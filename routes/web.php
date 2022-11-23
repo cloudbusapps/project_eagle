@@ -1,0 +1,182 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\EmployeeDirectoryController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\UserStoryController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DesignationController;
+
+// AUTH
+Route::get('/', [LoginController::class, 'index'])->name('auth.login');
+Route::post('/check', [LoginController::class, 'check'])->name('auth.check');
+Route::get('/logout', [LoginController::class, 'logout'])->name('auth.logout');
+Route::get('/register', [RegisterController::class, 'index'])->name('auth.register');
+Route::post('/register', [RegisterController::class, 'save'])->name('auth.save');
+
+// AUTHENTICATION REQUIRED TO ACCESS MODULES
+Route::group(['middleware' => 'auth'], function() {
+    // DASHBOARD
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/test', [DashboardController::class, 'index'])->name('test');
+
+    // SETUP
+    Route::prefix('setup')->group(function() {
+        // DEPARTMENT
+        Route::prefix('department')->group(function() {
+            Route::get('/', [DepartmentController::class, 'index'])->name('department');
+            Route::get('/add', [DepartmentController::class, 'form'])->name('department.add');
+            Route::post('/save', [DepartmentController::class, 'save'])->name('department.save');
+            Route::get('/edit/{Id}', [DepartmentController::class, 'edit'])->name('department.edit');
+            Route::put('/edit/{Id}/update', [DepartmentController::class, 'update'])->name('department.update');
+            Route::get('/delete/{Id}', [DepartmentController::class, 'delete'])->name('department.delete');
+        });
+
+        // DESIGNATION
+        Route::prefix('designation')->group(function() {
+            Route::get('/', [DesignationController::class, 'index'])->name('designation');
+            Route::get('/add', [DesignationController::class, 'form'])->name('designation.add');
+            Route::post('/save', [DesignationController::class, 'save'])->name('designation.save');
+            Route::get('/edit/{Id}', [DesignationController::class, 'edit'])->name('designation.edit');
+            Route::put('/edit/{Id}/update', [DesignationController::class, 'update'])->name('designation.update');
+            Route::get('/delete/{Id}', [DesignationController::class, 'delete'])->name('designation.delete');
+        });
+    });
+
+    // USER
+    Route::prefix('user')->group(function () {
+        // PROFILE
+        Route::prefix('profile')->group(function () {
+            // DEFAULT
+            Route::get('/{Id?}', [UserProfileController::class, 'index'])->name('user.viewProfile');
+            Route::get('/generate/{UserId}/{action}', [UserProfileController::class, 'generate'])->name('user.generate');
+
+            // IMAGE
+            Route::get('/edit/image/{Id}', [UserProfileController::class, 'editProfileImage'])->name('user.editProfileImage');
+            Route::put('/edit/image/{Id}/update', [UserProfileController::class, 'updateProfileImage'])->name('user.updateProfileImage');
+
+            // PERSONAL INFORMATION
+            Route::get('/edit/personalInformation/{Id}', [UserProfileController::class, 'editPersonalInformation'])->name('user.editPersonalInformation');
+            Route::put('/edit/personalInformation/{Id}/update', [UserProfileController::class, 'updatePersonalInformation'])->name('user.updatePersonalInformation');
+        
+            // CERTIFICATION
+            Route::get('/add/certification/{Id}', [UserProfileController::class, 'addCertification'])->name('user.addCertification');
+            Route::post('/add/certification/{Id}/save', [UserProfileController::class, 'saveCertification'])->name('user.saveCertification');
+            Route::get('/edit/certification/{Id}', [UserProfileController::class, 'editCertification'])->name('user.editCertification');
+            Route::put('/edit/certification/{Id}/update', [UserProfileController::class, 'updateCertification'])->name('user.updateCertification');
+            Route::get('/delete/certification/{Id}', [UserProfileController::class, 'deleteCertification'])->name('user.deleteCertification');
+            
+            // AWARD
+            Route::get('/add/award/{Id}', [UserProfileController::class, 'addAward'])->name('user.addAward');
+            Route::post('/add/award/{Id}/save', [UserProfileController::class, 'saveAward'])->name('user.saveAward');
+            Route::get('/edit/award/{Id}', [UserProfileController::class, 'editAward'])->name('user.editAward');
+            Route::put('/edit/award/{Id}/update', [UserProfileController::class, 'updateAward'])->name('user.updateAward');
+            Route::get('/delete/award/{Id}', [UserProfileController::class, 'deleteAward'])->name('user.deleteAward');
+            
+            // EXPERIENCE
+            Route::get('/add/experience/{Id}', [UserProfileController::class, 'addExperience'])->name('user.addExperience');
+            Route::post('/add/experience/{Id}/save', [UserProfileController::class, 'saveExperience'])->name('user.saveExperience');
+            Route::get('/edit/experience/{Id}', [UserProfileController::class, 'editExperience'])->name('user.editExperience');
+            Route::put('/edit/experience/{Id}/update', [UserProfileController::class, 'updateExperience'])->name('user.updateExperience');
+            Route::get('/delete/experience/{Id}', [UserProfileController::class, 'deleteExperience'])->name('user.deleteExperience');
+            
+            // EDUCATION
+            Route::get('/add/education/{Id}', [UserProfileController::class, 'addEducation'])->name('user.addEducation');
+            Route::post('/add/education/{Id}/save', [UserProfileController::class, 'saveEducation'])->name('user.saveEducation');
+            Route::get('/edit/education/{Id}', [UserProfileController::class, 'editEducation'])->name('user.editEducation');
+            Route::put('/edit/education/{Id}/update', [UserProfileController::class, 'updateEducation'])->name('user.updateEducation');
+            Route::get('/delete/education/{Id}', [UserProfileController::class, 'deleteEducation'])->name('user.deleteEducation');
+        
+            // SKILL
+            Route::get('/getFormSkill/{Id}', [UserProfileController::class, 'getFormSkill'])->name('user.getFormSkill');
+            Route::post('/saveSkill/{Id}', [UserProfileController::class, 'saveSkill'])->name('user.saveSkill');
+        });
+    });
+
+    // EMPLOYEE DIRECTORY
+    Route::get('/employeeDirectory', [EmployeeDirectoryController::class, 'index'])->name('employeeDirectory');
+
+    //PROJECTS
+    Route::prefix('projects')->group(function () {
+        // DEFAULT
+        Route::get('/projectView', [ProjectController::class, 'view'])->name('projects.view');
+        Route::get('/projectDetails/{Id}', [ProjectController::class, 'viewProjectDetails'])->name('projects.projectDetails');
+        Route::post('/add', [ProjectController::class, 'add'])->name('projects.add');
+        Route::put('/update/{Id}', [ProjectController::class, 'update'])->name('projects.update');
+        Route::get('/delete/{Id}', [ProjectController::class, 'delete'])->name('projects.delete');
+        // Route::get('/getProjectForm/{Id}/', [ProjectController::class, 'getProjectForm'])->name('projects.getProjectForm');
+        Route::get('/add/project', [ProjectController::class, 'addProject'])->name('projects.addProject');
+        Route::get('/edit/project/{Id}', [ProjectController::class, 'editProject'])->name('projects.editProject');
+        // Route::get('/confirmMessage/{type}', [ProjectController::class, 'confirmMessage'])->name('projects.confirmMessage');
+
+
+        //USER STORY
+        Route::get('/add/userStory/{Id}', [ProjectController::class, 'addUserStory'])->name('projects.addUserStory');
+        Route::post('/add/userStory/{Id}/save', [ProjectController::class, 'saveUserStory'])->name('projects.saveUserStory');
+        Route::get('/edit/userStory/{Id}', [ProjectController::class, 'editUserStory'])->name('projects.editUserStory');
+        Route::put('/edit/userStory/{Id}/update', [ProjectController::class, 'updateUserStory'])->name('projects.updateUserStory');
+        Route::get('/view/userStory/details/{Id}', [UserStoryController::class, 'userStoryDetails'])->name('projects.userStoryDetails');
+        Route::get('/delete/userStory/{Id}', [ProjectController::class, 'deleteUserStory'])->name('projects.deleteUserStory');
+
+
+
+        //TASK
+        Route::get('/addTask/{Id}', [TaskController::class, 'addTask'])->name('projects.addTask');
+        Route::post('/save/task/{Id}', [TaskController::class, 'saveTask'])->name('projects.saveTask');
+        Route::get('/edit/task/{Id}', [TaskController::class, 'editTask'])->name('projects.editTask');
+        Route::get('/delete/task/{Id}', [TaskController::class, 'deleteTask'])->name('projects.deleteTask');
+        Route::put('/update/task/{Id}', [TaskController::class, 'updateTask'])->name('projects.updateTask');
+
+        // RESOURCE
+        
+        Route::get('/add/resource/{Id}', [ProjectController::class, 'addResource'])->name('projects.addResource');
+       
+    });
+});
+
+
+// ----- ADMIN -----
+use App\Http\Controllers\admin\ProjectManagementController;
+
+Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function() {
+    // MODULE
+    Route::prefix('modules')->group(function() {
+        Route::get('/', [ModuleController::class, 'index'])->name('modules');
+        Route::get('/add', [ModuleController::class, 'form'])->name('modules.add');
+        Route::post('/save', [ModuleController::class, 'save'])->name('modules.save');
+        Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('modules.edit');
+        Route::put('/edit/{id}/update', [ModuleController::class, 'update'])->name('modules.update');
+        Route::get('/delete/{id}', [ModuleController::class, 'delete'])->name('modules.delete');
+    });
+
+    // PROJECT MANAGEMENT
+    Route::prefix('projectManagement')->group(function() {
+        // DEFAULT
+        Route::get('/', [ProjectManagementController::class, 'index'])->name('projectManagement');
+        Route::get('/edit/{Id}', [ProjectManagementController::class, 'edit'])->name('pm.edit');
+        Route::put('/edit/{Id}/update/{ProjectCostId?}', [ProjectManagementController::class, 'update'])->name('pm.update');
+
+        // RESOURCE COST
+        Route::get('/resourceCost/edit/{Id}', [ProjectManagementController::class, 'resourceCostEdit'])->name('pm.resourceCost.edit');
+        Route::put('/resourceCost/edit/{Id}/update/{ResourceCostId?}', [ProjectManagementController::class, 'resourceCostUpdate'])->name('pm.resourceCost.update');
+    });
+});
+// ----- END ADMIN -----
