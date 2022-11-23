@@ -34,13 +34,14 @@ class Project extends Model
 
     ];
 
-    public function createdBy(){
+    public function createdBy()
+    {
 
         // third param is the column of the first param, second param is the column of the current model
         // below will be translated to select * from users where users.Id = Project.Created_By_Id
-        return $this->belongsTo(User::class,'Created_By_Id', 'Id');
+        return $this->belongsTo(User::class, 'Created_By_Id', 'Id');
     }
-    
+
 
     protected static function boot()
     {

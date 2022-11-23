@@ -23,9 +23,11 @@ return new class extends Migration
             $table->uuid('UserStoryId')->nullable(false);
             $table->date('StartDate')->nullable(false);
             $table->date('EndDate')->nullable(false);
-            $table->dateTime('ActualStartDate')->nullable(true);
-            $table->dateTime('ActualEndDate')->nullable(true);
-            $table->integer('Duration')->nullable(true);
+            // $table->dateTime('ActualStartDate')->nullable(true);
+            // $table->dateTime('ActualEndDate')->nullable(true);
+            $table->date('ActualStartDate')->nullable(true);
+            $table->date('ActualEndDate')->nullable(true);
+            $table->string('Duration')->nullable(true);
             $table->string('TimeCompleted')->nullable(true);
             $table->uuid('UserId')->nullable(true);
             $table->string('Status');

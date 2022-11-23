@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\User;
 use App\Models\Task;
+use App\Models\Resource;
 use App\Models\UserStory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
@@ -22,6 +25,7 @@ class ProjectController extends Controller
         return view('projects.view', $data);
     }
 
+
     function viewProjectDetails($Id)
     {
 
@@ -29,16 +33,47 @@ class ProjectController extends Controller
             ->where('ProjectId', $Id)
             ->leftJoin('users', 'users.Id', '=', 'user_story.UserId')
             ->get();
-        $projectData = Project::select('projects.*', 'users.FirstName', 'users.LastName')
+
+        $userList = Resource::select(
+            'users.FirstName',
+            'users.LastName',
+            'users.Title',
+            'users.Id',
+            DB::raw('(
+                SELECT SUM(
+                CAST(tasks."Duration" AS INT)
+                ) As durationinseconds
+                FROM tasks
+                LEFT JOIN user_story
+                ON user_story."Id" = tasks."UserStoryId"
+            WHERE users."Id" = tasks."UserId" AND 
+             user_story."ProjectId" = \'' . $Id . '\'
+            )'),
+            DB::raw('(
+                SELECT SUM(
+                CAST(tasks."TimeCompleted" AS INT)
+                ) As timecompleteinsec
+                FROM tasks
+                LEFT JOIN user_story
+                ON user_story."Id" = tasks."UserStoryId"
+            WHERE users."Id" = tasks."UserId" AND 
+             user_story."ProjectId" = \'' . $Id . '\'
+            )'),
+        )
+            ->where('resources.ProjectId', $Id)
+            ->leftJoin('users', 'users.Id', '=', 'resources.UserId')
+
+            ->get();
+
+        $projectData = Project::select('projects.*', 'users.FirstName', 'users.LastName', 'users.Title')
             ->where('projects.Id', $Id)
-            ->leftJoin('users', 'users.Id', '=', 'projects.Created_By_Id')
+            ->leftJoin('users', 'users.Id', '=', 'projects.ProjectManagerId')
             ->first();
-        $userList = User::all();
         $data = [
             'projectData' => $projectData,
             'userStoryData' => $userStory,
             'userList'    => $userList,
-            'title'       => 'Project Details'
+            'title'       => 'Project Details',
 
         ];
 
@@ -119,10 +154,12 @@ class ProjectController extends Controller
 
     public function addProject()
     {
+        $userList = User::select('FirstName', 'LastName', 'Id', 'Title', 'MiddleName')->get();
         $data = [
             'title'          => 'Add Project',
             'projectData'    => [],
-            'type'           => 'insert'
+            'type'           => 'insert',
+            'userList'             => $userList,
         ];
         return view('projects.addProject', $data);
     }
@@ -130,7 +167,10 @@ class ProjectController extends Controller
     public function editProject($Id)
     {
         $projectData = Project::find($Id);
-        $userList = User::all();
+        $userList = Resource::select('users.FirstName', 'users.LastName', 'users.Title', 'users.Id')
+            ->where('resources.ProjectId', $Id)
+            ->leftJoin('users', 'users.Id', '=', 'resources.UserId')
+            ->get();
         $data = [
             'title'          => 'Edit Project',
             'projectData'    => $projectData,
@@ -256,16 +296,108 @@ class ProjectController extends Controller
     public function addResource($Id)
     {
 
-        $userList = User::all();
+        $userList = User::where('IsAdmin',false)
+        ->get();
+        $savedUser = Resource::select('users.FirstName', 'users.LastName', 'users.Title', 'users.Id')
+            ->where('resources.ProjectId', $Id)
+            ->leftJoin('users', 'users.Id', '=', 'resources.UserId')
+            ->get();
         $data = [
             'title'          => 'Add Resource',
             'type'           => 'insert',
             'projectId'           => $Id,
             'projectData'        => [],
-            'userList' => $userList
+            'userList' => $userList,
+            'savedUser' => $savedUser
         ];
         return view('projects.resource', $data);
     }
+    public function editResource($Id)
+    {
+
+        $userList = User::all();
+        $savedUser = Resource::select('users.FirstName', 'users.LastName', 'users.Title', 'users.Id')
+            ->where('resources.ProjectId', $Id)
+            ->leftJoin('users', 'users.Id', '=', 'resources.UserId')
+            ->get();
+        $data = [
+            'title'          => 'Edit Resource',
+            'type'           => 'edit',
+            'projectId'           => $Id,
+            'projectData'        => [],
+            'userList' => $userList,
+            'savedUser' => $savedUser
+        ];
+        return view('projects.resource', $data);
+    }
+
+
+
+
+    public function saveResource(Request $request, $Id)
+    {
+
+        $users = $request->usersId;
+        $deleteUsers = Resource::where('ProjectId', $Id)->delete();
+
+
+        if ($users && count($users)) {
+            $data = [];
+
+            foreach ($users as $user) {
+                $data[] = [
+                    'Id'            => Str::uuid(),
+                    'ProjectId'        => $Id,
+                    'UserId'        => $user,
+                ];
+            }
+
+            $saveUser = Resource::insert($data);
+            if ($saveUser) {
+                $request->session()->flash('success', 'Users updated');
+                return response()->json(['url' => url('projects/projectDetails/' . $Id)]);
+            }
+        }
+        if ($deleteUsers) {
+            $request->session()->flash('success', 'Users updated');
+            return response()->json(['url' => url('projects/projectDetails/' . $Id)]);
+        } else {
+            return redirect()
+                ->route('projects.view')->with('fail', 'Something went wrong, try again later');
+        }
+    }
+
+    public function updateResource(Request $request, $Id)
+    {
+
+        $usersId = $request->usersId;
+        $deleteUsers = Resource::where('ProjectId', $Id)->delete();
+
+        $sessionId = Auth::id();
+        if ($usersId && count($usersId)) {
+            $data = [];
+
+            foreach ($usersId as $user) {
+                $data[] = [
+                    'Id'            => Str::uuid(),
+                    'ProjectId'        => $Id,
+                    'UserId'        => $user,
+                ];
+            }
+
+            $saveUser = Resource::insert($data);
+        }
+        if ($saveUser && $deleteUsers) {
+            return redirect()
+                ->route('projects.projectDetails', ['Id' => $Id])
+                ->with('success', "Users has been updated in this project");
+        } else {
+            return redirect()
+                ->route('projects.view')->with('fail', 'Something went wrong, try again later');
+        }
+    }
+
+
 
 
 

@@ -15,7 +15,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('deadline:notify')->twiceDaily(9, 13);
         // $schedule->command('inspire')->hourly();
     }
 
@@ -26,7 +25,6 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        NotifyDeadline::class;
         $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');
