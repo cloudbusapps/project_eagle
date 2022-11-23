@@ -4,12 +4,17 @@
   $prefixArray = [$groupPrefix, $subModule];
 
   $moduleData = getModuleData();
+  $notifications = DB::table('notifications')
+    ->where('notifiable_id', '=', Auth::id())
+    ->where('read_at', '=', null)
+    ->orderBy('created_at',"ASC")
+    ->get();
 ?>
 
 <div class="sidebar p-2 py-md-3 @@cardClass version-2">
   <div class="container-fluid">
     <div class="title-text d-flex align-items-center mb-4 mt-1">
-      <img class="sidebar-img img-thumbnail shadow rounded-circle" src="{{ asset('assets/img/epldt-suite-logo.png') }}" height="50" width="50" alt="ePLDT">
+      <img class="sidebar-img img-thumbnail shadow" src="{{ asset('assets/img/epldt-suite-logo.png') }}" height="50" width="50" alt="ePLDT">
       <h4 class="sidebar-title mb-0 flex-grow-1 px-2 d-none d-xl-block"><span class="sm-txt fw-bold" style="color: #d0021b;">ePLDT</h4>
     </div>
 
@@ -47,6 +52,27 @@
         @endforeach
 
         @if (Auth::user()->IsAdmin)
+        <li class="{{ in_array('setup', $prefixArray) ? 'collapsed' : '' }}">
+          <a class="m-link" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#menu-setup" 
+            href="#" 
+            aria-expanded="{{ in_array('setup', $prefixArray) ? 'true' : 'false' }}">
+            <img src="{{ asset('uploads/icons/setup.png') }}" alt="Setup" width="20" height="20">
+            <span class="ms-2">Setup</span>
+            <span class="arrow fa fa-angle-right ms-auto text-end"></span>
+          </a>
+          <ul class="sub-menu collapse {{ in_array('setup', $prefixArray) ? 'collapsed show' : '' }}" id="menu-setup">
+            <li>
+              <a class="ms-link {{ 'department' == $subModule ? 'active' : '' }}" 
+                href="{{ route('department') }}">Department</a>
+            </li>
+            <li>
+              <a class="ms-link {{ 'designation' == $subModule ? 'active' : '' }}" 
+                href="{{ route('designation') }}">Designation</a>
+            </li>
+          </ul>
+        </li>
         <li>
           <a class="m-link {{ $subModule == 'modules' ? 'active' : '' }}" href="{{ route('modules') }}">
             <img src="{{ asset('uploads/icons/modules.png') }}" alt="Modules" width="20" height="20">
@@ -81,6 +107,60 @@
           </button>
         </div>
         <ul class="header-right justify-content-end d-flex align-items-center mb-0">
+          <li>
+            <div class="dropdown morphing scale-left notifications">
+                <a class="nav-link dropdown-toggle after-none" href="#" role="button"
+                    data-bs-toggle="dropdown">
+                    <i class="bi bi-bell"></i>
+                    @if (count($notifications) > 0)
+                        <span class='badge badge-warning'
+                            id='lblCartCount'>{{ count($notifications) }}</span>
+                    @endif
+
+                </a>
+                <div id="NotificationsDiv" class="dropdown-menu shadow rounded-4 border-0 p-0 m-0">
+
+                    <div class="card w380">
+                        <div class="card-header p-3">
+                            <h6 class="card-title mb-0">Notifications</h6>
+
+                            <span class="badge bg-danger text-light">{{ count($notifications) }}</span>
+                        </div>
+                        <div class="tab-content card-body custom_scroll">
+                            <div class="tab-pane fade show active">
+                                @if (count($notifications) > 0)
+                                    <ul class="list-unstyled list mb-0">
+                                        @foreach ($notifications as $notification)
+                                            <?php
+                                            $data = json_decode($notification->data);
+                                            ?>
+                                            <li class="py-2 mb-1 border-bottom">
+                                                <a href="{{ route('notifications.updateNotif', ['Id' => $notification->id]) }}"
+                                                    class="d-flex btnNotif"
+                                                    data-id="{{ $notification->id }}">
+                                                    <div class="avatar rounded-circle no-thumbnail"><i
+                                                            class="fa fa-warning fa-lg"></i></div>
+                                                    <div class="flex-fill ms-3">
+                                                        <p class="mb-0"><strong
+                                                                class="text-danger">Deadline
+                                                                Overdue</strong>
+                                                            {{ $data->taskTitle }}</p>
+                                                        <small>{{ activityTimes($notification->created_at) }}</small>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        @endforeach
+
+                                    </ul>
+                                @else
+                                    <h4 class="color-400">No Notifications right now!</h4>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </li>
           <li>
             <div class="dropdown morphing scale-left user-profile mx-lg-3 mx-2">
               <a class="nav-link dropdown-toggle rounded-circle after-none p-0" href="#" role="button" data-bs-toggle="dropdown">
