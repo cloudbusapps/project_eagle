@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\EmployeeDirectoryController;
@@ -37,29 +36,6 @@ Route::group(['middleware' => 'auth'], function() {
     // DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/test', [DashboardController::class, 'index'])->name('test');
-
-    // SETUP
-    Route::prefix('setup')->group(function() {
-        // DEPARTMENT
-        Route::prefix('department')->group(function() {
-            Route::get('/', [DepartmentController::class, 'index'])->name('department');
-            Route::get('/add', [DepartmentController::class, 'form'])->name('department.add');
-            Route::post('/save', [DepartmentController::class, 'save'])->name('department.save');
-            Route::get('/edit/{Id}', [DepartmentController::class, 'edit'])->name('department.edit');
-            Route::put('/edit/{Id}/update', [DepartmentController::class, 'update'])->name('department.update');
-            Route::get('/delete/{Id}', [DepartmentController::class, 'delete'])->name('department.delete');
-        });
-
-        // DESIGNATION
-        Route::prefix('designation')->group(function() {
-            Route::get('/', [DesignationController::class, 'index'])->name('designation');
-            Route::get('/add', [DesignationController::class, 'form'])->name('designation.add');
-            Route::post('/save', [DesignationController::class, 'save'])->name('designation.save');
-            Route::get('/edit/{Id}', [DesignationController::class, 'edit'])->name('designation.edit');
-            Route::put('/edit/{Id}/update', [DesignationController::class, 'update'])->name('designation.update');
-            Route::get('/delete/{Id}', [DesignationController::class, 'delete'])->name('designation.delete');
-        });
-    });
 
     // USER
     Route::prefix('user')->group(function () {
@@ -122,11 +98,8 @@ Route::group(['middleware' => 'auth'], function() {
         Route::post('/add', [ProjectController::class, 'add'])->name('projects.add');
         Route::put('/update/{Id}', [ProjectController::class, 'update'])->name('projects.update');
         Route::get('/delete/{Id}', [ProjectController::class, 'delete'])->name('projects.delete');
-        // Route::get('/getProjectForm/{Id}/', [ProjectController::class, 'getProjectForm'])->name('projects.getProjectForm');
         Route::get('/add/project', [ProjectController::class, 'addProject'])->name('projects.addProject');
         Route::get('/edit/project/{Id}', [ProjectController::class, 'editProject'])->name('projects.editProject');
-        // Route::get('/confirmMessage/{type}', [ProjectController::class, 'confirmMessage'])->name('projects.confirmMessage');
-
 
         //USER STORY
         Route::get('/add/userStory/{Id}', [ProjectController::class, 'addUserStory'])->name('projects.addUserStory');
@@ -136,8 +109,6 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('/view/userStory/details/{Id}', [UserStoryController::class, 'userStoryDetails'])->name('projects.userStoryDetails');
         Route::get('/delete/userStory/{Id}', [ProjectController::class, 'deleteUserStory'])->name('projects.deleteUserStory');
 
-
-
         //TASK
         Route::get('/addTask/{Id}', [TaskController::class, 'addTask'])->name('projects.addTask');
         Route::post('/save/task/{Id}', [TaskController::class, 'saveTask'])->name('projects.saveTask');
@@ -146,15 +117,22 @@ Route::group(['middleware' => 'auth'], function() {
         Route::put('/update/task/{Id}', [TaskController::class, 'updateTask'])->name('projects.updateTask');
 
         // RESOURCE
-        
         Route::get('/add/resource/{Id}', [ProjectController::class, 'addResource'])->name('projects.addResource');
-       
+        Route::get('/edit/resource/{Id}', [ProjectController::class, 'editResource'])->name('projects.editResource');
+        Route::post('/add/resource/{Id}/save', [ProjectController::class, 'saveResource'])->name('projects.saveResource');
+        Route::put('/update/resource/{Id}', [ProjectController::class, 'updateResource'])->name('projects.updateResource');
+    });
+    
+    // NOTIFICATION
+    Route::prefix('notification')->group(function () {
+        Route::get('/update/{Id}', [DashboardController::class, 'updateNotif'])->name('notifications.updateNotif');
     });
 });
 
 
 // ----- ADMIN -----
 use App\Http\Controllers\admin\ProjectManagementController;
+use App\Http\Controllers\ModuleController;
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function() {
     // MODULE
@@ -165,6 +143,29 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
         Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('modules.edit');
         Route::put('/edit/{id}/update', [ModuleController::class, 'update'])->name('modules.update');
         Route::get('/delete/{id}', [ModuleController::class, 'delete'])->name('modules.delete');
+    });
+
+    // SETUP
+    Route::prefix('setup')->group(function() {
+        // DEPARTMENT
+        Route::prefix('department')->group(function() {
+            Route::get('/', [DepartmentController::class, 'index'])->name('department');
+            Route::get('/add', [DepartmentController::class, 'form'])->name('department.add');
+            Route::post('/save', [DepartmentController::class, 'save'])->name('department.save');
+            Route::get('/edit/{Id}', [DepartmentController::class, 'edit'])->name('department.edit');
+            Route::put('/edit/{Id}/update', [DepartmentController::class, 'update'])->name('department.update');
+            Route::get('/delete/{Id}', [DepartmentController::class, 'delete'])->name('department.delete');
+        });
+
+        // DESIGNATION
+        Route::prefix('designation')->group(function() {
+            Route::get('/', [DesignationController::class, 'index'])->name('designation');
+            Route::get('/add', [DesignationController::class, 'form'])->name('designation.add');
+            Route::post('/save', [DesignationController::class, 'save'])->name('designation.save');
+            Route::get('/edit/{Id}', [DesignationController::class, 'edit'])->name('designation.edit');
+            Route::put('/edit/{Id}/update', [DesignationController::class, 'update'])->name('designation.update');
+            Route::get('/delete/{Id}', [DesignationController::class, 'delete'])->name('designation.delete');
+        });
     });
 
     // PROJECT MANAGEMENT

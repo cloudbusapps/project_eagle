@@ -17,8 +17,8 @@
             '<a href="/projects/delete/' .
             $Id .
             '" class="btn btn-danger btnDeleteForm">Delete</a>
-                                                                                        <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
-        $Name = !empty($projectData) ? $projectData['Name'] ?? 'b' : 'a';
+    <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
+        $Name = !empty($projectData) ? $projectData['Name'] ?? '' : '';
         $Description = !empty($projectData) ? $projectData['Description'] ?? '' : '';
         $KickoffDate = !empty($projectData) ? $projectData['KickoffDate'] ?? '' : '';
         $ClosedDate = !empty($projectData) ? $projectData['ClosedDate'] ?? '' : '';
@@ -43,14 +43,14 @@
                     </div>
                 </div>
             </div>
-        </div>  
-    
+        </div>
+
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0">
             <div class="container-fluid">
                 <div class="card">
 
                     <div class="card-body">
-    
+
                         <form validated="false" id="formProject" class="row g-3" action="{{ $action }}"
                             todo="{{ $todo }}" method="POST">
                             @csrf
@@ -85,10 +85,10 @@
                                     </div>
                                 @endif
                             </div>
-    
+
                             <div class="profile-overview">
-    
-    
+
+
                                 <div class="row mb-3">
                                     <label for="inputText" class="col-sm-2 label">Project Name <code>*</code></label>
                                     <div class="col-sm-10">
@@ -112,14 +112,17 @@
                                             <select name="ProjectManagerId" id="ProjectManagerId" class="form-select"
                                                 id="floatingSelect" aria-label="State">
                                                 <option value="" selected disabled>Select Project Manager</option>
-                                                @foreach ($userList as $users)
-                                                    <option {{ $projectData->ProjectManagerId == $users->Id ? 'selected' : '' }}
-                                                        value="{{ $users->Id }}">
-                                                        {{ $users->FirstName . ' ' . $users->LastName }}
+                                                @foreach ($userList as $user)
+                                                    <option
+                                                        {{ $projectData->ProjectManagerId == $user->Id ? 'selected' : '' }}
+                                                        value="{{ $user->Id }}">
+                                                        {{ $user->FirstName . ' ' . $user->LastName }}
                                                     </option>
                                                 @endforeach
                                             </select>
-    
+                                            <div id="title" class="d-block">
+
+                                            </div>
                                         </div>
                                     </div>
                                 @endif
@@ -138,23 +141,23 @@
                                         <input value="{{ old('ProjectClosedDate') ?? $ClosedDate }}" required
                                             placeholder="Closed Date" name="ProjectClosedDate" id="ProjectClosedDate"
                                             type="date" class="form-control">
-    
+
                                     </div>
                                 </div>
                             </div>
                             <div class="button-footer text-end">
                                 <a href="{{ route('projects.view') }}" class="btn btn-secondary">Cancel</a>
-    
+
                                 <?= $button ?>
                             </div>
-    
+
                     </div>
-    
+
                     </form>
                 </div>
             </div>
         </div>
-        
+
     </main>
 
 
@@ -167,6 +170,24 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
+
+            // Fix if already have PM then display title
+            // if (userId !== "") {
+            //     const title = userArray.find(x => x.Id === userId).Title;
+            //     $('#title').addClass('d-block');
+            //     $('#title').text(`Title: ${title?title:'none'}`);
+            // }
+
+            // ----- DISPLAY TITLE BELOW SELECT -----
+            $(document).on('change', 'select', function(e) {
+                const userArray = @json($userList);
+                const userId = $('#ProjectManagerId').find(":selected").val();
+                const title = userArray.find(x => x.Id === userId).Title;
+
+                console.log(title)
+                $('#title').addClass('d-block');
+                $('#title').text(`Title: ${title?title:'----'}`);
+            })
 
             // ----- SUBMIT FORM -----
             $(document).on('submit', '#formProject', function(e) {

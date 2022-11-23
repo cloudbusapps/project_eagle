@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\User;
 use App\Models\UserStory;
+use App\Models\Resource;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +25,15 @@ class TaskController extends Controller
 
     function addTask($Id)
     {
-        $userList = User::all();
+
+        // $userList = User::all();
+        $userList = Resource::select('users.FirstName', 'users.LastName', 'users.Title', 'users.Id')
+
+            ->leftJoin('users', 'users.Id', '=', 'resources.UserId')
+            ->leftJoin('projects', 'projects.Id', '=', 'resources.ProjectId')
+            ->leftJoin('user_story', 'user_story.ProjectId', '=', 'resources.ProjectId')
+            ->where('user_story.Id', $Id)
+            ->get();
 
         $data = [
             'title'          => 'Add Task',
@@ -39,8 +48,16 @@ class TaskController extends Controller
     }
     function editTask($Id)
     {
-        $userList = User::all();
+
         $taskData = Task::Where('Id', '=',  $Id)->first();
+
+        $userList = Resource::select('users.FirstName', 'users.LastName', 'users.Title', 'users.Id')
+
+            ->leftJoin('users', 'users.Id', '=', 'resources.UserId')
+            ->leftJoin('projects', 'projects.Id', '=', 'resources.ProjectId')
+            ->leftJoin('user_story', 'user_story.ProjectId', '=', 'resources.ProjectId')
+            ->where('user_story.Id', $taskData->UserStoryId)
+            ->get();
 
         $data = [
             'taskData'    => $taskData,
@@ -62,13 +79,16 @@ class TaskController extends Controller
     {
         $userData = User::Where('Id', '=', session('LoggedUser'))->first();
 
+        $durationInSeconds = (string) $request->TaskDuration * 60 * 60;
+
         $taskName         = $request->TaskName;
         $taskDescription  = $request->TaskDescription;
         $taskStartDate    = $request->TaskStartDate;
         $taskEndDate      = $request->TaskEndDate;
         $actualTaskStartDate    = $request->ActualTaskStartDate;
         $actualTaskEndDate      = $request->ActualTaskEndDate;
-        $taskDuration      = $request->TaskDuration;
+        $taskDuration      = $durationInSeconds;
+
         $taskUserAssigned = $request->TaskUserAssigned;
         $taskStatus       = $request->TaskStatus;
 
@@ -82,15 +102,21 @@ class TaskController extends Controller
         $task->ActualStartDate   = $actualTaskStartDate;
         $task->ActualEndDate     = $actualTaskEndDate;
         $task->Duration     = $taskDuration;
+
         $task->UserId      = $taskUserAssigned;
         $task->Status      = $taskStatus;
         $task->UserStoryId   = $Id;
 
-        if (!empty($actualTaskStartDate)) {
-            $interval = Carbon::parse($actualTaskEndDate)->diffInSeconds(Carbon::parse($actualTaskStartDate));
-            $task->TimeCompleted = $interval;
+        // if (!empty($actualTaskStartDate)) {
+        //     $interval = Carbon::parse($actualTaskEndDate)->diffInSeconds(Carbon::parse($actualTaskStartDate));
+        //     $task->TimeCompleted = $interval;
+        // }
+        $timeCompleted = null;
+        if (!empty($request->ActualTaskDuration)) {
+            $timeCompletedInSeconds = (string) $request->ActualTaskDuration * 60 * 60;
+            $timeCompleted = $timeCompletedInSeconds;
         }
-
+        $task->TimeCompleted = $timeCompleted;
 
 
         $save = $userData->tasks()->save($task);
@@ -144,16 +170,15 @@ class TaskController extends Controller
     }
     function updateTask(Request $request, $Id)
     {
-        // $projectData = Project::Where('Id', '=',  $Id)->first();
         $task = Task::Where('Id', '=',  $Id)->first();
-
+        $durationInSeconds = (string) $request->TaskDuration * 60 * 60;
         $taskName         = $request->TaskName;
         $taskDescription  = $request->TaskDescription;
         $taskStartDate    = $request->TaskStartDate;
         $taskEndDate      = $request->TaskEndDate;
         $actualTaskStartDate    = $request->ActualTaskStartDate;
         $actualTaskEndDate      = $request->ActualTaskEndDate;
-        $taskDuration      = $request->TaskDuration;
+        $taskDuration      = $durationInSeconds;
         $taskUserAssigned = $request->TaskUserAssigned;
         $taskStatus       = $request->TaskStatus;
 
@@ -166,10 +191,19 @@ class TaskController extends Controller
         $task->Duration     = $taskDuration;
         $task->UserId      = $taskUserAssigned;
         $task->Status      = $taskStatus;
-        if (!empty($actualTaskStartDate)) {
-            $interval = Carbon::parse($actualTaskEndDate)->diffInSeconds(Carbon::parse($actualTaskStartDate));
-            $task->TimeCompleted = $interval;
+
+
+        // if (!empty($actualTaskStartDate)) {
+        //     $interval = Carbon::parse($actualTaskEndDate)->diffInSeconds(Carbon::parse($actualTaskStartDate));
+        //     $task->TimeCompleted = $interval;
+        // }
+        $timeCompleted = null;
+        if (!empty($request->ActualTaskDuration)) {
+            $timeCompletedInSeconds = (string) $request->ActualTaskDuration * 60 * 60;
+            $timeCompleted = $timeCompletedInSeconds;
         }
+        $task->TimeCompleted = $timeCompleted;
+
         $save = $task->update();
 
         if ($save) {
@@ -243,9 +277,9 @@ class TaskController extends Controller
             $update = $userStory->update();
 
             if ($update) {
-            return redirect()
-                ->route('projects.userStoryDetails', ['Id' => $task->UserStoryId])
-                ->with('success', 'Task has been deleted');
+                return redirect()
+                    ->route('projects.userStoryDetails', ['Id' => $task->UserStoryId])
+                    ->with('success', 'Task has been deleted');
             } else {
                 return redirect()
                     ->route('projects.userStoryDetails', ['Id' => $task->UserStoryId])

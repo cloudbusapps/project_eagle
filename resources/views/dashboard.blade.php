@@ -2,24 +2,6 @@
 
 @section('content')
 
-<?php
-    function activityTime($date) {
-        $today = now();
-        $date1 = new DateTime($date);
-        $date2 = new DateTime(now());
-        $interval = $date1->diff($date2);
-        $hours = (float) $interval->format('%H');
-        $minutes = (float) $interval->format('%I');
-        if ($hours > 0) {
-            return "{$hours} hr ago";
-        } else if ($minutes > 0) {
-            return "{$minutes} min ago";
-        } else {
-            return "Just now";
-        }
-    }
-?>
-
 <main id="main" class="main">
   <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
     <div class="container-fluid">
