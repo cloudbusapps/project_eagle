@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('ParentId')->nullable();
             $table->string('Title');
+            $table->boolean('WithApproval')->default(false);
             $table->string('RouteName')->nullable();
             $table->string('Prefix');
             $table->string('Icon')->default('default.png');

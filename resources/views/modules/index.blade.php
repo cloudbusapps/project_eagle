@@ -48,7 +48,8 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Title</th>
+                                <th>Key - Title</th>
+                                <th>With Approval</th>
                                 <th>Parent</th>
                                 <th>Sort Order</th>
                                 <th>Route Name</th>
@@ -62,6 +63,7 @@
                         @foreach ($data as $index => $dt)
                         <?php 
                             $status = $dt->Status == "Active" ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-danger'>Inactive</span>";
+                            $approval = $dt->WithApproval ? "<span class='border border-success px-2 text-success'>Yes</span>" : "<span class='border border-danger px-2 text-danger'>No</span>";
                         ?>
 
                             <tr>
@@ -69,9 +71,10 @@
                                 <td>
                                     <img src="{{ asset('uploads/icons/'.$dt->Icon) }}" alt="{{ $dt->Title }}" width="20" height="20">
                                     <a href="{{ route('modules.edit', ['id' => $dt->id]) }}">
-                                        {{ $dt->Title }}
+                                        {{ $dt->id. ' - ' .$dt->Title }}
                                     </a>
                                 </td>
+                                <td><?= $approval ?></td>
                                 <td>{{ $dt->ParentTitle ?? '-' }}</td>
                                 <td>{{ $dt->SortOrder ?? '1' }}</td>
                                 <td>{{ $dt->RouteName ?? '-' }}</td>

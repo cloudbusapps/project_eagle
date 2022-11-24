@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-    $ParentId = $Title = $RouteName = $Prefix = $todo = null;
+    $ParentId = $Title = $WithApproval = $RouteName = $Prefix = $todo = null;
     $SortOrder = 1;
     $Icon      = "default.png"; 
     $Status    = "Active";
@@ -16,6 +16,7 @@
         <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
         $ParentId  = (!empty($data)) ? ($data['ParentId'] ?? '') : '';
         $Title     = (!empty($data)) ? ($data['Title'] ?? '') : '';
+        $WithApproval = (!empty($data)) ? ($data['WithApproval'] ?? '') : '';
         $SortOrder = (!empty($data)) ? ($data['SortOrder'] ?? '') : '';
         $Icon      = (!empty($data)) ? ($data['Icon'] ?? '') : '';
         $Status    = (!empty($data)) ? ($data['Status'] ?? '') : '';
@@ -72,7 +73,7 @@
                                 <div class="row my-3">
                                     <label for="ParentModule" class="col-sm-2">Parent Module</label>
                                     <div class="col-sm-10">
-                                        <select name="ParentId" id="ParentId" class="form-select">
+                                        <select name="ParentId" id="ParentId" class="form-select" select2>
                                             <option value="" {{ (old('ParentId') ?? $ParentId) == "" ? "selected" : '' }}>None</option>
                                             
                                             @foreach ($modules as $dt)
@@ -87,6 +88,13 @@
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="Title" name="Title" placeholder="Title"
                                             value="{{ old('Title') ?? $Title }}" required>
+                                    </div>
+                                </div>
+                                <div class="row my-3 py-2">
+                                    <label for="WithApproval" class="col-sm-2">With Approval?</label>
+                                    <div class="col-sm-10">
+                                        <input type="checkbox" name="WithApproval" id="WithApproval"  
+                                            {{ (old('WithApproval') ?? $WithApproval) ? 'checked' : '' }}>
                                     </div>
                                 </div>
                                 <div class="row my-3">
@@ -121,7 +129,7 @@
                                 <div class="row my-3">
                                     <label for="Status" class="col-sm-2">Status</label>
                                     <div class="col-sm-10">
-                                        <select name="Status" id="Status" class="form-select">
+                                        <select name="Status" id="Status" class="form-select" select2>
                                             <option value="Active" {{ $Status == "Active" ? "selected" : "" }}>Active</option>
                                             <option value="Inactive" {{ $Status == "Inactive" ? "selected" : "" }}>Inactive</option>
                                         </select>

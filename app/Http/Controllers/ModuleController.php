@@ -39,6 +39,7 @@ class ModuleController extends Controller
         $destinationPath = 'uploads/icons';
         $Icon  = $request->file('Icon');
         $Title = $request->Title;
+        $WithApproval = $request->WithApproval == 'on' ? true : false;
         
         $IconStore = $request->IconStore;
         $filename = $IconStore ?? "default.png";
@@ -53,6 +54,7 @@ class ModuleController extends Controller
         $Module = new Module;
         $Module->ParentId  = $request->ParentId;
         $Module->Title     = $request->Title;
+        $Module->WithApproval = $WithApproval;
         $Module->SortOrder = $request->SortOrder;
         $Module->Icon      = $filename;
         $Module->Status    = $request->Status;
@@ -86,6 +88,7 @@ class ModuleController extends Controller
         $destinationPath = 'uploads/icons';
         $Icon  = $request->file('Icon');
         $Title = $request->Title;
+        $WithApproval = $request->WithApproval == 'on' ? true : false;
 
         $IconStore = $request->IconStore;
         $filename = $IconStore ?? "default.png";
@@ -100,6 +103,7 @@ class ModuleController extends Controller
         $Module = Module::find($id);
         $Module->ParentId  = $request->ParentId;
         $Module->Title     = $request->Title;
+        $Module->WithApproval = $WithApproval;
         $Module->SortOrder = $request->SortOrder;
         $Module->Icon      = $filename;
         $Module->Status    = $request->Status;
