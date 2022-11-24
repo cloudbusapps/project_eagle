@@ -11,8 +11,8 @@
     if (isset($data) && !empty($data)) {
         $todo   = "update";
         $method = "PUT";
-        $action = route('modules.update', ['id' => $data['id']]);
-        $button = '<a href="/admin/modules/delete/'.$data['id'].'" class="btn btn-danger btnDeleteForm">Delete</a>
+        $action = route('module.update', ['id' => $data['id']]);
+        $button = '<a href="/admin/module/delete/'.$data['id'].'" class="btn btn-danger btnDeleteForm">Delete</a>
         <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
         $ParentId  = (!empty($data)) ? ($data['ParentId'] ?? '') : '';
         $Title     = (!empty($data)) ? ($data['Title'] ?? '') : '';
@@ -25,7 +25,7 @@
     } else {
         $todo   = "insert";
         $method = "POST";
-        $action = route('modules.save');
+        $action = route('module.save');
         $button = '<button type="submit" class="btn btn-primary btnSubmitForm">Save</button>';
     }
 ?>
@@ -39,7 +39,7 @@
                     <h4 class="mb-0">{{ $title }}</h4>
                     <ol class="breadcrumb bg-transparent mb-0">
                         <li class="breadcrumb-item"><a class="text-secondary" href="{{ route('dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('modules') }}">Modules</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('module') }}">Modules</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
                     </ol>
                 </div>
