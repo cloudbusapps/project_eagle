@@ -42,8 +42,8 @@ class OvertimeRequest extends Model
     {
 
         // third param is the column of the first param, second param is the column of the current model
-        // below will be translated to select * from users where users.Id = Project.Created_By_Id
-        return $this->belongsTo(User::class, 'Created_By_Id', 'Id');
+        // below will be translated to select * from users where users.Id = overtime_requests.UserId
+        return $this->belongsTo(User::class, 'UserId', 'Id');
     }
 
 

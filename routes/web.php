@@ -23,6 +23,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserStoryController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OvertimeRequestController;
 
 // AUTH
@@ -126,7 +127,8 @@ Route::group(['middleware' => 'auth'], function() {
     
     // NOTIFICATION
     Route::prefix('notification')->group(function () {
-        Route::get('/update/{Id}', [DashboardController::class, 'updateNotif'])->name('notifications.updateNotif');
+        Route::get('/update/{Id}', [NotificationController::class, 'updateNotif'])->name('notifications.updateNotif');
+        Route::get('/send/email/overtime/{Id}', [NotificationController::class, 'sendOvertimeEmail'])->name('notifications.sendOvertimeEmail');
     });
 
     // OVERTIME REQUEST
