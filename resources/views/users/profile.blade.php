@@ -87,7 +87,7 @@
                             <img src="{{ asset('uploads/profile/' . $userData->Profile ?? 'default.png') }}" alt="Profile"
                                 class="rounded-circle" height="150" width="150">
                             <h4 class="mb-0">{{ $userData->FirstName .' '. $userData->LastName }}</h4>
-                            <small>{{ $userData->Title }}</small>
+                            <small>{{ $userData->designation }}</small>
                         </div>
                         <div class="card-footer">
                             <div class="text-center">
@@ -225,9 +225,9 @@
                                             </div>
                                         </div>
                                         <div class="row mb-1">
-                                            <div class="col-lg-4 col-sm-5 label ">Title:</div>
+                                            <div class="col-lg-4 col-sm-5 label ">Designation:</div>
                                             <div class="col-lg-8 col-sm-7">
-                                                {{ $userData->Title ?? '-' }}
+                                                {{ $userData->designation ?? '-' }}
                                             </div>
                                         </div>
                                         <div class="row mb-1">

@@ -63,7 +63,7 @@ class ModuleController extends Controller
 
         if ($Module->save()) {
             return redirect()
-                ->route('modules')
+                ->route('module')
                 ->with('success', "<b>{$Title}</b> successfully saved!");
         } 
     }
@@ -112,7 +112,7 @@ class ModuleController extends Controller
 
         if ($Module->save()) {
             return redirect()
-                ->route('modules')
+                ->route('module')
                 ->with('success', "<b>{$Title}</b> successfully updated!");
         } 
     }
@@ -123,11 +123,11 @@ class ModuleController extends Controller
 
         if ($Module->delete()) {
             return redirect()
-                ->route('modules')
+                ->route('module')
                 ->with('success', "<b>{$Title}</b> successfully deleted!");
         } else {
             return redirect()
-                ->route('modules')
+                ->route('module')
                 ->with('fail', "<b>{$Title}</b> failed to delete!");
         }
     }

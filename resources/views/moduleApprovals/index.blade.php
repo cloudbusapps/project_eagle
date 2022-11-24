@@ -10,7 +10,7 @@
                 <div class="col">
                     <h4 class="mb-0">{{ $title }}</h4>
                     <ol class="breadcrumb bg-transparent mb-0">
-                        <li class="breadcrumb-item"><a class="text-secondary" href="{{ route('dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a class="text-secondary" href="#">Setup</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
                     </ol>
                 </div>
@@ -38,48 +38,25 @@
 
             <div class="card">
                 <div class="card-body">
-                    <div class="w-100 text-end mb-3">
-                        <a href="{{ route('module.add') }}" class="btn btn-outline-primary px-2 py-1">
-                            <i class="bi bi-plus-lg"></i> New
-                        </a>
-                    </div>
-
-                    <table class="table table-striped table-hover" id="tableModule">
+                    <table class="table table-striped table-hover" id="tableModuleApproval">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Key - Title</th>
-                                <th>With Approval</th>
-                                <th>Parent</th>
-                                <th>Sort Order</th>
-                                <th>Route Name</th>
-                                <th>Prefix</th>
-                                <th>Status</th>
+                                <th>Module Name</th>
                             </tr>
                         </thead>
                         <tbody>
 
-                        @if (!empty($data))
-                        @foreach ($data as $index => $dt)
-                        <?php 
-                            $status = $dt->Status == "Active" ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-danger'>Inactive</span>";
-                            $approval = $dt->WithApproval ? "<span class='border border-success px-2 text-success'>Yes</span>" : "<span class='border border-danger px-2 text-danger'>No</span>";
-                        ?>
-
+                        @if (!empty($modules))
+                        @foreach ($modules as $index => $dt)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>
                                     <img src="{{ asset('uploads/icons/'.$dt->Icon) }}" alt="{{ $dt->Title }}" width="20" height="20">
-                                    <a href="{{ route('module.edit', ['id' => $dt->id]) }}">
-                                        {{ $dt->id. ' - ' .$dt->Title }}
+                                    <a href="{{ route('moduleApproval.edit', ['id' => $dt->id]) }}">
+                                        {{ $dt->Title }}
                                     </a>
                                 </td>
-                                <td><?= $approval ?></td>
-                                <td>{{ $dt->ParentTitle ?? '-' }}</td>
-                                <td>{{ $dt->SortOrder ?? '1' }}</td>
-                                <td>{{ $dt->RouteName ?? '-' }}</td>
-                                <td>{{ $dt->Prefix ?? '-' }}</td>
-                                <td><?= $status ?></td>
                             </tr>
                         @endforeach
                         @endif
@@ -98,7 +75,7 @@
     $(document).ready(function() {
         
         // ----- DATATABLES -----
-        let tableModule = $('#tableModule')
+        let tableModuleApproval = $('#tableModuleApproval')
             .css({ "min-width": "99%" })
             .removeAttr("width")
             .DataTable({

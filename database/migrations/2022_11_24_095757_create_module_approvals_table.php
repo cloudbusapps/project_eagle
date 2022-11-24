@@ -13,16 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('modules', function (Blueprint $table) {
+        Schema::create('module_approvals', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('ParentId')->nullable();
-            $table->string('Title');
-            $table->boolean('WithApproval')->default(false);
-            $table->string('RouteName')->nullable();
-            $table->string('Prefix');
-            $table->string('Icon')->default('default.png');
-            $table->string('Status')->default('Active');
-            $table->integer('SortOrder')->default(1);
+            $table->bigInteger('ModuleId');
+            $table->uuid('DesignationId')->nullable();
+            $table->json('Approver')->nullable();
             $table->uuid('Created_By_Id');
             $table->uuid('Updated_By_Id');
             $table->timestamps();
@@ -36,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('modules');
+        Schema::dropIfExists('module_approvals');
     }
 };

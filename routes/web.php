@@ -23,6 +23,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserStoryController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\ModuleApprovalController;
 
 // AUTH
 Route::get('/', [LoginController::class, 'index'])->name('auth.login');
@@ -136,13 +137,13 @@ use App\Http\Controllers\ModuleController;
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function() {
     // MODULE
-    Route::prefix('modules')->group(function() {
-        Route::get('/', [ModuleController::class, 'index'])->name('modules');
-        Route::get('/add', [ModuleController::class, 'form'])->name('modules.add');
-        Route::post('/save', [ModuleController::class, 'save'])->name('modules.save');
-        Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('modules.edit');
-        Route::put('/edit/{id}/update', [ModuleController::class, 'update'])->name('modules.update');
-        Route::get('/delete/{id}', [ModuleController::class, 'delete'])->name('modules.delete');
+    Route::prefix('module')->group(function() {
+        Route::get('/', [ModuleController::class, 'index'])->name('module');
+        Route::get('/add', [ModuleController::class, 'form'])->name('module.add');
+        Route::post('/save', [ModuleController::class, 'save'])->name('module.save');
+        Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('module.edit');
+        Route::put('/edit/{id}/update', [ModuleController::class, 'update'])->name('module.update');
+        Route::get('/delete/{id}', [ModuleController::class, 'delete'])->name('module.delete');
     });
 
     // SETUP
@@ -165,6 +166,16 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
             Route::get('/edit/{Id}', [DesignationController::class, 'edit'])->name('designation.edit');
             Route::put('/edit/{Id}/update', [DesignationController::class, 'update'])->name('designation.update');
             Route::get('/delete/{Id}', [DesignationController::class, 'delete'])->name('designation.delete');
+        });
+
+        // APPROVAL
+        Route::prefix('moduleApproval')->group(function() {
+            Route::get('/', [ModuleApprovalController::class, 'index'])->name('moduleApproval');
+            Route::get('/edit/{id}', [ModuleApprovalController::class, 'edit'])->name('moduleApproval.edit');
+            Route::get('/edit/{id}/{designationId}', [ModuleApprovalController::class, 'editDesignation'])->name('moduleApproval.edit.designation');
+            Route::post('/edit/{id}/{designationId}/save', [ModuleApprovalController::class, 'saveDesignation'])->name('moduleApproval.edit.designation.save');
+
+            Route::put('/edit/{id}/update', [ModuleApprovalController::class, 'update'])->name('moduleApproval.update');
         });
     });
 

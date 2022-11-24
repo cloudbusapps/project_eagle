@@ -7,16 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 use Auth;
 
-class Module extends Model
+class ModuleApproval extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'ParentId',
-        'Title',
-        'Icon',
-        'Status',
-        'SortBy',
+        'ModuleId',
+        'Approver',
     ];
 
     protected static function boot() {

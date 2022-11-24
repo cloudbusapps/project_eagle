@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('ContactNumber')->nullable();
             $table->string('Profile')->default('default.png');
             $table->uuid('DepartmentId')->nullable();
+            $table->uuid('DesignationId')->nullable();
             $table->string('Title')->nullable();
             $table->text('About')->nullable();
             $table->boolean('IsAdmin')->default(false);

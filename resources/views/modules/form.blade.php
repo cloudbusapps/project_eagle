@@ -137,7 +137,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-end">
-                                <a href="{{ route('modules') }}" class="btn btn-secondary">Cancel</a>
+                                <a href="{{ route('module') }}" class="btn btn-secondary">Cancel</a>
                                 <?= $button ?>
                             </div>
                         </div>
