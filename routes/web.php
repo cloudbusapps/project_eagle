@@ -24,6 +24,7 @@ use App\Http\Controllers\UserStoryController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\ModuleApprovalController;
+use App\Http\Controllers\OvertimeRequestController;
 
 // AUTH
 Route::get('/', [LoginController::class, 'index'])->name('auth.login');
