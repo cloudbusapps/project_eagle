@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\OvertimeRequest;
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Notifications\OvertimeEmail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 class OvertimeRequestController extends Controller
 {
@@ -60,7 +64,9 @@ class OvertimeRequestController extends Controller
         $OvertimeRequest->Reason  = $request->Reason;
         $OvertimeRequest->Created_By_Id  = $userId;
 
+
         if ($OvertimeRequest->save()) {
+            $this->sendOvertimeEmail($OvertimeRequest->Id);
             return redirect()
                 ->route('overtimeRequest')
                 ->with('success', "<b>{$Agenda}</b> successfully saved!");
@@ -115,5 +121,28 @@ class OvertimeRequestController extends Controller
                 ->route('overtimeRequest')
                 ->with('fail', "<b>{$Agenda}</b> failed to delete!");
         }
+    }
+
+    public function sendOvertimeEmail($Id)
+    {
+        // SELECT THE APPROVERS DATA
+        $user = User::where('email', 'cieldantalion@gmail.com')->first();
+
+        // GETS THE OVERTIME DETAILS
+        $data = OvertimeRequest::where('Id', $Id)->first();
+
+        $project = [
+            'greeting' => 'Hi ' . $user->FirstName . ',',
+            'body' => 'This is my overtime request. below are the details:',
+            'thanks' => 'Thank you!',
+            'agenda' => $data->Agenda,
+            'date' => $data->Date,
+            'timeIn' => $data->TimeIn,
+            'timeOut' => $data->TimeOut,
+            'reason' => $data->Reason,
+            'userName' => $data->createdBy->FirstName.' '.$data->createdBy->LastName
+        ];
+
+        Notification::send($user, new OvertimeEmail($project));
     }
 }

@@ -170,6 +170,16 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
+            
+             // ----- Date Validation
+             const firstdate = document.getElementById("ProjectKickoffDate");
+            firstdate.addEventListener('change', updateDate);
+
+            function updateDate() {
+                const minDate = firstdate.value;
+                document.getElementById("ProjectClosedDate").value = "";
+                document.getElementById("ProjectClosedDate").setAttribute("min", minDate);
+            }
 
             // Fix if already have PM then display title
             // if (userId !== "") {

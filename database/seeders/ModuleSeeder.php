@@ -68,7 +68,7 @@ class ModuleSeeder extends Seeder
                 'Title'     => 'Overtime Request',
                 'WithApproval' => true,
                 'Icon'      => 'default.png',
-                'RouteName' => null,
+                'RouteName' => 'overtimeRequest',
                 'Prefix'    => 'overtimeRequest',
                 'Status'    => 'Active',
                 'SortOrder' => 2,

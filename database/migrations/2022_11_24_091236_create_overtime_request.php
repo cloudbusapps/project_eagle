@@ -22,6 +22,7 @@ return new class extends Migration
             $table->time('TimeOut');
             $table->string('Reason')->nullable(true);
             $table->integer('Status')->default(0);
+            $table->json('ApproverId')->nullable(true);
             $table->uuid('Created_By_Id');
             $table->uuid('Updated_By_Id')->nullable(true);
             $table->timestamps();

@@ -112,7 +112,7 @@
                                     </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <label class="col-sm-2 label" for="floatingTextarea">Time In<code>*</code></label>
+                                    <label class="col-sm-2 label" for="floatingTextarea">Time In <code>*</code></label>
                                     <div class="col-sm-10">
                                         <input {{ $editable }} value="{{ old('TimeIn') ?? $TimeIn }}" required placeholder="Time In"
                                             name="TimeIn" id="TimeIn" type="time" class="form-control">
@@ -120,7 +120,7 @@
                                 </div>
                                 <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label label" for="floatingTextarea">Time
-                                        Out<code>*</code></label>
+                                        Out <code>*</code></label>
                                     <div class="col-sm-10">
                                         <input {{ $editable }} value="{{ old('TimeOut') ?? $TimeOut }}" required placeholder="Time Out"
                                             name="TimeOut" id="TimeOut" type="time" class="form-control">
