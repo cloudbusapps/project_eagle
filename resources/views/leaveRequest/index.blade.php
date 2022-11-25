@@ -10,7 +10,7 @@
                 <div class="col">
                     <h4 class="mb-0">{{ $title }}</h4>
                     <ol class="breadcrumb bg-transparent mb-0">
-                        <li class="breadcrumb-item"><a class="text-secondary" href="#">Setup</a></li>
+                        <li class="breadcrumb-item"><a class="text-secondary" href="#">Forms</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
                     </ol>
                 </div>
@@ -38,25 +38,43 @@
 
             <div class="card">
                 <div class="card-body">
-                    <table class="table table-striped table-hover" id="tableModuleApproval">
+                    <div class="w-100 text-end mb-3">
+                        <a href="{{ route('leaveRequest.add') }}" class="btn btn-outline-primary px-2 py-1">
+                            <i class="bi bi-plus-lg"></i> New
+                        </a>
+                    </div>
+
+                    <table class="table table-striped table-hover" id="tableLeaveRequest">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Module Name</th>
+                                <th>Document No.</th>
+                                <th>Employee Name</th>
+                                <th>Date</th>
+                                <th>Reason</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
 
-                        @if (!empty($modules))
-                        @foreach ($modules as $index => $dt)
+                        @if (!empty($data))
+                        @foreach ($data as $index => $dt)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>
-                                    <img src="{{ asset('uploads/icons/'.$dt->Icon) }}" alt="{{ $dt->Title }}" width="20" height="20">
-                                    <a href="{{ route('moduleApproval.edit', ['id' => $dt->id]) }}">
-                                        {{ $dt->Title }}
+                                    <a href="{{ route('leaveRequest.view', ['Id' => $dt->Id]) }}">
+                                        {{ generateDocumentNumber('LR', $dt->DocumentNumber) }}
                                     </a>
                                 </td>
+                                <td>{{ $dt->FirstName.' '.$dt->LastName }}</td>
+                                <td>
+                                    {{ $dt->StartDate == $dt->EndDate ? 
+                                    (date('F d, Y', strtotime($dt->StartDate))) :
+                                    (date('M d', strtotime($dt->StartDate)).' - '.date('M d, Y', strtotime($dt->EndDate)))
+                                    }}
+                                </td>
+                                <td>{{ $dt->Reason }}</td>
+                                <td><?= getStatusDisplay($dt->Status) ?></td>
                             </tr>
                         @endforeach
                         @endif
@@ -75,7 +93,7 @@
     $(document).ready(function() {
         
         // ----- DATATABLES -----
-        let tableModuleApproval = $('#tableModuleApproval')
+        let tableLeaveRequest = $('#tableLeaveRequest')
             .css({ "min-width": "99%" })
             .removeAttr("width")
             .DataTable({
@@ -84,8 +102,12 @@
                 sorting: [],
                 scrollCollapse: true,
                 columnDefs: [
-                    { targets: 0,  width: 10     },
-                    { targets: 1,  width: '100%' },
+                    { targets: 0,  width: 10  },
+                    { targets: 1,  width: 120 },
+                    { targets: 2,  width: 120 },
+                    { targets: 3,  width: 120 },
+                    { targets: 4,  width: 200 }, 
+                    { targets: 5,  width: 100 }, 
                 ],
             });
         // ----- END DATATABLES -----

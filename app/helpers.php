@@ -60,3 +60,23 @@
             return "Just now";
         }
     }
+
+    function getStatusDisplay($status = 0, $additionalText = '') {
+        switch ($status) {
+            case 1: return "<span class='badge bg-success'>Approved". ($additionalText ? ' - '.$additionalText : '') ."</span>";
+            case 2: return "<span class='badge bg-danger'>Rejected". ($additionalText ? ' - '.$additionalText : '') ."</span>";
+            case 3: return "<span class='badge bg-secondary'>Cancelled". ($additionalText ? ' - '.$additionalText : '') ."</span>";
+            default: return "<span class='badge bg-info'>For Approval". ($additionalText ? ' - '.$additionalText : '') ."</span>";
+        }
+    }
+
+    function generateDocumentNumber($prefix = '', $number) {
+        $strNumber  = (string) $number;
+        $strLength  = strlen($strNumber);
+        $baseNumber = 6;
+
+        if ($strLength < $baseNumber) {
+            $strNumber = str_repeat('0', $baseNumber - $strLength).$strNumber;
+        }
+        return "{$prefix}-{$strNumber}";
+    }

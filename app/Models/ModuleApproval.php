@@ -13,7 +13,9 @@ class ModuleApproval extends Model
 
     protected $fillable = [
         'ModuleId',
-        'Approver',
+        'DesignationId',
+        'Level',
+        'ApproverId',
     ];
 
     protected static function boot() {
