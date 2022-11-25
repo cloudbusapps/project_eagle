@@ -1,7 +1,8 @@
 <?php 
   $groupPrefix = Request::segment(1);
   $subModule   = Request::segment(2);
-  $prefixArray = [$groupPrefix, $subModule];
+  $setupModule = Request::segment(3);
+  $prefixArray = [$groupPrefix, $subModule, $setupModule];
 
   $moduleData = getModuleData();
   $notifications = DB::table('notifications')
@@ -64,17 +65,21 @@
           </a>
           <ul class="sub-menu collapse {{ in_array('setup', $prefixArray) ? 'collapsed show' : '' }}" id="menu-setup">
             <li>
-              <a class="ms-link {{ 'department' == $subModule ? 'active' : '' }}" 
+              <a class="ms-link {{ 'department' == $setupModule ? 'active' : '' }}" 
                 href="{{ route('department') }}">Department</a>
             </li>
             <li>
-              <a class="ms-link {{ 'designation' == $subModule ? 'active' : '' }}" 
+              <a class="ms-link {{ 'designation' == $setupModule ? 'active' : '' }}" 
                 href="{{ route('designation') }}">Designation</a>
+            </li>
+            <li>
+              <a class="ms-link {{ 'moduleApproval' == $setupModule ? 'active' : '' }}" 
+                href="{{ route('moduleApproval') }}">Module Approval</a>
             </li>
           </ul>
         </li>
         <li>
-          <a class="m-link {{ $subModule == 'modules' ? 'active' : '' }}" href="{{ route('modules') }}">
+          <a class="m-link {{ $subModule == 'module' ? 'active' : '' }}" href="{{ route('module') }}">
             <img src="{{ asset('uploads/icons/modules.png') }}" alt="Modules" width="20" height="20">
             <span class="ms-2">Modules</span>
           </a>

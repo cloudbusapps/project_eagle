@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-    $ParentId = $Title = $RouteName = $Prefix = $todo = null;
+    $ParentId = $Title = $WithApproval = $RouteName = $Prefix = $todo = null;
     $SortOrder = 1;
     $Icon      = "default.png"; 
     $Status    = "Active";
@@ -11,11 +11,12 @@
     if (isset($data) && !empty($data)) {
         $todo   = "update";
         $method = "PUT";
-        $action = route('modules.update', ['id' => $data['id']]);
-        $button = '<a href="/admin/modules/delete/'.$data['id'].'" class="btn btn-danger btnDeleteForm">Delete</a>
+        $action = route('module.update', ['id' => $data['id']]);
+        $button = '<a href="/admin/module/delete/'.$data['id'].'" class="btn btn-danger btnDeleteForm">Delete</a>
         <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
         $ParentId  = (!empty($data)) ? ($data['ParentId'] ?? '') : '';
         $Title     = (!empty($data)) ? ($data['Title'] ?? '') : '';
+        $WithApproval = (!empty($data)) ? ($data['WithApproval'] ?? '') : '';
         $SortOrder = (!empty($data)) ? ($data['SortOrder'] ?? '') : '';
         $Icon      = (!empty($data)) ? ($data['Icon'] ?? '') : '';
         $Status    = (!empty($data)) ? ($data['Status'] ?? '') : '';
@@ -24,7 +25,7 @@
     } else {
         $todo   = "insert";
         $method = "POST";
-        $action = route('modules.save');
+        $action = route('module.save');
         $button = '<button type="submit" class="btn btn-primary btnSubmitForm">Save</button>';
     }
 ?>
@@ -38,7 +39,7 @@
                     <h4 class="mb-0">{{ $title }}</h4>
                     <ol class="breadcrumb bg-transparent mb-0">
                         <li class="breadcrumb-item"><a class="text-secondary" href="{{ route('dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('modules') }}">Modules</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('module') }}">Modules</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
                     </ol>
                 </div>
@@ -72,7 +73,7 @@
                                 <div class="row my-3">
                                     <label for="ParentModule" class="col-sm-2">Parent Module</label>
                                     <div class="col-sm-10">
-                                        <select name="ParentId" id="ParentId" class="form-select">
+                                        <select name="ParentId" id="ParentId" class="form-select" select2>
                                             <option value="" {{ (old('ParentId') ?? $ParentId) == "" ? "selected" : '' }}>None</option>
                                             
                                             @foreach ($modules as $dt)
@@ -87,6 +88,13 @@
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="Title" name="Title" placeholder="Title"
                                             value="{{ old('Title') ?? $Title }}" required>
+                                    </div>
+                                </div>
+                                <div class="row my-3 py-2">
+                                    <label for="WithApproval" class="col-sm-2">With Approval?</label>
+                                    <div class="col-sm-10">
+                                        <input type="checkbox" name="WithApproval" id="WithApproval"  
+                                            {{ (old('WithApproval') ?? $WithApproval) ? 'checked' : '' }}>
                                     </div>
                                 </div>
                                 <div class="row my-3">
@@ -121,7 +129,7 @@
                                 <div class="row my-3">
                                     <label for="Status" class="col-sm-2">Status</label>
                                     <div class="col-sm-10">
-                                        <select name="Status" id="Status" class="form-select">
+                                        <select name="Status" id="Status" class="form-select" select2>
                                             <option value="Active" {{ $Status == "Active" ? "selected" : "" }}>Active</option>
                                             <option value="Inactive" {{ $Status == "Inactive" ? "selected" : "" }}>Inactive</option>
                                         </select>
@@ -129,7 +137,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-end">
-                                <a href="{{ route('modules') }}" class="btn btn-secondary">Cancel</a>
+                                <a href="{{ route('module') }}" class="btn btn-secondary">Cancel</a>
                                 <?= $button ?>
                             </div>
                         </div>

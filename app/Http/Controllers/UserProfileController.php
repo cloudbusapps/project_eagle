@@ -35,8 +35,9 @@ class UserProfileController extends Controller
                 ->get();
 
             $userData = DB::table('users AS u')
-                ->select('u.*', DB::raw('"d"."Name" AS department'))
+                ->select('u.*', DB::raw('"d"."Name" AS department, "d2"."Name" AS designation'))
                 ->leftJoin('departments AS d', 'DepartmentId', '=', 'd.Id')
+                ->leftJoin('designations AS d2', 'DesignationId', '=', 'd2.Id')
                 ->where('u.Id', $UserId)
                 ->first();
 
@@ -117,10 +118,10 @@ class UserProfileController extends Controller
     public function editPersonalInformation($Id) {
         try {
             $data = [
-                'title'    => 'Edit Personal Information',
-                'departments' => Department::all(),
+                'title'        => 'Edit Personal Information',
+                'departments'  => Department::all(),
                 'designations' => Designation::all(),
-                'userData' => User::where('Id', $Id)->first(),
+                'userData'     => User::where('Id', $Id)->first(),
             ];
     
             return view('users.formPersonalInformation', $data);
@@ -135,10 +136,11 @@ class UserProfileController extends Controller
             'EmployeeNumber' => ['required', 'string', 'max:255',
                 Rule::unique('users')->ignore($Id, 'Id')
             ],
-            'Title'     => ['required', 'string', 'max:255'],
             'About'     => ['required', 'string', 'max:500'],
             'FirstName' => ['required', 'string', 'max:255'],
             'LastName'  => ['required', 'string', 'max:255'],
+            'DepartmentId'  => ['required'],
+            'DesignationId' => ['required'],
             'email'     => ['required', 'string', 'email', 'max:255', 
                 Rule::unique('users')->ignore($Id, 'Id')
             ],
@@ -146,7 +148,6 @@ class UserProfileController extends Controller
 
         $user = User::find($Id);
         $user->EmployeeNumber = $request->EmployeeNumber;
-        $user->Title          = $request->Title;
         $user->About          = $request->About;
         $user->FirstName      = $request->FirstName;
         $user->MiddleName     = $request->MiddleName;
@@ -155,6 +156,7 @@ class UserProfileController extends Controller
         $user->Address        = $request->Address;
         $user->ContactNumber  = $request->ContactNumber;
         $user->DepartmentId   = $request->DepartmentId;
+        $user->DesignationId  = $request->DesignationId;
         $user->email          = $request->email;
 
         if ($user->save()) {

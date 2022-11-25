@@ -5,10 +5,15 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+use Illuminate\Support\Str;
+use App\Models\Department;
+use App\Models\Designation;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Module;
-use Illuminate\Support\Facades\DB;
+use DB;
 
-class ModuleSeeder extends Seeder
+class StartUpSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -17,6 +22,41 @@ class ModuleSeeder extends Seeder
      */
     public function run()
     {
+        $DepartmentId  = Str::uuid();
+        $DesignationId = Str::uuid();
+        $UserId        = Str::uuid();
+
+        DB::table('departments')->insert([
+            'Id'     => $DepartmentId,
+            'Name'   => 'Information Technology',
+            'Status' => 'Active'
+        ]);
+
+        DB::table('designations')->insert([
+            'Id'           => $DesignationId,
+            'DepartmentId' => $DepartmentId,
+            'Name'         => 'Administrator',
+            'Status'       => 'Active'
+        ]);
+
+        DB::table('users')->insert([
+            'Id'                => $UserId,
+            'EmployeeNumber'    => 'EPLDT-000001',
+            'FirstName'         => 'Project',
+            'LastName'          => 'Eagle',
+            'Gender'            => 'Male',
+            'Address'           => 'Makati City, Philippines',
+            'ContactNumber'     => '09099054766',
+            'Title'             => 'Administrator',
+            'DepartmentId'      => $DepartmentId,
+            'DesignationId'     => $DesignationId,
+            'About'             => fake()->paragraph(3),
+            'IsAdmin'           => true,
+            'email'             => 'projecteagle@epldt.com',
+            'email_verified_at' => now(),
+            'password'          => Hash::make('projecteagle')
+        ]);
+
         $data = [
             [
                 'id'        => 1,
@@ -28,6 +68,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'dashboard',
                 'Status'    => 'Active',
                 'SortOrder' => 1,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 2,
@@ -39,6 +81,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'employeeDirectory',
                 'Status'    => 'Active',
                 'SortOrder' => 2,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 3,
@@ -50,6 +94,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'form',
                 'Status'    => 'Active',
                 'SortOrder' => 3,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 4,
@@ -61,6 +107,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'leaveRequest',
                 'Status'    => 'Active',
                 'SortOrder' => 1,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 5,
@@ -68,10 +116,12 @@ class ModuleSeeder extends Seeder
                 'Title'     => 'Overtime Request',
                 'WithApproval' => true,
                 'Icon'      => 'default.png',
-                'RouteName' => 'overtimeRequest',
+                'RouteName' => null,
                 'Prefix'    => 'overtimeRequest',
                 'Status'    => 'Active',
                 'SortOrder' => 2,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 6,
@@ -83,6 +133,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'onboarding',
                 'Status'    => 'Active',
                 'SortOrder' => 4,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 7,
@@ -94,6 +146,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'kpi',
                 'Status'    => 'Active',
                 'SortOrder' => 5,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 8,
@@ -105,6 +159,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'projects',
                 'Status'    => 'Active',
                 'SortOrder' => 6,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 9,
@@ -116,6 +172,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'projectView',
                 'Status'    => 'Active',
                 'SortOrder' => 1,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 10,
@@ -127,6 +185,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'training',
                 'Status'    => 'Active',
                 'SortOrder' => 7,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 11,
@@ -138,6 +198,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'certification',
                 'Status'    => 'Active',
                 'SortOrder' => 8,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 12,
@@ -149,6 +211,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'report',
                 'Status'    => 'Active',
                 'SortOrder' => 9,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
         ];
 
