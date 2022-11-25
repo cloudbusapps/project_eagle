@@ -133,6 +133,7 @@ Route::group(['middleware' => 'auth'], function() {
     // OVERTIME REQUEST
     Route::prefix('overtimeRequest')->group(function () {
         Route::get('/', [OvertimeRequestController::class, 'index'])->name('overtimeRequest');
+        Route::get('/overtimeDetails/{Id}', [OvertimeRequestController::class, 'overtimeDetails'])->name('overtimeDetails');
         Route::get('/add', [OvertimeRequestController::class, 'addOvertimeRequest'])->name('overtimeRequest.add');
         Route::post('/save', [OvertimeRequestController::class, 'saveOvertimeRequest'])->name('overtimeRequest.save');
         Route::get('/edit/{Id}', [OvertimeRequestController::class, 'editOvertimeRequest'])->name('overtimeRequest.edit');

@@ -90,7 +90,7 @@
                                 <div class="row mb-3">
                                     <label for="inputText" class="col-sm-2 label">User Name</label>
                                     <div class="col-sm-9">
-                                        <select name="UsersId" id="UsersIdSelect" class="form-select" id="floatingSelect">
+                                        <select select2 name="UsersId" id="UsersIdSelect" class="form-select" id="floatingSelect">
                                             <option value="" selected disabled>Select User</option>
                                             @foreach ($userList as $users)
                                                 <option value="{{ $users->Id }}">
