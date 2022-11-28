@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('leave_requests', function (Blueprint $table) {
             $table->uuid('Id');
-            $table->increments('DocumentNumber');
+            $table->string('DocumentNumber')->nullable();
             $table->uuid('UserId');
             $table->string('LeaveType'); // VACATION, SICK
             $table->decimal('LeaveBalance', 10, 2);
@@ -27,10 +27,6 @@ return new class extends Migration
             $table->uuid('Created_By_Id');
             $table->uuid('Updated_By_Id');
             $table->timestamps();
-
-            $table->index(['DocumentNumber']);
-            $table->dropPrimary("DocumentNumber");
-            $table->primary(['Id']);
         });
     }
 
@@ -41,6 +37,7 @@ return new class extends Migration
      */
     public function down()
     {
+        // Schema::dropIfExists('leave_request_files');
         Schema::dropIfExists('leave_requests');
     }
 };

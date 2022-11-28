@@ -70,6 +70,15 @@
         }
     }
 
+    function getLastDocumentNumber($code = null) {
+        if ($code) {
+            $array = explode('-', $code);
+            $number = (int) ($array[1]);
+            return $number + 1;
+        }
+        return 1;
+    }
+
     function generateDocumentNumber($prefix = '', $number) {
         $strNumber  = (string) $number;
         $strLength  = strlen($strNumber);

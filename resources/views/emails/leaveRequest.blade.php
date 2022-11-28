@@ -33,22 +33,22 @@
 </head>
 <body>
     <div>
-        <div>Hello <b>Approver Name,</b></div>
+        <div>Hello <b>{{ $moduleFormApprover->FirstName.' '.$moduleFormApprover->LastName }},</b></div>
         <br><br>
         <div style="text-indent: 15px;">
-            <a href="{{ route('leaveRequest.view', ['Id' => $data->Id]) }}" style="color: blue;">{{ $data->FirstName.' '.$data->LastName }}</a> is asking for your approval.
+            <a href="{{ route('leaveRequest.view', ['Id' => $leaveRequest->Id]) }}" style="color: blue;">{{ $leaveRequest->DocumentNumber }}</a> - {{ $leaveRequest->FirstName.' '.$leaveRequest->LastName }} is asking for your approval.
         </div>
         <br><br>
         <div>
             <div>Details</div>
-            <div><label>Leave Type</label> {{ $data->LeaveType }}</div>
-            <div><label>Date:</label> {{ $data->StartDate == $data->EndDate ? date('F d, Y', strtotime($data->StartDate)) : (date('F d', strtotime($data->StartDate)).' - '.date('F d, Y', strtotime($data->EndDate))) }}</div>
-            <div><label>Reason:</label> {{ $data->Reason }}</div>
+            <div><label>Leave Type</label> {{ $leaveRequest->LeaveType }}</div>
+            <div><label>Date:</label> {{ $leaveRequest->StartDate == $leaveRequest->EndDate ? date('F d, Y', strtotime($leaveRequest->StartDate)) : (date('F d', strtotime($leaveRequest->StartDate)).' - '.date('F d, Y', strtotime($leaveRequest->EndDate))) }}</div>
+            <div><label>Reason:</label> {{ $leaveRequest->Reason }}</div>
         </div>
         <br><br>
         <div class="form-group">
-            <a href="{{ route('external.leaveRequest.approve', ['Id' => $data->Id]) }}" class="btn-approve">Approve</a>
-            <a href="{{ route('external.leaveRequest.reject', ['Id' => $data->Id]) }}" class="btn-reject">Reject</a>
+            <a href="{{ route('external.leaveRequest.approve', ['Id' => $leaveRequest->Id]) }}" class="btn-approve">Approve</a>
+            <a href="{{ route('external.leaveRequest.reject', ['Id' => $leaveRequest->Id]) }}" class="btn-reject">Reject</a>
         </div>
         <br><br><br>
         <div>

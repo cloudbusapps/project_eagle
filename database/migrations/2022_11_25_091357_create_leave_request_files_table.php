@@ -21,7 +21,7 @@ return new class extends Migration
             $table->uuid('Updated_By_Id');
             $table->timestamps();
 
-            $table->foreign('LeaveRequestId')->references('Id')->on('leave_requests')->onDelete('cascade');
+            // $table->foreign('LeaveRequestId')->references('Id')->on('leave_requests')->onDelete('cascade');
         });
     }
 

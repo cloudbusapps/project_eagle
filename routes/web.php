@@ -151,6 +151,8 @@ Route::group(['middleware' => 'auth'], function() {
             Route::get('/view/{Id}', [LeaveRequestController::class, 'view'])->name('leaveRequest.view');
             Route::get('/revise/{Id}', [LeaveRequestController::class, 'revise'])->name('leaveRequest.revise');
             Route::put('/revise/{Id}/update', [LeaveRequestController::class, 'update'])->name('leaveRequest.update');
+            Route::post('/approve/{Id}/{UserId}', [LeaveRequestController::class, 'approve'])->name('leaveRequest.approve');
+            Route::post('/reject/{Id}/{UserId}', [LeaveRequestController::class, 'reject'])->name('leaveRequest.reject');
         });
     });
 
@@ -159,8 +161,8 @@ Route::group(['middleware' => 'auth'], function() {
 
 // ----- EXTERNAL ACTIONS -----
 Route::prefix('leaveRequest')->group(function() {
-    Route::get('/approve/{Id}', [LeaveRequestController::class, 'approve'])->name('external.leaveRequest.approve');
-    Route::get('/reject/{Id}', [LeaveRequestController::class, 'reject'])->name('external.leaveRequest.reject');
+    Route::get('/approve/{Id}', [LeaveRequestController::class, 'externalApprove'])->name('external.leaveRequest.approve');
+    Route::get('/reject/{Id}', [LeaveRequestController::class, 'externalReject'])->name('external.leaveRequest.reject');
 });
 // ----- END EXTERNAL ACTIONS -----
 

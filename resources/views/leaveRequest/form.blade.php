@@ -7,7 +7,10 @@
     $requiredLabel = $event == 'view' ? '' : '<code>*</code>';
 
     $DocumentNumber = $LeaveType = $StartDate = $EndDate = $LeaveDuration = $LeaveBalance = $Reason = $Status = null;
-    $method = $action = $button = $todo = '';
+    $method = $action = $button = $approverButton = $todo = '';
+
+    $currentApprover = $currentApprover ?? null;
+    $pending = $pending ?? false;
 
     if (isset($data) && !empty($data)) {
         $UserId         = (!empty($data)) ? ($data['UserId'] ?? '') : '';
@@ -45,11 +48,31 @@
         $button = '
         <a href="/forms/leaveRequest" class="btn btn-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary btnSubmitForm">Save</button>';
-    } else {
+    } else if ($pending && $UserId == Auth::id() || $Status == 2) {
         $todo   = "revise";
         $method = "GET";
-        $action = route('leaveRequest.revise', ['Id' => $data['Id']]);
-        $button = '<button type="submit" class="btn btn-info btnReviseForm">Revise</button>';
+        $action = route('leaveRequest.revise', ['Id' => $data['Id']]) ;
+        $button = '
+        <form action="'. route('leaveRequest.revise', ['Id' => $data['Id']]) .'" method="GET">
+            '. csrf_field() .'
+            <button type="submit" class="btn btn-warning btnReviseForm">Revise</button>    
+        </form>';
+    }
+
+    if ($currentApprover == Auth::id()) {
+        $button = '
+        <div class="d-flex justify-content-end" style="gap: 5px;">
+            <form action="'. route('leaveRequest.approve', ['Id' => $data->Id, 'UserId' => Auth::id()]) .'" method="POST">
+                '. csrf_field() .'
+                <input type="hidden" name="Remarks" id="approveRemarks">
+                <button type="submit" class="btn btn-success btnApprove">Approve</button>    
+            </form>
+            <form action="'. route('leaveRequest.reject', ['Id' => $data->Id, 'UserId' => Auth::id()]) .'" method="POST">
+                '. csrf_field() .'
+                <input type="hidden" name="Remarks" id="rejectRemarks">
+                <button type="submit" class="btn btn-danger btnReject">Reject</button>    
+            </form>
+        </div>';
     }
 ?>
 
@@ -80,7 +103,10 @@
             <div class="row">
                 <div class="col-12">
 
+                    @if (!$currentApprover == Auth::id())
                     <form action="{{ $action }}" method="POST" id="formLeaveRequest" validated="false" todo="{{ $todo }}" enctype="multipart/form-data">
+                    @endif
+
                         @csrf
                         @method($method)
                         <input type="hidden" name="UserId" value="{{ $UserId }}">
@@ -105,7 +131,7 @@
                                     <label for="DocumentNumber" class="col-sm-2">Document No.</label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="DocumentNumber" name="DocumentNumber" placeholder="Employee Name"
-                                            value="{{ $DocumentNumber ? generateDocumentNumber('LR', $DocumentNumber) : '-' }}" disabled readonly>
+                                            value="{{ $DocumentNumber ? $DocumentNumber : '-' }}" disabled readonly>
                                     </div>
                                 </div>
                                 <div class="row my-3">
@@ -203,7 +229,9 @@
                             </div>
                         </div>
                         
+                    @if (!$currentApprover == Auth::id())
                     </form>
+                    @endif
 
                 </div>
             </div>
@@ -402,6 +430,99 @@
             }
         })
         // ----- END SELECT ICON -----
+
+
+        // ----- BUTTON APPROVE -----
+        $(document).on('keyup', `[name="approveRemarks"]`, function() {
+            let value = $(this).val()?.trim();
+            $('#approveRemarks').val(value);
+        })
+
+        $(document).on('click', '.btnApprove', function(e) {
+            let $form       = $(this).closest('form');
+            let isValidated = $(this).attr('validated') == "true";
+
+            if (!isValidated) {
+                e.preventDefault();
+    
+                let confirmation = $.confirm({
+                    title: `<h5>APPROVE LEAVE REQUEST</h5>`,
+                    content: `
+                    <div class="form-group">
+                        <label>Remarks</label>    
+                        <textarea class="form-control" name="approveRemarks" rows="3" style="resize: none;"></textarea>
+                    </div>`,
+                    buttons: {
+                        cancel: {
+                            btnClass: 'btn-default',
+                        },
+                        approve: {
+                            btnClass: 'btn-success',
+                            keys: ['enter'],
+                            action: function(){
+                                $form.attr('validated', 'true').submit();
+    
+                                confirmation.buttons.approve.setText(`<span class="spinner-border spinner-border-sm"></span> Please wait...`);
+                                confirmation.buttons.approve.disable();
+                                confirmation.buttons.cancel.hide();
+        
+                                return false;
+                            }
+                        },
+                    }
+                });
+            }
+
+        })
+        // ----- END BUTTON APPROVE -----
+
+
+        // ----- BUTTON REJECT -----
+        $(document).on('keyup', `[name="rejectRemarks"]`, function() {
+            let value = $(this).val()?.trim();
+            $('#rejectRemarks').val(value);
+        })
+
+        $(document).on('click', '.btnReject', function(e) {
+            let $form       = $(this).closest('form');
+            let isValidated = $(this).attr('validated') == "true";
+
+            if (!isValidated) {
+                e.preventDefault();
+    
+                let confirmation = $.confirm({
+                    title: `<h5>REJECT LEAVE REQUEST</h5>`,
+                    content: `
+                    <div class="form-group">
+                        <label>Remarks <code>*</code></label>    
+                        <textarea class="form-control" name="rejectRemarks" rows="3" style="resize: none;"></textarea>
+                    </div>`,
+                    buttons: {
+                        cancel: {
+                            btnClass: 'btn-default',
+                        },
+                        reject: {
+                            btnClass: 'btn-danger',
+                            keys: ['enter'],
+                            action: function(){
+                                let rejectRemarks = $(`[name="rejectRemarks"]`).val()?.trim();
+                                if (rejectRemarks && rejectRemarks.length) {
+                                    $form.attr('validated', 'true').submit();
+        
+                                    confirmation.buttons.reject.setText(`<span class="spinner-border spinner-border-sm"></span> Please wait...`);
+                                    confirmation.buttons.reject.disable();
+                                    confirmation.buttons.cancel.hide();
+                                }
+        
+                                return false;
+                            }
+                        },
+                    }
+                });
+            }
+
+        })
+        // ----- END BUTTON REJECT -----
 
     })
 

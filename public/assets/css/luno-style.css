@@ -20758,11 +20758,11 @@ fieldset:disabled .btn {
     }
 }
 html {
-    -webkit-user-select: none;
+    /* -webkit-user-select: none;
     -moz-user-select: none;
     -o-user-select: none;
     -ms-user-select: none;
-    user-select: none;
+    user-select: none; */
 }
 body {
     transition: ease 0.1s;

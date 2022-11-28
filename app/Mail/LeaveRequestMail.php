@@ -11,21 +11,23 @@ use Illuminate\Queue\SerializesModels;
 
 use App\Models\LeaveRequest;
 use App\Models\User;
+use App\Models\ModuleFormApprover;
 
 class LeaveRequestMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    protected $data;
+    protected $leaveRequest, $moduleFormApprover;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(LeaveRequest $leaveRequest)
+    public function __construct(LeaveRequest $leaveRequest, ModuleFormApprover $moduleFormApprover)
     {
-        $this->data = $leaveRequest;
+        $this->leaveRequest       = $leaveRequest;
+        $this->moduleFormApprover = $moduleFormApprover;
     }
 
     /**
@@ -50,7 +52,8 @@ class LeaveRequestMail extends Mailable
         return new Content(
             view: 'emails.leaveRequest',
             with: [
-                'data' => $this->data
+                'leaveRequest'       => $this->leaveRequest,
+                'moduleFormApprover' => $this->moduleFormApprover
             ]
         );
     }
