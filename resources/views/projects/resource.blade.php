@@ -90,11 +90,13 @@
                                 <div class="row mb-3">
                                     <label for="inputText" class="col-sm-2 label">User Name</label>
                                     <div class="col-sm-9">
-                                        <select select2 name="UsersId" id="UsersIdSelect" class="form-select" id="floatingSelect">
+                                        <select select2 name="UsersId" id="UsersIdSelect" class="form-select"
+                                            id="floatingSelect">
                                             <option value="" selected disabled>Select User</option>
                                             @foreach ($userList as $users)
                                                 <option value="{{ $users->Id }}">
-                                                    {{ $users->FirstName . ' ' . $users->LastName }}
+                                                    <strong>{{ $users->FirstName . ' ' . $users->LastName }}</strong>-{{ $users->Title }}
+
                                                 </option>
                                             @endforeach
                                         </select>
@@ -102,7 +104,8 @@
                                         </div>
                                     </div>
                                     <div class="col-sm-1">
-                                        <button id="btnAddUser" type="button" class="btn btn-outline-success text-end"><i class="bi bi-plus-lg"></i>
+                                        <button id="btnAddUser" type="button" class="btn btn-outline-success text-end"><i
+                                                class="bi bi-plus-lg"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -148,7 +151,7 @@
                     let body = `
                 <div id="userContainer" class="row mb-3">
                                 <div class="col-11 text-left mb-2">
-                                    ${e.FirstName} ${e.LastName} 
+                                   <strong> ${e.FirstName} ${e.LastName} </strong>- ${e.Title}
                                 </div>
                                 <div class="col-1">
                                     <a id="btnDeleteUser" type="button" class="btn btn-outline-danger text-end"><i
@@ -252,7 +255,7 @@
                                             usersId: users,
                                         },
                                         success: function(response) {
-                                            window.location=response.url;
+                                            window.location = response.url;
                                         }
                                     });
                                     confirmation.buttons.yes.setText(

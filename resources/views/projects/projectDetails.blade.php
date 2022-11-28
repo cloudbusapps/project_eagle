@@ -160,7 +160,7 @@
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Name</th>
-                                    <th scope="col">Position</th>
+                                    <th scope="col">Title</th>
                                     <th scope="col">Budgeted Hours</th>
                                     <th scope="col">Actual Hours</th>
                                     <th scope="col">Available Hours</th>

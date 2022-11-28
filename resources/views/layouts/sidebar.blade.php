@@ -150,7 +150,7 @@
                                                                 class="text-danger">Deadline
                                                                 Overdue</strong>
                                                             {{ $data->taskTitle }}</p>
-                                                        <small>{{ activityTimes($notification->created_at) }}</small>
+                                                        <small>{{ activityTime($notification->created_at) }}</small>
                                                     </div>
                                                 </a>
                                             </li>
