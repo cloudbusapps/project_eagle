@@ -9,6 +9,7 @@ use App\Models\Module;
 use App\Models\ModuleApproval;
 use App\Models\User;
 use App\Models\Designation;
+use Auth;
 
 class ModuleApprovalController extends Controller
 {
@@ -35,21 +36,12 @@ class ModuleApprovalController extends Controller
     }
 
     public function editDesignation($id, $designationId) {
-        $data = ModuleApproval::where('ModuleId', $id)->where('DesignationId', $designationId)->first();
-        if (!empty($data)) {
-            $approverList = [];
-            $Approver = $data->Approver ? json_decode($data->Approver) : null;
-            if ($Approver && count($Approver)) {
-                foreach ($Approver as $index => $dt) {
-                    $approverList[] = [
-                        'Level'    => $dt->Level,
-                        'UserId'   => $dt->UserId,
-                        'FullName' => User::find($dt->UserId)->full_name
-                    ];
-                }
-            }
-            $data['Approver'] = $approverList;
-        }
+        $data = ModuleApproval::select('module_approvals.*', 'u.FirstName', 'u.LastName')
+            ->leftJoin('users AS u', 'u.Id', 'ApproverId')
+            ->where('ModuleId', $id)
+            ->where('module_approvals.DesignationId', $designationId)
+            ->orderBy('Level', 'ASC')
+            ->get();
 
         return response()->json($data, 200);
     }
@@ -57,21 +49,22 @@ class ModuleApprovalController extends Controller
     public function saveDesignation(Request $request, $id, $designationId) {
         $delete = ModuleApproval::where('ModuleId', $id)->where('DesignationId', $designationId)->delete();
 
-        $approvers = [];
+        $data = [];
         if (!empty($request->Approver)) {
             foreach ($request->Approver as $index => $approver) {
-                $approvers[] = [
-                    'Level'  => $index+1,
-                    'UserId' => $approver,
+                $data[] = [
+                    'ModuleId'      => $id,
+                    'DesignationId' => $designationId,
+                    'Level'         => $index+1,
+                    'ApproverId'    => $approver,
+                    'Created_By_Id' => Auth::id(),
+                    'Updated_By_Id' => Auth::id(),
                 ];
             }
         }
 
-        $ModuleApproval = new ModuleApproval;
-        $ModuleApproval->ModuleId      = $id;
-        $ModuleApproval->DesignationId = $designationId;
-        $ModuleApproval->Approver      = json_encode($approvers);
-        if ($ModuleApproval->save()) {
+        $ModuleApproval = ModuleApproval::insert($data);
+        if ($ModuleApproval) {
             return response()->json(['status' => 'success']);
         }
         return response()->json(['status' => 'failed']);

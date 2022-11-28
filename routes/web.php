@@ -25,6 +25,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\ModuleApprovalController;
 use App\Http\Controllers\OvertimeRequestController;
+use App\Http\Controllers\LeaveRequestController;
 
 // AUTH
 Route::get('/', [LoginController::class, 'index'])->name('auth.login');
@@ -130,17 +131,41 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('/update/{Id}', [DashboardController::class, 'updateNotif'])->name('notifications.updateNotif');
     });
 
-    // OVERTIME REQUEST
-    Route::prefix('overtimeRequest')->group(function () {
-        Route::get('/', [OvertimeRequestController::class, 'index'])->name('overtimeRequest');
-        Route::get('/overtimeDetails/{Id}', [OvertimeRequestController::class, 'overtimeDetails'])->name('overtimeDetails');
-        Route::get('/add', [OvertimeRequestController::class, 'addOvertimeRequest'])->name('overtimeRequest.add');
-        Route::post('/save', [OvertimeRequestController::class, 'saveOvertimeRequest'])->name('overtimeRequest.save');
-        Route::get('/edit/{Id}', [OvertimeRequestController::class, 'editOvertimeRequest'])->name('overtimeRequest.edit');
-        Route::put('/edit/{Id}/update', [OvertimeRequestController::class, 'updateOvertimeRequest'])->name('overtimeRequest.update');
-        Route::get('/delete/{Id}', [OvertimeRequestController::class, 'deleteOvertimeRequest'])->name('overtimeRequest.delete');
+    // FORMS
+    Route::prefix('forms')->group(function() {
+        // OVERTIME REQUEST
+        Route::prefix('overtimeRequest')->group(function () {
+            Route::get('/', [OvertimeRequestController::class, 'index'])->name('overtimeRequest');
+            Route::get('/overtimeDetails/{Id}', [OvertimeRequestController::class, 'overtimeDetails'])->name('overtimeDetails');
+            Route::get('/add', [OvertimeRequestController::class, 'addOvertimeRequest'])->name('overtimeRequest.add');
+            Route::post('/save', [OvertimeRequestController::class, 'saveOvertimeRequest'])->name('overtimeRequest.save');
+            Route::get('/edit/{Id}', [OvertimeRequestController::class, 'editOvertimeRequest'])->name('overtimeRequest.edit');
+            Route::put('/edit/{Id}/update', [OvertimeRequestController::class, 'updateOvertimeRequest'])->name('overtimeRequest.update');
+            Route::get('/delete/{Id}', [OvertimeRequestController::class, 'deleteOvertimeRequest'])->name('overtimeRequest.delete');
+        });
+    
+        // LEAVE REQUEST
+        Route::prefix('leaveRequest')->group(function() {
+            Route::get('/', [LeaveRequestController::class, 'index'])->name('leaveRequest');
+            Route::get('/add', [LeaveRequestController::class, 'form'])->name('leaveRequest.add');
+            Route::post('/save', [LeaveRequestController::class, 'save'])->name('leaveRequest.save');
+            Route::get('/view/{Id}', [LeaveRequestController::class, 'view'])->name('leaveRequest.view');
+            Route::get('/revise/{Id}', [LeaveRequestController::class, 'revise'])->name('leaveRequest.revise');
+            Route::put('/revise/{Id}/update', [LeaveRequestController::class, 'update'])->name('leaveRequest.update');
+            Route::post('/approve/{Id}/{UserId}', [LeaveRequestController::class, 'approve'])->name('leaveRequest.approve');
+            Route::post('/reject/{Id}/{UserId}', [LeaveRequestController::class, 'reject'])->name('leaveRequest.reject');
+        });
     });
+
 });
+
+
+// ----- EXTERNAL ACTIONS -----
+Route::prefix('leaveRequest')->group(function() {
+    Route::get('/approve/{Id}', [LeaveRequestController::class, 'externalApprove'])->name('external.leaveRequest.approve');
+    Route::get('/reject/{Id}', [LeaveRequestController::class, 'externalReject'])->name('external.leaveRequest.reject');
+});
+// ----- END EXTERNAL ACTIONS -----
 
 
 // ----- ADMIN -----

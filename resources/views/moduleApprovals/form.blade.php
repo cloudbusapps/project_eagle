@@ -200,23 +200,22 @@
                     })
                 }
 
-                if (data && data?.id) {
-                    let { Approver } = data;
-                    Approver?.map(dt => {
-                        let { Level, FullName, UserId } = dt;
+                if (data && data.length) {
+                    data.map(dt => {
+                        let { FirstName, LastName, ApproverId, Level } = dt;
 
                         tbodyHTML += `
-                        <tr id="${UserId}">
+                        <tr id="${ApproverId}">
                             <td class="d-flex justify-content-between align-items-center py-1 px-0">
                                 <div class="pl-2"> 
                                     <span class="badge bg-warning">Level ${Level}</span>
-                                    <span class="px-2">${FullName}</span>
+                                    <span class="px-2">${FirstName} ${LastName}</span>
                                 </div>
                                 <button class="btn btn-outline-danger btnDeleteApprover"><i class="bi bi-trash"></i></button>
                             </td>
                         </tr>`;
-                    });
-                } 
+                    })
+                }
 
                 let html = `
                 <div class="form-group">

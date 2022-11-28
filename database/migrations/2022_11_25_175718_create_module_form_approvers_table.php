@@ -13,12 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('module_approvals', function (Blueprint $table) {
-            $table->id();
+        Schema::create('module_form_approvers', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
             $table->bigInteger('ModuleId');
-            $table->uuid('DesignationId')->nullable();
+            $table->uuid('TableId');
             $table->integer('Level');
-            $table->uuid('ApproverId')->nullable();
+            $table->uuid('ApproverId');
+            $table->datetime('Date')->nullable();
+            $table->integer('Status')->nullable();
+            $table->string('Remarks')->nullable();
             $table->uuid('Created_By_Id');
             $table->uuid('Updated_By_Id');
             $table->timestamps();
@@ -32,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('module_approvals');
+        Schema::dropIfExists('module_form_approvers');
     }
 };

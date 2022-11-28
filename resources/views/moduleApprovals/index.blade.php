@@ -84,12 +84,8 @@
                 sorting: [],
                 scrollCollapse: true,
                 columnDefs: [
-                    { targets: 0,  width: 10  },
-                    { targets: 1,  width: 150 },
-                    { targets: 2,  width: 150 },
-                    { targets: 3,  width: 100 },
-                    { targets: 4,  width: 100 },
-                    { targets: 5,  width: 100 },
+                    { targets: 0,  width: 10     },
+                    { targets: 1,  width: '100%' },
                 ],
             });
         // ----- END DATATABLES -----

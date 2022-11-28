@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 
 use App\Models\Module;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ModuleSeeder extends Seeder
 {
@@ -17,6 +18,8 @@ class ModuleSeeder extends Seeder
      */
     public function run()
     {
+        $UserId = Str::uuid();
+
         $data = [
             [
                 'id'        => 1,
@@ -28,6 +31,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'dashboard',
                 'Status'    => 'Active',
                 'SortOrder' => 1,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 2,
@@ -39,6 +44,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'employeeDirectory',
                 'Status'    => 'Active',
                 'SortOrder' => 2,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 3,
@@ -47,9 +54,11 @@ class ModuleSeeder extends Seeder
                 'WithApproval' => false,
                 'Icon'      => 'form.png',
                 'RouteName' => null,
-                'Prefix'    => 'form',
+                'Prefix'    => 'forms',
                 'Status'    => 'Active',
                 'SortOrder' => 3,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 4,
@@ -57,10 +66,12 @@ class ModuleSeeder extends Seeder
                 'Title'     => 'Leave Request',
                 'WithApproval' => true,
                 'Icon'      => 'default.png',
-                'RouteName' => null,
+                'RouteName' => 'leaveRequest',
                 'Prefix'    => 'leaveRequest',
                 'Status'    => 'Active',
                 'SortOrder' => 1,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 5,
@@ -72,6 +83,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'overtimeRequest',
                 'Status'    => 'Active',
                 'SortOrder' => 2,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 6,
@@ -83,6 +96,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'onboarding',
                 'Status'    => 'Active',
                 'SortOrder' => 4,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 7,
@@ -94,6 +109,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'kpi',
                 'Status'    => 'Active',
                 'SortOrder' => 5,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 8,
@@ -105,6 +122,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'projects',
                 'Status'    => 'Active',
                 'SortOrder' => 6,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 9,
@@ -116,6 +135,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'projectView',
                 'Status'    => 'Active',
                 'SortOrder' => 1,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 10,
@@ -127,6 +148,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'training',
                 'Status'    => 'Active',
                 'SortOrder' => 7,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 11,
@@ -138,6 +161,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'certification',
                 'Status'    => 'Active',
                 'SortOrder' => 8,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
             [
                 'id'        => 12,
@@ -149,6 +174,8 @@ class ModuleSeeder extends Seeder
                 'Prefix'    => 'report',
                 'Status'    => 'Active',
                 'SortOrder' => 9,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId
             ],
         ];
 
