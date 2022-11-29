@@ -72,7 +72,7 @@
                                 <div class="row my-3">
                                     <label for="Status" class="col-sm-2">Status</label>
                                     <div class="col-sm-10">
-                                        <select name="Status" id="Status" class="form-select">
+                                        <select name="Status" id="Status" class="form-select" select2>
                                             <option value="Active" {{ $Status == "Active" ? "selected" : "" }}>Active</option>
                                             <option value="Inactive" {{ $Status == "Inactive" ? "selected" : "" }}>Inactive</option>
                                         </select>

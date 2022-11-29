@@ -1,4 +1,6 @@
 <?php 
+  use App\Models\Designation;
+
   $groupPrefix = Request::segment(1);
   $subModule   = Request::segment(2);
   $setupModule = Request::segment(3);
@@ -74,7 +76,7 @@
             </li>
             <li>
               <a class="ms-link {{ 'moduleApproval' == $setupModule ? 'active' : '' }}" 
-                href="{{ route('moduleApproval') }}">Module Approval</a>
+                href="{{ route('moduleApproval') }}">Approval</a>
             </li>
           </ul>
         </li>
@@ -158,7 +160,7 @@
 
                                     </ul>
                                 @else
-                                    <h4 class="color-400">No Notifications right now!</h4>
+                                    <h6 class="color-400 text-center">No notification</h6>
                                 @endif
                             </div>
                         </div>
@@ -177,7 +179,7 @@
                     <img class="avatar rounded-circle" src="{{ asset('uploads/profile/' . Auth::user()->Profile ?? 'default.png') }}" alt="">
                     <div class="flex-fill ms-3">
                       <h6 class="card-title mb-0">{{ Auth::user()->FirstName.' '. Auth::user()->LastName }}</h6>
-                      <small class="text-muted">{{ Auth::user()->Title }}</small>
+                      <small class="text-muted">{{ Designation::find(Auth::user()->DesignationId)->Name ?? '-' }}</small>
                     </div>
                   </div>
                   <div class="list-group m-2 mb-3">

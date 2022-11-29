@@ -106,6 +106,24 @@ class LeaveRequestController extends Controller
     }
 
     public function index() {
+        $approveData = LeaveRequest::select('leave_requests.*', 'u.FirstName', 'u.LastName')
+            ->leftJoin('users AS u', 'u.Id', 'UserId')
+            ->where('leave_requests.Status', 1)
+            ->get();
+        $calendar = [];
+        foreach ($approveData as $dt) {
+            $calendar[] = [
+                'id'        => $dt['Id'],
+                'title'     => $dt['FirstName'].' '.$dt['LastName'],
+                'start'     => $dt['StartDate'],
+                'end'       => date('Y-m-d', strtotime($dt['EndDate'].' +1 day')),
+                'className' => $dt['LeaveType'] == 'Vacation' ? 'bg-success' : 'bg-danger',
+                'leaveType' => $dt['LeaveType'],
+                'color'     => 'yellow',
+                'allDay'    => true
+            ];
+        }
+
         $data = [
             'title' => 'Leave Request',
             'data' => LeaveRequest::select('leave_requests.*', 'u.FirstName', 'u.LastName')
@@ -117,6 +135,7 @@ class LeaveRequestController extends Controller
                 ->leftJoin('module_form_approvers AS mfa', 'leave_requests.Id', 'TableId')
                 ->where('ApproverId', Auth::id())
                 ->get(),
+            'calendar' => $calendar,
         ];
         return view('leaveRequest.index', $data);
     }
@@ -187,6 +206,7 @@ class LeaveRequestController extends Controller
 
             return redirect()
                 ->route('leaveRequest')
+                ->with('tab', 'My Forms')
                 ->with('success', "<b>{$DocumentNumber}</b> successfully saved!");
         } 
     }
@@ -289,6 +309,7 @@ class LeaveRequestController extends Controller
 
             return redirect()
                 ->route('leaveRequest')
+                ->with('tab', 'My Forms')
                 ->with('success', "<b>{$DocumentNumber}</b> successfully updated!");
         } 
     }

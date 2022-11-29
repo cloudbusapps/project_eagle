@@ -48,7 +48,7 @@
         $button = '
         <a href="/forms/leaveRequest" class="btn btn-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary btnSubmitForm">Save</button>';
-    } else if ($pending && $UserId == Auth::id() || $Status == 2) {
+    } else if (($pending || $Status == 2) && $UserId == Auth::id()) {
         $todo   = "revise";
         $method = "GET";
         $action = route('leaveRequest.revise', ['Id' => $data['Id']]) ;

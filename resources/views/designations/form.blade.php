@@ -66,7 +66,7 @@
                                 <div class="row my-3">
                                     <label for="DepartmentId" class="col-sm-2">Department <code>*</code></label>
                                     <div class="col-sm-10">
-                                        <select name="DepartmentId" id="DepartmentId" class="form-select" required>
+                                        <select name="DepartmentId" id="DepartmentId" class="form-select" required select2>
                                             <option value="" selected disabled>Select Department</option>
                                             
                                             @foreach ($departments as $dt)
@@ -86,7 +86,7 @@
                                 <div class="row my-3">
                                     <label for="Status" class="col-sm-2">Status</label>
                                     <div class="col-sm-10">
-                                        <select name="Status" id="Status" class="form-select">
+                                        <select name="Status" id="Status" class="form-select" select2>
                                             <option value="Active" {{ $Status == "Active" ? "selected" : "" }}>Active</option>
                                             <option value="Inactive" {{ $Status == "Inactive" ? "selected" : "" }}>Inactive</option>
                                         </select>
