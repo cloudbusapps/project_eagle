@@ -9,6 +9,8 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+// UNUSED
+
 class OvertimeNotification extends Mailable
 {
     use Queueable, SerializesModels;

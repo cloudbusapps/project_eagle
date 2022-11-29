@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\OvertimeRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Task;
 use App\Notifications\OvertimeEmail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
@@ -25,9 +26,13 @@ class OvertimeRequestController extends Controller
 
     public function addOvertimeRequest()
     {
+        $userId = Auth::id();
+        $tasks = Task::where('UserId', $userId)
+        ->where('TimeCompleted',null)
+        ->get();
         $data = [
             'title'          => 'Add Overtime Request',
-            'data'    => [],
+            'data'    => $tasks,
             'type'           => 'insert',
         ];
         return view('overtimeRequest.form', $data);
@@ -35,13 +40,32 @@ class OvertimeRequestController extends Controller
     public function editOvertimeRequest($Id)
     {
         $OvertimeRequest = OvertimeRequest::where('Id', $Id)->first();
+        $status = $OvertimeRequest->Status;
+
+        //validate if form is editable
+        if ($status == 1) {
+            return redirect()->back();
+        }
+
         $data = [
             'title'          => 'Edit Overtime Request',
             'OvertimeRequest'    => $OvertimeRequest,
             'type'           => 'edit',
             'Id'           => $Id,
         ];
+
         return view('overtimeRequest.form', $data);
+    }
+    public function overtimeDetails($Id)
+    {
+        $OvertimeRequest = OvertimeRequest::where('Id', $Id)->first();
+        $data = [
+            'title'          => 'Overtime Request Details',
+            'OvertimeRequest'    => $OvertimeRequest,
+            'type'           => 'edit',
+            'Id'           => $Id,
+        ];
+        return view('overtimeRequest.overtimeDetails', $data);
     }
     public function saveOvertimeRequest(Request $request)
     {
@@ -95,6 +119,7 @@ class OvertimeRequestController extends Controller
         $OvertimeRequest->TimeIn  = $request->TimeIn;
         $OvertimeRequest->TimeOut  = $request->TimeOut;
         $OvertimeRequest->Reason  = $request->Reason;
+        $OvertimeRequest->Status  = 0;
         $OvertimeRequest->Updated_By_Id  = $userId;
 
         if ($OvertimeRequest->update()) {
@@ -126,7 +151,7 @@ class OvertimeRequestController extends Controller
     public function sendOvertimeEmail($Id)
     {
         // SELECT THE APPROVERS DATA
-        $user = User::where('email', 'cieldantalion@gmail.com')->first();
+        $user = User::where('IsAdmin', true)->first();
 
         // GETS THE OVERTIME DETAILS
         $data = OvertimeRequest::where('Id', $Id)->first();
@@ -140,7 +165,7 @@ class OvertimeRequestController extends Controller
             'timeIn' => $data->TimeIn,
             'timeOut' => $data->TimeOut,
             'reason' => $data->Reason,
-            'userName' => $data->createdBy->FirstName.' '.$data->createdBy->LastName
+            'userName' => $data->createdBy->FirstName . ' ' . $data->createdBy->LastName
         ];
 
         Notification::send($user, new OvertimeEmail($project));

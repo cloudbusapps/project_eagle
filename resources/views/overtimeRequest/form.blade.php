@@ -2,17 +2,19 @@
 
 @section('content')
     <?php
-    $Agenda = $Date = $TimeIn = $TimeOut = $Reason = $editable = '';
+    $Agenda = $Date = $TimeIn = $TimeOut = $Reason = $editable = $cancelRoute = '';
     
     if ($type === 'insert') {
         $todo = 'insert';
         $method = 'POST';
         $action = route('overtimeRequest.save');
+        $cancelRoute = route('overtimeRequest');
         $button = '<button type="submit" class="btn btn-primary btnSubmitForm">Save</button>';
     } elseif ($type === 'edit') {
         $todo = 'update';
         $method = 'PUT';
         $action = route('overtimeRequest.update', ['Id' => $Id]);
+        $cancelRoute = route('overtimeDetails', ['Id' => $Id]);
     
         if ($OvertimeRequest->Status == 1) {
             $editable = 'readonly';
@@ -22,7 +24,7 @@
                 '<a href="/overtimeRequest/delete/' .
                 $Id .
                 '" class="btn btn-danger btnDeleteForm">Delete</a>
-                                    <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
+                                            <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
         }
     
         $Agenda = !empty($OvertimeRequest) ? $OvertimeRequest['Agenda'] ?? '' : '';
@@ -99,44 +101,64 @@
                                 <div class="row mb-3">
                                     <label for="inputText" class="col-sm-2 label">Agenda <code>*</code></label>
                                     <div class="col-sm-10">
-                                        <input {{ $editable }} value="{{ old('Agenda') ?? $Agenda }}" required type="text"
-                                            class="form-control" name="Agenda" id="Agenda" placeholder="Agenda">
+                                        <input {{ $editable }} value="{{ old('Agenda') ?? $Agenda }}" required
+                                            type="text" class="form-control" name="Agenda" id="Agenda"
+                                            placeholder="Agenda">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label label" for="floatingTextarea">Date
                                         <code>*</code></label>
                                     <div class="col-sm-10">
-                                        <input {{ $editable }} value="{{ old('Date') ?? $Date }}" type="date" required
-                                            class="form-control" name="Date" placeholder="Date" id="Date">
+                                        <input {{ $editable }} value="{{ old('Date') ?? $Date }}" type="date"
+                                            required class="form-control" name="Date" placeholder="Date" id="Date">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <label class="col-sm-2 label" for="floatingTextarea">Time In <code>*</code></label>
                                     <div class="col-sm-10">
-                                        <input {{ $editable }} value="{{ old('TimeIn') ?? $TimeIn }}" required placeholder="Time In"
-                                            name="TimeIn" id="TimeIn" type="time" class="form-control">
+                                        <input {{ $editable }} value="{{ old('TimeIn') ?? $TimeIn }}" required
+                                            placeholder="Time In" name="TimeIn" id="TimeIn" type="time"
+                                            class="form-control">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label label" for="floatingTextarea">Time
                                         Out <code>*</code></label>
                                     <div class="col-sm-10">
-                                        <input {{ $editable }} value="{{ old('TimeOut') ?? $TimeOut }}" required placeholder="Time Out"
-                                            name="TimeOut" id="TimeOut" type="time" class="form-control">
+                                        <input {{ $editable }} value="{{ old('TimeOut') ?? $TimeOut }}" required
+                                            placeholder="Time Out" name="TimeOut" id="TimeOut" type="time"
+                                            class="form-control">
 
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <label for="inputText" class="col-sm-2 label">Reason <code>*</code></label>
                                     <div class="col-sm-10">
-                                        <textarea {{ $editable }} style="height: 82px;" required type="text" class="form-control" name="Reason" id="Reason"
-                                            placeholder="Reason">{{ old('Reason') ?? $Reason }}</textarea>
+                                        <textarea {{ $editable }} style="height: 82px;" required type="text" class="form-control" name="Reason"
+                                            id="Reason" placeholder="Reason">{{ old('Reason') ?? $Reason }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label for="inputText" class="col-sm-2 label">Task <code>*</code></label>
+                                    <div class="col-sm-10">
+                                        <select select2 name="UsersId" id="UsersIdSelect" class="form-select"
+                                            id="floatingSelect">
+                                            <option value="" selected disabled>Select Task</option>
+                                            @if (count($data) > 0)
+                                                @foreach ($data as $task)
+                                                    <option value="{{ $users->Id }}">
+                                                        {{ $users->Title . ' ' . $users->Title }}
+                                                    </option>
+                                                @endforeach
+                                            @endif
+
+                                        </select>
                                     </div>
                                 </div>
                             </div>
                             <div class="button-footer text-end">
-                                <a href="{{ route('overtimeRequest') }}" class="btn btn-secondary">Cancel</a>
+                                <a href="{{ $cancelRoute }}" class="btn btn-secondary">Cancel</a>
 
                                 <?= $button ?>
                             </div>

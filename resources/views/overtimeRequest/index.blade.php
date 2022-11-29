@@ -1,6 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
+    <?php
+    function getHours($TimeIn, $TimeOut)
+    {
+        $from_time = strtotime($TimeIn);
+        $to_time = strtotime($TimeOut);
+        if ($from_time > $to_time) {
+            $time_perday = ($to_time + 86400 - $from_time) / 3600;
+            return $hoursRendered = (int) $time_perday . ' hours, ' . ($time_perday - (int) $time_perday) * 60 . ' minutes.';
+        } else {
+            $time_perday = ($from_time - $to_time) / 3600;
+            $date1 = new DateTime($TimeIn);
+            $date2 = new DateTime($TimeOut);
+            $diff = $date1->diff($date2);
+            return $hoursRendered = $diff->format('%h hours, %i minutes.');
+        }
+    }
+    
+    ?>
     <main id="main" class="main">
 
         <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
@@ -66,9 +84,7 @@
                             <tbody>
                                 @foreach ($data as $index => $data)
                                     <?php
-                                    
-                                    $startTime = new DateTime($data->TimeIn);
-                                    $timeRendered = $startTime->diff(new DateTime($data->TimeOut));
+                                    $hoursRendered = getHours($data->TimeIn, $data->TimeOut);
                                     $status = $data->Status;
                                     switch ($status) {
                                         case 1:
@@ -88,14 +104,14 @@
                                         <th scope="row">{{ $index + 1 }}</th>
 
                                         <td>
-                                            <a href="{{ route('overtimeRequest.edit', ['Id' => $data->Id]) }}">
+                                            <a href="{{ route('overtimeDetails', ['Id' => $data->Id]) }}">
                                                 {{ $data->Agenda }}</a>
                                         </td>
 
                                         <td>{{ date('F d, Y', strtotime($data->Date)) }}</td>
                                         <td>{{ date('g:i: a', strtotime($data->TimeIn)) }}</td>
                                         <td>{{ date('g:i: a', strtotime($data->TimeOut)) }}</td>
-                                        <td>{{ $timeRendered->h . 'hrs : ' . $timeRendered->i . 'mins' }}
+                                        <td>{{ $hoursRendered }}
                                         </td>
                                         <td><?= $statusDisplay ?>
                                         </td>
