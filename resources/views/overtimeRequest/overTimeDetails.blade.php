@@ -10,7 +10,7 @@
     if ($OvertimeRequest->Status == 1) {
         $button = '';
     } else {
-        $button = '<a href="/overtimeRequest/edit/' . $Id . '" class="btn btn-warning">Revise</a>';
+        $button = '<a href="forms/overtimeRequest/edit/' . $Id . '" class="btn btn-warning">Revise</a>';
     }
     
     $Agenda = !empty($OvertimeRequest) ? $OvertimeRequest['Agenda'] ?? '' : '';

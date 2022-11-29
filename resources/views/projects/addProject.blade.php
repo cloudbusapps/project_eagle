@@ -127,7 +127,7 @@
                                     </div>
                                 @endif
                                 <div class="row mb-3">
-                                    <label class="col-sm-2 label" for="floatingTextarea">Kickoff Date<code>*</code></label>
+                                    <label class="col-sm-2 label" for="floatingTextarea">Kickoff Date <code>*</code></label>
                                     <div class="col-sm-10">
                                         <input value="{{ old('ProjectKickoffDate') ?? $KickoffDate }}" required
                                             placeholder="Kickoff Date" name="ProjectKickoffDate" id="ProjectKickoffDate"
@@ -136,7 +136,7 @@
                                 </div>
                                 <div class="row mb-3">
                                     <label class="col-sm-2 col-form-label label" for="floatingTextarea">Closed
-                                        Date<code>*</code></label>
+                                        Date <code>*</code></label>
                                     <div class="col-sm-10">
                                         <input value="{{ old('ProjectClosedDate') ?? $ClosedDate }}" required
                                             placeholder="Closed Date" name="ProjectClosedDate" id="ProjectClosedDate"

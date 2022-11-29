@@ -21,7 +21,7 @@
             $button = '';
         } else {
             $button =
-                '<a href="/overtimeRequest/delete/' .
+                '<a href="forms/overtimeRequest/delete/' .
                 $Id .
                 '" class="btn btn-danger btnDeleteForm">Delete</a>
                                             <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';

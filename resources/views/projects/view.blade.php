@@ -16,14 +16,14 @@
                     </div>
                 </div>
             </div>
-        </div>  
-    
+        </div>
+
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0">
             <div class="container-fluid">
                 <div class="card">
 
                     <div class="card-body">
-    
+
                         <div class="card-title">
                             @if (Session::get('success'))
                                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -42,18 +42,18 @@
                                 </div>
                             @endif
                             <div class="text-end">
-    
+
                                 <a href="{{ route('projects.addProject') }}" type="button" class="btn btn-outline-primary">
                                     <i class="bi bi-plus-lg"></i> New Project
                                 </a>
                             </div>
-    
-    
+
+
                         </div>
                         <!-- Table with stripped rows -->
                         <table id="projectTable" class="table table-striped" style="width:100%">
                             <thead>
-    
+
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Project Name</th>
@@ -66,12 +66,12 @@
                                 @foreach ($projectData as $index => $project)
                                     <tr>
                                         <th scope="row">{{ $index + 1 }}</th>
-    
+
                                         <td>
                                             <a href="{{ route('projects.projectDetails', ['Id' => $project->Id]) }}">
                                                 {{ $project->Name }}</a>
                                         </td>
-    
+
                                         <td>{{ $project->Description }}</td>
                                         <td>{{ date('F d, Y', strtotime($project->KickoffDate)) }}</td>
                                         <td>{{ date('F d, Y', strtotime($project->ClosedDate)) }}</td>
@@ -80,7 +80,7 @@
                             </tbody>
                         </table>
                         <!-- End Table with stripped rows -->
-    
+
                     </div>
                 </div>
             </div>
