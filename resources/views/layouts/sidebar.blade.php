@@ -21,9 +21,15 @@
       <h4 class="sidebar-title mb-0 flex-grow-1 px-2 d-none d-xl-block"><span class="sm-txt fw-bold" style="color: #d0021b;">ePLDT</h4>
     </div>
 
-    <div class="main-menu flex-grow-1">
+    <div class="main-menu flex-grow-1 pb-3">
+
+      @foreach ($moduleData as $index => $modules)
       <ul class="menu-list">
-        @foreach ($moduleData as $module)
+        <li class="divider py-2 lh-sm">
+          <span class="small fw-bold"><?= 'MODULE '.($index+1) ?></span><br>
+          <small class="text-muted"><?= $modules['module'] ?></small>
+        </li>
+        @foreach ($modules['items'] as $module)
         <li class="{{ in_array($module['Prefix'], $prefixArray) ? 'collapsed' : '' }}">
           @if (count($module['items']))
           <a class="m-link" 
@@ -53,8 +59,20 @@
           @endif
         </li>
         @endforeach
-
+      </ul>
+      @endforeach
+      <ul class="menu-list">
         @if (Auth::user()->IsAdmin)
+        <li class="divider py-2 lh-sm">
+          <span class="small fw-bold"><?= 'MODULE '.(count($moduleData)+1) ?></span><br>
+          <small class="text-muted">INTEGRATION & ADMIN</small>
+        </li>
+        <li>
+          <a class="m-link {{ $subModule == 'integration' ? 'active' : '' }}" href="{{ '#' }}">
+            <img src="{{ asset('uploads/icons/default.png') }}" alt="Integration" width="20" height="20">
+            <span class="ms-2">Integration</span>
+          </a>
+        </li>
         <li class="{{ in_array('setup', $prefixArray) ? 'collapsed' : '' }}">
           <a class="m-link" 
             data-bs-toggle="collapse" 
@@ -88,6 +106,7 @@
         </li>
         @endif
       </ul>
+
     </div>
   </div>
 </div>

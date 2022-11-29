@@ -218,6 +218,7 @@
                                             <span class="px-2">{{ $dt['FirstName'].' '.$dt['LastName']  }}</span>
                                         </div>
                                         <?= getStatusDisplay($dt['Status'], $dt['Date'] ? date('F d, Y h:i A', strtotime($dt['Date'])) : null) ?>
+                                        <?= $dt['Remarks'] ? "<div><small>".$dt['Remarks']."</small></div>" : '' ?>
                                     </div>
                                     @endforeach
                                     @endif

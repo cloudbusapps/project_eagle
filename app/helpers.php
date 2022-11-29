@@ -23,24 +23,50 @@
         return $data;
     }
 
+    function getModuleCategory($CategoryId = 0) {
+        switch ($CategoryId) {
+            case 1: return 'EMPLOYEE PROFILE';
+            case 2: return 'UTILIZATION';
+            case 3: default: return 'REPORT & DASHBOARD';
+        }
+    }
+
     function getModuleData() {
         $data = [];
 
-        $modules = Module::where('Status', 'Active')
-            ->where('ParentId', null)
-            ->orderBy('SortOrder', 'ASC')
+        $moduleCategory = Module::select('CategoryId')
+            ->groupBy('CategoryId')
+            ->orderBy('CategoryId', 'ASC')
             ->get();
 
-        foreach ($modules as $module) {
-            $data[] = [
-                'id'        => $module['id'],
-                'Title'     => $module['Title'],
-                'Prefix'    => $module['Prefix'],
-                'RouteName' => $module['RouteName'],
-                'Icon'      => $module['Icon'],
-                'items'     => getModuleItemsData($module['id'])
+        foreach ($moduleCategory as $index => $category) {
+            $temp = [
+                'module' => getModuleCategory($category['CategoryId']),
+                'items'  => []
             ];
+
+            $modules = Module::where('Status', 'Active')
+                ->where('ParentId', null)
+                ->where('CategoryId', $category['CategoryId'])
+                ->orderBy('SortOrder', 'ASC')
+                ->get();
+
+            foreach ($modules as $module) {
+                $temp['items'][] = [
+                    'id'        => $module['id'],
+                    'Title'     => $module['Title'],
+                    'Prefix'    => $module['Prefix'],
+                    'RouteName' => $module['RouteName'],
+                    'Icon'      => $module['Icon'],
+                    'items'     => getModuleItemsData($module['id'])
+                ];
+            }
+
+            $data[] = $temp;
         }
+        // echo "<pre>";
+        // print_r($data);
+        // exit;
         return $data;
     }
 

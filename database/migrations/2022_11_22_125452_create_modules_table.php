@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('modules', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('CategoryId')->nullable();
             $table->bigInteger('ParentId')->nullable();
             $table->string('Title');
             $table->boolean('WithApproval')->default(false);
@@ -23,8 +24,8 @@ return new class extends Migration
             $table->string('Icon')->default('default.png');
             $table->string('Status')->default('Active');
             $table->integer('SortOrder')->default(1);
-            $table->uuid('Created_By_Id');
-            $table->uuid('Updated_By_Id');
+            $table->uuid('Created_By_Id')->nullable();
+            $table->uuid('Updated_By_Id')->nullable();
             $table->timestamps();
         });
     }

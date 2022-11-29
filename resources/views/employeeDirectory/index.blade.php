@@ -73,7 +73,7 @@
                                 <a href="{{ route('user.viewProfile', ['Id' => $user['Id']]) }}" class="btnViewProfile">
                                     <h5>{{ $user['full_name'] }}</h5>
                                 </a>
-                                <small class="mb-0 fw-bold">{{ ($user['EmployeeNumber'] ?? '-') . ' | ' . ($user['Title'] ?? '-') }}</small>
+                                <small class="mb-0 fw-bold">{{ ($user['EmployeeNumber'] ?? '-') . ' | ' . ($user['designation'] ?? '-') }}</small>
                                 <small>{{ $user['email'] }}</small>
                             </div>
                         </div>
