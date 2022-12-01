@@ -31,7 +31,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'dashboard.png',
                 'RouteName'     => 'dashboard',
                 'Prefix'        => 'dashboard',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 1,
             ],
             [
@@ -43,7 +43,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'onboarding.png',
                 'RouteName'     => null,
                 'Prefix'        => 'onboardingProcedure',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 2,
             ],
             [
@@ -55,7 +55,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'employeeDirectory.png',
                 'RouteName'     => 'employeeDirectory',
                 'Prefix'        => 'employeeDirectory',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 3,
             ],
             [
@@ -67,7 +67,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'form.png',
                 'RouteName'     => 'leaveRequest',
                 'Prefix'        => 'leaveRequest',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 4,
             ],
             [
@@ -79,7 +79,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'evaluation.png',
                 'RouteName'     => null,
                 'Prefix'        => 'evaluation',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 5,
             ],
             [
@@ -91,7 +91,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'training.png',
                 'RouteName'     => null,
                 'Prefix'        => 'training',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 6,
             ],
             [
@@ -103,7 +103,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'certification.png',
                 'RouteName'     => null,
                 'Prefix'        => 'certification',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 7,
             ],
             // ----- END EMPLOYEE PROFILE -----
@@ -119,7 +119,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'project.png',
                 'RouteName'     => null,
                 'Prefix'        => 'projectUtilization',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 2,
             ],
             [
@@ -131,7 +131,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'project.png',
                 'RouteName'     => null,
                 'Prefix'        => 'projects',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 1,
             ],
             [
@@ -143,7 +143,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'default.png',
                 'RouteName'     => null,
                 'Prefix'        => 'resources',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 2,
             ],
             [
@@ -155,7 +155,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'default.png',
                 'RouteName'     => null,
                 'Prefix'        => 'components',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 3,
             ],
             [
@@ -167,7 +167,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'default.png',
                 'RouteName'     => null,
                 'Prefix'        => 'budget',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 4,
             ],
             [
@@ -179,7 +179,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'default.png',
                 'RouteName'     => 'overtimeRequest',
                 'Prefix'        => 'overtimeRequest',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 5,
             ],
             [
@@ -191,7 +191,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'default.png',
                 'RouteName'     => null,
                 'Prefix'        => 'timekeeping',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 6,
             ],
             [
@@ -203,7 +203,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'dashboard.png',
                 'RouteName'     => null,
                 'Prefix'        => 'projectDashboard',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 1,
             ],
             // ----- END UTILIZATION -----
@@ -219,7 +219,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'dashboard.png',
                 'RouteName'     => null,
                 'Prefix'        => 'reportDashboard',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 1,
             ],
             [
@@ -231,7 +231,7 @@ class ModuleSeeder extends Seeder
                 'Icon'          => 'report.png',
                 'RouteName'     => null,
                 'Prefix'        => 'reports',
-                'Status'        => 'Active',
+                'Status'        => 1,
                 'SortOrder'     => 2,
             ],
             // ----- END REPORTS AND DASHBOARDS -----
@@ -247,7 +247,7 @@ class ModuleSeeder extends Seeder
             //     'Icon'      => 'employeeDirectory.png',
             //     'RouteName' => 'employeeDirectory',
             //     'Prefix'    => 'employeeDirectory',
-            //     'Status'    => 'Active',
+            //     'Status'    => 1,
             //     'SortOrder' => 2,
             //     'Created_By_Id' => $UserId,
             //     'Updated_By_Id' => $UserId
@@ -260,7 +260,7 @@ class ModuleSeeder extends Seeder
             //     'Icon'      => 'form.png',
             //     'RouteName' => null,
             //     'Prefix'    => 'forms',
-            //     'Status'    => 'Active',
+            //     'Status'    => 1,
             //     'SortOrder' => 3,
             //     'Created_By_Id' => $UserId,
             //     'Updated_By_Id' => $UserId
@@ -273,7 +273,7 @@ class ModuleSeeder extends Seeder
             //     'Icon'      => 'default.png',
             //     'RouteName' => 'leaveRequest',
             //     'Prefix'    => 'leaveRequest',
-            //     'Status'    => 'Active',
+            //     'Status'    => 1,
             //     'SortOrder' => 1,
             //     'Created_By_Id' => $UserId,
             //     'Updated_By_Id' => $UserId
@@ -286,7 +286,7 @@ class ModuleSeeder extends Seeder
             //     'Icon'      => 'default.png',
             //     'RouteName' => 'overtimeRequest',
             //     'Prefix'    => 'overtimeRequest',
-            //     'Status'    => 'Active',
+            //     'Status'    => 1,
             //     'SortOrder' => 2,
             //     'Created_By_Id' => $UserId,
             //     'Updated_By_Id' => $UserId
@@ -299,7 +299,7 @@ class ModuleSeeder extends Seeder
             //     'Icon'      => 'onboarding.png',
             //     'RouteName' => null,
             //     'Prefix'    => 'onboarding',
-            //     'Status'    => 'Active',
+            //     'Status'    => 1,
             //     'SortOrder' => 4,
             //     'Created_By_Id' => $UserId,
             //     'Updated_By_Id' => $UserId
@@ -312,7 +312,7 @@ class ModuleSeeder extends Seeder
             //     'Icon'      => 'kpi.png',
             //     'RouteName' => null,
             //     'Prefix'    => 'kpi',
-            //     'Status'    => 'Active',
+            //     'Status'    => 1,
             //     'SortOrder' => 5,
             //     'Created_By_Id' => $UserId,
             //     'Updated_By_Id' => $UserId
@@ -325,7 +325,7 @@ class ModuleSeeder extends Seeder
             //     'Icon'      => 'project.png',
             //     'RouteName' => null,
             //     'Prefix'    => 'projects',
-            //     'Status'    => 'Active',
+            //     'Status'    => 1,
             //     'SortOrder' => 6,
             //     'Created_By_Id' => $UserId,
             //     'Updated_By_Id' => $UserId
@@ -338,7 +338,7 @@ class ModuleSeeder extends Seeder
             //     'Icon'      => 'default.png',
             //     'RouteName' => 'projects.view',
             //     'Prefix'    => 'projectView',
-            //     'Status'    => 'Active',
+            //     'Status'    => 1,
             //     'SortOrder' => 1,
             //     'Created_By_Id' => $UserId,
             //     'Updated_By_Id' => $UserId
@@ -351,7 +351,7 @@ class ModuleSeeder extends Seeder
             //     'Icon'      => 'training.png',
             //     'RouteName' => null,
             //     'Prefix'    => 'training',
-            //     'Status'    => 'Active',
+            //     'Status'    => 1,
             //     'SortOrder' => 7,
             //     'Created_By_Id' => $UserId,
             //     'Updated_By_Id' => $UserId
@@ -364,7 +364,7 @@ class ModuleSeeder extends Seeder
             //     'Icon'      => 'certification.png',
             //     'RouteName' => null,
             //     'Prefix'    => 'certification',
-            //     'Status'    => 'Active',
+            //     'Status'    => 1,
             //     'SortOrder' => 8,
             //     'Created_By_Id' => $UserId,
             //     'Updated_By_Id' => $UserId
@@ -377,7 +377,7 @@ class ModuleSeeder extends Seeder
             //     'Icon'      => 'report.png',
             //     'RouteName' => null,
             //     'Prefix'    => 'report',
-            //     'Status'    => 'Active',
+            //     'Status'    => 1,
             //     'SortOrder' => 9,
             //     'Created_By_Id' => $UserId,
             //     'Updated_By_Id' => $UserId

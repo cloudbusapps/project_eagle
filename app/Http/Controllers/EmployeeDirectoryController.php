@@ -82,7 +82,7 @@ class EmployeeDirectoryController extends Controller
         }
 
         $data = [
-            'title'      => 'Employee Directory',
+            'title'      => 'Directory',
             'users'      => $userData,
             "filterBy"   => $filterBy,
             'filterData' => $filterData,

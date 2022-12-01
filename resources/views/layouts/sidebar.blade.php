@@ -69,7 +69,7 @@
         </li>
         <li>
           <a class="m-link {{ $subModule == 'integration' ? 'active' : '' }}" href="{{ '#' }}">
-            <img src="{{ asset('uploads/icons/default.png') }}" alt="Integration" width="20" height="20">
+            <img src="{{ asset('uploads/icons/integration.png') }}" alt="Integration" width="20" height="20">
             <span class="ms-2">Integration</span>
           </a>
         </li>
@@ -91,6 +91,10 @@
             <li>
               <a class="ms-link {{ 'designation' == $setupModule ? 'active' : '' }}" 
                 href="{{ route('designation') }}">Designation</a>
+            </li>
+            <li>
+              <a class="ms-link {{ 'leaveType' == $setupModule ? 'active' : '' }}" 
+                href="{{ route('leaveType') }}">Leave Type</a>
             </li>
             <li>
               <a class="ms-link {{ 'moduleApproval' == $setupModule ? 'active' : '' }}" 

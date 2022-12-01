@@ -13,11 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('designations', function (Blueprint $table) {
-            $table->uuid('Id');
-            $table->uuid('DepartmentId');
-            $table->string('Name');
-            $table->integer('Status')->default(1);
+        Schema::create('user_leave_balances', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->uuid('UserId');
+            $table->uuid('LeaveTypeId');
+            $table->decimal('Balance', 10, 2)->default(0);
+            $table->decimal('Accumulated', 10, 2)->default(0);
             $table->uuid('Created_By_Id')->nullable();
             $table->uuid('Updated_By_Id')->nullable();
             $table->timestamps();
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('designations');
+        Schema::dropIfExists('user_leave_balances');
     }
 };

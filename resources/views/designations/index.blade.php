@@ -58,7 +58,7 @@
                         @if (count($data))
                         @foreach ($data as $index => $dt)
                         <?php 
-                            $status = $dt->Status == "Active" ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-danger'>Inactive</span>";
+                            $status = $dt->Status == 1 ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-danger'>Inactive</span>";
                         ?>
 
                             <tr>

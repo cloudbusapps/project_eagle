@@ -20,7 +20,7 @@
                 <div class="col">
                     <h4 class="mb-0">Profile</h4>
                     <ol class="breadcrumb bg-transparent mb-0">
-                        <li class="breadcrumb-item"><a class="text-secondary" href="#">User</a></li>
+                        <li class="breadcrumb-item"><a class="text-secondary" href="{{ route('employeeDirectory') }}">Directory</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Profile</li>
                     </ol>
                 </div>
@@ -67,23 +67,6 @@
                         @endif
 
                         <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-                        
-                            @if (Session::get('tab') == 'Image')
-                                @if (Session::get('success'))
-                                    <div class="alert alert-success alert-dismissible fade show" role="alert"> 
-                                        <i class="bi bi-check-circle me-1"></i> 
-                                        <?= Session::get('success') ?>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                @endif
-                                @if (Session::get('fail'))
-                                    <div class="alert alert-danger alert-dismissible fade show" role="alert"> 
-                                        <i class="bi bi-exclamation-octagon me-1"></i>
-                                        <?= Session::get('danger') ?>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                @endif
-                            @endif
                             <img src="{{ asset('uploads/profile/' . $userData->Profile ?? 'default.png') }}" alt="Profile"
                                 class="rounded-circle" height="150" width="150">
                             <h4 class="mb-0">{{ $userData->FirstName .' '. $userData->LastName }}</h4>
@@ -115,33 +98,16 @@
                         </div>
                         <div class="card-body">
                             <div class="skills py-2" style="font-size: 1.1rem">
-
-                            @if (Session::get('tab') == 'Skill')
-                                @if (Session::get('success'))
-                                    <div class="alert alert-success alert-dismissible fade show" role="alert"> 
-                                        <i class="bi bi-check-circle me-1"></i> 
-                                        <?= Session::get('success') ?>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                @endif
-                                @if (Session::get('fail'))
-                                    <div class="alert alert-danger alert-dismissible fade show" role="alert"> 
-                                        <i class="bi bi-exclamation-octagon me-1"></i>
-                                        <?= Session::get('danger') ?>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                @endif
-                            @endif
-
+                                
                             @if (count($skills))
                             @foreach ($skills as $skill)
                                 <span class="badge text-success"><i class="bi bi-check me-1"></i>{{ $skill['Title'] }}</span>
                             @endforeach
                             @else
-                                {{-- <div class="text-center py-2">
+                                <div class="text-center py-2">
                                     <img src="{{ asset('assets/img/modal/database-search.png') }}" height="80" width="80"  alt="No data found">
                                     <h6 class="mt-2">No data found.</h6>
-                                </div> --}}
+                                </div>
                             @endif
 
                             </div>

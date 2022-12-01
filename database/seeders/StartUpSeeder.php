@@ -31,52 +31,59 @@ class StartUpSeeder extends Seeder
         $FCDesignationId   = Str::uuid();
         $GMDesignationId   = Str::uuid();
 
+        // ----- DEPARTMENT -----
         DB::table('departments')->insert([
             [
                 'Id'     => $DepartmentId,
                 'Name'   => 'Information Technology',
-                'Status' => 'Active'
+                'Status' => 1
             ],
             [
                 'Id'     => $CloudDepartmentId,
                 'Name'   => 'Cloud Business Applications',
-                'Status' => 'Active'
+                'Status' => 1
             ]
         ]);
+        // ----- END DEPARTMENT -----
 
+
+        // ----- DESIGNATION -----
         DB::table('designations')->insert([
             [
                 'Id'           => $DesignationId,
                 'DepartmentId' => $DepartmentId,
                 'Name'         => 'Administrator',
-                'Status'       => 'Active'
+                'Status'       => 1
             ],
             [
                 'Id'           => $TCDesignationId,
                 'DepartmentId' => $CloudDepartmentId,
                 'Name'         => 'Technical Consultant',
-                'Status'       => 'Active'
+                'Status'       => 1
             ],
             [
                 'Id'           => $GMDesignationId,
                 'DepartmentId' => $CloudDepartmentId,
                 'Name'         => 'General Manager - Cloud Applications',
-                'Status'       => 'Active'
+                'Status'       => 1
             ],
             [
                 'Id'           => $FCDesignationId,
                 'DepartmentId' => $CloudDepartmentId,
                 'Name'         => 'Functional Consultant',
-                'Status'       => 'Active'
+                'Status'       => 1
             ],
             [
                 'Id'           => Str::uuid(),
                 'DepartmentId' => $CloudDepartmentId,
                 'Name'         => 'Business Analyst',
-                'Status'       => 'Active'
+                'Status'       => 1
             ],
         ]);
+        // ----- END DESIGNATION -----
 
+
+        // ----- USERS -----
         DB::table('users')->insert([
             [
                 'Id'                => $UserId,
@@ -89,10 +96,11 @@ class StartUpSeeder extends Seeder
                 'DepartmentId'      => $DepartmentId,
                 'DesignationId'     => $DesignationId,
                 'About'             => fake()->paragraph(3),
-                'IsAdmin'           => true,
                 'email'             => 'projecteagle@epldt.com',
                 'email_verified_at' => now(),
-                'password'          => Hash::make('projecteagle')
+                'password'          => Hash::make('projecteagle'),
+                'IsAdmin'           => true,
+                'Status'            => 1,
             ],
             [
                 'Id'                => Str::uuid(),
@@ -105,10 +113,11 @@ class StartUpSeeder extends Seeder
                 'DepartmentId'      => $CloudDepartmentId,
                 'DesignationId'     => $TCDesignationId,
                 'About'             => fake()->paragraph(3),
-                'IsAdmin'           => false,
                 'email'             => 'arjaydiangzon@epldt.com',
                 'email_verified_at' => now(),
-                'password'          => Hash::make('arjaydiangzon')
+                'password'          => Hash::make('arjaydiangzon'),
+                'IsAdmin'           => false,
+                'Status'            => 1,
             ],
             [
                 'Id'                => Str::uuid(),
@@ -121,10 +130,11 @@ class StartUpSeeder extends Seeder
                 'DepartmentId'      => $CloudDepartmentId,
                 'DesignationId'     => $GMDesignationId,
                 'About'             => fake()->paragraph(3),
-                'IsAdmin'           => false,
                 'email'             => 'monicaborje@epldt.com',
                 'email_verified_at' => now(),
-                'password'          => Hash::make('monicaborje')
+                'password'          => Hash::make('monicaborje'),
+                'IsAdmin'           => false,
+                'Status'            => 1,
             ],
             [
                 'Id'                => Str::uuid(),
@@ -137,13 +147,38 @@ class StartUpSeeder extends Seeder
                 'DepartmentId'      => $CloudDepartmentId,
                 'DesignationId'     => $FCDesignationId,
                 'About'             => fake()->paragraph(3),
-                'IsAdmin'           => false,
                 'email'             => 'alvinagato@epldt.com',
                 'email_verified_at' => now(),
-                'password'          => Hash::make('alvinagato')
+                'password'          => Hash::make('alvinagato'),
+                'IsAdmin'           => false,
+                'Status'            => 1,
             ],
         ]);
+        // ----- END USERS -----
 
+
+        // ----- MODULES -----
         $this->call(ModuleSeeder::class);
+        // ----- END MODULES -----
+
+
+        // ----- LEAVE TYPE -----
+        DB::table('leave_types')->insert([
+            [
+                'Id'            => Str::uuid(),
+                'Name'          => 'Vacation Leave',
+                'Status'        => 1,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId,
+            ],
+            [
+                'Id'            => Str::uuid(),
+                'Name'          => 'Sick Leave',
+                'Status'        => 1,
+                'Created_By_Id' => $UserId,
+                'Updated_By_Id' => $UserId,
+            ],
+        ]);
+        // ----- END LEAVE TYPE -----
     }
 }

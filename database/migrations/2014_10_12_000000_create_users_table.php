@@ -27,10 +27,11 @@ return new class extends Migration
             $table->uuid('DesignationId')->nullable();
             $table->string('Title')->nullable();
             $table->text('About')->nullable();
-            $table->boolean('IsAdmin')->default(false);
             $table->string('email')->unique();
             $table->date('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('IsAdmin')->default(false);
+            $table->integer('Status')->default(1); // [0 - Inactive, 1 - Active]
             $table->uuid('Created_By_Id')->nullable();
             $table->uuid('Updated_By_Id')->nullable();
             $table->timestamps();

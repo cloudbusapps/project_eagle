@@ -9,7 +9,7 @@
     function getModuleItemsData($ParentId = 0) {
         $data = [];
         $modules = Module::where('ParentId', $ParentId)
-            ->where('Status', 'Active')
+            ->where('Status', 1)
             ->orderBy('SortOrder')
             ->get();
         foreach ($modules as $module) {
@@ -45,7 +45,7 @@
                 'items'  => []
             ];
 
-            $modules = Module::where('Status', 'Active')
+            $modules = Module::where('Status', 1)
                 ->where('ParentId', null)
                 ->where('CategoryId', $category['CategoryId'])
                 ->orderBy('SortOrder', 'ASC')

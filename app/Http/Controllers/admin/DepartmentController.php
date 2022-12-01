@@ -1,11 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use App\Models\Department;
+use App\Models\User;
 
 class DepartmentController extends Controller
 {
@@ -26,7 +29,7 @@ class DepartmentController extends Controller
 
     public function save(Request $request) {
         $validator = $request->validate([
-            'Name' => ['required', 'string', 'max:255'],
+            'Name' => ['required', 'string', 'max:255', 'unique:departments'],
         ]);
         
         $Name = $request->Name;
@@ -51,7 +54,10 @@ class DepartmentController extends Controller
 
     public function update(Request $request, $Id) {
         $validator = $request->validate([
-            'Name' => ['required', 'string', 'max:255'],
+            'Name' => [
+                'required', 'string', 'max:255',
+                Rule::unique('departments')->ignore($Id, 'Id')
+            ]
         ]);
         
         $Name = $request->Name;
@@ -59,26 +65,39 @@ class DepartmentController extends Controller
         $Department->Name   = $request->Name;
         $Department->Status = $request->Status;
 
-        if ($Department->save()) {
+        if ($request->Status == 0 && $this->isActive($Id)) {
             return redirect()
-                ->route('department')
-                ->with('success', "<b>{$Name}</b> successfully updated!");
-        } 
+                ->back()
+                ->withErrors(["{$Name} is currently in used!"])
+                ->withInput();
+        } else {
+            if ($Department->save()) {
+                return redirect()
+                    ->route('department')
+                    ->with('success', "<b>{$Name}</b> successfully updated!");
+            } 
+        }
+
     }
 
     public function delete($Id) {
         $Department = Department::find($Id);
         $Name = $Department->Name;
 
-        if ($Department->delete()) {
+        if (!$this->isActive($Id) && $Department->delete()) {
             return redirect()
                 ->route('department')
                 ->with('success', "<b>{$Name}</b> successfully deleted!");
         } else {
             return redirect()
-                ->route('department')
-                ->with('fail', "<b>{$Name}</b> failed to delete!");
+                ->back()
+                ->withErrors(["{$Name} is currently in used!"])
+                ->withInput();
         }
+    }
+
+    public function isActive($Id) {
+        return User::where('DepartmentId', $Id)->count() ? true : false;
     }
 
 }

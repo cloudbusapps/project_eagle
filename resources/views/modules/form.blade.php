@@ -140,8 +140,8 @@
                                     <label for="Status" class="col-sm-2">Status</label>
                                     <div class="col-sm-10">
                                         <select name="Status" id="Status" class="form-select" select2>
-                                            <option value="Active" {{ $Status == "Active" ? "selected" : "" }}>Active</option>
-                                            <option value="Inactive" {{ $Status == "Inactive" ? "selected" : "" }}>Inactive</option>
+                                            <option value="1" {{ $Status == 1 ? "selected" : "" }}>Active</option>
+                                            <option value="0" {{ $Status == 0 ? "selected" : "" }}>Inactive</option>
                                         </select>
                                     </div>
                                 </div>

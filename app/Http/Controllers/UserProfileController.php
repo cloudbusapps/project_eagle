@@ -683,8 +683,8 @@ class UserProfileController extends Controller
         }
 
         if ($saveSkill && $deleteSkill) {
-            Session::flash('tab', 'Skill'); 
-            Session::flash('success', 'Skills successfully updated!'); 
+            Session::flash('card', 'Skill'); 
+            Session::flash('success', '<b>Skills</b> successfully updated!'); 
             return "true";
         } 
         return "false";
@@ -763,13 +763,13 @@ class UserProfileController extends Controller
             if ($User->save()) {
                 return redirect()
                     ->route('user.viewProfile')
-                    ->with('tab', 'Image')
+                    ->with('card', 'Image')
                     ->with('success', "Profile image successfully updated!");
             } 
         } catch (\Throwable $th) {
             return redirect()
                 ->route('user.viewProfile')
-                ->with('tab', 'Image')
+                ->with('card', 'Image')
                 ->with('fail', "There's an error occured. Please try again later...");
         }
 
