@@ -35,7 +35,6 @@ Route::post('/register', [RegisterController::class, 'save'])->name('auth.save')
 Route::group(['middleware' => 'auth'], function() {
     // DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/test', [DashboardController::class, 'index'])->name('test');
 
     // USER
     Route::prefix('user')->group(function () {
@@ -48,6 +47,10 @@ Route::group(['middleware' => 'auth'], function() {
             // IMAGE
             Route::get('/edit/image/{Id}', [UserProfileController::class, 'editProfileImage'])->name('user.editProfileImage');
             Route::put('/edit/image/{Id}/update', [UserProfileController::class, 'updateProfileImage'])->name('user.updateProfileImage');
+
+            // LEAVE
+            Route::get('/edit/leave/{Id}', [UserProfileController::class, 'editLeaveBalance'])->name('user.editLeaveBalance');
+            Route::post('/edit/leave/{Id}/update', [UserProfileController::class, 'updateLeaveBalance'])->name('user.updateLeaveBalance');
 
             // PERSONAL INFORMATION
             Route::get('/edit/personalInformation/{Id}', [UserProfileController::class, 'editPersonalInformation'])->name('user.editPersonalInformation');
