@@ -5,6 +5,7 @@
 <?php
     $Name = $todo = null;
     $Status = 1;
+    $disabled = '';
 
     if (isset($data) && !empty($data)) {
         $todo   = "update";
@@ -14,6 +15,11 @@
         <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
         $Name   = (!empty($data)) ? ($data['Name'] ?? '') : '';
         $Status = (!empty($data)) ? ($data['Status'] ?? '') : '';
+
+        if (in_array($Name, ['Vacation Leave', 'Sick Leave'])) {
+            $disabled = 'disabled';
+            $button = '';
+        }
     } else {
         $todo   = "insert";
         $method = "POST";
@@ -66,13 +72,13 @@
                                     <label for="Name" class="col-sm-2">Leave Type <code>*</code></label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="Name" name="Name" placeholder="Leave Type"
-                                            value="{{ old('Name') ?? $Name }}" required>
+                                            value="{{ old('Name') ?? $Name }}" required {{ $disabled }}>
                                     </div>
                                 </div>
                                 <div class="row my-3">
                                     <label for="Status" class="col-sm-2">Status</label>
                                     <div class="col-sm-10">
-                                        <select name="Status" id="Status" class="form-select" select2>
+                                        <select name="Status" id="Status" class="form-select" select2 {{ $disabled }}>
                                             <option value="1" {{ $Status == 1 ? "selected" : "" }}>Active</option>
                                             <option value="0" {{ $Status == 0 ? "selected" : "" }}>Inactive</option>
                                         </select>

@@ -12,7 +12,7 @@
                 <div class="col">
                     <h4 class="mb-0">{{ $title }}</h4>
                     <ol class="breadcrumb bg-transparent mb-0">
-                        <li class="breadcrumb-item"><a class="text-secondary" href="#">Forms</a></li>
+                        <li class="breadcrumb-item"><a class="text-secondary" href="{{ route('dashboard') }}">Dashboard</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
                     </ol>
                 </div>
@@ -88,7 +88,7 @@
                                             </a>
                                         </td>
                                         <td>{{ $dt->FirstName.' '.$dt->LastName }}</td>
-                                        <td>{{ $dt->LeaveType }}</td>
+                                        <td>{{ $dt->Name }}</td>
                                         <td>
                                             {{ $dt->StartDate == $dt->EndDate ? 
                                             (date('F d, Y', strtotime($dt->StartDate))) :
@@ -149,8 +149,14 @@
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <div>
-                                        <label class="text-success"><input type="checkbox" name="cboxVl" checked> Vacation Leave</label>
-                                        <label class="text-danger mx-2"><input type="checkbox" name="cboxSl" checked> Sick Leave</label>
+
+                                        @foreach ($leaveTypes as $dt)
+                                        <?php 
+                                            $className = $dt['Name'] == "Vacation Leave" ? 'text-success' : ($dt['Name'] == "Sick Leave" ? 'text-danger' : 'text-info'); 
+                                        ?>
+                                        <label class="{{ $className }} mx-2"><input type="checkbox" class="leaveTypes" leaveType="{{ $dt['Name'] }}" checked> {{ $dt['Name'] }}</label>
+                                        @endforeach
+
                                     </div>
                                     <div>
                                         <label><input type="checkbox" checked name="viewAll"> View All</label>
@@ -216,10 +222,11 @@
 
 
         // ----- CHANGE CALENDAR VIEW -----
-        $(document).on('change', `[name="cboxVl"], [name="cboxSl"]`, function() {
-            let cboxVl = $(`[name="cboxVl"]`).is(':checked');
-            let cboxSl = $(`[name="cboxSl"]`).is(':checked');
-            let leaveTypeArr = [cboxVl && 'Vacation', cboxSl && 'Sick'];
+        $(document).on('change', `.leaveTypes`, function() {
+            let leaveTypeArr = [];
+            $('[type="checkbox"].leaveTypes').each(function() {
+                this.checked && leaveTypeArr.push($(this).attr('leaveType'));
+            })
 
             currentEventData = eventData.filter(dt => leaveTypeArr.includes(dt.leaveType));
             initCalendar(currentEventData);
@@ -229,8 +236,7 @@
 
         // ----- CHANGE VIEW ALL -----
         $(document).on('change', `[name="viewAll"]`, function() {
-            $(`[name="cboxVl"]`).prop('checked', this.checked).trigger('change');
-            $(`[name="cboxSl"]`).prop('checked', this.checked).trigger('change');
+            $(`[type="checkbox"].leaveTypes`).prop('checked', this.checked).trigger('change');
         })
         // ----- END CHANGE VIEW ALL -----
 

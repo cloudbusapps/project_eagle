@@ -14,6 +14,7 @@ use App\Mail\LeaveRequestMail;
 use Illuminate\Support\Facades\Mail;
 use App\Models\ModuleApproval;
 use App\Models\ModuleFormApprover;
+use App\Models\LeaveType;
 
 class LeaveRequestController extends Controller
 {
@@ -102,11 +103,12 @@ class LeaveRequestController extends Controller
         foreach ($approvers as $approver) {
             if ($approver['Status'] == 0) $count++;
         }
-        return count($approvers) == $count;
+        return count($approvers) > 0 && count($approvers) == $count;
     }
 
     public function index() {
-        $approveData = LeaveRequest::select('leave_requests.*', 'u.FirstName', 'u.LastName')
+        $approveData = LeaveRequest::select('leave_requests.*', 'lt.Name AS LeaveType', 'u.FirstName', 'u.LastName')
+            ->leftJoin('leave_types AS lt', 'leave_requests.LeaveTypeId', 'lt.Id')
             ->leftJoin('users AS u', 'u.Id', 'UserId')
             ->where('leave_requests.Status', 1)
             ->get();
@@ -117,16 +119,17 @@ class LeaveRequestController extends Controller
                 'title'     => $dt['FirstName'].' '.$dt['LastName'],
                 'start'     => $dt['StartDate'],
                 'end'       => date('Y-m-d', strtotime($dt['EndDate'].' +1 day')),
-                'className' => $dt['LeaveType'] == 'Vacation' ? 'bg-success' : 'bg-danger',
+                'className' => $dt['LeaveType'] == 'Vacation Leave' ? 'bg-success' : ($dt['LeaveType'] == 'Sick Leave' ? 'bg-danger' : 'bg-info'),
                 'leaveType' => $dt['LeaveType'],
-                'color'     => 'yellow',
+                'color'     => 'black',
                 'allDay'    => true
             ];
         }
 
         $data = [
             'title' => 'Leave Request',
-            'data' => LeaveRequest::select('leave_requests.*', 'u.FirstName', 'u.LastName')
+            'data' => LeaveRequest::select('leave_requests.*', 'lt.Name', 'u.FirstName', 'u.LastName')
+                ->leftJoin('leave_types AS lt', 'leave_requests.LeaveTypeId', 'lt.Id')
                 ->leftJoin('users AS u', 'u.Id', 'UserId')
                 ->where('UserId', Auth::id())
                 ->get(),
@@ -136,6 +139,7 @@ class LeaveRequestController extends Controller
                 ->where('ApproverId', Auth::id())
                 ->get(),
             'calendar' => $calendar,
+            'leaveTypes' => LeaveType::where('Status', 1)->get(),
         ];
         return view('leaveRequest.index', $data);
     }
@@ -144,6 +148,9 @@ class LeaveRequestController extends Controller
         $data = [
             'title' => "New Leave Request",
             'data'  => User::find(Auth::id()),
+            'leaveTypes' => LeaveType::select('leave_types.*',
+                DB::raw('(SELECT "Balance" FROM user_leave_balances WHERE "UserId" = \''.Auth::id().'\' AND "LeaveTypeId" = "leave_types"."Id") AS "Balance"'))
+                ->where('Status', 1)->get(),
             'event' => 'add'
         ];
         return view('leaveRequest.form', $data);
@@ -152,7 +159,7 @@ class LeaveRequestController extends Controller
     public function save(Request $request) {
         $validator = $request->validate([
             'UserId'        => ['required'],
-            'LeaveType'     => ['required'],
+            'LeaveTypeId'     => ['required'],
             'StartDate'     => ['required', 'date'],
             'EndDate'       => ['required', 'date'],
             'LeaveDuration' => ['required'],
@@ -168,7 +175,7 @@ class LeaveRequestController extends Controller
         $LeaveRequest = new LeaveRequest;
         $LeaveRequest->DocumentNumber = $DocumentNumber;
         $LeaveRequest->UserId         = $request->UserId;
-        $LeaveRequest->LeaveType      = $request->LeaveType;
+        $LeaveRequest->LeaveTypeId      = $request->LeaveTypeId;
         $LeaveRequest->StartDate      = $request->StartDate;
         $LeaveRequest->EndDate        = $request->EndDate;
         $LeaveRequest->LeaveDuration  = $request->LeaveDuration;
@@ -214,7 +221,8 @@ class LeaveRequestController extends Controller
     public function view($Id) {
         $data = [
             'title' => "View Leave Request",
-            'data' => LeaveRequest::select('leave_requests.*', 'u.FirstName', 'u.LastName')
+            'data' => LeaveRequest::select('leave_requests.*', 'lt.Name', 'u.FirstName', 'u.LastName')
+                ->leftJoin('leave_types AS lt', 'leave_requests.LeaveTypeId', 'lt.Id')
                 ->leftJoin('users AS u', 'u.Id', 'UserId')
                 ->where('leave_requests.Id', $Id)
                 ->first(),
@@ -234,7 +242,8 @@ class LeaveRequestController extends Controller
                 ->orderBy('Level', 'ASC')
                 ->first()->ApproverId ?? null,
             'pending' => $this->isPending($Id),
-            'event' => 'view'
+            'event' => 'view',
+            'leaveTypes' => LeaveType::where('Status', 1)->get(),
         ];
 
         return view('leaveRequest.form', $data);
@@ -243,13 +252,15 @@ class LeaveRequestController extends Controller
     public function revise($Id) {
         $data = [
             'title' => "Revise Leave Request",
-            'data'  => LeaveRequest::select('leave_requests.*', 'u.FirstName', 'u.LastName')
+            'data'  => LeaveRequest::select('leave_requests.*', 'lt.Name AS LeaveType', 'u.FirstName', 'u.LastName')
+                ->leftJoin('leave_types AS lt', 'leave_requests.LeaveTypeId', 'lt.Id')
                 ->leftJoin('users AS u', 'u.Id', 'UserId')
                 ->where('leave_requests.Id', $Id)
                 ->first(),
             'files' => LeaveRequestFiles::where('LeaveRequestId', $Id)->get(),
             'currentApprover' => null,
-            'event' => 'edit'
+            'event' => 'edit',
+            'leaveTypes' => LeaveType::where('Status', 1)->get(),
         ];
         return view('leaveRequest.form', $data);
     }
@@ -257,7 +268,7 @@ class LeaveRequestController extends Controller
     public function update(Request $request, $Id) {
         $validator = $request->validate([
             'UserId'        => ['required'],
-            'LeaveType'     => ['required'],
+            'LeaveTypeId'     => ['required'],
             'StartDate'     => ['required', 'date'],
             'EndDate'       => ['required', 'date'],
             'LeaveDuration' => ['required'],
@@ -269,7 +280,7 @@ class LeaveRequestController extends Controller
         
         $LeaveRequest = LeaveRequest::find($Id);
         $LeaveRequest->UserId        = $request->UserId;
-        $LeaveRequest->LeaveType     = $request->LeaveType;
+        $LeaveRequest->LeaveTypeId     = $request->LeaveTypeId;
         $LeaveRequest->StartDate     = $request->StartDate;
         $LeaveRequest->EndDate       = $request->EndDate;
         $LeaveRequest->LeaveDuration = $request->LeaveDuration;

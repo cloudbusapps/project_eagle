@@ -6,27 +6,30 @@
     $disabledField = $event == 'view' ? 'disabled' : '';
     $requiredLabel = $event == 'view' ? '' : '<code>*</code>';
 
-    $DocumentNumber = $LeaveType = $StartDate = $EndDate = $LeaveDuration = $LeaveBalance = $Reason = $Status = null;
+    $DocumentNumber = $LeaveTypeId = $StartDate = $EndDate = $LeaveBalance = $Reason = $Status = null;
+    $LeaveDuration = 1;
     $method = $action = $button = $approverButton = $todo = '';
 
     $currentApprover = $currentApprover ?? null;
     $pending = $pending ?? false;
+    $LeaveType = '';
 
     if (isset($data) && !empty($data)) {
         $UserId         = (!empty($data)) ? ($data['UserId'] ?? '') : '';
         $DocumentNumber = (!empty($data)) ? ($data['DocumentNumber'] ?? '') : '';
+        $LeaveTypeId    = (!empty($data)) ? ($data['LeaveTypeId'] ?? '') : '';
         $LeaveType      = (!empty($data)) ? ($data['LeaveType'] ?? '') : '';
         $StartDate      = (!empty($data)) ? ($data['StartDate'] ?? '') : '';
         $EndDate        = (!empty($data)) ? ($data['EndDate'] ?? '') : '';
-        $LeaveDuration  = (!empty($data)) ? ($data['LeaveDuration'] ?? '') : '';
-        $LeaveBalance   = (!empty($data)) ? ($data['LeaveBalance'] ?? '') : '';
+        $LeaveDuration  = (!empty($data)) ? ($data['LeaveDuration'] ?? 1) : 1;
+        $LeaveBalance   = (!empty($data)) ? ($data['LeaveBalance'] ?? 0) : 0;
         $Reason         = (!empty($data)) ? ($data['Reason'] ?? '') : '';
         $Status         = (!empty($data)) ? ($data['Status'] ?? '') : '';
     } 
 
     $UserId         = old('UserId') ?? $UserId;
     $DocumentNumber = old('DocumentNumber') ?? $DocumentNumber;
-    $LeaveType      = old('LeaveType') ?? $LeaveType;
+    $LeaveTypeId      = old('LeaveType') ?? $LeaveTypeId;
     $StartDate      = old('StartDate') ?? $StartDate;
     $EndDate        = old('EndDate') ?? $EndDate;
     $LeaveDuration  = old('LeaveDuration') ?? $LeaveDuration;
@@ -38,7 +41,7 @@
         $method = "PUT";
         $action = route('leaveRequest.update', ['Id' => $data['Id']]);
         $button = '
-        <a href="/forms/leaveRequest" class="btn btn-secondary">Cancel</a>
+        <a href="'. route("leaveRequest") .'" class="btn btn-secondary">Cancel</a>
         <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
     } else if ($event == 'add') {
         $UserId = Auth::id();
@@ -46,7 +49,7 @@
         $method = "POST";
         $action = route('leaveRequest.save');
         $button = '
-        <a href="/forms/leaveRequest" class="btn btn-secondary">Cancel</a>
+        <a href="'. route("leaveRequest") .'" class="btn btn-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary btnSubmitForm">Save</button>';
     } else if (($pending || $Status == 2) && $UserId == Auth::id()) {
         $todo   = "revise";
@@ -110,8 +113,8 @@
                         @csrf
                         @method($method)
                         <input type="hidden" name="UserId" value="{{ $UserId }}">
-                        <input type="hidden" name="LeaveBalance" value="0">
-                        <input type="hidden" name="LeaveDuration" value="0">
+                        <input type="hidden" name="LeaveBalance" value="{{ $LeaveBalance ?? 0 }}">
+                        <input type="hidden" name="LeaveDuration" value="{{ $LeaveDuration ?? 1 }}">
     
                         @if ($errors->any())
                         <div class="alert alert-danger alert-dismissible fade show" role="alert"> 
@@ -144,10 +147,13 @@
                                 <div class="row my-3">
                                     <label for="LeaveType" class="col-sm-2">Leave Type <?= $requiredLabel ?></label>
                                     <div class="col-sm-10">
-                                        <select name="LeaveType" id="LeaveType" class="form-select" select2 required {{ $disabledField }}>
+                                        <select name="LeaveTypeId" id="LeaveTypeId" class="form-select" select2 required {{ $disabledField }}>
                                             <option value="" selected disabled>Select Leave Type</option>
-                                            <option value="Vacation" {{ $LeaveType == 'Vacation' ? 'selected' : '' }}>Vacation Leave</option>
-                                            <option value="Sick" {{ $LeaveType == 'Sick' ? 'selected' : '' }}>Sick Leave</option>
+
+                                            @foreach ($leaveTypes as $dt)
+                                            <option value="{{ $dt['Id'] }}" balance="{{ $dt['Balance'] ?? 0 }}" {{ $LeaveTypeId == $dt['Id'] ? 'selected' : '' }}>{{ $dt['Name'] }}</option>
+                                            @endforeach
+
                                         </select>
                                     </div>
                                 </div>
@@ -157,8 +163,8 @@
                                         <input type="date" class="form-control" id="StartDate" name="StartDate" placeholder="Start Date"
                                             required
                                             value="{{ $StartDate }}"
-                                            min="{{ $LeaveType == 'Vacation' ? date('Y-m-d', strtotime(now().' +14 days')) : null }}"
-                                            max="{{ $LeaveType == 'Sick' ? date('Y-m-d') : null }}"
+                                            min="{{ $LeaveType == 'Vacation Leave' ? date('Y-m-d', strtotime(now().' +14 days')) : null }}"
+                                            max="{{ $LeaveType == 'Sick Leave' ? date('Y-m-d') : null }}"
                                             onchange="let endDate = document.getElementById('EndDate');
                                             endDate.setAttribute('min', this.value);
                                             endDate.value = this.value"
@@ -171,7 +177,7 @@
                                         <input type="date" class="form-control" id="EndDate" name="EndDate" placeholder="End Date"
                                             required 
                                             value="{{ $EndDate }}"
-                                            min="{{ $LeaveType == 'Sick' ? $StartDate : date('Y-m-d') }}"
+                                            min="{{ $LeaveTypeId == 'Sick' ? $StartDate : date('Y-m-d') }}"
                                             {{ $disabledField }}>
                                     </div>
                                 </div>
@@ -288,15 +294,18 @@
 
 
         // ----- CHANGE LEAVE TYPE -----
-        $(document).on('change', `[name="LeaveType"]`, function() {
-            let leaveType = $(this).val();
+        $(document).on('change', `[name="LeaveTypeId"]`, function() {
+            let balance = $('option:selected', this).attr('balance');
+            let leaveType = $('option:selected', this).text()?.trim();
             let minDate = moment().format('YYYY-MM-DD');
             let maxDate = moment().format('YYYY-MM-DD');
 
-            if (leaveType == "Vacation") {
+            if (leaveType == "Vacation Leave") {
                 minDate = moment(minDate).add(14, 'days').format('YYYY-MM-DD');
                 maxDate = null;
-            } else if (leaveType == "Sick") {
+            } else if (leaveType == "Sick Leave") {
+                minDate = null;
+            } else {
                 minDate = null;
             }
 
@@ -305,6 +314,7 @@
                 .val(minDate)
                 .trigger('change');
             $(`[name="EndDate"]`).attr('max', maxDate);
+            $(`[name="LeaveBalance"]`).val(balance);
         })
         // ----- END CHANGE LEAVE TYPE -----
 
