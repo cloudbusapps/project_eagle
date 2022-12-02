@@ -8,54 +8,54 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Models\admin\Permission;
+use App\Models\admin\Designation;
+use App\Models\admin\Module;
 use App\Models\User;
+use Illuminate\Support\Str;
+use Auth;
 
 class PermissionController extends Controller
 {
     public function index() {
         $data = [
             'title' => 'Permission',
-            'data' => Permission::select('permissions.*', 'FirstName', 'LastName')
-                ->leftJoin('users AS u', 'permissions.UserId', 'u.Id')
-                ->orderBy('Name', 'ASC')
-                ->get()
+            'designations' => Designation::where('Status', 1)->get(),
         ];
-        return view('permissions.index', $data);
+        return view('admin.permissions.index', $data);
     }
+
+    public function edit($Id) {
+        $data = Permission::where('DesignationId', $Id)->get();
+        return response()->json($data, 200);
+    }
+
+    public function save(Request $request, $Id) {
+        $data = $request->data;
+        
+        foreach ($data as $index => $dt) {
+            $data[$index]['Id']          = Str::uuid();
+            $data[$index]['CreatedById'] = Auth::id();
+            $data[$index]['UpdatedById'] = Auth::id();
+        }
+
+        $delete = Permission::where('DesignationId', $Id)->delete();
+        $Permission = Permission::insert($data);
+        if ($Permission) {
+            return response()->json(['status' => 'success']);
+        }
+        return response()->json(['status' => 'failed']);
+    }
+
+
+
+
 
     public function form() {
         $data = [
             'title' => "New Permission",
             'employees' => User::where('IsAdmin', false)->where('Status', 1)->get()
         ];
-        return view('permissions.form', $data);
-    }
-
-    public function save(Request $request) {
-        $validator = $request->validate([
-            'Name' => ['required', 'string', 'max:255', 'unique:permissions'],
-        ]);
-        
-        $Name = $request->Name;
-        $Permission = new Permission;
-        $Permission->Name   = $request->Name;
-        $Permission->UserId = $request->UserId;
-        $Permission->Status = $request->Status;
-
-        if ($Permission->save()) {
-            return redirect()
-                ->route('permission')
-                ->with('success', "<b>{$Name}</b> successfully saved!");
-        } 
-    }
-
-    public function edit($Id) {
-        $data = [
-            'title' => "Edit Permission",
-            'data'  => Permission::find($Id),
-            'employees' => User::where('IsAdmin', false)->where('Status', 1)->get()
-        ];
-        return view('permissions.form', $data);
+        return view('admin.permissions.form', $data);
     }
 
     public function update(Request $request, $Id) {

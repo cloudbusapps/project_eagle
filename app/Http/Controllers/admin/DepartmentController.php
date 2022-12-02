@@ -20,7 +20,7 @@ class DepartmentController extends Controller
                 ->orderBy('Name', 'ASC')
                 ->get()
         ];
-        return view('departments.index', $data);
+        return view('admin.departments.index', $data);
     }
 
     public function form() {
@@ -28,7 +28,7 @@ class DepartmentController extends Controller
             'title' => "New Department",
             'employees' => User::where('IsAdmin', false)->where('Status', 1)->get()
         ];
-        return view('departments.form', $data);
+        return view('admin.departments.form', $data);
     }
 
     public function save(Request $request) {
@@ -55,7 +55,7 @@ class DepartmentController extends Controller
             'data'  => Department::find($Id),
             'employees' => User::where('IsAdmin', false)->where('Status', 1)->get()
         ];
-        return view('departments.form', $data);
+        return view('admin.departments.form', $data);
     }
 
     public function update(Request $request, $Id) {

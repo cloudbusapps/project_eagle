@@ -14,7 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('permissions', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('Id')->primary();
+            $table->uuid('DesignationId');
+            $table->bigInteger('ModuleId');
+            $table->integer('Read')->default(0);
+            $table->integer('Create')->default(0);
+            $table->integer('Edit')->default(0);
+            $table->integer('Delete')->default(0);
+            $table->uuid('CreatedById');
+            $table->uuid('UpdatedById');
             $table->timestamps();
         });
     }

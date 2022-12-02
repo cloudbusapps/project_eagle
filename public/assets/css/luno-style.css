@@ -31254,4 +31254,11 @@ label, div.label {
 .m-link span {
     font-size: 13px;
 }
+tr.active {
+    background-color: #4fb8c9;
+    border-color: #4fb8c9;
+}
+tr.active td {
+    color: white;
+}
 /* ----- END CUSTOM ----- */

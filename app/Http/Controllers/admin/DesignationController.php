@@ -22,7 +22,7 @@ class DesignationController extends Controller
                 ->orderBy('Name', 'ASC')
                 ->get()
         ];
-        return view('designations.index', $data);
+        return view('admin.designations.index', $data);
     }
 
     public function form() {
@@ -30,7 +30,7 @@ class DesignationController extends Controller
             'title' => "New Designation",
             'departments' => Department::where('Status', 1)->get()
         ];
-        return view('designations.form', $data);
+        return view('admin.designations.form', $data);
     }
 
     public function save(Request $request) {
@@ -66,7 +66,7 @@ class DesignationController extends Controller
             'departments' => Department::where('Status', 1)->get(),
             'data'  => Designation::find($Id)
         ];
-        return view('designations.form', $data);
+        return view('admin.designations.form', $data);
     }
 
     public function update(Request $request, $Id) {

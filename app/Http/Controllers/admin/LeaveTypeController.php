@@ -17,14 +17,14 @@ class LeaveTypeController extends Controller
             'title' => 'Leave Type',
             'data' => LeaveType::orderBy('Name', 'ASC')->get()
         ];
-        return view('leaveTypes.index', $data);
+        return view('admin.leaveTypes.index', $data);
     }
 
     public function form() {
         $data = [
             'title' => "New Leave Type",
         ];
-        return view('leaveTypes.form', $data);
+        return view('admin.leaveTypes.form', $data);
     }
 
     public function save(Request $request) {
@@ -49,7 +49,7 @@ class LeaveTypeController extends Controller
             'title' => "Edit Leave Type",
             'data'  => LeaveType::find($Id)
         ];
-        return view('leaveTypes.form', $data);
+        return view('admin.leaveTypes.form', $data);
     }
 
     public function update(Request $request, $Id) {
