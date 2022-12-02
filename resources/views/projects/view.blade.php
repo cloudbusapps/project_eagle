@@ -41,12 +41,15 @@
                                         aria-label="Close"></button>
                                 </div>
                             @endif
+                            @if (Auth::user()->IsAdmin)
                             <div class="text-end">
 
                                 <a href="{{ route('projects.addProject') }}" type="button" class="btn btn-outline-primary">
                                     <i class="bi bi-plus-lg"></i> New Project
                                 </a>
                             </div>
+                            @endif
+                          
 
 
                         </div>

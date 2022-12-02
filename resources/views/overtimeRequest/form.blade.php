@@ -24,7 +24,7 @@
                 '<a href="forms/overtimeRequest/delete/' .
                 $Id .
                 '" class="btn btn-danger btnDeleteForm">Delete</a>
-                                            <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
+                                                <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
         }
     
         $Agenda = !empty($OvertimeRequest) ? $OvertimeRequest['Agenda'] ?? '' : '';
@@ -142,13 +142,13 @@
                                 <div class="row mb-3">
                                     <label for="inputText" class="col-sm-2 label">Task <code>*</code></label>
                                     <div class="col-sm-10">
-                                        <select select2 name="UsersId" id="UsersIdSelect" class="form-select"
+                                        <select required select2 name="UsersId" id="UsersIdSelect" class="form-select"
                                             id="floatingSelect">
                                             <option value="" selected disabled>Select Task</option>
                                             @if (count($data) > 0)
                                                 @foreach ($data as $task)
-                                                    <option value="{{ $users->Id }}">
-                                                        {{ $users->Title . ' ' . $users->Title }}
+                                                    <option value="{{ $task->Id }}">
+                                                        {{ $task->Title . ' ' . $task->Title }}
                                                     </option>
                                                 @endforeach
                                             @endif

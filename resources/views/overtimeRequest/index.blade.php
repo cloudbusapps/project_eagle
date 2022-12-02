@@ -85,18 +85,7 @@
                                 @foreach ($data as $index => $data)
                                     <?php
                                     $hoursRendered = getHours($data->TimeIn, $data->TimeOut);
-                                    $status = $data->Status;
-                                    switch ($status) {
-                                        case 1:
-                                            $statusDisplay = '<span class="badge rounded-pill bg-success">Approved</span>';
-                                            break;
-                                        case 2:
-                                            $statusDisplay = '<span class="badge rounded-pill bg-danger">Rejected</span>';
-                                            break;
-                                        default:
-                                            $statusDisplay = '<span class="badge rounded-pill bg-secondary">Pending</span>';
-                                            break;
-                                    }
+                                    $status = getStatusDisplay($data->Status);
                                     
                                     ?>
 
@@ -113,7 +102,7 @@
                                         <td>{{ date('g:i: a', strtotime($data->TimeOut)) }}</td>
                                         <td>{{ $hoursRendered }}
                                         </td>
-                                        <td><?= $statusDisplay ?>
+                                        <td><?= $status ?>
                                         </td>
                                     </tr>
                                 @endforeach

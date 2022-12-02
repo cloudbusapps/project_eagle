@@ -3,7 +3,7 @@
 @section('content')
     <?php
     $Title = $Description = $StartDate = $EndDate = $ActualStartDate = $ActualEndDate = $todo = '';
-    $Duration= $ActualTaskDuration = 0;
+    $Duration = $ActualTaskDuration = '';
     $isEditable = '';
     if ($type === 'insert') {
         $todo = 'insert';
@@ -21,15 +21,15 @@
             '<a href="/projects/delete/task/' .
             $Id .
             '" class="btn btn-danger btnDeleteForm">Delete</a>
-                                                                                        <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
+                                  <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
         $Title = !empty($taskData) ? $taskData['Title'] ?? '' : '';
         $Description = !empty($taskData) ? $taskData['Description'] ?? '' : '';
         $StartDate = !empty($taskData) ? $taskData['StartDate'] ?? '' : '';
         $EndDate = !empty($taskData) ? $taskData['EndDate'] ?? '' : '';
         $ActualStartDate = !empty($taskData) ? $taskData['ActualStartDate'] ?? '' : '';
         $ActualEndDate = !empty($taskData) ? $taskData['ActualEndDate'] ?? '' : '';
-        $Duration = !empty($taskData) ? (int) $taskData['Duration'] / 60 / 60 ?? '' : '';
-        $ActualTaskDuration = !empty($taskData) ? (int) $taskData['TimeCompleted'] / 60 / 60 ?? '' : '';
+        $Duration = !empty($taskData) ? (!empty($taskData['Duration']) ? (int) $taskData['Duration'] / 60 / 60 : '') : '';
+        $ActualTaskDuration = !empty($taskData) ? (!empty($taskData['TimeCompleted']) ? (int) $taskData['TimeCompleted'] / 60 / 60 : '') : '';
         $UserId = !empty($taskData) ? $taskData['UserId'] ?? '' : '';
         $status = !empty($taskData) ? $taskData['Status'] ?? '' : '';
         $isEditable = $UserId == Auth::id() ? '' : 'readonly';
@@ -138,7 +138,8 @@
                                     <div class="col-sm-10">
                                         <input {{ $isEditable }} step=".01"
                                             value="{{ old('TaskDuration') ?? $Duration }}" name="TaskDuration"
-                                            id="TaskDuration" type="number" min="0" class="form-control">
+                                            id="TaskDuration" type="number" min="0" class="form-control"
+                                            placeholder="0">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -163,14 +164,15 @@
                                     <label for="inputTime" class="col-sm-2 label">Actual Hours</label>
                                     <div class="col-sm-10">
                                         <input {{ $isEditable }} step=".01"
-                                            value="{{ old('ActualTaskDuration') ?? $ActualTaskDuration }}" name="ActualTaskDuration"
-                                            id="ActualTaskDuration" type="number" min="0" class="form-control">
+                                            value="{{ old('ActualTaskDuration') ?? $ActualTaskDuration }}"
+                                            name="ActualTaskDuration" id="ActualTaskDuration" type="number"
+                                            min="0" class="form-control" placeholder="0">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <label for="inputText" class="col-sm-2 label">User Assigned</label>
                                     <div class="col-sm-10">
-                                        <select {{ $isEditable }} class="form-select" name="TaskUserAssigned"
+                                        <select select2 {{ $isEditable }} class="form-select" name="TaskUserAssigned"
                                             id="TaskUserAssigned" aria-label="State">
                                             <option value="" selected disabled>Select User</option>
                                             @foreach ($userList as $user)
@@ -203,8 +205,8 @@
                             <div class="form-footer text-end">
                                 <a href="{{ route('projects.userStoryDetails', ['Id' => $UserStoryId]) }}"
                                     class="btn btn-secondary">Cancel</a>
-                                @if ($UserId == Auth::id() ||$UserId==='' )
-                                <?= $button ?>
+                                @if ($UserId == Auth::id() || $UserId === '')
+                                    <?= $button ?>
                                 @endif
                             </div>
 

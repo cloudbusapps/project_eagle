@@ -2,6 +2,8 @@
 
 @section('content')
     <?php
+
+
     $Name = $Description = $KickoffDate = $ClosedDate = $todo = '';
     
     if ($type === 'insert') {
@@ -109,7 +111,7 @@
                                         <label class="col-sm-2 col-form-label label" for="floatingTextarea">Project Manager
                                             <code>*</code></label>
                                         <div class="col-sm-10">
-                                            <select name="ProjectManagerId" id="ProjectManagerId" class="form-select"
+                                            <select select2 name="ProjectManagerId" id="ProjectManagerId" class="form-select"
                                                 id="floatingSelect" aria-label="State">
                                                 <option value="" selected disabled>Select Project Manager</option>
                                                 @foreach ($userList as $user)
