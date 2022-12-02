@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use App\Models\Designation;
+use App\Models\admin\Designation;
 
-use App\Models\Department;
+use App\Models\admin\Department;
 use App\Models\User;
 
 class DesignationController extends Controller

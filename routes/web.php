@@ -226,6 +226,16 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
             Route::get('/delete/{Id}', [LeaveTypeController::class, 'delete'])->name('leaveType.delete');
         });
 
+        // PERMISSION
+        Route::prefix('permission')->group(function() {
+            Route::get('/', [LeaveTypeController::class, 'index'])->name('permission');
+            Route::get('/add', [LeaveTypeController::class, 'form'])->name('permission.add');
+            Route::post('/save', [LeaveTypeController::class, 'save'])->name('permission.save');
+            Route::get('/edit/{Id}', [LeaveTypeController::class, 'edit'])->name('permission.edit');
+            Route::put('/edit/{Id}/update', [LeaveTypeController::class, 'update'])->name('permission.update');
+            Route::get('/delete/{Id}', [LeaveTypeController::class, 'delete'])->name('permission.delete');
+        });
+
         // APPROVAL
         Route::prefix('moduleApproval')->group(function() {
             Route::get('/', [ModuleApprovalController::class, 'index'])->name('moduleApproval');

@@ -1,5 +1,5 @@
 <?php 
-  use App\Models\Designation;
+  use App\Models\admin\Designation;
 
   $groupPrefix = Request::segment(1);
   $subModule   = Request::segment(2);
@@ -95,6 +95,10 @@
             <li>
               <a class="ms-link {{ 'leaveType' == $setupModule ? 'active' : '' }}" 
                 href="{{ route('leaveType') }}">Leave Type</a>
+            </li>
+            <li>
+              <a class="ms-link {{ 'permission' == $setupModule ? 'active' : '' }}" 
+                href="{{ route('permission') }}">Permission</a>
             </li>
             <li>
               <a class="ms-link {{ 'moduleApproval' == $setupModule ? 'active' : '' }}" 

@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-use App\Models\Module;
+use App\Models\admin\Module;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -132,7 +132,7 @@ class ModuleSeeder extends Seeder
                 'RouteName'     => null,
                 'Prefix'        => 'projectUtilization',
                 'Status'        => 1,
-                'SortOrder'     => 2,
+                'SortOrder'     => 3,
             ],
             [
                 'id'            => 9,
@@ -218,6 +218,18 @@ class ModuleSeeder extends Seeder
                 'Status'        => 1,
                 'SortOrder'     => 1,
             ],
+            [
+                'id'            => 18,
+                'CategoryId'    => 2,
+                'ParentId'      => null,
+                'Title'         => 'Customer',
+                'WithApproval'  => false,
+                'Icon'          => 'default.png',
+                'RouteName'     => null,
+                'Prefix'        => 'customer',
+                'Status'        => 1,
+                'SortOrder'     => 2,
+            ],
             // ----- END UTILIZATION -----
 
 
@@ -247,154 +259,7 @@ class ModuleSeeder extends Seeder
                 'SortOrder'     => 2,
             ],
             // ----- END REPORTS AND DASHBOARDS -----
-
-            // LATEST ID USED IS 18
-
-
-
-            // [
-            //     'id'        => 2,
-            //     'ParentId'  => null,
-            //     'Title'     => 'Employee Directory',
-            //     'WithApproval' => false,
-            //     'Icon'      => 'employeeDirectory.png',
-            //     'RouteName' => 'employeeDirectory',
-            //     'Prefix'    => 'employeeDirectory',
-            //     'Status'    => 1,
-            //     'SortOrder' => 2,
-            //     'CreatedById' => $UserId,
-            //     'UpdatedById' => $UserId
-            // ],
-            // [
-            //     'id'        => 3,
-            //     'ParentId'  => null,
-            //     'Title'     => 'Forms',
-            //     'WithApproval' => false,
-            //     'Icon'      => 'form.png',
-            //     'RouteName' => null,
-            //     'Prefix'    => 'forms',
-            //     'Status'    => 1,
-            //     'SortOrder' => 3,
-            //     'CreatedById' => $UserId,
-            //     'UpdatedById' => $UserId
-            // ],
-            // [
-            //     'id'        => 4,
-            //     'ParentId'  => 3,
-            //     'Title'     => 'Leave Request',
-            //     'WithApproval' => true,
-            //     'Icon'      => 'default.png',
-            //     'RouteName' => 'leaveRequest',
-            //     'Prefix'    => 'leaveRequest',
-            //     'Status'    => 1,
-            //     'SortOrder' => 1,
-            //     'CreatedById' => $UserId,
-            //     'UpdatedById' => $UserId
-            // ],
-            // [
-            //     'id'        => 5,
-            //     'ParentId'  => 3,
-            //     'Title'     => 'Overtime Request',
-            //     'WithApproval' => true,
-            //     'Icon'      => 'default.png',
-            //     'RouteName' => 'overtimeRequest',
-            //     'Prefix'    => 'overtimeRequest',
-            //     'Status'    => 1,
-            //     'SortOrder' => 2,
-            //     'CreatedById' => $UserId,
-            //     'UpdatedById' => $UserId
-            // ],
-            // [
-            //     'id'        => 6,
-            //     'ParentId'  => null,
-            //     'Title'     => 'Onboarding',
-            //     'WithApproval' => false,
-            //     'Icon'      => 'onboarding.png',
-            //     'RouteName' => null,
-            //     'Prefix'    => 'onboarding',
-            //     'Status'    => 1,
-            //     'SortOrder' => 4,
-            //     'CreatedById' => $UserId,
-            //     'UpdatedById' => $UserId
-            // ],
-            // [
-            //     'id'        => 7,
-            //     'ParentId'  => null,
-            //     'Title'     => 'List of KPIs',
-            //     'WithApproval' => false,
-            //     'Icon'      => 'kpi.png',
-            //     'RouteName' => null,
-            //     'Prefix'    => 'kpi',
-            //     'Status'    => 1,
-            //     'SortOrder' => 5,
-            //     'CreatedById' => $UserId,
-            //     'UpdatedById' => $UserId
-            // ],
-            // [
-            //     'id'        => 8,
-            //     'ParentId'  => null,
-            //     'Title'     => 'Project',
-            //     'WithApproval' => false,
-            //     'Icon'      => 'project.png',
-            //     'RouteName' => null,
-            //     'Prefix'    => 'projects',
-            //     'Status'    => 1,
-            //     'SortOrder' => 6,
-            //     'CreatedById' => $UserId,
-            //     'UpdatedById' => $UserId
-            // ],
-            // [
-            //     'id'        => 9,
-            //     'ParentId'  => 8,
-            //     'Title'     => 'List of Project',
-            //     'WithApproval' => false,
-            //     'Icon'      => 'default.png',
-            //     'RouteName' => 'projects.view',
-            //     'Prefix'    => 'projectView',
-            //     'Status'    => 1,
-            //     'SortOrder' => 1,
-            //     'CreatedById' => $UserId,
-            //     'UpdatedById' => $UserId
-            // ],
-            // [
-            //     'id'        => 10,
-            //     'ParentId'  => null,
-            //     'Title'     => 'Training',
-            //     'WithApproval' => false,
-            //     'Icon'      => 'training.png',
-            //     'RouteName' => null,
-            //     'Prefix'    => 'training',
-            //     'Status'    => 1,
-            //     'SortOrder' => 7,
-            //     'CreatedById' => $UserId,
-            //     'UpdatedById' => $UserId
-            // ],
-            // [
-            //     'id'        => 11,
-            //     'ParentId'  => null,
-            //     'Title'     => 'Certification',
-            //     'WithApproval' => false,
-            //     'Icon'      => 'certification.png',
-            //     'RouteName' => null,
-            //     'Prefix'    => 'certification',
-            //     'Status'    => 1,
-            //     'SortOrder' => 8,
-            //     'CreatedById' => $UserId,
-            //     'UpdatedById' => $UserId
-            // ],
-            // [
-            //     'id'        => 12,
-            //     'ParentId'  => null,
-            //     'Title'     => 'Reports',
-            //     'WithApproval' => false,
-            //     'Icon'      => 'report.png',
-            //     'RouteName' => null,
-            //     'Prefix'    => 'report',
-            //     'Status'    => 1,
-            //     'SortOrder' => 9,
-            //     'CreatedById' => $UserId,
-            //     'UpdatedById' => $UserId
-            // ],
+            
         ];
 
         Module::insert($data);

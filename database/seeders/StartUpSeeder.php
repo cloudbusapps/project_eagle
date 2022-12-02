@@ -6,11 +6,11 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 use Illuminate\Support\Str;
-use App\Models\Department;
-use App\Models\Designation;
+use App\Models\admin\Department;
+use App\Models\admin\Designation;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Module;
+use App\Models\admin\Module;
 use DB;
 
 class StartUpSeeder extends Seeder

@@ -13,13 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('departments', function (Blueprint $table) {
-            $table->uuid('Id');
-            $table->uuid('UserId')->nullable();
-            $table->string('Name')->unique();
-            $table->integer('Status')->default(1);
-            $table->uuid('CreatedById')->nullable();
-            $table->uuid('UpdatedById')->nullable();
+        Schema::create('permissions', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
         });
     }
@@ -31,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('departments');
+        Schema::dropIfExists('permissions');
     }
 };

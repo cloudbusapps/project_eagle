@@ -1,29 +1,27 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Support\Str;
-use Auth;
 use function PHPUnit\Framework\isNull;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Models\Activity;
+use Auth;
 
-class LeaveType extends Model
+class Designation extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory;
 
+    protected $table = 'designations';
     protected $primaryKey = 'Id';
     protected $KeyType = 'string';
     public $incrementing = false;
 
     protected $fillable = [
-        'Id',
+        'DepartmentId',
         'Name',
-        'Status',
+        'Status'
     ];
 
     protected static function boot() {
@@ -39,18 +37,4 @@ class LeaveType extends Model
             }
         });
     } 
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()->logFillable();
-    }
-
-    public function tapActivity(Activity $activity, string $eventName)
-    {
-        if (!empty($activity->causer)) {
-            $Name = $activity->subject->Name;
-            $FullName = $activity->causer->FirstName . ' ' . $activity->causer->LastName;
-            $activity->description = "{$FullName} {$eventName} leave type <b>{$Name}</b>";
-        }
-    }
 }

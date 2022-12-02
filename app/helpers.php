@@ -1,6 +1,6 @@
 <?php
 
-    use App\Models\Module;
+    use App\Models\admin\Module;
 
     function formatAmount($value = 0, $prefix = false) {
         return ($prefix ? "₱ " : "") . number_format($value, 2);

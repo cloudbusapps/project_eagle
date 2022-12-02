@@ -12,9 +12,9 @@ use Auth;
 use Illuminate\Support\Str;
 use App\Mail\LeaveRequestMail;
 use Illuminate\Support\Facades\Mail;
-use App\Models\ModuleApproval;
+use App\Models\admin\ModuleApproval;
 use App\Models\ModuleFormApprover;
-use App\Models\LeaveType;
+use App\Models\admin\LeaveType;
 
 class LeaveRequestController extends Controller
 {
