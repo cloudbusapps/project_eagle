@@ -120,7 +120,7 @@ class ModuleSeeder extends Seeder
                 'RouteName'     => null,
                 'Prefix'        => 'projectUtilization',
                 'Status'        => 1,
-                'SortOrder'     => 2,
+                'SortOrder'     => 3,
             ],
             [
                 'id'            => 9,
@@ -205,6 +205,18 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'projectDashboard',
                 'Status'        => 1,
                 'SortOrder'     => 1,
+            ],
+            [
+                'id'            => 18,
+                'CategoryId'    => 2,
+                'ParentId'      => null,
+                'Title'         => 'Customer',
+                'WithApproval'  => false,
+                'Icon'          => 'default.png',
+                'RouteName'     => null,
+                'Prefix'        => 'customer',
+                'Status'        => 1,
+                'SortOrder'     => 2,
             ],
             // ----- END UTILIZATION -----
 
