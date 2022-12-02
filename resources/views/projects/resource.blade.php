@@ -175,9 +175,9 @@
 
                 if (users.indexOf(selectedVal.val()) != -1) {
                     $('#UsersIdSelect').addClass('is-invalid');
-                    $('#UsersIdSelect').closest('.col-sm-9').find('.invalid-feedback').text(
-                        `User already picked`);
-                    return ""
+                    // $('#UsersIdSelect').closest('.col-sm-9').find('.invalid-feedback').text(
+                    //     `User already picked`);
+                    return showToast('danger', 'User already picked!');
                 }
                 $('#UsersIdSelect').removeClass('is-invalid');
                 $('#UsersIdSelect').closest('.col-sm-9').find('.invalid-feedback').text(``);

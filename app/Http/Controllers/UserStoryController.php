@@ -23,8 +23,9 @@ class UserStoryController extends Controller
             ->leftJoin('users', 'users.Id', '=', 'tasks.UserId')
             ->get();
 
-        $userStory = UserStory::select('user_story.*', 'users.FirstName', 'users.LastName')
+        $userStory = UserStory::select('user_story.*', 'users.FirstName', 'users.LastName', 'projects.ProjectManagerId')
             ->where('user_story.Id', $Id)
+            ->leftJoin('projects', 'projects.Id', '=', 'user_story.ProjectId')
             ->leftJoin('users', 'users.Id', '=', 'user_story.CreatedById')
             ->first();
         $data = [

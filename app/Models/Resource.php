@@ -25,6 +25,10 @@ class Resource extends Model
 
     ];
 
+    public static function projects(){
+        // return $this->";
+    }
+
 
     protected static function boot()
     {

@@ -16,10 +16,24 @@ class ProjectController extends Controller
 {
     function view()
     {
-        $projectData = Project::all();
+        $userData = Auth::user();
+
+        if ($userData->IsAdmin) {
+            $projectData = Project::all();
+        } else {
+            $projectData = Resource::select('projects.*')
+                ->where('resources.UserId', Auth::id())
+                ->leftJoin('projects', 'projects.Id', '=', 'resources.ProjectId')
+                ->get();
+        }
+
+
+
+
         $data = [
             'title'       => 'List of Project',
-            'projectData' => $projectData = Project::all()
+            'projectData' => $projectData,
+            'isAdmin' => $userData
         ];
 
         return view('projects.view', $data);
@@ -296,8 +310,8 @@ class ProjectController extends Controller
     public function addResource($Id)
     {
 
-        $userList = User::where('IsAdmin',false)
-        ->get();
+        $userList = User::where('IsAdmin', false)
+            ->get();
         $savedUser = Resource::select('users.FirstName', 'users.LastName', 'users.Title', 'users.Id')
             ->where('resources.ProjectId', $Id)
             ->leftJoin('users', 'users.Id', '=', 'resources.UserId')

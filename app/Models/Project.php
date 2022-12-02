@@ -41,6 +41,10 @@ class Project extends Model
         // below will be translated to select * from users where users.Id = Project.CreatedById
         return $this->belongsTo(User::class, 'CreatedById', 'Id');
     }
+    public function tasks()
+    {
+        return $this->hasManyThrough(Task::class, UserStory::class, 'ProjectId', 'UserStoryId','Id','Id');
+    }
 
 
     protected static function boot()
