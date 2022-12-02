@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-    $Name = $todo = null;
+    $Name = $UserId = $todo = null;
     $Status = 1;
 
     if (isset($data) && !empty($data)) {
@@ -12,8 +12,9 @@
         $action = route('department.update', ['Id' => $data['Id']]);
         $button = '<a href="/admin/setup/department/delete/'.$data['Id'].'" class="btn btn-danger btnDeleteForm">Delete</a>
         <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
-        $Name     = (!empty($data)) ? ($data['Name'] ?? '') : '';
-        $Status    = (!empty($data)) ? ($data['Status'] ?? '') : '';
+        $Name   = (!empty($data)) ? ($data['Name'] ?? '') : '';
+        $UserId = (!empty($data)) ? ($data['UserId'] ?? '') : '';
+        $Status = (!empty($data)) ? ($data['Status'] ?? '') : '';
     } else {
         $todo   = "insert";
         $method = "POST";
@@ -63,10 +64,23 @@
                         <div class="card">
                             <div class="card-body pt-3">
                                 <div class="row my-3">
-                                    <label for="Name" class="col-sm-2">Department Name <code>*</code></label>
+                                    <label for="Name" class="col-sm-2">Department <code>*</code></label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="Name" name="Name" placeholder="Department Name"
                                             value="{{ old('Name') ?? $Name }}" required>
+                                    </div>
+                                </div>
+                                <div class="row my-3">
+                                    <label for="UserId" class="col-sm-2">Head</label>
+                                    <div class="col-sm-10">
+                                        <select name="UserId" id="UserId" class="form-select" select2>
+                                            <option value="" selected>Select Head</option>
+
+                                            @foreach ($employees as $dt)
+                                            <option value="{{ $dt->Id }}" {{ $dt->Id == $UserId ? 'selected' : '' }}>{{ $dt->FirstName.' '.$dt->LastName }}</option>
+                                            @endforeach
+
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="row my-3">

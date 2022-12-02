@@ -15,7 +15,10 @@ class DepartmentController extends Controller
     public function index() {
         $data = [
             'title' => 'Department',
-            'data' => Department::orderBy('Name', 'ASC')->get()
+            'data' => Department::select('departments.*', 'FirstName', 'LastName')
+                ->leftJoin('users AS u', 'departments.UserId', 'u.Id')
+                ->orderBy('Name', 'ASC')
+                ->get()
         ];
         return view('departments.index', $data);
     }
@@ -23,6 +26,7 @@ class DepartmentController extends Controller
     public function form() {
         $data = [
             'title' => "New Department",
+            'employees' => User::where('IsAdmin', false)->where('Status', 1)->get()
         ];
         return view('departments.form', $data);
     }
@@ -35,6 +39,7 @@ class DepartmentController extends Controller
         $Name = $request->Name;
         $Department = new Department;
         $Department->Name   = $request->Name;
+        $Department->UserId = $request->UserId;
         $Department->Status = $request->Status;
 
         if ($Department->save()) {
@@ -47,7 +52,8 @@ class DepartmentController extends Controller
     public function edit($Id) {
         $data = [
             'title' => "Edit Department",
-            'data'  => Department::find($Id)
+            'data'  => Department::find($Id),
+            'employees' => User::where('IsAdmin', false)->where('Status', 1)->get()
         ];
         return view('departments.form', $data);
     }
@@ -63,6 +69,7 @@ class DepartmentController extends Controller
         $Name = $request->Name;
         $Department = Department::find($Id);
         $Department->Name   = $request->Name;
+        $Department->UserId = $request->UserId;
         $Department->Status = $request->Status;
 
         if ($request->Status == 0 && $this->isActive($Id)) {

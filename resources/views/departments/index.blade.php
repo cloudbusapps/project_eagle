@@ -49,6 +49,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>Department</th>
+                                <th>Head</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -67,6 +68,7 @@
                                         {{ $dt->Name }}
                                     </a>
                                 </td>
+                                <td>{{ $dt->UserId ? $dt->FirstName.' '.$dt->LastName : '-' }}</td>
                                 <td><?= $status ?></td>
                             </tr>
                         @endforeach
@@ -97,7 +99,8 @@
                 columnDefs: [
                     { targets: 0,  width: 10  },
                     { targets: 1,  width: 150 },
-                    { targets: 2,  width: 100 },
+                    { targets: 2,  width: 150 },
+                    { targets: 3,  width: 100 },
                 ],
             });
         // ----- END DATATABLES -----
