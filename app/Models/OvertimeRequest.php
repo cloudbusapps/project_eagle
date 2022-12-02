@@ -33,8 +33,8 @@ class OvertimeRequest extends Model
         'TimeIn',
         'TimeOut',
         'Reason',
-        'Created_By_Id',
-        'Updated_By_Id',
+        'CreatedById',
+        'UpdatedById',
 
     ];
 

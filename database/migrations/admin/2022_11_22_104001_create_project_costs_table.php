@@ -17,8 +17,8 @@ return new class extends Migration
             $table->uuid('Id')->primary();
             $table->uuid('ProjectId');
             $table->decimal('Budget', 15, 2);
-            $table->uuid('Created_By_Id');
-            $table->uuid('Updated_By_Id');
+            $table->uuid('CreatedById');
+            $table->uuid('UpdatedById');
             $table->timestamps();
         });
     }

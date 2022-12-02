@@ -29,8 +29,8 @@ class Project extends Model
         'KickoffDate',
         'ClosedDate',
         'ProjectManager',
-        'Created_By_Id',
-        'Updated_By_Id',
+        'CreatedById',
+        'UpdatedById',
 
     ];
 
@@ -38,8 +38,8 @@ class Project extends Model
     {
 
         // third param is the column of the first param, second param is the column of the current model
-        // below will be translated to select * from users where users.Id = Project.Created_By_Id
-        return $this->belongsTo(User::class, 'Created_By_Id', 'Id');
+        // below will be translated to select * from users where users.Id = Project.CreatedById
+        return $this->belongsTo(User::class, 'CreatedById', 'Id');
     }
     public function tasks()
     {

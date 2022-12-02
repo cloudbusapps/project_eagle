@@ -25,8 +25,8 @@ return new class extends Migration
             $table->string('Reason')->nullable(true);
             $table->integer('Status')->default(0);
             $table->json('ApproverId')->nullable(true);
-            $table->uuid('Created_By_Id');
-            $table->uuid('Updated_By_Id')->nullable(true);
+            $table->uuid('CreatedById');
+            $table->uuid('UpdatedById')->nullable(true);
             $table->timestamps();
 
             $table->foreign('UserId')->references('Id')->on('users')->onDelete('cascade');

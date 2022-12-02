@@ -22,8 +22,8 @@ class ModuleApproval extends Model
         parent::boot();
 
         static::creating(function($model) {
-            $model->Created_By_Id = Auth::id() ?? null;
-            $model->Updated_By_Id = Auth::id() ?? null;
+            $model->CreatedById = Auth::id() ?? null;
+            $model->UpdatedById = Auth::id() ?? null;
         });
     } 
 }

@@ -27,8 +27,8 @@ class Task extends Model
         'EndDate',
         'UserId',
         'Status',
-        'Created_By_Id',
-        'Updated_By_Id',
+        'CreatedById',
+        'UpdatedById',
 
     ];
 

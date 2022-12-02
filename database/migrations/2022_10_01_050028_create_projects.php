@@ -23,12 +23,12 @@ return new class extends Migration
 
             // will change it to ProjectManagerID if needed
             $table->uuid('ProjectManagerId')->nullable(true);
-            $table->uuid('Created_By_Id')->nullable(false);
-            $table->uuid('Updated_By_Id')->nullable(true);
+            $table->uuid('CreatedById')->nullable(false);
+            $table->uuid('UpdatedById')->nullable(true);
             $table->timestamps();
 
-            $table->foreign('Created_By_Id')->references('Id')->on('users');
-            $table->foreign('Updated_By_Id')->references('Id')->on('users');
+            $table->foreign('CreatedById')->references('Id')->on('users');
+            $table->foreign('UpdatedById')->references('Id')->on('users');
         });
     }
 

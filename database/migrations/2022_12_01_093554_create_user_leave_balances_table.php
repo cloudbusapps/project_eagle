@@ -19,8 +19,8 @@ return new class extends Migration
             $table->uuid('LeaveTypeId');
             $table->decimal('Balance', 10, 2)->default(0);
             $table->decimal('Accumulated', 10, 2)->default(0);
-            $table->uuid('Created_By_Id')->nullable();
-            $table->uuid('Updated_By_Id')->nullable();
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
         });
     }

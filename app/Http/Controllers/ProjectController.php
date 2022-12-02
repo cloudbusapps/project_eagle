@@ -132,7 +132,7 @@ class ProjectController extends Controller
         $project->KickoffDate      = $request->ProjectKickoffDate;
         $project->ClosedDate       = $request->ProjectClosedDate;
         $project->ProjectManagerId = $request->ProjectManagerId;
-        $project->Updated_By_Id    = Auth::id();
+        $project->UpdatedById    = Auth::id();
         $update = $project->update();
 
 
@@ -247,7 +247,7 @@ class ProjectController extends Controller
         $userStory->Admin_Id      = $sessionId;
 
 
-        $userStory->Created_By_Id      = $sessionId;
+        $userStory->CreatedById      = $sessionId;
         $userStory->ProjectId      = $Id;
 
 
@@ -271,7 +271,7 @@ class ProjectController extends Controller
         $userStory->EndDate         = $request->UserStoryEndDate;
         $userStory->ActualStartDate = $request->UserStoryActualStartDate;
         $userStory->ActualEndDate  = $request->UserStoryActualEndDate;
-        $userStory->Updated_By_Id   = Auth::id();
+        $userStory->UpdatedById   = Auth::id();
         $update = $userStory->update();
 
 

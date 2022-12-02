@@ -26,7 +26,8 @@ class StartUpSeeder extends Seeder
         $DesignationId = Str::uuid();
         $UserId        = Str::uuid();
 
-        $CloudDepartmentId = Str::uuid();
+        $CloudDepartmentId = config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION');
+        $TCDepartmentId    = config('constant.ID.DEPARTMENTS.TECHNOLOGY_CONSULTING');
         $TCDesignationId   = Str::uuid();
         $FCDesignationId   = Str::uuid();
         $GMDesignationId   = Str::uuid();
@@ -41,6 +42,11 @@ class StartUpSeeder extends Seeder
             [
                 'Id'     => $CloudDepartmentId,
                 'Name'   => 'Cloud Business Applications',
+                'Status' => 1
+            ],
+            [
+                'Id'     => $TCDepartmentId,
+                'Name'   => 'Technology Consulting',
                 'Status' => 1
             ]
         ]);
@@ -104,7 +110,7 @@ class StartUpSeeder extends Seeder
             ],
             [
                 'Id'                => Str::uuid(),
-                'EmployeeNumber'    => 'EPLDT-000002',
+                'EmployeeNumber'    => 'EPLDT-000004',
                 'FirstName'         => 'Arjay',
                 'LastName'          => 'Diangzon',
                 'Gender'            => 'Male',
@@ -121,7 +127,7 @@ class StartUpSeeder extends Seeder
             ],
             [
                 'Id'                => Str::uuid(),
-                'EmployeeNumber'    => 'EPLDT-000003',
+                'EmployeeNumber'    => 'EPLDT-000002',
                 'FirstName'         => 'Monica',
                 'LastName'          => 'Borje',
                 'Gender'            => 'Female',
@@ -138,7 +144,7 @@ class StartUpSeeder extends Seeder
             ],
             [
                 'Id'                => Str::uuid(),
-                'EmployeeNumber'    => 'EPLDT-000004',
+                'EmployeeNumber'    => 'EPLDT-000003',
                 'FirstName'         => 'Alvin',
                 'LastName'          => 'Agato',
                 'Gender'            => 'Male',
@@ -150,6 +156,23 @@ class StartUpSeeder extends Seeder
                 'email'             => 'alvinagato@epldt.com',
                 'email_verified_at' => now(),
                 'password'          => Hash::make('alvinagato'),
+                'IsAdmin'           => false,
+                'Status'            => 1,
+            ],
+            [
+                'Id'                => Str::uuid(),
+                'EmployeeNumber'    => 'EPLDT-000005',
+                'FirstName'         => 'Hashim',
+                'LastName'          => 'Mascara',
+                'Gender'            => 'Male',
+                'Address'           => 'Makati City, Philippines',
+                'ContactNumber'     => fake()->phoneNumber(),
+                'DepartmentId'      => $CloudDepartmentId,
+                'DesignationId'     => $TCDesignationId,
+                'About'             => fake()->paragraph(3),
+                'email'             => 'hashimmascara@epldt.com',
+                'email_verified_at' => now(),
+                'password'          => Hash::make('hashimmascara'),
                 'IsAdmin'           => false,
                 'Status'            => 1,
             ],
@@ -168,15 +191,15 @@ class StartUpSeeder extends Seeder
                 'Id'            => Str::uuid(),
                 'Name'          => 'Vacation Leave',
                 'Status'        => 1,
-                'Created_By_Id' => $UserId,
-                'Updated_By_Id' => $UserId,
+                'CreatedById' => $UserId,
+                'UpdatedById' => $UserId,
             ],
             [
                 'Id'            => Str::uuid(),
                 'Name'          => 'Sick Leave',
                 'Status'        => 1,
-                'Created_By_Id' => $UserId,
-                'Updated_By_Id' => $UserId,
+                'CreatedById' => $UserId,
+                'UpdatedById' => $UserId,
             ],
         ]);
         // ----- END LEAVE TYPE -----

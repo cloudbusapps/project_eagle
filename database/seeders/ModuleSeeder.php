@@ -249,8 +249,8 @@ class ModuleSeeder extends Seeder
             //     'Prefix'    => 'employeeDirectory',
             //     'Status'    => 1,
             //     'SortOrder' => 2,
-            //     'Created_By_Id' => $UserId,
-            //     'Updated_By_Id' => $UserId
+            //     'CreatedById' => $UserId,
+            //     'UpdatedById' => $UserId
             // ],
             // [
             //     'id'        => 3,
@@ -262,8 +262,8 @@ class ModuleSeeder extends Seeder
             //     'Prefix'    => 'forms',
             //     'Status'    => 1,
             //     'SortOrder' => 3,
-            //     'Created_By_Id' => $UserId,
-            //     'Updated_By_Id' => $UserId
+            //     'CreatedById' => $UserId,
+            //     'UpdatedById' => $UserId
             // ],
             // [
             //     'id'        => 4,
@@ -275,8 +275,8 @@ class ModuleSeeder extends Seeder
             //     'Prefix'    => 'leaveRequest',
             //     'Status'    => 1,
             //     'SortOrder' => 1,
-            //     'Created_By_Id' => $UserId,
-            //     'Updated_By_Id' => $UserId
+            //     'CreatedById' => $UserId,
+            //     'UpdatedById' => $UserId
             // ],
             // [
             //     'id'        => 5,
@@ -288,8 +288,8 @@ class ModuleSeeder extends Seeder
             //     'Prefix'    => 'overtimeRequest',
             //     'Status'    => 1,
             //     'SortOrder' => 2,
-            //     'Created_By_Id' => $UserId,
-            //     'Updated_By_Id' => $UserId
+            //     'CreatedById' => $UserId,
+            //     'UpdatedById' => $UserId
             // ],
             // [
             //     'id'        => 6,
@@ -301,8 +301,8 @@ class ModuleSeeder extends Seeder
             //     'Prefix'    => 'onboarding',
             //     'Status'    => 1,
             //     'SortOrder' => 4,
-            //     'Created_By_Id' => $UserId,
-            //     'Updated_By_Id' => $UserId
+            //     'CreatedById' => $UserId,
+            //     'UpdatedById' => $UserId
             // ],
             // [
             //     'id'        => 7,
@@ -314,8 +314,8 @@ class ModuleSeeder extends Seeder
             //     'Prefix'    => 'kpi',
             //     'Status'    => 1,
             //     'SortOrder' => 5,
-            //     'Created_By_Id' => $UserId,
-            //     'Updated_By_Id' => $UserId
+            //     'CreatedById' => $UserId,
+            //     'UpdatedById' => $UserId
             // ],
             // [
             //     'id'        => 8,
@@ -327,8 +327,8 @@ class ModuleSeeder extends Seeder
             //     'Prefix'    => 'projects',
             //     'Status'    => 1,
             //     'SortOrder' => 6,
-            //     'Created_By_Id' => $UserId,
-            //     'Updated_By_Id' => $UserId
+            //     'CreatedById' => $UserId,
+            //     'UpdatedById' => $UserId
             // ],
             // [
             //     'id'        => 9,
@@ -340,8 +340,8 @@ class ModuleSeeder extends Seeder
             //     'Prefix'    => 'projectView',
             //     'Status'    => 1,
             //     'SortOrder' => 1,
-            //     'Created_By_Id' => $UserId,
-            //     'Updated_By_Id' => $UserId
+            //     'CreatedById' => $UserId,
+            //     'UpdatedById' => $UserId
             // ],
             // [
             //     'id'        => 10,
@@ -353,8 +353,8 @@ class ModuleSeeder extends Seeder
             //     'Prefix'    => 'training',
             //     'Status'    => 1,
             //     'SortOrder' => 7,
-            //     'Created_By_Id' => $UserId,
-            //     'Updated_By_Id' => $UserId
+            //     'CreatedById' => $UserId,
+            //     'UpdatedById' => $UserId
             // ],
             // [
             //     'id'        => 11,
@@ -366,8 +366,8 @@ class ModuleSeeder extends Seeder
             //     'Prefix'    => 'certification',
             //     'Status'    => 1,
             //     'SortOrder' => 8,
-            //     'Created_By_Id' => $UserId,
-            //     'Updated_By_Id' => $UserId
+            //     'CreatedById' => $UserId,
+            //     'UpdatedById' => $UserId
             // ],
             // [
             //     'id'        => 12,
@@ -379,8 +379,8 @@ class ModuleSeeder extends Seeder
             //     'Prefix'    => 'report',
             //     'Status'    => 1,
             //     'SortOrder' => 9,
-            //     'Created_By_Id' => $UserId,
-            //     'Updated_By_Id' => $UserId
+            //     'CreatedById' => $UserId,
+            //     'UpdatedById' => $UserId
             // ],
         ];
 
