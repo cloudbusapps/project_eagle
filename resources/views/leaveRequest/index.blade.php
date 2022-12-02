@@ -1,8 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+<link rel="stylesheet" href="{{ asset('assets/css/fullcalendar.css') }}">
+<script src="{{ asset('assets/js/fullcalendar.js') }}"></script>
 
-<main id="main" class="main">
+<main id="main" class="main" calendarData="{{ json_encode($calendar) }}">
 
     <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
         <div class="container-fluid">
@@ -10,7 +12,7 @@
                 <div class="col">
                     <h4 class="mb-0">{{ $title }}</h4>
                     <ol class="breadcrumb bg-transparent mb-0">
-                        <li class="breadcrumb-item"><a class="text-secondary" href="#">Forms</a></li>
+                        <li class="breadcrumb-item"><a class="text-secondary" href="{{ route('dashboard') }}">Dashboard</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
                     </ol>
                 </div>
@@ -43,16 +45,16 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link {{ in_array(Session::get('tab'), ['My Forms', null]) ? 'active' : '' }}" id="my-forms-tab" data-bs-toggle="tab" data-bs-target="#my-forms" type="button" role="tab">My Forms</button>
                         </li>
-
                         @if ($forApproval && count($forApproval))
                         <li class="nav-item" role="presentation">
                             <button class="nav-link {{ in_array(Session::get('tab'), ['For Approval']) ? 'active' : '' }}" id="for-approval-tab" data-bs-toggle="tab" data-bs-target="#for-approval" type="button" role="tab">For Approval</button>
                         </li>
                         @endif
-
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link {{ in_array(Session::get('tab'), ['Calendar']) ? 'active' : '' }}" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar" type="button" role="tab">Calendar</button>
+                            <button class="nav-link {{ in_array(Session::get('tab'), ['Calendar']) ? 'active' : '' }}" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar-content" type="button" role="tab">Calendar</button>
                         </li>
+
+                        
                     </ul>
                     <div class="tab-content pt-4 px-4">
                         <div class="tab-pane fade {{ in_array(Session::get('tab'), ['My Forms', null]) ? 'show active' : '' }}" id="my-forms" role="tabpanel">
@@ -86,7 +88,7 @@
                                             </a>
                                         </td>
                                         <td>{{ $dt->FirstName.' '.$dt->LastName }}</td>
-                                        <td>{{ $dt->LeaveType }}</td>
+                                        <td>{{ $dt->Name }}</td>
                                         <td>
                                             {{ $dt->StartDate == $dt->EndDate ? 
                                             (date('F d, Y', strtotime($dt->StartDate))) :
@@ -143,7 +145,27 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="tab-pane fade {{ in_array(Session::get('tab'), ['Calendar']) ? 'show active' : '' }}" id="calendar" role="tabpanel">
+                        <div class="tab-pane fade {{ in_array(Session::get('tab'), ['Calendar']) ? 'show active' : '' }}" id="calendar-content" role="tabpanel">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div>
+
+                                        @foreach ($leaveTypes as $dt)
+                                        <?php 
+                                            $className = $dt['Name'] == "Vacation Leave" ? 'text-success' : ($dt['Name'] == "Sick Leave" ? 'text-danger' : 'text-info'); 
+                                        ?>
+                                        <label class="{{ $className }} mx-2"><input type="checkbox" class="leaveTypes" leaveType="{{ $dt['Name'] }}" checked> {{ $dt['Name'] }}</label>
+                                        @endforeach
+
+                                    </div>
+                                    <div>
+                                        <label><input type="checkbox" checked name="viewAll"> View All</label>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                  <div id="myCalendar"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -154,6 +176,72 @@
 </main>
 
 <script>
+
+    $(document).ready(function() {
+        var calendarEl = document.getElementById('myCalendar');
+
+        let eventData = JSON.parse($('#main').attr('calendarData'));
+        let currentEventData = [...eventData];
+
+        let calendar = function(data = []) { 
+            return new FullCalendar.Calendar(calendarEl, {
+                height: 650,
+                contentHeight: 600,
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    start: 'prev,next today',
+                    center: 'title',
+                    end: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                buttonText: {
+                    today:    'Today',
+                    month:    'Month',
+                    week:     'Week',
+                    day:      'Day',
+                },
+                events: data
+            })
+        };
+
+        
+        // ----- INIT CALENDAR -----
+        function initCalendar(data = []) {
+            calendar().destroy();
+            calendar(data).render();
+        }
+        
+        let calendarInit = false;
+        $('#calendar-tab').on('shown.bs.tab', function (e) {
+            if ($(this).data('bs-target') == '#calendar-content' && !calendarInit) {
+                initCalendar(currentEventData);
+                calendarInit = true;
+            }
+        });
+        // ----- END INIT CALENDAR -----
+        
+
+
+        // ----- CHANGE CALENDAR VIEW -----
+        $(document).on('change', `.leaveTypes`, function() {
+            let leaveTypeArr = [];
+            $('[type="checkbox"].leaveTypes').each(function() {
+                this.checked && leaveTypeArr.push($(this).attr('leaveType'));
+            })
+
+            currentEventData = eventData.filter(dt => leaveTypeArr.includes(dt.leaveType));
+            initCalendar(currentEventData);
+        })
+        // ----- END CHANGE CALENDAR VIEW -----
+
+
+        // ----- CHANGE VIEW ALL -----
+        $(document).on('change', `[name="viewAll"]`, function() {
+            $(`[type="checkbox"].leaveTypes`).prop('checked', this.checked).trigger('change');
+        })
+        // ----- END CHANGE VIEW ALL -----
+
+    })
+
 
     $(document).ready(function() {
         

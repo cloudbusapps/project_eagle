@@ -1,6 +1,6 @@
 // ----- PRELOADER -----
 const PRELOADER = `
-<div class="w-100 h-100 d-flex flex-column justify-content-center align-items-center">
+<div class="w-100 h-100 d-flex flex-column justify-content-center align-items-center py-5">
     <div class="spinner-grow spinner-grow-lg text-secondary" role="status">
         <span class="visually-hidden">Loading...</span>
     </div>

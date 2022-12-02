@@ -13,17 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('modules', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('CategoryId')->nullable();
-            $table->bigInteger('ParentId')->nullable();
-            $table->string('Title');
-            $table->boolean('WithApproval')->default(false);
-            $table->string('RouteName')->nullable();
-            $table->string('Prefix');
-            $table->string('Icon')->default('default.png');
+        Schema::create('leave_types', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Name')->unique();
             $table->integer('Status')->default(1);
-            $table->integer('SortOrder')->default(1);
             $table->uuid('Created_By_Id')->nullable();
             $table->uuid('Updated_By_Id')->nullable();
             $table->timestamps();
@@ -37,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('modules');
+        Schema::dropIfExists('leave_types');
     }
 };

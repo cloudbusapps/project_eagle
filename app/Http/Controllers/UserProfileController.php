@@ -14,8 +14,10 @@ use App\Models\UserSkill;
 use App\Models\UserAward;
 use App\Models\UserExperience;
 use App\Models\UserEducation;
+use App\Models\UserLeaveBalance;
 use App\Models\Department;
 use App\Models\Designation;
+use App\Models\LeaveType;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
@@ -41,6 +43,11 @@ class UserProfileController extends Controller
                 ->where('u.Id', $UserId)
                 ->first();
 
+            $leaveBalance = LeaveType::select('leave_types.*', 
+                DB::raw('(SELECT "Balance" FROM user_leave_balances WHERE "UserId" = \''. $UserId .'\' AND "LeaveTypeId" = "leave_types"."Id") AS "Balance"'))
+                ->where('Status', 1)
+                ->get();
+
             $data = [
                 'title'          => 'Profile',
                 'userData'       => $userData,
@@ -50,46 +57,16 @@ class UserProfileController extends Controller
                 'experiences'    => UserExperience::where('UserId', $UserId)->get(),
                 'educations'     => UserEducation::where('UserId', $UserId)->get(),
                 'projects'       => $projects,
+                'leaveBalance'   => $leaveBalance,
                 'requestId'      => $UserId,
             ];
     
             return view('users.profile', $data);
         } catch (\Illuminate\Database\QueryException $e) {
+            dd($e);
             abort('500');
         }
     }
-
-    // public function generatePdf(Request $request) {
-    //     $UserId = $request->Id ? $request->Id : Auth::id();
-    //     $projects = DB::table('projects')
-    //         ->select('projects.*')
-    //         ->leftJoin('user_story', 'projects.Id', '=', 'user_story.ProjectId')
-    //         ->leftJoin('tasks', 'user_story.Id', '=', 'tasks.UserStoryId')
-    //         ->where('tasks.UserId', $UserId)
-    //         ->groupBy('projects.Id')
-    //         ->orderBy('projects.updated_at', 'DESC')
-    //         ->get();
-
-    //     $userData = DB::table('users AS u')
-    //         ->select('u.*', DB::raw('"d"."Name" AS department'))
-    //         ->leftJoin('departments AS d', 'DepartmentId', '=', 'd.Id')
-    //         ->where('u.Id', $UserId)
-    //         ->first();
-
-    //         $data = [
-    //             'title'          => 'Profile',
-    //             'userData'       => $userData,
-    //             'certifications' => UserCertification::where('UserId', $UserId)->get(),
-    //             'skills'         => UserSkill::where('UserId', $UserId)->get(),
-    //             'awards'         => UserAward::where('UserId', $UserId)->get(),
-    //             'experiences'    => UserExperience::where('UserId', $UserId)->get(),
-    //             'educations'     => UserEducation::where('UserId', $UserId)->get(),
-    //             'projects'       => $projects,
-    //             'requestId'      => $UserId,
-    //         ];
-
-    //     return view('users.generatePdf', $data);
-    // }
 
     public function generate($UserId, $action = 'print') {
         $userData = DB::table('users AS u')
@@ -683,8 +660,8 @@ class UserProfileController extends Controller
         }
 
         if ($saveSkill && $deleteSkill) {
-            Session::flash('tab', 'Skill'); 
-            Session::flash('success', 'Skills successfully updated!'); 
+            Session::flash('card', 'Skill'); 
+            Session::flash('success', '<b>Skills</b> successfully updated!'); 
             return "true";
         } 
         return "false";
@@ -763,13 +740,13 @@ class UserProfileController extends Controller
             if ($User->save()) {
                 return redirect()
                     ->route('user.viewProfile')
-                    ->with('tab', 'Image')
+                    ->with('card', 'Image')
                     ->with('success', "Profile image successfully updated!");
             } 
         } catch (\Throwable $th) {
             return redirect()
                 ->route('user.viewProfile')
-                ->with('tab', 'Image')
+                ->with('card', 'Image')
                 ->with('fail', "There's an error occured. Please try again later...");
         }
 
@@ -777,6 +754,92 @@ class UserProfileController extends Controller
 
     }
     // ----- END PROFILE IMAGE -----
+
+
+    // ----- LEAVE BALANCE -----
+    public function editLeaveBalance($Id) {
+        $UserLeaveBalance = LeaveType::select('leave_types.*', 
+            DB::raw('(SELECT "Balance" FROM user_leave_balances WHERE "UserId" = \''.$Id.'\' AND "LeaveTypeId" = "leave_types"."Id") AS "Balance"'))
+            ->where('Status', 1)
+            ->get();
+
+        $leaveHTML = '';
+        foreach ($UserLeaveBalance as $index => $dt) {
+            $count = $index + 1;
+            $balance = $dt['Balance'] ?? 0;
+
+            $leaveHTML .= "
+            <tr>
+                <td>{$count}</td>
+                <td>{$dt['Name']}</td>
+                <td>
+                    <input type='hidden' name='LeaveTypeId[]' value='{$dt['Id']}'>
+                    <input type='number' step='0.01' name='Balance[]' value='{$balance}' class='form-control text-center'>
+                </td>
+            </tr>";
+        }
+
+        $html = '
+        <form method="POST" action="'. route('user.updateLeaveBalance', ['Id' => $Id]) .'">
+            '. csrf_field() .'
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Leave Type</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    '.$leaveHTML.'
+                </tbody>
+            </table>
+            <div class="modal-footer mt-3 pb-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-warning">Update</button>
+            </div>
+        </form>';
+        return $html;
+    }
+
+
+    public function updateLeaveBalance(Request $request, $Id) {
+        
+        $delete = UserLeaveBalance::where('UserId', $Id)->delete();
+
+        $LeaveTypeId = $request->LeaveTypeId;
+        $Balance     = $request->Balance;
+        
+        if ($LeaveTypeId && count($LeaveTypeId)) {
+            $data = [];
+            foreach ($LeaveTypeId as $index => $ltId) {
+                $data[] = [
+                    'Id'            => Str::uuid(),
+                    'UserId'        => $Id,
+                    'LeaveTypeId'   => $ltId,
+                    'Balance'       => $Balance[$index],
+                    'Accumulated'   => 0,
+                    'Created_By_Id' => Auth::id(),
+                    'Updated_By_Id' => Auth::id(),
+                ];
+            }
+            if ($data && count($data)) {
+                $save = DB::table('user_leave_balances')->insert($data);
+                if ($save) {
+                    return redirect()
+                        ->back()
+                        ->with('card', 'Leave')
+                        ->with('success', "<b>Leave balance</b> successfully updated!");
+                }
+            }
+        }
+
+        return redirect()
+            ->back()
+            ->with('card', 'Leave')
+            ->with('fail', "There's an error occured. Please try again later...");
+    }
+    // ----- END LEAVE BALANCE -----
 
 
 

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
@@ -15,22 +16,26 @@ class ModuleApprovalController extends Controller
 {
     public function index() {
         $data = [
-            'title' => 'Module Approval',
-            'modules' => Module::where('Status', 'Active')
+            'title' => 'Approval',
+            'modules' => Module::where('Status', 1)
                 ->where('WithApproval', true)
-                ->get()
+                ->get(),
+            'employees' => User::select('users.*', 'd.Name AS designation')
+                ->leftJoin('designations AS d', 'DesignationId', 'd.Id')
+                ->where('IsAdmin', false)->get(),
+            'designations' => Designation::where('Status', 1)->get()
         ];
         return view('moduleApprovals.index', $data);
     }
 
     public function edit($id) {
         $data = [
-            'title' => "Edit Module Approval",
+            'title' => "Edit Approval",
             'data' => Module::find($id),
             'employees' => User::select('users.*', 'd.Name AS designation')
                 ->leftJoin('designations AS d', 'DesignationId', 'd.Id')
                 ->where('IsAdmin', false)->get(),
-            'designations' => Designation::where('Status', 'Active')->get()
+            'designations' => Designation::where('Status', 1)->get()
         ];
         return view('moduleApprovals.form', $data);
     }

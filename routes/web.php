@@ -21,9 +21,6 @@ use App\Http\Controllers\EmployeeDirectoryController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserStoryController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\DesignationController;
-use App\Http\Controllers\ModuleApprovalController;
 use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\LeaveRequestController;
 
@@ -38,7 +35,6 @@ Route::post('/register', [RegisterController::class, 'save'])->name('auth.save')
 Route::group(['middleware' => 'auth'], function() {
     // DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/test', [DashboardController::class, 'index'])->name('test');
 
     // USER
     Route::prefix('user')->group(function () {
@@ -51,6 +47,10 @@ Route::group(['middleware' => 'auth'], function() {
             // IMAGE
             Route::get('/edit/image/{Id}', [UserProfileController::class, 'editProfileImage'])->name('user.editProfileImage');
             Route::put('/edit/image/{Id}/update', [UserProfileController::class, 'updateProfileImage'])->name('user.updateProfileImage');
+
+            // LEAVE
+            Route::get('/edit/leave/{Id}', [UserProfileController::class, 'editLeaveBalance'])->name('user.editLeaveBalance');
+            Route::post('/edit/leave/{Id}/update', [UserProfileController::class, 'updateLeaveBalance'])->name('user.updateLeaveBalance');
 
             // PERSONAL INFORMATION
             Route::get('/edit/personalInformation/{Id}', [UserProfileController::class, 'editPersonalInformation'])->name('user.editPersonalInformation');
@@ -91,7 +91,7 @@ Route::group(['middleware' => 'auth'], function() {
     });
 
     // EMPLOYEE DIRECTORY
-    Route::get('/employeeDirectory', [EmployeeDirectoryController::class, 'index'])->name('employeeDirectory');
+    Route::get('/directory', [EmployeeDirectoryController::class, 'index'])->name('employeeDirectory');
 
     //PROJECTS
     Route::prefix('projects')->group(function () {
@@ -131,6 +131,18 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('/update/{Id}', [DashboardController::class, 'updateNotif'])->name('notifications.updateNotif');
     });
 
+    // LEAVE
+    Route::prefix('leave')->group(function() {
+        Route::get('/', [LeaveRequestController::class, 'index'])->name('leaveRequest');
+        Route::get('/add', [LeaveRequestController::class, 'form'])->name('leaveRequest.add');
+        Route::post('/save', [LeaveRequestController::class, 'save'])->name('leaveRequest.save');
+        Route::get('/view/{Id}', [LeaveRequestController::class, 'view'])->name('leaveRequest.view');
+        Route::get('/revise/{Id}', [LeaveRequestController::class, 'revise'])->name('leaveRequest.revise');
+        Route::put('/revise/{Id}/update', [LeaveRequestController::class, 'update'])->name('leaveRequest.update');
+        Route::post('/approve/{Id}/{UserId}', [LeaveRequestController::class, 'approve'])->name('leaveRequest.approve');
+        Route::post('/reject/{Id}/{UserId}', [LeaveRequestController::class, 'reject'])->name('leaveRequest.reject');
+    });
+
     // FORMS
     Route::prefix('forms')->group(function() {
         // OVERTIME REQUEST
@@ -142,18 +154,6 @@ Route::group(['middleware' => 'auth'], function() {
             Route::get('/edit/{Id}', [OvertimeRequestController::class, 'editOvertimeRequest'])->name('overtimeRequest.edit');
             Route::put('/edit/{Id}/update', [OvertimeRequestController::class, 'updateOvertimeRequest'])->name('overtimeRequest.update');
             Route::get('/delete/{Id}', [OvertimeRequestController::class, 'deleteOvertimeRequest'])->name('overtimeRequest.delete');
-        });
-    
-        // LEAVE REQUEST
-        Route::prefix('leaveRequest')->group(function() {
-            Route::get('/', [LeaveRequestController::class, 'index'])->name('leaveRequest');
-            Route::get('/add', [LeaveRequestController::class, 'form'])->name('leaveRequest.add');
-            Route::post('/save', [LeaveRequestController::class, 'save'])->name('leaveRequest.save');
-            Route::get('/view/{Id}', [LeaveRequestController::class, 'view'])->name('leaveRequest.view');
-            Route::get('/revise/{Id}', [LeaveRequestController::class, 'revise'])->name('leaveRequest.revise');
-            Route::put('/revise/{Id}/update', [LeaveRequestController::class, 'update'])->name('leaveRequest.update');
-            Route::post('/approve/{Id}/{UserId}', [LeaveRequestController::class, 'approve'])->name('leaveRequest.approve');
-            Route::post('/reject/{Id}/{UserId}', [LeaveRequestController::class, 'reject'])->name('leaveRequest.reject');
         });
     });
 
@@ -170,7 +170,11 @@ Route::prefix('leaveRequest')->group(function() {
 
 // ----- ADMIN -----
 use App\Http\Controllers\admin\ProjectManagementController;
-use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\admin\ModuleController;
+use App\Http\Controllers\admin\DepartmentController;
+use App\Http\Controllers\admin\DesignationController;
+use App\Http\Controllers\admin\ModuleApprovalController;
+use App\Http\Controllers\admin\LeaveTypeController;
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function() {
     // MODULE
@@ -205,13 +209,22 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
             Route::get('/delete/{Id}', [DesignationController::class, 'delete'])->name('designation.delete');
         });
 
+        // LEAVE TYPE
+        Route::prefix('leaveType')->group(function() {
+            Route::get('/', [LeaveTypeController::class, 'index'])->name('leaveType');
+            Route::get('/add', [LeaveTypeController::class, 'form'])->name('leaveType.add');
+            Route::post('/save', [LeaveTypeController::class, 'save'])->name('leaveType.save');
+            Route::get('/edit/{Id}', [LeaveTypeController::class, 'edit'])->name('leaveType.edit');
+            Route::put('/edit/{Id}/update', [LeaveTypeController::class, 'update'])->name('leaveType.update');
+            Route::get('/delete/{Id}', [LeaveTypeController::class, 'delete'])->name('leaveType.delete');
+        });
+
         // APPROVAL
         Route::prefix('moduleApproval')->group(function() {
             Route::get('/', [ModuleApprovalController::class, 'index'])->name('moduleApproval');
             Route::get('/edit/{id}', [ModuleApprovalController::class, 'edit'])->name('moduleApproval.edit');
             Route::get('/edit/{id}/{designationId}', [ModuleApprovalController::class, 'editDesignation'])->name('moduleApproval.edit.designation');
             Route::post('/edit/{id}/{designationId}/save', [ModuleApprovalController::class, 'saveDesignation'])->name('moduleApproval.edit.designation.save');
-
             Route::put('/edit/{id}/update', [ModuleApprovalController::class, 'update'])->name('moduleApproval.update');
         });
     });

@@ -71,7 +71,17 @@
                                 @endif
 
                                 <div class="row my-3">
-                                    <label for="ParentModule" class="col-sm-2">Parent Module</label>
+                                    <label for="ParentModule" class="col-sm-2">Category <code>*</code></label>
+                                    <div class="col-sm-10">
+                                        <select name="CategoryId" id="CategoryId" class="form-select" select2>
+                                            <option value="1">EMPLOYEE PROFILE</option>
+                                            <option value="2">UTILIZATION</option>
+                                            <option value="3">REPORT & DASHBOARD</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row my-3">
+                                    <label for="ParentModule" class="col-sm-2">Parent</label>
                                     <div class="col-sm-10">
                                         <select name="ParentId" id="ParentId" class="form-select" select2>
                                             <option value="" {{ (old('ParentId') ?? $ParentId) == "" ? "selected" : '' }}>None</option>
@@ -130,8 +140,8 @@
                                     <label for="Status" class="col-sm-2">Status</label>
                                     <div class="col-sm-10">
                                         <select name="Status" id="Status" class="form-select" select2>
-                                            <option value="Active" {{ $Status == "Active" ? "selected" : "" }}>Active</option>
-                                            <option value="Inactive" {{ $Status == "Inactive" ? "selected" : "" }}>Inactive</option>
+                                            <option value="1" {{ $Status == 1 ? "selected" : "" }}>Active</option>
+                                            <option value="0" {{ $Status == 0 ? "selected" : "" }}>Inactive</option>
                                         </select>
                                     </div>
                                 </div>

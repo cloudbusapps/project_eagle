@@ -17,7 +17,7 @@ return new class extends Migration
             $table->uuid('Id');
             $table->string('DocumentNumber')->nullable();
             $table->uuid('UserId');
-            $table->string('LeaveType'); // VACATION, SICK
+            $table->uuid('LeaveTypeId'); // VACATION, SICK
             $table->decimal('LeaveBalance', 10, 2);
             $table->date('StartDate');
             $table->date('EndDate');

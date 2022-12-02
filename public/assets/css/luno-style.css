@@ -24270,7 +24270,9 @@ button:focus:not(:focus-visible) {
     box-shadow: inset -2px 0px 10px 0px rgb(0 0 0 / 50%);;
 }
 .layout-1 .sidebar.version-2 .menu-list {
-    border: 0;
+    /* border: 0; */
+    border: 1px dotted gray;
+    margin-bottom: 10px;
 }
 .layout-1 .sidebar.version-2 .menu-list > li {
     border: 0;
@@ -31248,5 +31250,8 @@ label, div.label {
     background: #0d6efd;
     border-radius: 5px;
     cursor: pointer;
+}
+.m-link span {
+    font-size: 13px;
 }
 /* ----- END CUSTOM ----- */

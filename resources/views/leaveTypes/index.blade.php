@@ -39,16 +39,16 @@
             <div class="card">
                 <div class="card-body">
                     <div class="w-100 text-end mb-3">
-                        <a href="{{ route('department.add') }}" class="btn btn-outline-primary px-2 py-1">
+                        <a href="{{ route('leaveType.add') }}" class="btn btn-outline-primary px-2 py-1">
                             <i class="bi bi-plus-lg"></i> New
                         </a>
                     </div>
 
-                    <table class="table table-striped table-hover" id="tableDepartment">
+                    <table class="table table-striped table-hover" id="tableLeaveType">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Department</th>
+                                <th>Leave Type</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -63,7 +63,7 @@
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>
-                                    <a href="{{ route('department.edit', ['Id' => $dt->Id]) }}">
+                                    <a href="{{ route('leaveType.edit', ['Id' => $dt->Id]) }}">
                                         {{ $dt->Name }}
                                     </a>
                                 </td>
@@ -86,7 +86,7 @@
     $(document).ready(function() {
         
         // ----- DATATABLES -----
-        let tableDepartment = $('#tableDepartment')
+        let tableLeaveType = $('#tableLeaveType')
             .css({ "min-width": "99%" })
             .removeAttr("width")
             .DataTable({

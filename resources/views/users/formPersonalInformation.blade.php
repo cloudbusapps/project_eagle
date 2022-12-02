@@ -57,13 +57,6 @@
                                     </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <label for="LastName" class="col-sm-2">Last Name <code>*</code></label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="LastName" name="LastName" placeholder="Last Name" required
-                                            value="{{ old('LastName') ?? $userData['LastName'] }}">
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
                                     <label for="FirstName" class="col-sm-2">First Name <code>*</code></label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="FirstName" name="FirstName" placeholder="First Name" required
@@ -78,9 +71,16 @@
                                     </div>
                                 </div>
                                 <div class="row mb-3">
+                                    <label for="LastName" class="col-sm-2">Last Name <code>*</code></label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="LastName" name="LastName" placeholder="Last Name" required
+                                            value="{{ old('LastName') ?? $userData['LastName'] }}">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
                                     <label for="Gender" class="col-sm-2">Gender <code>*</code></label>
                                     <div class="col-sm-10">
-                                        <select class="form-control" id="Gender" name="Gender" required>
+                                        <select class="form-control" id="Gender" name="Gender" required select2>
                                             <option value="" selected disabled>Select Gender</option>
                                             <option value="Male" {{ (old('Gender') ?? $userData['Gender']) == 'Male' ? 'selected' : '' }}>Male</option>
                                             <option value="Female" {{ (old('Gender') ?? $userData['Gender']) == 'Female' ? 'selected' : '' }}>Female</option>
@@ -96,7 +96,7 @@
                                     </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <label for="ContactNumber" class="col-sm-2">Contact Number <code>*</code></label>
+                                    <label for="ContactNumber" class="col-sm-2">Contact No. <code>*</code></label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="ContactNumber" name="ContactNumber" placeholder="Contact Number" 
                                             value="{{ old('ContactNumber') ?? $userData['ContactNumber'] }}" required>

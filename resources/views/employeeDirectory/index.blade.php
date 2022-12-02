@@ -27,8 +27,9 @@
                             <form action="{{ route('employeeDirectory') }}" method="GET">
                                 <div class="row">
                                     <div class="col-md-4 col-sm-12">
-                                        <div class="form-floating">
-                                            <select class="form-control" name="filterBy" id="filterBy" data="{{ $filterBy }}">
+                                        <div class="form-group">
+                                            <label for="filterBy">Filter By</label>
+                                            <select class="form-control" name="filterBy" id="filterBy" data="{{ $filterBy }}" select2>
                                                 <option value="All" {{ $filterBy == 'All' ? 'selected' : '' }}>All</option>
             
                                                 @foreach ($filterData as $key => $dt)
@@ -36,13 +37,12 @@
                                                 @endforeach
             
                                             </select>
-                                            <label for="filterBy">Filter By</label>
                                         </div>
                                     </div>
                                     <div class="col-md-4 col-sm-12">
-                                        <div class="form-floating">
-                                            <input type="text" name="search" id="search" list="searchData" class="form-control" value="{{ $search }}" placeholder="Search for..." autocomplete="off">
+                                        <div class="form-group">
                                             <label for="search">Search</label>
+                                            <input type="text" name="search" id="search" list="searchData" class="form-control" value="{{ $search }}" placeholder="Search for..." autocomplete="off">
             
                                             <datalist id="searchData">
                                             @foreach ($searchData as $key => $dt)
@@ -73,7 +73,7 @@
                                 <a href="{{ route('user.viewProfile', ['Id' => $user['Id']]) }}" class="btnViewProfile">
                                     <h5>{{ $user['full_name'] }}</h5>
                                 </a>
-                                <small class="mb-0 fw-bold">{{ ($user['EmployeeNumber'] ?? '-') . ' | ' . ($user['Title'] ?? '-') }}</small>
+                                <small class="mb-0 fw-bold">{{ ($user['EmployeeNumber'] ?? '-') . ' | ' . ($user['designation'] ?? '-') }}</small>
                                 <small>{{ $user['email'] }}</small>
                             </div>
                         </div>

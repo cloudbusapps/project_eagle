@@ -1,4 +1,6 @@
 <?php 
+  use App\Models\Designation;
+
   $groupPrefix = Request::segment(1);
   $subModule   = Request::segment(2);
   $setupModule = Request::segment(3);
@@ -19,9 +21,15 @@
       <h4 class="sidebar-title mb-0 flex-grow-1 px-2 d-none d-xl-block"><span class="sm-txt fw-bold" style="color: #d0021b;">ePLDT</h4>
     </div>
 
-    <div class="main-menu flex-grow-1">
+    <div class="main-menu flex-grow-1 pb-3">
+
+      @foreach ($moduleData as $index => $modules)
       <ul class="menu-list">
-        @foreach ($moduleData as $module)
+        <li class="divider py-2 lh-sm">
+          <span class="small fw-bold"><?= 'MODULE '.($index+1) ?></span><br>
+          <small class="text-muted"><?= $modules['module'] ?></small>
+        </li>
+        @foreach ($modules['items'] as $module)
         <li class="{{ in_array($module['Prefix'], $prefixArray) ? 'collapsed' : '' }}">
           @if (count($module['items']))
           <a class="m-link" 
@@ -51,8 +59,20 @@
           @endif
         </li>
         @endforeach
-
+      </ul>
+      @endforeach
+      <ul class="menu-list">
         @if (Auth::user()->IsAdmin)
+        <li class="divider py-2 lh-sm">
+          <span class="small fw-bold"><?= 'MODULE '.(count($moduleData)+1) ?></span><br>
+          <small class="text-muted">INTEGRATION & ADMIN</small>
+        </li>
+        <li>
+          <a class="m-link {{ $subModule == 'integration' ? 'active' : '' }}" href="{{ '#' }}">
+            <img src="{{ asset('uploads/icons/integration.png') }}" alt="Integration" width="20" height="20">
+            <span class="ms-2">Integration</span>
+          </a>
+        </li>
         <li class="{{ in_array('setup', $prefixArray) ? 'collapsed' : '' }}">
           <a class="m-link" 
             data-bs-toggle="collapse" 
@@ -73,8 +93,12 @@
                 href="{{ route('designation') }}">Designation</a>
             </li>
             <li>
+              <a class="ms-link {{ 'leaveType' == $setupModule ? 'active' : '' }}" 
+                href="{{ route('leaveType') }}">Leave Type</a>
+            </li>
+            <li>
               <a class="ms-link {{ 'moduleApproval' == $setupModule ? 'active' : '' }}" 
-                href="{{ route('moduleApproval') }}">Module Approval</a>
+                href="{{ route('moduleApproval') }}">Approval</a>
             </li>
           </ul>
         </li>
@@ -86,6 +110,7 @@
         </li>
         @endif
       </ul>
+
     </div>
   </div>
 </div>
@@ -158,7 +183,7 @@
 
                                     </ul>
                                 @else
-                                    <h4 class="color-400">No Notifications right now!</h4>
+                                    <h6 class="color-400 text-center">No notification</h6>
                                 @endif
                             </div>
                         </div>
@@ -177,7 +202,7 @@
                     <img class="avatar rounded-circle" src="{{ asset('uploads/profile/' . Auth::user()->Profile ?? 'default.png') }}" alt="">
                     <div class="flex-fill ms-3">
                       <h6 class="card-title mb-0">{{ Auth::user()->FirstName.' '. Auth::user()->LastName }}</h6>
-                      <small class="text-muted">{{ Auth::user()->Title }}</small>
+                      <small class="text-muted">{{ Designation::find(Auth::user()->DesignationId)->Name ?? '-' }}</small>
                     </div>
                   </div>
                   <div class="list-group m-2 mb-3">
