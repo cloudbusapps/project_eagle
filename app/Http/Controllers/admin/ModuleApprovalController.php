@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
-use App\Models\Module;
-use App\Models\ModuleApproval;
+use App\Models\admin\Module;
+use App\Models\admin\ModuleApproval;
 use App\Models\User;
-use App\Models\Designation;
+use App\Models\admin\Designation;
 use Auth;
 
 class ModuleApprovalController extends Controller

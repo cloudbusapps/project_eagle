@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,17 +9,16 @@ use Illuminate\Support\Str;
 use function PHPUnit\Framework\isNull;
 use Auth;
 
-class Designation extends Model
+class Department extends Model
 {
     use HasFactory;
 
-    protected $table = 'designations';
+    protected $table = 'departments';
     protected $primaryKey = 'Id';
     protected $KeyType = 'string';
     public $incrementing = false;
 
     protected $fillable = [
-        'DepartmentId',
         'Name',
         'Status'
     ];

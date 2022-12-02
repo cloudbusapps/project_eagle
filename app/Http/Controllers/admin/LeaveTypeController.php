@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use App\Models\LeaveType;
+use App\Models\admin\LeaveType;
 use App\Models\UserLeaveBalance;
 
 class LeaveTypeController extends Controller

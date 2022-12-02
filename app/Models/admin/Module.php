@@ -1,21 +1,22 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use Auth;
 
-class ModuleApproval extends Model
+class Module extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'ModuleId',
-        'DesignationId',
-        'Level',
-        'ApproverId',
+        'ParentId',
+        'Title',
+        'Icon',
+        'Status',
+        'SortBy',
     ];
 
     protected static function boot() {
