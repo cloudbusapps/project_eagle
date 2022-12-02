@@ -32,8 +32,8 @@ return new class extends Migration
             $table->string('password');
             $table->boolean('IsAdmin')->default(false);
             $table->integer('Status')->default(1); // [0 - Inactive, 1 - Active]
-            $table->uuid('Created_By_Id')->nullable();
-            $table->uuid('Updated_By_Id')->nullable();
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
         });
     }

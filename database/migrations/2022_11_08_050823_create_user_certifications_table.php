@@ -20,13 +20,13 @@ return new class extends Migration
             $table->text('Description');
             $table->date('DateTaken')->nullable();
             $table->string('Status');
-            $table->uuid('Created_By_Id');
-            $table->uuid('Updated_By_Id');
+            $table->uuid('CreatedById');
+            $table->uuid('UpdatedById');
             $table->timestamps();
 
             $table->foreign('UserId')->references('Id')->on('users');
-            $table->foreign('Created_By_Id')->references('Id')->on('users');
-            $table->foreign('Updated_By_Id')->references('Id')->on('users');
+            $table->foreign('CreatedById')->references('Id')->on('users');
+            $table->foreign('UpdatedById')->references('Id')->on('users');
         });
     }
 

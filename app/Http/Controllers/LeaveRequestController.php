@@ -87,8 +87,8 @@ class LeaveRequestController extends Controller
                 'Status'        => 0,
                 'Date'          => null,
                 'Remarks'       => null,
-                'Created_By_Id' => Auth::id(),
-                'Updated_By_Id' => Auth::id(),
+                'CreatedById' => Auth::id(),
+                'UpdatedById' => Auth::id(),
             ];
         }
         if ($approverData && count($approverData)) {
@@ -199,8 +199,8 @@ class LeaveRequestController extends Controller
                         'Id'             => Str::uuid(),
                         'LeaveRequestId' => $Id,
                         'File'           => $filename,
-                        'Created_By_Id'  => Auth::id(),
-                        'Updated_By_Id'  => Auth::id(),
+                        'CreatedById'  => Auth::id(),
+                        'UpdatedById'  => Auth::id(),
                     ];
                 }
 
@@ -306,8 +306,8 @@ class LeaveRequestController extends Controller
                         'Id'             => Str::uuid(),
                         'LeaveRequestId' => $Id,
                         'File'           => $filename,
-                        'Created_By_Id'  => Auth::id(),
-                        'Updated_By_Id'  => Auth::id(),
+                        'CreatedById'  => Auth::id(),
+                        'UpdatedById'  => Auth::id(),
                     ];
                 }
 

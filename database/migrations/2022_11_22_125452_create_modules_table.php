@@ -24,8 +24,8 @@ return new class extends Migration
             $table->string('Icon')->default('default.png');
             $table->integer('Status')->default(1);
             $table->integer('SortOrder')->default(1);
-            $table->uuid('Created_By_Id')->nullable();
-            $table->uuid('Updated_By_Id')->nullable();
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
         });
     }

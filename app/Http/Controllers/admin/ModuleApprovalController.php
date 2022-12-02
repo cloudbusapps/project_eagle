@@ -62,8 +62,8 @@ class ModuleApprovalController extends Controller
                     'DesignationId' => $designationId,
                     'Level'         => $index+1,
                     'ApproverId'    => $approver,
-                    'Created_By_Id' => Auth::id(),
-                    'Updated_By_Id' => Auth::id(),
+                    'CreatedById' => Auth::id(),
+                    'UpdatedById' => Auth::id(),
                 ];
             }
         }

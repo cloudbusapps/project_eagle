@@ -651,8 +651,8 @@ class UserProfileController extends Controller
                     'Id'            => Str::uuid(),
                     'UserId'        => $Id,
                     'Title'         => $skill,
-                    'Created_By_Id' => Auth::id(),
-                    'Updated_By_Id' => Auth::id(),
+                    'CreatedById' => Auth::id(),
+                    'UpdatedById' => Auth::id(),
                 ];
             }
 
@@ -819,8 +819,8 @@ class UserProfileController extends Controller
                     'LeaveTypeId'   => $ltId,
                     'Balance'       => $Balance[$index],
                     'Accumulated'   => 0,
-                    'Created_By_Id' => Auth::id(),
-                    'Updated_By_Id' => Auth::id(),
+                    'CreatedById' => Auth::id(),
+                    'UpdatedById' => Auth::id(),
                 ];
             }
             if ($data && count($data)) {

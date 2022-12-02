@@ -86,7 +86,7 @@ class OvertimeRequestController extends Controller
         $OvertimeRequest->TimeIn  = $request->TimeIn;
         $OvertimeRequest->TimeOut  = $request->TimeOut;
         $OvertimeRequest->Reason  = $request->Reason;
-        $OvertimeRequest->Created_By_Id  = $userId;
+        $OvertimeRequest->CreatedById  = $userId;
 
 
         if ($OvertimeRequest->save()) {
@@ -120,7 +120,7 @@ class OvertimeRequestController extends Controller
         $OvertimeRequest->TimeOut  = $request->TimeOut;
         $OvertimeRequest->Reason  = $request->Reason;
         $OvertimeRequest->Status  = 0;
-        $OvertimeRequest->Updated_By_Id  = $userId;
+        $OvertimeRequest->UpdatedById  = $userId;
 
         if ($OvertimeRequest->update()) {
             return redirect()

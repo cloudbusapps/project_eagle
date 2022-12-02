@@ -18,8 +18,8 @@ return new class extends Migration
             $table->uuid('DepartmentId');
             $table->string('Name');
             $table->integer('Status')->default(1);
-            $table->uuid('Created_By_Id')->nullable();
-            $table->uuid('Updated_By_Id')->nullable();
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
         });
     }

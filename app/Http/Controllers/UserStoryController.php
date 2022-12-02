@@ -25,7 +25,7 @@ class UserStoryController extends Controller
 
         $userStory = UserStory::select('user_story.*', 'users.FirstName', 'users.LastName')
             ->where('user_story.Id', $Id)
-            ->leftJoin('users', 'users.Id', '=', 'user_story.Created_By_Id')
+            ->leftJoin('users', 'users.Id', '=', 'user_story.CreatedById')
             ->first();
         $data = [
             'taskData' => $taskData,
