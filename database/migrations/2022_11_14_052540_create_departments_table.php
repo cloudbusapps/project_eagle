@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('departments', function (Blueprint $table) {
             $table->uuid('Id');
-            $table->uuid('UserId');
+            $table->uuid('UserId')->nullable(true);
             $table->string('Name')->unique();
             $table->integer('Status')->default(1);
             $table->uuid('CreatedById')->nullable();

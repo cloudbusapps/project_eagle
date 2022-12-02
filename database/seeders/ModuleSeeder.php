@@ -111,6 +111,18 @@ class ModuleSeeder extends Seeder
 
             // ----- UTILIZATION -----
             [
+                'id'            => 18,
+                'CategoryId'    => 2,
+                'ParentId'      => null,
+                'Title'         => 'Customer',
+                'WithApproval'  => false,
+                'Icon'          => 'default.png',
+                'RouteName'     => 'customer',
+                'Prefix'        => 'customer',
+                'Status'        => 1,
+                'SortOrder'     => 2,
+            ],
+            [
                 'id'            => 8,
                 'CategoryId'    => 2,
                 'ParentId'      => null,
@@ -236,6 +248,7 @@ class ModuleSeeder extends Seeder
             ],
             // ----- END REPORTS AND DASHBOARDS -----
 
+            // LATEST ID USED IS 18
 
 
 

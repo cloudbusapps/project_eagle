@@ -159,6 +159,13 @@ Route::group(['middleware' => 'auth'], function() {
 
 });
 
+// CUSTOMER
+Route::prefix('customer')->group(function() {
+    Route::get('/', [LeaveRequestController::class, 'externalApprove'])->name('external.leaveRequest.approve');
+    Route::get('/reject/{Id}', [LeaveRequestController::class, 'externalReject'])->name('external.leaveRequest.reject');
+});
+// END CUSTOMER
+
 
 // ----- EXTERNAL ACTIONS -----
 Route::prefix('leaveRequest')->group(function() {
