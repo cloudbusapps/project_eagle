@@ -34,8 +34,8 @@
             "Tests\\": "tests/"
         },
         "files": [
-            "app/Helpers/helpers.php",
-            "app/Helpers/permission.php"
+            "app/Helpers/ModuleHelper.php",
+            "app/Helpers/PermissionHelper.php"
         ]
     },
     "scripts": {
