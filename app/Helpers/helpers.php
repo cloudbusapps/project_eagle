@@ -13,12 +13,14 @@
             ->orderBy('SortOrder')
             ->get();
         foreach ($modules as $module) {
-            $data[] = [
-                'id'        => $module['id'],
-                'Title'     => $module['Title'],
-                'RouteName' => $module['RouteName'],
-                'Prefix'    => $module['Prefix'],
-            ];
+            if (isReadAllowed($module['id'])) {
+                $data[] = [
+                    'id'        => $module['id'],
+                    'Title'     => $module['Title'],
+                    'RouteName' => $module['RouteName'],
+                    'Prefix'    => $module['Prefix'],
+                ];
+            }
         }
         return $data;
     }
@@ -42,6 +44,7 @@
         foreach ($moduleCategory as $index => $category) {
             $temp = [
                 'module' => getModuleCategory($category['CategoryId']),
+                'index' => $index + 1,
                 'items'  => []
             ];
 
@@ -52,17 +55,32 @@
                 ->get();
 
             foreach ($modules as $module) {
-                $temp['items'][] = [
-                    'id'        => $module['id'],
-                    'Title'     => $module['Title'],
-                    'Prefix'    => $module['Prefix'],
-                    'RouteName' => $module['RouteName'],
-                    'Icon'      => $module['Icon'],
-                    'items'     => getModuleItemsData($module['id'])
-                ];
+                $items = getModuleItemsData($module['id']);
+
+                if (!$module['RouteName'] && count($items)) {
+                    $temp['items'][] = [
+                        'id'        => $module['id'],
+                        'Title'     => $module['Title'],
+                        'Prefix'    => $module['Prefix'],
+                        'RouteName' => $module['RouteName'],
+                        'Icon'      => $module['Icon'],
+                        'items'     => $items,
+                    ];
+                } else if (isReadAllowed($module['id'])) {
+                    $temp['items'][] = [
+                        'id'        => $module['id'],
+                        'Title'     => $module['Title'],
+                        'Prefix'    => $module['Prefix'],
+                        'RouteName' => $module['RouteName'],
+                        'Icon'      => $module['Icon'],
+                        'items'     => $items,
+                    ];
+                }
             }
 
-            $data[] = $temp;
+            if ($temp['items'] && count($temp['items'])) {
+                $data[] = $temp;
+            }
         }
         // echo "<pre>";
         // print_r($data);

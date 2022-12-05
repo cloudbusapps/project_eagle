@@ -26,7 +26,7 @@
       @foreach ($moduleData as $index => $modules)
       <ul class="menu-list">
         <li class="divider py-2 lh-sm">
-          <span class="small fw-bold"><?= 'MODULE '.($index+1) ?></span><br>
+          <span class="small fw-bold"><?= 'MODULE '.$modules['index'] ?></span><br>
           <small class="text-muted"><?= $modules['module'] ?></small>
         </li>
         @foreach ($modules['items'] as $module)
@@ -61,8 +61,9 @@
         @endforeach
       </ul>
       @endforeach
+
+      @if (Auth::user()->IsAdmin)
       <ul class="menu-list">
-        @if (Auth::user()->IsAdmin)
         <li class="divider py-2 lh-sm">
           <span class="small fw-bold"><?= 'MODULE '.(count($moduleData)+1) ?></span><br>
           <small class="text-muted">INTEGRATION & ADMIN</small>
@@ -114,8 +115,8 @@
             <span class="ms-2">Modules</span>
           </a>
         </li> --}}
-        @endif
       </ul>
+      @endif
 
     </div>
   </div>
