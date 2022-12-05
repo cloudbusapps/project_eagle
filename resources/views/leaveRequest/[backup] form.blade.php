@@ -3,56 +3,66 @@
 @section('content')
 
 <?php
+    $disabledField = $event == 'view' ? 'disabled' : '';
+    $requiredLabel = $event == 'view' ? '' : '<code>*</code>';
 
-    $DocumentNumber = $LeaveTypeId = $StartDate = $EndDate = $Reason = $Status = null;
+    $DocumentNumber = $LeaveTypeId = $StartDate = $EndDate = $LeaveBalance = $Reason = $Status = null;
     $LeaveDuration = 1;
-    $LeaveBalance  = 0;
-    $UserId        = Auth::id();
+    $method = $action = $button = $approverButton = $todo = '';
 
-    $requiredLabel = "<code>*</code>";
-    $disabledField = '';
+    $currentApprover = $currentApprover ?? null;
     $pending = $pending ?? false;
+    $LeaveType = '';
 
-    // ADD
-    $action = route('leaveRequest.save');
-    $method = 'POST';
-    $button = '
-    <a href="'. route("leaveRequest") .'" class="btn btn-secondary">Cancel</a>
-    <button type="submit" class="btn btn-primary btnSubmitForm">Save</button>';
-
-    if (in_array($event, ['view', 'edit']))  // VIEW & EDIT
-    {
-        if ($event == 'view') {
-            if ($pending || $data['Status'] == 2) { // PENDING OR REJECTED
-                $action = route('leaveRequest.revise', ['Id' => $data['Id']]) ;
-                $method = "GET";
-                $button = '<button type="submit" class="btn btn-warning btnReviseForm">Revise</button>';
-            } else {
-                $button = '';
-            }
-    
-            $requiredLabel = "";
-            $disabledField = "disabled";
-        } else {
-            $action = route('leaveRequest.update', ['Id' => $data['Id']]);
-            $method = "PUT";
-            $button = '
-            <a href="'. route("leaveRequest") .'" class="btn btn-secondary">Cancel</a>
-            <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
-        }
-
-        $DocumentNumber = $data['DocumentNumber'];
-        $UserId         = $data['UserId'];
-        $LeaveTypeId    = $data['LeaveTypeId'];
-        $StartDate      = $data['StartDate'];
-        $EndDate        = $data['EndDate'];
-        $Reason         = $data['Reason'];
-        $Status         = $data['Status'];
-        $LeaveDuration  = $data['LeaveDuration'];
-        $LeaveBalance   = $data['LeaveBalance'];
+    if (isset($data) && !empty($data)) {
+        $UserId         = (!empty($data)) ? ($data['UserId'] ?? '') : '';
+        $DocumentNumber = (!empty($data)) ? ($data['DocumentNumber'] ?? '') : '';
+        $LeaveTypeId    = (!empty($data)) ? ($data['LeaveTypeId'] ?? '') : '';
+        $LeaveType      = (!empty($data)) ? ($data['LeaveType'] ?? '') : '';
+        $StartDate      = (!empty($data)) ? ($data['StartDate'] ?? '') : '';
+        $EndDate        = (!empty($data)) ? ($data['EndDate'] ?? '') : '';
+        $LeaveDuration  = (!empty($data)) ? ($data['LeaveDuration'] ?? 1) : 1;
+        $LeaveBalance   = (!empty($data)) ? ($data['LeaveBalance'] ?? 0) : 0;
+        $Reason         = (!empty($data)) ? ($data['Reason'] ?? '') : '';
+        $Status         = (!empty($data)) ? ($data['Status'] ?? '') : '';
     } 
 
-    if ($currentApprover == Auth::id() && isEditAllowed($MODULE_ID)) {
+    $UserId         = old('UserId') ?? $UserId;
+    $DocumentNumber = old('DocumentNumber') ?? $DocumentNumber;
+    $LeaveTypeId      = old('LeaveType') ?? $LeaveTypeId;
+    $StartDate      = old('StartDate') ?? $StartDate;
+    $EndDate        = old('EndDate') ?? $EndDate;
+    $LeaveDuration  = old('LeaveDuration') ?? $LeaveDuration;
+    $LeaveBalance   = old('LeaveBalance') ?? $LeaveBalance;
+    $Reason         = old('Reason') ?? $Reason;
+
+    if ($event == 'edit') {
+        $todo   = "update";
+        $method = "PUT";
+        $action = route('leaveRequest.update', ['Id' => $data['Id']]);
+        $button = '
+        <a href="'. route("leaveRequest") .'" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
+    } else if ($event == 'add') {
+        $UserId = Auth::id();
+        $todo   = "insert";
+        $method = "POST";
+        $action = route('leaveRequest.save');
+        $button = '
+        <a href="'. route("leaveRequest") .'" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary btnSubmitForm">Save</button>';
+    } else if (($pending || $Status == 2) && $UserId == Auth::id() && isEditAllowed($MODULE_ID)) {
+        $todo   = "revise";
+        $method = "GET";
+        $action = route('leaveRequest.revise', ['Id' => $data['Id']]) ;
+        $button = '
+        <form action="'. route('leaveRequest.revise', ['Id' => $data['Id']]) .'" method="GET">
+            '. csrf_field() .'
+            <button type="submit" class="btn btn-warning btnReviseForm">Revise</button>    
+        </form>';
+    }
+
+    if ($currentApprover == Auth::id()) {
         $button = '
         <div class="d-flex justify-content-end" style="gap: 5px;">
             <form action="'. route('leaveRequest.approve', ['Id' => $data->Id, 'UserId' => Auth::id()]) .'" method="POST">
@@ -67,12 +77,9 @@
             </form>
         </div>';
     }
-
 ?>
 
-<main id="main" class="main"
-    sickLeaveId="{{ config('constant.ID.LEAVE_TYPES.SICK_LEAVE') }}"
-    vacationLeaveId="{{ config('constant.ID.LEAVE_TYPES.VACATION_LEAVE') }}">
+<main id="main" class="main">
 
     <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
         <div class="container-fluid">
@@ -80,8 +87,8 @@
                 <div class="col">
                     <h4 class="mb-0">{{ $title }}</h4>
                     <ol class="breadcrumb bg-transparent mb-0">
-                        <li class="breadcrumb-item"><a class="text-secondary" href="{{ route('dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('leaveRequest') }}">Leave</a></li>
+                        <li class="breadcrumb-item"><a class="text-secondary" href="#">Forms</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('leaveRequest') }}">Leave Request</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
                     </ol>
                 </div>
@@ -99,105 +106,87 @@
             <div class="row">
                 <div class="col-12">
 
-                    @if ($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert"> 
-                        @foreach ($errors->all() as $error)
-                            <div>
-                                <i class="bi bi-exclamation-octagon me-1"></i>
-                                {{ $error }}
-                            </div>
-                        @endforeach
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    @endif
-
-                    @if (!$currentApprover == Auth::id() || $pending)
-                    <form action="{{ $action }}" 
-                        method="POST" 
-                        enctype="multipart/form-data" 
-                        todo="{{ $event }}" 
-                        id="formLeaveRequest">
+                    @if (!$currentApprover == Auth::id())
+                    <form action="{{ $action }}" method="POST" id="formLeaveRequest" validated="false" todo="{{ $todo }}" enctype="multipart/form-data">
                     @endif
 
                         @csrf
                         @method($method)
-
                         <input type="hidden" name="UserId" value="{{ $UserId }}">
-                        <input type="hidden" name="LeaveBalance" value="{{ $LeaveBalance }}">
-                        <input type="hidden" name="StartDate" value="{{ $StartDate }}">
-                        <input type="hidden" name="EndDate" value="{{ $EndDate }}">
-                        <input type="hidden" name="LeaveDuration" value="{{ $LeaveDuration }}">
+                        <input type="hidden" name="LeaveBalance" value="{{ $LeaveBalance ?? 0 }}">
+                        <input type="hidden" name="LeaveDuration" value="{{ $LeaveDuration ?? 1 }}">
+    
+                        @if ($errors->any())
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert"> 
+                            @foreach ($errors->all() as $error)
+                                <div>
+                                    <i class="bi bi-exclamation-octagon me-1"></i>
+                                    {{ $error }}
+                                </div>
+                            @endforeach
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        @endif
 
                         <div class="card">
                             <div class="card-body pt-3">
                                 <div class="row my-3">
                                     <label for="DocumentNumber" class="col-sm-2">Document No.</label>
                                     <div class="col-sm-10">
-                                        <input type="text" 
-                                            class="form-control" 
-                                            id="DocumentNumber" 
-                                            name="DocumentNumber" 
-                                            placeholder="Document Number"
-                                            value="{{ $DocumentNumber ?? '-' }}" 
-                                            disabled 
-                                            readonly>
+                                        <input type="text" class="form-control" id="DocumentNumber" name="DocumentNumber" placeholder="Employee Name"
+                                            value="{{ $DocumentNumber ? $DocumentNumber : '-' }}" disabled readonly>
                                     </div>
                                 </div>
                                 <div class="row my-3">
                                     <label for="EmployeeName" class="col-sm-2">Employee Name</label>
                                     <div class="col-sm-10">
-                                        <input type="text" 
-                                            class="form-control" 
-                                            id="EmployeeName" 
-                                            name="EmployeeName" 
-                                            placeholder="Employee Name"
-                                            value="{{ $data->FirstName.' '.$data->LastName }}" 
-                                            disabled 
-                                            readonly>
+                                        <input type="text" class="form-control" id="EmployeeName" name="EmployeeName" placeholder="Employee Name"
+                                            value="{{ $data->FirstName.' '.$data->LastName }}" disabled readonly>
                                     </div>
                                 </div>
                                 <div class="row my-3">
                                     <label for="LeaveType" class="col-sm-2">Leave Type <?= $requiredLabel ?></label>
                                     <div class="col-sm-10">
-                                        <select name="LeaveTypeId" 
-                                            id="LeaveTypeId" 
-                                            class="form-select" 
-                                            select2 
-                                            required
-                                            {{ $disabledField }}>
+                                        <select name="LeaveTypeId" id="LeaveTypeId" class="form-select" select2 required {{ $disabledField }}>
                                             <option value="" selected disabled>Select Leave Type</option>
 
                                             @foreach ($leaveTypes as $dt)
-                                            <option value="{{ $dt['Id'] }}" 
-                                                balance="{{ $dt['Balance'] ?? 0 }}"
-                                                {{ $LeaveTypeId == $dt['Id'] ? 'selected' : '' }}>{{ $dt['Name'] }}</option>
+                                            <option value="{{ $dt['Id'] }}" balance="{{ $dt['Balance'] ?? 0 }}" {{ $LeaveTypeId == $dt['Id'] ? 'selected' : '' }}>{{ $dt['Name'] }}</option>
                                             @endforeach
 
                                         </select>
                                     </div>
                                 </div>
                                 <div class="row my-3">
-                                    <label for="Date" class="col-sm-2">Date <?= $requiredLabel ?></label>
+                                    <label for="StartDate" class="col-sm-2">Start Date <?= $requiredLabel ?></label>
                                     <div class="col-sm-10">
-                                        <input type="text" 
-                                            class="form-control" 
-                                            name="Date" 
-                                            cdaterangepicker
+                                        <input type="date" class="form-control" id="StartDate" name="StartDate" placeholder="Start Date"
                                             required
-                                            {{ $disabledField }}
-                                            value="{{ date('F d, Y', strtotime($StartDate ?? now())).' - '.date('F d, Y', strtotime($EndDate ?? now())) }}">
+                                            value="{{ $StartDate }}"
+                                            min="{{ $LeaveType == 'Vacation Leave' ? date('Y-m-d', strtotime(now().' +14 days')) : null }}"
+                                            max="{{ $LeaveType == 'Sick Leave' ? date('Y-m-d') : null }}"
+                                            onchange="let endDate = document.getElementById('EndDate');
+                                            endDate.setAttribute('min', this.value);
+                                            endDate.value = this.value"
+                                            {{ $disabledField }}>
+                                    </div>
+                                </div>
+                                <div class="row my-3">
+                                    <label for="EndDate" class="col-sm-2">End Date <?= $requiredLabel ?></label>
+                                    <div class="col-sm-10">
+                                        <input type="date" class="form-control" id="EndDate" name="EndDate" placeholder="End Date"
+                                            required 
+                                            value="{{ $EndDate }}"
+                                            min="{{ $LeaveTypeId == 'Sick' ? $StartDate : date('Y-m-d') }}"
+                                            {{ $disabledField }}>
                                     </div>
                                 </div>
                                 <div class="row my-3">
                                     <label for="Reason" class="col-sm-2">Reason <?= $requiredLabel ?></label>
                                     <div class="col-sm-10">
-                                        <textarea name="Reason" 
-                                            id="Reason" 
-                                            rows="3" 
-                                            style="resize: none;" 
-                                            class="form-control" 
+                                        <textarea name="Reason" id="Reason" rows="3" style="resize: none;" class="form-control" 
                                             required
-                                            {{ $disabledField }}>{{ $Reason ?? '' }}</textarea>
+                                            {{ $disabledField }}>{{ $Reason }}</textarea>
                                     </div>
                                 </div>
                                 <div class="row my-3">
@@ -211,14 +200,14 @@
                                         @if (isset($files) && count($files))
                                         <div class="row mt-1" id="displayFile">
                                         @foreach ($files as $file)
-                                            <div class="py-2 col-sm-6 col-md-4 parent" filename="{{ $file['File'] }}">
-                                                <div class="display-filename">
-                                                    <a href="{{ asset('uploads/leaveRequest/'.$file['File']) }}" 
-                                                        class="text-white"
-                                                        target="_blank">{{ $file['File'] }}</a>
-                                                    {{-- <button type="button" class="btn-close btnRemoveFilename"></button> --}}
-                                                </div>
+                                        <div class="py-2 col-sm-6 col-md-4 parent" filename="{{ $file['File'] }}">
+                                            <div class="display-filename">
+                                                <a href="{{ asset('uploads/leaveRequest/'.$file['File']) }}" 
+                                                    class="text-white"
+                                                    target="_blank">{{ $file['File'] }}</a>
+                                                {{-- <button type="button" class="btn-close btnRemoveFilename"></button> --}}
                                             </div>
+                                        </div>
                                         @endforeach
                                         </div>
                                         @endif
@@ -246,8 +235,8 @@
                                 <?= $button ?>
                             </div>
                         </div>
-
-                    @if (!$currentApprover == Auth::id() || $pending)
+                        
+                    @if (!$currentApprover == Auth::id())
                     </form>
                     @endif
 
@@ -261,12 +250,6 @@
 <script>
 
     $(document).ready(function() {
-
-        // ----- GLOBAL VARIABLES -----
-        let SICK_LEAVE_ID     = $('#main').attr('sickLeaveId');
-        let VACATION_LEAVE_ID = $('#main').attr('vacationLeaveId');
-        // ----- END GLOBAL VARIABLES -----
-
 
         // ----- SELECT FILES -----
         $(document).on('change', '#File', function() {
@@ -310,6 +293,42 @@
         // ----- END REMOVE FILE -----
 
 
+        // ----- CHANGE LEAVE TYPE -----
+        $(document).on('change', `[name="LeaveTypeId"]`, function() {
+            let balance = $('option:selected', this).attr('balance');
+            let leaveType = $('option:selected', this).text()?.trim();
+            let minDate = moment().format('YYYY-MM-DD');
+            let maxDate = moment().format('YYYY-MM-DD');
+
+            if (leaveType == "Vacation Leave") {
+                minDate = moment(minDate).add(14, 'days').format('YYYY-MM-DD');
+                maxDate = null;
+            } else if (leaveType == "Sick Leave") {
+                minDate = null;
+            } else {
+                minDate = null;
+            }
+
+            $(`[name="StartDate"]`).attr('min', minDate)
+                .attr('max', maxDate)
+                .val(minDate)
+                .trigger('change');
+            $(`[name="EndDate"]`).attr('max', maxDate);
+            $(`[name="LeaveBalance"]`).val(balance);
+        })
+        // ----- END CHANGE LEAVE TYPE -----
+
+
+        // ----- CHANGE END DATE -----
+        $(document).on('change', `[name="EndDate"]`, function() {
+            let startDate = $(`[name="StartDate"]`).val();
+            let endDate   = $(this).val();
+            let duration = moment.duration(moment(endDate).diff(moment(startDate))).asDays() + 1;
+            $(`[name="LeaveDuration"]`).val(duration);
+        })
+        // ----- END CHANGE END DATE -----
+
+
         // ----- SUBMIT FORM -----
         $(document).on('submit', '#formLeaveRequest', function(e) {
             let isValidated = $(this).attr('validated') == "true";
@@ -318,12 +337,11 @@
             if (!isValidated) {
                 e.preventDefault();
 
-                let leaveTypeId   = $(`[name="LeaveTypeId"]`).val();
-                let files         = $(`#File`).val();
-                let saveFile      = $('.display-filename').length;
-                let leaveDuration = $(`[name="LeaveDuration"]`).val();
-
-                if (todo != 'view' && leaveTypeId == SICK_LEAVE_ID && parseFloat(leaveDuration) >= 2 && !saveFile) {
+                let leaveType = $(`[name="LeaveType"]`).val();
+                let files      = $(`#File`).val();
+                let saveFile   = $('.display-filename').length;
+                let leaveDuration = $(`[name="LeaveDuration"]`).val()
+                if (leaveType == 'Sick' && parseFloat(leaveDuration) >= 2 && (!files || saveFile)) {
                     showToast('danger', 'Please upload attachment.');
                 } else {
                     let content = '';
@@ -335,7 +353,7 @@
                                 <b class="mt-4">Are you sure you want to revise this leave request?</b>
                             </div>`;
                             break;
-                        case 'edit':
+                        case 'update':
                             content = `
                             <div class="d-flex justify-content-center align-items-center flex-column text-center">
                                 <img src="/assets/img/modal/update.svg" class="py-1" height="150" width="150">
@@ -379,54 +397,50 @@
         // ----- END SUBMIT FORM -----
 
 
-        // ----- INIT DATERANGEPICKER -----
-        function cInitDateRangePicker(minDate = null, maxDate = null) {
-            $(`[cdaterangepicker]`).daterangepicker({
-                opens: 'left',
-                // drops: 'up',
-                showDropdowns: true,
-                minDate,
-                maxDate,
-                locale: {
-                    format: 'MMMM DD, YYYY'
+        // ----- BUTTON DELETE FORM -----
+        $(document).on('click', '.btnDeleteForm', function(e) {
+            e.preventDefault();
+            let href = $(this).attr('href');
+
+            let confirmation = $.confirm({
+                title: false,
+                content: `
+                <div class="d-flex justify-content-center align-items-center flex-column text-center">
+                    <img src="/assets/img/modal/delete.svg" class="py-5" height="200" width="200">
+                    <b class="mt-4">Are you sure you want to delete this module?</b>
+                </div>`,
+                buttons: {
+                    no: {
+                        btnClass: 'btn-default',
+                    },
+                    yes: {
+                        btnClass: 'btn-blue',
+                        keys: ['enter'],
+                        action: function() {
+    
+                            confirmation.buttons.yes.setText(`<span class="spinner-border spinner-border-sm"></span> Please wait...`);
+                            confirmation.buttons.yes.disable();
+                            confirmation.buttons.no.hide();
+
+                            window.location.replace(href);
+    
+                            return false;
+                        }
+                    },
                 }
-            }, function(start, end, label) {
-                let startDate = start.format('YYYY-MM-DD');
-                let endDate   = end.format('YYYY-MM-DD');
-                let duration  = moment.duration(moment(endDate).diff(moment(startDate))).asDays() + 1;
-                
-                $(`[name="StartDate"]`).val(startDate);
-                $(`[name="EndDate"]`).val(endDate);
-                $(`[name="LeaveDuration"]`).val(duration);
             });
-        }
-        cInitDateRangePicker();
-        // ----- END INIT DATERANGEPICKER -----
-
-
-        // ----- CHANGE LEAVE TYPE -----
-        $(document).on('change', `[name="LeaveTypeId"]`, function() {
-            let leaveTypeId = $(this).val();
-            let balance = $('option:selected', this).attr('balance');
-            let minDate = moment().format('MMMM DD, YYYY');
-            let maxDate = moment().format('MMMM DD, YYYY');
-
-            if (leaveTypeId == VACATION_LEAVE_ID) {
-                minDate = moment(minDate).add(14, 'days').format('MMMM DD, YYYY');
-                maxDate = null;
-            } else if (leaveTypeId == SICK_LEAVE_ID) {
-                minDate = null;
-            } else {
-                minDate = null;
-            }
-
-            cInitDateRangePicker(minDate, maxDate);
-            $(`[name="LeaveBalance"]`).val(balance);
-            $(`[name="StartDate"]`).val($('[name=Date]').data('daterangepicker').startDate.format('YYYY-MM-DD'));
-            $(`[name="EndDate"]`).val($('[name=Date]').data('daterangepicker').endDate.format('YYYY-MM-DD'));
-            $(`[name="LeaveDuration"]`).val(1);
         })
-        // ----- END CHANGE LEAVE TYPE -----
+        // ----- END BUTTON DELETE FORM -----
+
+
+        // ----- SELECT ICON -----
+        $(document).on('change', `[name="Icon"]`, function() {
+            let [file] = this.files;
+            if (file) {
+                $(`img.preview-image`).attr('src', URL.createObjectURL(file));
+            }
+        })
+        // ----- END SELECT ICON -----
 
 
         // ----- BUTTON APPROVE -----

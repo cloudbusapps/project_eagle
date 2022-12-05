@@ -1501,4 +1501,12 @@ A VERTICAL event
 .bg-success .fc-event-title {
   color: white;
 }
+
+@media screen and (max-width: 578px) {
+  .fc-toolbar.fc-header-toolbar {
+    display: flex;
+    flex-direction: column;
+  }
+}
 /* ----- END CUSTOM ----- */
+

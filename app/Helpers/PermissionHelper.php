@@ -32,8 +32,9 @@
         if ($ModuleId) {
             $permission = getUserPermission($ModuleId);
             if ($permission && count($permission)) {
-                $flag = Auth::user()->IsAdmin || $permission[0]->Read == 1;
+                $flag = $permission[0]->Read == 1;
             }
+            if (Auth::user()->IsAdmin) $flag = true;
         }
         
         if ($ReturnView) {
@@ -47,8 +48,9 @@
         if ($ModuleId) {
             $permission = getUserPermission($ModuleId);
             if ($permission && count($permission)) {
-                $flag = Auth::user()->IsAdmin || $permission[0]->Create == 1;
+                $flag = $permission[0]->Create == 1;
             }
+            if (Auth::user()->IsAdmin) $flag = true;
         }
         
         if ($ReturnView) {
@@ -62,8 +64,9 @@
         if ($ModuleId) {
             $permission = getUserPermission($ModuleId);
             if ($permission && count($permission)) {
-                $flag = Auth::user()->IsAdmin || $permission[0]->Edit == 1;
+                $flag = $permission[0]->Edit == 1;
             }
+            if (Auth::user()->IsAdmin) $flag = true;
         }
         
         if ($ReturnView) {
@@ -77,8 +80,9 @@
         if ($ModuleId) {
             $permission = getUserPermission($ModuleId);
             if ($permission && count($permission)) {
-                $flag = Auth::user()->IsAdmin || $permission[0]->Delete == 1;
+                $flag = $permission[0]->Delete == 1;
             }
+            if (Auth::user()->IsAdmin) $flag = true;
         }
         
         if ($ReturnView) {

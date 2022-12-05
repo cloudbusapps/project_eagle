@@ -35,7 +35,8 @@
         },
         "files": [
             "app/Helpers/ModuleHelper.php",
-            "app/Helpers/PermissionHelper.php"
+            "app/Helpers/PermissionHelper.php",
+            "app/Helpers/ApprovalHelper.php"
         ]
     },
     "scripts": {

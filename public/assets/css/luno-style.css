@@ -29574,7 +29574,7 @@ button:focus:not(:focus-visible) {
 .daterangepicker .ranges li.active,
 .daterangepicker td.active,
 .daterangepicker td.active:hover {
-    background-color: var(--primary-color);
+    background-color: var(--primary-color) !important;
 }
 .daterangepicker td.in-range {
     background-color: rgba(var(--primary-rgb), 0.1);

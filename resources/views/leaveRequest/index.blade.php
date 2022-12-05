@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ asset('assets/css/fullcalendar.css') }}">
 <script src="{{ asset('assets/js/fullcalendar.js') }}"></script>
 
-<main id="main" class="main" calendarData="{{ json_encode($calendar) }}">
+<main id="main" class="main" calendarData="{{ json_encode($calendarData) }}">
 
     <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
         <div class="container-fluid">
@@ -45,7 +45,7 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link {{ in_array(Session::get('tab'), ['My Forms', null]) ? 'active' : '' }}" id="my-forms-tab" data-bs-toggle="tab" data-bs-target="#my-forms" type="button" role="tab">My Forms</button>
                         </li>
-                        @if ($forApproval && count($forApproval))
+                        @if ($forApprovalData && count($forApprovalData))
                         <li class="nav-item" role="presentation">
                             <button class="nav-link {{ in_array(Session::get('tab'), ['For Approval']) ? 'active' : '' }}" id="for-approval-tab" data-bs-toggle="tab" data-bs-target="#for-approval" type="button" role="tab">For Approval</button>
                         </li>
@@ -59,9 +59,13 @@
                     <div class="tab-content pt-4 px-4">
                         <div class="tab-pane fade {{ in_array(Session::get('tab'), ['My Forms', null]) ? 'show active' : '' }}" id="my-forms" role="tabpanel">
                             <div class="w-100 text-end mb-3">
+                                
+                                @if (isCreateAllowed($MODULE_ID))
                                 <a href="{{ route('leaveRequest.add') }}" class="btn btn-outline-primary px-2 py-1">
                                     <i class="bi bi-plus-lg"></i> New
                                 </a>
+                                @endif
+
                             </div>
         
                             <table class="table table-striped table-hover" id="tableLeaveRequestMyForms">
@@ -78,8 +82,8 @@
                                 </thead>
                                 <tbody>
         
-                                @if (!empty($data))
-                                @foreach ($data as $index => $dt)
+                                @if (!empty($myData))
+                                @foreach ($myData as $index => $dt)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>
@@ -119,8 +123,8 @@
                                 </thead>
                                 <tbody>
         
-                                @if (!empty($forApproval))
-                                @foreach ($forApproval as $index => $dt)
+                                @if (!empty($forApprovalData))
+                                @foreach ($forApprovalData as $index => $dt)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>
@@ -129,7 +133,7 @@
                                             </a>
                                         </td>
                                         <td>{{ $dt->FirstName.' '.$dt->LastName }}</td>
-                                        <td>{{ $dt->LeaveType }}</td>
+                                        <td>{{ $dt->Name }}</td>
                                         <td>
                                             {{ $dt->StartDate == $dt->EndDate ? 
                                             (date('F d, Y', strtotime($dt->StartDate))) :

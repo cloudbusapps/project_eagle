@@ -2,6 +2,24 @@
 
     use App\Models\admin\Module;
 
+    /**
+     * It returns an array of modules that are allowed to be read by the user.
+     * 
+     * @param ParentId The parent id of the module.
+     * 
+     * @return [
+     *     {
+     *         "id": 1,
+     *         "Title": "Dashboard",
+     *         "RouteName": "dashboard",
+     *         "Prefix": "dashboard"
+     *     },
+     *     {
+     *         "id": 2,
+     *         "Title": "Users",
+     *         "RouteName": "users",
+     *         "Prefix
+     */
     function getModuleItemsData($ParentId = 0) {
         $data = [];
         $modules = Module::where('ParentId', $ParentId)
@@ -21,6 +39,13 @@
         return $data;
     }
 
+    /**
+     * It returns a string based on the value of the parameter.
+     * 
+     * @param CategoryId The category ID of the module.
+     * 
+     * @return the string value of the category name.
+     */
     function getModuleCategory($CategoryId = 0) {
         switch ($CategoryId) {
             case 1: return 'EMPLOYEE PROFILE';
@@ -29,6 +54,21 @@
         }
     }
 
+    /**
+     * It gets all the modules from the database and then checks if the user has access to the module.
+     * If the user has access to the module, it will be added to the array.
+     * 
+     * @return Array
+     * (
+     *     [0] =&gt; Array
+     *         (
+     *             [module] =&gt; Array
+     *                 (
+     *                     [id] =&gt; 1
+     *                     [Title] =&gt; Master
+     *                     [Prefix] =&gt; 
+     *                     [RouteName] =&
+     */
     function getModuleData() {
         $data = [];
 
@@ -85,10 +125,24 @@
     }
 
 
+    /**
+     * It takes a number, and returns a string with a comma separating the thousands, and a period
+     * separating the decimal places
+     * 
+     * @param value The value to be formatted.
+     * @param prefix if true, it will add a ₱ before the amount.
+     */
     function formatAmount($value = 0, $prefix = false) {
         return ($prefix ? "₱ " : "") . number_format($value, 2);
     }
 
+    /**
+     * If the difference between the current time and the time of the activity is greater than an hour,
+     * return the number of hours ago. If the difference is less than an hour, return the number of
+     * minutes ago. If the difference is less than a minute, return "Just now".
+     * 
+     * @param date The date you want to convert to a time ago.
+     */
     function activityTime($date) {
         $today = now();
         $date1 = new DateTime($date);
@@ -105,6 +159,20 @@
         }
     }
 
+    /**
+     * If the status is 1, return a span with the class badge bg-success and the text Approved. If the
+     * status is 2, return a span with the class badge bg-danger and the text Rejected. If the status
+     * is 3, return a span with the class badge bg-secondary and the text Cancelled. If the status is
+     * anything else, return a span with the class badge bg-info and the text For Approval.
+     * 
+     * @param status the status of the request
+     * @param additionalText This is the text that will be displayed after the status.
+     * 
+     * @return 1. Approved
+     *     2. Rejected
+     *     3. Cancelled
+     *     0. For Approval
+     */
     function getStatusDisplay($status = 0, $additionalText = '') {
         switch ($status) {
             case 1: return "<span class='badge bg-success'>Approved". ($additionalText ? ' - '.$additionalText : '') ."</span>";
@@ -114,6 +182,13 @@
         }
     }
 
+    /**
+     * It takes a string like "ABC-123" and returns the number 123.
+     * 
+     * @param code The document code, e.g. "DOC-1"
+     * 
+     * @return The last document number.
+     */
     function getLastDocumentNumber($code = null) {
         if ($code) {
             $array = explode('-', $code);
@@ -123,6 +198,20 @@
         return 1;
     }
 
+    /**
+     * It takes a number and returns a string with a prefix and a number with leading zeros.
+     * 
+     * @param prefix The prefix of the document number.
+     * @param number The number to be formatted.
+     * 
+     * @return  = 'ABC'
+     *      = 1
+     *      = '1'
+     *      = 1
+     *      = 6
+     *      = '000001'
+     *     return 'ABC-000001'
+     */
     function generateDocumentNumber($prefix = '', $number) {
         $strNumber  = (string) $number;
         $strLength  = strlen($strNumber);

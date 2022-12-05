@@ -11,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 
 use App\Models\LeaveRequest;
 use App\Models\User;
-use App\Models\ModuleFormApprover;
+use App\Models\admin\ModuleFormApprover;
 
 class LeaveRequestMail extends Mailable
 {
