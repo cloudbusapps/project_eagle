@@ -2,10 +2,6 @@
 
     use App\Models\admin\Module;
 
-    function formatAmount($value = 0, $prefix = false) {
-        return ($prefix ? "₱ " : "") . number_format($value, 2);
-    }
-
     function getModuleItemsData($ParentId = 0) {
         $data = [];
         $modules = Module::where('ParentId', $ParentId)
@@ -88,6 +84,10 @@
         return $data;
     }
 
+
+    function formatAmount($value = 0, $prefix = false) {
+        return ($prefix ? "₱ " : "") . number_format($value, 2);
+    }
 
     function activityTime($date) {
         $today = now();
