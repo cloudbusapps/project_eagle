@@ -1,24 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    <?php
-    function getHours($TimeIn, $TimeOut)
-    {
-        $from_time = strtotime($TimeIn);
-        $to_time = strtotime($TimeOut);
-        if ($from_time > $to_time) {
-            $time_perday = ($to_time + 86400 - $from_time) / 3600;
-            return $hoursRendered = (int) $time_perday . ' hours, ' . ($time_perday - (int) $time_perday) * 60 . ' minutes.';
-        } else {
-            $time_perday = ($from_time - $to_time) / 3600;
-            $date1 = new DateTime($TimeIn);
-            $date2 = new DateTime($TimeOut);
-            $diff = $date1->diff($date2);
-            return $hoursRendered = $diff->format('%h hours, %i minutes.');
-        }
-    }
-    
-    ?>
     <main id="main" class="main">
 
         <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
@@ -27,7 +9,7 @@
                     <div class="col">
                         <h4 class="mb-0">{{ $title }}</h4>
                         <ol class="breadcrumb bg-transparent mb-0">
-                            <li class="breadcrumb-item"><a class="text-secondary" href="#">Overtime Requests</a></li>
+                            <li class="breadcrumb-item"><a class="text-secondary" href="#">Customers</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
                         </ol>
                     </div>
@@ -60,7 +42,7 @@
                             @endif
                             <div class="text-end">
 
-                                <a href="{{ route('overtimeRequest.add') }}" type="button" class="btn btn-outline-primary">
+                                <a href="{{ route('customers.add') }}" type="button" class="btn btn-outline-primary">
                                     <i class="bi bi-plus-lg"></i> New
                                 </a>
                             </div>
@@ -73,37 +55,25 @@
 
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Agenda</th>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Time In</th>
-                                    <th scope="col">Time Out</th>
-                                    <th scope="col">Hours</th>
-                                    <th scope="col">Status</th>
+                                    <th scope="col">Customer Name</th>
+                                    <th scope="col">Industry</th>
+                                    <th scope="col">Project Name</th>
+                                    <th scope="col">Contact Person</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($data as $index => $data)
-                                    <?php
-                                    $hoursRendered = getHours($data->TimeIn, $data->TimeOut);
-                                    $status = getStatusDisplay($data->Status);
-                                    
-                                    ?>
-
                                     <tr>
                                         <th scope="row">{{ $index + 1 }}</th>
 
                                         <td>
-                                            <a href="{{ route('overtimeDetails', ['Id' => $data->Id]) }}">
-                                                {{ $data->Agenda }}</a>
+                                            <a href="{{ route('customers.add', ['Id' => $data->Id]) }}">
+                                                {{ $data->CustomerName }}</a>
                                         </td>
 
-                                        <td>{{ date('F d, Y', strtotime($data->Date)) }}</td>
-                                        <td>{{ date('g:i: a', strtotime($data->TimeIn)) }}</td>
-                                        <td>{{ date('g:i: a', strtotime($data->TimeOut)) }}</td>
-                                        <td>{{ $hoursRendered }}
-                                        </td>
-                                        <td><?= $status ?>
-                                        </td>
+                                        <td>{{ $data->Industry }}</td>
+                                        <td>{{ $data->ProjectName }}</td>
+                                        <td>{{ $data->ContactPerson }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>

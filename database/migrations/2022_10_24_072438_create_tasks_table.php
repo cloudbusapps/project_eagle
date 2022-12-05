@@ -35,7 +35,7 @@ return new class extends Migration
 
             $table->foreign('CreatedById')->references('Id')->on('users');
             $table->foreign('UpdatedById')->references('Id')->on('users');
-            $table->foreign('UserStoryId')->references('Id')->on('user_story')->onDelete('cascade');
+            $table->foreign('UserStoryId')->references('Id')->on('user_story');
         });
     }
 

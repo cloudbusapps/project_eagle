@@ -45,7 +45,7 @@
                             <div class="text-end">
 
                                 <a href="{{ route('projects.addProject') }}" type="button" class="btn btn-outline-primary">
-                                    <i class="bi bi-plus-lg"></i> New Project
+                                    <i class="bi bi-plus-lg"></i> New
                                 </a>
                             </div>
                             @endif
