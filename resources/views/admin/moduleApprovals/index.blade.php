@@ -74,6 +74,30 @@
         let employeeList    = JSON.parse($('main').attr('employees'));
         // ----- END GLOBAL VARIABLES -----
 
+
+        // ----- DATATABLES -----
+        function initDataTables() {
+            if ( $.fn.DataTable.isDataTable('#tableDesignation') ) {
+                $('#tableDesignation').DataTable().destroy();
+            }
+
+            let tableDesignation = $('#tableDesignation')
+                .css({ "min-width": "99%" })
+                .removeAttr("width")
+                .DataTable({
+                    scrollY: '400px',
+                    sorting: [],
+                    scrollCollapse: true,
+                    paginate: false,
+                    info: false,
+                    drawCallback: function() {
+                        let $parent = $('#tableDesignation_filter').parent();
+                        $parent.removeClass('col-md-6').addClass('col-md-12');
+                    }
+                });
+        }
+        // ----- END DATATABLES -----
+
         
         // ----- SELECT MODULE -----
         $(document).on('change', `[name="ModuleId"]`, function() {
@@ -84,21 +108,24 @@
             let designationHTML = '';
             designationList.map(dt => {
                 designationHTML += `
-                <a href="#" 
-                    class="list-group-item btnDesignation" 
-                    moduleId="${moduleId}" 
-                    designationId="${dt.Id}">
-                    ${dt.Name}
-                </a>`;
+                <tr class="btnDesignation" style="cursor: pointer;" moduleId="${moduleId}" designationId="${dt.Id}">
+                    <td>${dt.Name}</td>
+                </tr>`;
             })
 
             let html = `
             <div class="row my-3 pt-3">
                 <div class="col-md-3 col-sm-12">
-                    <div class="list-group">
-                        <a href="#" class="list-group-item bg-dark disabled text-white fw-bold text-center">DESIGNATION</a>
-                        ${designationHTML}
-                    </div>
+                    <table class="table table-hover table-bordered" style="white-space: normal;" id="tableDesignation">
+                        <thead>
+                            <tr class="bg-dark">
+                                <th class="text-center text-white fw-bold">DESIGNATION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${designationHTML}
+                        </tbody>
+                    </table>
                 </div>
                 <div class="col-md-9 col-sm-12" id="displayApprover">
                     <div class="text-center">
@@ -110,6 +137,7 @@
 
             setTimeout(() => {
                 $('#approvalDisplay').html(html);
+                initDataTables();
             }, 500);
         })
         // ----- END SELECT MODULE -----
@@ -202,7 +230,7 @@
         }
 
         $(document).on('click', '.btnDesignation', function() {
-            $('.list-group-item').removeClass('active');
+            $('#tableDesignation tbody tr').removeClass('active');
             $(this).addClass('active');
 
             $('#displayApprover').html(PRELOADER);

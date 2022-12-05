@@ -180,12 +180,12 @@ Route::prefix('leaveRequest')->group(function () {
 
 
 // ----- ADMIN -----
-use App\Http\Controllers\admin\ProjectManagementController;
 use App\Http\Controllers\admin\ModuleController;
 use App\Http\Controllers\admin\DepartmentController;
 use App\Http\Controllers\admin\DesignationController;
 use App\Http\Controllers\admin\ModuleApprovalController;
 use App\Http\Controllers\admin\LeaveTypeController;
+use App\Http\Controllers\admin\PermissionController;
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function () {
     // MODULE
@@ -231,13 +231,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
         });
 
         // PERMISSION
-        Route::prefix('permission')->group(function () {
-            Route::get('/', [LeaveTypeController::class, 'index'])->name('permission');
-            Route::get('/add', [LeaveTypeController::class, 'form'])->name('permission.add');
-            Route::post('/save', [LeaveTypeController::class, 'save'])->name('permission.save');
-            Route::get('/edit/{Id}', [LeaveTypeController::class, 'edit'])->name('permission.edit');
-            Route::put('/edit/{Id}/update', [LeaveTypeController::class, 'update'])->name('permission.update');
-            Route::get('/delete/{Id}', [LeaveTypeController::class, 'delete'])->name('permission.delete');
+        Route::prefix('permission')->group(function() {
+            Route::get('/', [PermissionController::class, 'index'])->name('permission');
+            Route::get('/edit/{Id}', [PermissionController::class, 'edit'])->name('permission.edit');
+            Route::post('/edit/{Id}/save', [PermissionController::class, 'save'])->name('permission.save');
         });
 
         // APPROVAL
@@ -246,7 +243,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
             Route::get('/edit/{id}', [ModuleApprovalController::class, 'edit'])->name('moduleApproval.edit');
             Route::get('/edit/{id}/{designationId}', [ModuleApprovalController::class, 'editDesignation'])->name('moduleApproval.edit.designation');
             Route::post('/edit/{id}/{designationId}/save', [ModuleApprovalController::class, 'saveDesignation'])->name('moduleApproval.edit.designation.save');
-            Route::put('/edit/{id}/update', [ModuleApprovalController::class, 'update'])->name('moduleApproval.update');
         });
     });
 

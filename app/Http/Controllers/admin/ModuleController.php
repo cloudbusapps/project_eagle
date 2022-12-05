@@ -18,7 +18,7 @@ class ModuleController extends Controller
                 ->leftJoin('modules AS m2', 'm2.id', 'm.ParentId')
                 ->get()
         ];
-        return view('modules.index', $data);
+        return view('admin.modules.index', $data);
     }
 
     public function form() {
@@ -26,7 +26,7 @@ class ModuleController extends Controller
             'title' => "New Module",
             'modules' => Module::where('ParentId', null)->get()
         ];
-        return view('modules.form', $data);
+        return view('admin.modules.form', $data);
     }
 
     public function save(Request $request) {
@@ -75,7 +75,7 @@ class ModuleController extends Controller
             'modules' => Module::where('ParentId', null)->get(),
             'data' => Module::find($id)
         ];
-        return view('modules.form', $data);
+        return view('admin.modules.form', $data);
     }
 
     public function update(Request $request, $id) {

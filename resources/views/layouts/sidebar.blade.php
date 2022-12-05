@@ -106,12 +106,14 @@
             </li>
           </ul>
         </li>
+        {{-- 
+        <!-- FOR DEVELOPER ONLY -->  
         <li>
           <a class="m-link {{ $subModule == 'module' ? 'active' : '' }}" href="{{ route('module') }}">
             <img src="{{ asset('uploads/icons/modules.png') }}" alt="Modules" width="20" height="20">
             <span class="ms-2">Modules</span>
           </a>
-        </li>
+        </li> --}}
         @endif
       </ul>
 

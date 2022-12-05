@@ -25,7 +25,7 @@ class ModuleApprovalController extends Controller
                 ->where('IsAdmin', false)->get(),
             'designations' => Designation::where('Status', 1)->get()
         ];
-        return view('moduleApprovals.index', $data);
+        return view('admin.moduleApprovals.index', $data);
     }
 
     public function edit($id) {
@@ -37,7 +37,7 @@ class ModuleApprovalController extends Controller
                 ->where('IsAdmin', false)->get(),
             'designations' => Designation::where('Status', 1)->get()
         ];
-        return view('moduleApprovals.form', $data);
+        return view('admin.moduleApprovals.form', $data);
     }
 
     public function editDesignation($id, $designationId) {
