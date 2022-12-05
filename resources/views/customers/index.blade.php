@@ -42,8 +42,8 @@
                             @endif
                             <div class="text-end">
 
-                                <a href="{{ route('overtimeRequest.add') }}" type="button" class="btn btn-outline-primary">
-                                    <i class="bi bi-plus-lg"></i> New Overtime Request
+                                <a href="{{ route('customers.add') }}" type="button" class="btn btn-outline-primary">
+                                    <i class="bi bi-plus-lg"></i> New
                                 </a>
                             </div>
 
@@ -55,37 +55,25 @@
 
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Agenda</th>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Time In</th>
-                                    <th scope="col">Time Out</th>
-                                    <th scope="col">Hours</th>
-                                    <th scope="col">Status</th>
+                                    <th scope="col">Customer Name</th>
+                                    <th scope="col">Industry</th>
+                                    <th scope="col">Project Name</th>
+                                    <th scope="col">Contact Person</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($data as $index => $data)
-                                    <?php
-                                    $hoursRendered = getHours($data->TimeIn, $data->TimeOut);
-                                    $status = getStatusDisplay($data->Status);
-                                    
-                                    ?>
-
                                     <tr>
                                         <th scope="row">{{ $index + 1 }}</th>
 
                                         <td>
-                                            <a href="{{ route('overtimeDetails', ['Id' => $data->Id]) }}">
-                                                {{ $data->Agenda }}</a>
+                                            <a href="{{ route('customers.add', ['Id' => $data->Id]) }}">
+                                                {{ $data->CustomerName }}</a>
                                         </td>
 
-                                        <td>{{ date('F d, Y', strtotime($data->Date)) }}</td>
-                                        <td>{{ date('g:i: a', strtotime($data->TimeIn)) }}</td>
-                                        <td>{{ date('g:i: a', strtotime($data->TimeOut)) }}</td>
-                                        <td>{{ $hoursRendered }}
-                                        </td>
-                                        <td><?= $status ?>
-                                        </td>
+                                        <td>{{ $data->Industry }}</td>
+                                        <td>{{ $data->ProjectName }}</td>
+                                        <td>{{ $data->ContactPerson }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>

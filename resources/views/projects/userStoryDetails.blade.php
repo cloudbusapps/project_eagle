@@ -160,7 +160,7 @@
                                 <div class="text-end">
                                     <a href="{{ route('projects.addTask', ['Id' => $userStoryData->Id]) }}" id="btnAddTask"
                                         type="button" class="btn btn-outline-primary">
-                                        <i class="bi bi-plus-lg"></i> New Tasks
+                                        <i class="bi bi-plus-lg"></i> New
                                     </a>
                                 </div>
                             @endif

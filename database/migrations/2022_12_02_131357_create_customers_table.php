@@ -17,6 +17,7 @@ return new class extends Migration
             $table->uuid('Id')->primary();
             $table->string('CustomerName');
             $table->string('Industry');
+            $table->string('ProjectName');
             $table->string('Address');
 
             $table->string('ContactPerson');
