@@ -77,6 +77,7 @@
                                         <th>Leave Type</th>
                                         <th>Date</th>
                                         <th>Reason</th>
+                                        <th>Current Approver</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -95,11 +96,17 @@
                                         <td>{{ $dt->Name }}</td>
                                         <td>
                                             {{ $dt->StartDate == $dt->EndDate ? 
-                                            (date('F d, Y', strtotime($dt->StartDate))) :
-                                            (date('M d', strtotime($dt->StartDate)).' - '.date('M d, Y', strtotime($dt->EndDate)))
+                                                (date('F d, Y', strtotime($dt->StartDate))) :
+                                                (date('M d', strtotime($dt->StartDate)).' - '.date('M d, Y', strtotime($dt->EndDate)))
                                             }}
                                         </td>
                                         <td>{{ $dt->Reason }}</td>
+                                        <td>
+                                            {{ $dt->currentApprover ? 
+                                                $dt->currentApprover->FirstName.' '.$dt->currentApprover->LastName :
+                                                '-'
+                                            }}
+                                        </td>
                                         <td><?= getStatusDisplay($dt->Status) ?></td>
                                     </tr>
                                 @endforeach
@@ -118,6 +125,7 @@
                                         <th>Leave Type</th>
                                         <th>Date</th>
                                         <th>Reason</th>
+                                        <th>Current Approver</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -141,6 +149,12 @@
                                             }}
                                         </td>
                                         <td>{{ $dt->Reason }}</td>
+                                        <td>
+                                            {{ $dt->currentApprover ? 
+                                                $dt->currentApprover->FirstName.' '.$dt->currentApprover->LastName :
+                                                '-'
+                                            }}
+                                        </td>
                                         <td><?= getStatusDisplay($dt->Status) ?></td>
                                     </tr>
                                 @endforeach
@@ -265,7 +279,8 @@
                     { targets: 3,  width: 120 },
                     { targets: 4,  width: 120 },
                     { targets: 5,  width: 200 }, 
-                    { targets: 6,  width: 80  }, 
+                    { targets: 6,  width: 120 }, 
+                    { targets: 7,  width: 80  }, 
                 ],
             });
 
@@ -284,7 +299,8 @@
                     { targets: 3,  width: 120 },
                     { targets: 4,  width: 120 },
                     { targets: 5,  width: 200 }, 
-                    { targets: 6,  width: 80  }, 
+                    { targets: 6,  width: 120 }, 
+                    { targets: 7,  width: 80  }, 
                 ],
             });
 

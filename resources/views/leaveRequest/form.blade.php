@@ -11,7 +11,9 @@
 
     $requiredLabel = "<code>*</code>";
     $disabledField = '';
-    $pending = $pending ?? false;
+
+    $pending         = $pending ?? false;
+    $currentApprover = $currentApprover ?? false;
 
     // ADD
     $action = route('leaveRequest.save');
@@ -23,7 +25,7 @@
     if (in_array($event, ['view', 'edit']))  // VIEW & EDIT
     {
         if ($event == 'view') {
-            if ($pending || $data['Status'] == 2) { // PENDING OR REJECTED
+            if (($pending || $data['Status'] == 2) && $data['UserId'] == Auth::id()) { // PENDING OR REJECTED
                 $action = route('leaveRequest.revise', ['Id' => $data['Id']]) ;
                 $method = "GET";
                 $button = '<button type="submit" class="btn btn-warning btnReviseForm">Revise</button>';
@@ -231,7 +233,7 @@
                                     @foreach ($approvers as $dt)
                                     <div class="col-md-4 col-sm-6">
                                         <div class="pl-2"> 
-                                            <span class="badge bg-warning">Level {{ $dt['Level'] }}</span>
+                                            <span class="badge bg-dark">Level {{ $dt['Level'] }}</span>
                                             <span class="px-2">{{ $dt['FirstName'].' '.$dt['LastName']  }}</span>
                                         </div>
                                         <?= getStatusDisplay($dt['Status'], $dt['Date'] ? date('F d, Y h:i A', strtotime($dt['Date'])) : null) ?>

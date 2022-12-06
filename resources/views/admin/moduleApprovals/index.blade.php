@@ -256,7 +256,7 @@
                         <tr id="${ApproverId}">
                             <td class="d-flex justify-content-between align-items-center py-1 px-0">
                                 <div class="pl-2"> 
-                                    <span class="badge bg-warning">Level ${Level}</span>
+                                    <span class="badge bg-dark">Level ${Level}</span>
                                     <span class="px-2">${FirstName} ${LastName}</span>
                                 </div>
                                 <button class="btn btn-outline-danger btnDeleteApprover"><i class="bi bi-trash"></i></button>
@@ -310,7 +310,7 @@
                     <tr id="${approverId}">
                         <td class="d-flex justify-content-between align-items-center py-1 px-0">
                             <div class="pl-2"> 
-                                <span class="badge bg-warning">Level ${count}</span>
+                                <span class="badge bg-dark">Level ${count}</span>
                                 <span class="px-2">${approverName}</span>
                             </div>
                             <button class="btn btn-outline-danger btnDeleteApprover"><i class="bi bi-trash"></i></button>
@@ -334,7 +334,7 @@
             $parent.fadeOut(500, function() {
                 $parent.remove();
 
-                $('#tableApprover span.bg-warning').each(function(index) {
+                $('#tableApprover span.bg-dark').each(function(index) {
                     $(this).text('Level '+ (index+1));
                 })
             })

@@ -158,27 +158,24 @@
             return "Just now";
         }
     }
-
+    
     /**
-     * If the status is 1, return a span with the class badge bg-success and the text Approved. If the
-     * status is 2, return a span with the class badge bg-danger and the text Rejected. If the status
-     * is 3, return a span with the class badge bg-secondary and the text Cancelled. If the status is
-     * anything else, return a span with the class badge bg-info and the text For Approval.
+     * It returns a span element with a class of badge and a background color of either info, success,
+     * danger, secondary, or warning. The text inside the span element is either "For Approval",
+     * "Approved", "Rejected", "Cancelled", or "Pending".
      * 
      * @param status the status of the request
      * @param additionalText This is the text that will be displayed after the status.
      * 
-     * @return 1. Approved
-     *     2. Rejected
-     *     3. Cancelled
-     *     0. For Approval
+     * @return a string.
      */
     function getStatusDisplay($status = 0, $additionalText = '') {
         switch ($status) {
-            case 1: return "<span class='badge bg-success'>Approved". ($additionalText ? ' - '.$additionalText : '') ."</span>";
-            case 2: return "<span class='badge bg-danger'>Rejected". ($additionalText ? ' - '.$additionalText : '') ."</span>";
-            case 3: return "<span class='badge bg-secondary'>Cancelled". ($additionalText ? ' - '.$additionalText : '') ."</span>";
-            default: return "<span class='badge bg-info'>For Approval". ($additionalText ? ' - '.$additionalText : '') ."</span>";
+            case 1: return "<span class='badge bg-info'>For Approval". ($additionalText ? ' - '.$additionalText : '') ."</span>";
+            case 2: return "<span class='badge bg-success'>Approved". ($additionalText ? ' - '.$additionalText : '') ."</span>";
+            case 3: return "<span class='badge bg-danger'>Rejected". ($additionalText ? ' - '.$additionalText : '') ."</span>";
+            case 4: return "<span class='badge bg-secondary'>Cancelled". ($additionalText ? ' - '.$additionalText : '') ."</span>";
+            default: return "<span class='badge bg-warning'>Pending". ($additionalText ? ' - '.$additionalText : '') ."</span>";
         }
     }
 

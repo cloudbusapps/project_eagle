@@ -4,15 +4,6 @@
     use App\Models\admin\ModuleApproval;
     use App\Models\admin\ModuleFormApprover;
 
-    function isFormPending($ModuleId = 0, $TableId = '') {
-        $data = ModuleFormApprover::select(DB::raw('CASE WHEN SUM("Status") = 0 THEN \'0\' ELSE \'1\' END AS status'))
-            ->where('ModuleId', $ModuleId)
-            ->where('TableId', $TableId)
-            ->limit(1)
-            ->get();
-        return ($data && count($data)) ? $data[0]->status == '0' : false;
-    }
-
     function setFormApprovers($ModuleId = 0, $TableId = '') {
         $DesignationId = Auth::user()->DesignationId;
         $delete = ModuleFormApprover::where('ModuleId', $ModuleId)->where('TableId', $TableId)->delete();
@@ -22,24 +13,34 @@
             ->get();
 
         $approverData = [];
-        foreach ($approvers as $dt) {
+        foreach ($approvers as $index => $dt) {
             $approverData[] = [
                 'Id'            => Str::uuid(),
                 'ModuleId'      => $ModuleId,
                 'TableId'       => $TableId,
                 'Level'         => $dt['Level'],
                 'ApproverId'    => $dt['ApproverId'],
-                'Status'        => 0,
+                'Status'        => $index == 0 ? 1 : 0,
                 'Date'          => null,
                 'Remarks'       => null,
-                'CreatedById' => Auth::id(),
-                'UpdatedById' => Auth::id(),
+                'CreatedById'   => Auth::id(),
+                'UpdatedById'   => Auth::id(),
             ];
         }
         if ($approverData && count($approverData)) {
             ModuleFormApprover::insert($approverData);
         }
         return true;
+    }
+
+
+    function isFormPending($ModuleId = 0, $TableId = '') {
+        $data = ModuleFormApprover::select(DB::raw('CASE WHEN SUM("Status") = 0 THEN \'0\' ELSE \'1\' END AS status'))
+            ->where('ModuleId', $ModuleId)
+            ->where('TableId', $TableId)
+            ->limit(1)
+            ->get();
+        return ($data && count($data)) ? $data[0]->status == '0' : false;
     }
 
     function getFormStatus($ModuleId = 0, $TableId = '') {
@@ -49,12 +50,31 @@
         $status = 0; $approvedCount = 0;
         if ($approvers && count($approvers)) {
             foreach ($approvers as $dt) {
-                if ($dt['Status'] == 2) $status = 2; // REJECTED
-                if ($dt['Status'] == 1) {
+                if ($dt['Status'] == 3) $status = 3; // REJECTED
+                if ($dt['Status'] == 2) {
                     $approvedCount++;
                 }
             }
-            $status = count($approvers) == $approvedCount ? 1 : $status; // APPROVED
+            $status = count($approvers) == $approvedCount ? 2 : $status; // APPROVED
         }
         return $status;
+    }
+
+    function getCurrentApprover($ModuleId = 0, $TableId = '') {
+        $output = [];
+
+        $approvers = ModuleFormApprover::select('module_form_approvers.ApproverId', 'u.FirstName', 'u.LastName')
+            ->leftJoin('users AS u', 'u.Id', 'module_form_approvers.ApproverId')
+            ->where('ModuleId', $ModuleId)
+            ->where('TableId', $TableId)
+            ->where('module_form_approvers.Status', 0)
+            ->orderBy('Level', 'ASC')
+            ->limit(1)
+            ->get();
+
+        if ($approvers && count($approvers)) {
+            $output = $approvers[0];
+        }
+
+        return $output;
     }
