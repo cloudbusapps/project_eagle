@@ -17,7 +17,7 @@ class TaskController extends Controller
     {
         if (session()->has('LoggedUser')) {
             //
-            return view('projects.view');
+            return view('projects');
         } else {
             return view('/auth/login');
         }

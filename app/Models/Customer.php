@@ -28,7 +28,7 @@ class Customer extends Model
         'Type',
         'Notes',
         'Link',
-        'isComplex',
+        'IsComplex',
         'Status',
         'CreatedById',
         'UpdatedById',

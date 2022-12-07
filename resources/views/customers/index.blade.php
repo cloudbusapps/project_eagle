@@ -67,7 +67,7 @@
                                         <th scope="row">{{ $index + 1 }}</th>
 
                                         <td>
-                                            <a href="{{ route('customers.add', ['Id' => $data->Id]) }}">
+                                            <a href="{{ route('customers.edit', ['Id' => $data->Id]) }}">
                                                 {{ $data->CustomerName }}</a>
                                         </td>
 

@@ -114,11 +114,11 @@ class ProjectController extends Controller
         $save = $userData->projects()->save($project);
         if ($save) {
             return redirect()
-                ->route('projects.view')
+                ->route('projects')
                 ->with('success', "Project <b>{$projectName}</b> has been created");
         } else {
             return redirect()
-                ->route('projects.view')->with('fail', 'Something went wrong, try again later');
+                ->route('projects')->with('fail', 'Something went wrong, try again later');
         }
     }
 
@@ -156,11 +156,11 @@ class ProjectController extends Controller
 
         if ($projectData->delete()) {
             return redirect()
-                ->route('projects.view')
+                ->route('projects')
                 ->with('success', "Project <b>{$projectName}</b> has been deleted");
         } else {
             return redirect()
-                ->route('projects.view')
+                ->route('projects')
                 ->with('fail', 'Something went wrong, try again later');
         }
     }
@@ -257,7 +257,7 @@ class ProjectController extends Controller
                 ->with('success', "User Story <b>{$UserStoryTitle}</b> has been created");
         } else {
             return redirect()
-                ->route('projects.view')->with('fail', 'Something went wrong, try again later');
+                ->route('projects')->with('fail', 'Something went wrong, try again later');
         }
     }
     function updateUserStory(Request $request, $Id)
@@ -377,7 +377,7 @@ class ProjectController extends Controller
             return response()->json(['url' => url('projects/projectDetails/' . $Id)]);
         } else {
             return redirect()
-                ->route('projects.view')->with('fail', 'Something went wrong, try again later');
+                ->route('projects')->with('fail', 'Something went wrong, try again later');
         }
     }
 
@@ -407,7 +407,7 @@ class ProjectController extends Controller
                 ->with('success', "Users has been updated in this project");
         } else {
             return redirect()
-                ->route('projects.view')->with('fail', 'Something went wrong, try again later');
+                ->route('projects')->with('fail', 'Something went wrong, try again later');
         }
     }
 

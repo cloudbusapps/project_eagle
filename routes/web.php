@@ -23,6 +23,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserStoryController;
 use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\LeaveRequestController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CustomerController;
 
 // AUTH
@@ -97,7 +98,7 @@ Route::group(['middleware' => 'auth'], function () {
     //PROJECTS
     Route::prefix('projects')->group(function () {
         // DEFAULT
-        Route::get('/projectView', [ProjectController::class, 'view'])->name('projects.view');
+        Route::get('/projectView', [ProjectController::class, 'view'])->name('projects');
         Route::get('/projectDetails/{Id}', [ProjectController::class, 'viewProjectDetails'])->name('projects.projectDetails');
         Route::post('/add', [ProjectController::class, 'add'])->name('projects.add');
         Route::put('/update/{Id}', [ProjectController::class, 'update'])->name('projects.update');
@@ -129,7 +130,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     // NOTIFICATION
     Route::prefix('notification')->group(function () {
-        Route::get('/update/{Id}', [DashboardController::class, 'updateNotif'])->name('notifications.updateNotif');
+        Route::get('/update/{Id}', [NotificationController::class, 'updateNotif'])->name('notifications.updateNotif');
     });
 
     // LEAVE

@@ -17,16 +17,16 @@ return new class extends Migration
             $table->uuid('Id')->primary();
             $table->string('CustomerName');
             $table->string('Industry');
-            $table->string('ProjectName');
+            $table->string('ProjectName')->nullable(true);
             $table->string('Address');
 
             $table->string('ContactPerson');
             $table->integer('Product')->nullable(true);
             $table->integer('Type')->nullable(true);
-            $table->string('Notes');
-            $table->string('Link');
-            $table->boolean('isComplex');
-            $table->integer('Status');
+            $table->string('Notes')->nullable(true);
+            $table->string('Link')->nullable(true);
+            $table->boolean('IsComplex')->nullable(true);
+            $table->integer('Status')->nullable(true);
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();
             $table->timestamps();

@@ -33,7 +33,7 @@
                         <h4 class="mb-0">{{ $title }}</h4>
                         <ol class="breadcrumb bg-transparent mb-0">
                             <li class="breadcrumb-item"><a class="text-secondary" href="#">Projects</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('projects.view') }}">List of Project</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('projects') }}">List of Project</a></li>
                             <li class="breadcrumb-item"><a
                                     href="{{ route('projects.projectDetails', ['Id' => $projectId]) }}">Project Details</a>
                             </li>
@@ -115,7 +115,7 @@
 
                             </div>
                             <div class="button-footer text-end">
-                                <a href="{{ route('projects.view') }}" class="btn btn-secondary">Cancel</a>
+                                <a href="{{ route('projects') }}" class="btn btn-secondary">Cancel</a>
                                 {{-- <button id="test">test</button> --}}
 
                                 <?= $button ?>
