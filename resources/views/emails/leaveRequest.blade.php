@@ -35,21 +35,32 @@
     <div>
         <div>Hello <b>{{ $approver->FirstName.' '.$approver->LastName }},</b></div>
         <br><br>
-        <div style="text-indent: 15px;">
-            <a href="{{ route('leaveRequest.view', ['Id' => $data->Id]) }}" style="color: blue;">{{ $data->DocumentNumber }}</a> - {{ $data->FirstName.' '.$data->LastName }} is asking for your approval.
-        </div>
-        <br><br>
-        <div>
-            <div>Details</div>
-            <div><label>Leave Type</label> {{ $data->LeaveType }}</div>
-            <div><label>Date:</label> {{ $data->StartDate == $data->EndDate ? date('F d, Y', strtotime($data->StartDate)) : (date('F d', strtotime($data->StartDate)).' - '.date('F d, Y', strtotime($data->EndDate))) }}</div>
-            <div><label>Reason:</label> {{ $data->Reason }}</div>
-        </div>
-        <br><br>
-        <div class="form-group">
-            <a href="{{ route('external.leaveRequest.approve', ['Id' => $data->Id]) }}" class="btn-approve">Approve</a>
-            <a href="{{ route('external.leaveRequest.reject', ['Id' => $data->Id]) }}" class="btn-reject">Reject</a>
-        </div>
+        @if ($data->Status == 2) <!-- APPROVED -->
+            <div style="text-indent: 15px;">
+                <a href="{{ route('leaveRequest.view', ['Id' => $data->Id]) }}" style="color: blue;">{{ $data->DocumentNumber }}</a> - Your request has been approved.
+            </div>
+        @elseif ($data->Status == 3) <!-- REJECTED -->
+            <div style="text-indent: 15px;">
+                <a href="{{ route('leaveRequest.view', ['Id' => $data->Id]) }}" style="color: blue;">{{ $data->DocumentNumber }}</a> - Your request has been rejected.
+            </div>
+        @else
+            <div style="text-indent: 15px;">
+                <a href="{{ route('leaveRequest.view', ['Id' => $data->Id]) }}" style="color: blue;">{{ $data->DocumentNumber }}</a> - {{ $data->FirstName.' '.$data->LastName }} is asking for your approval.
+            </div>
+            <br><br>
+            <div>
+                <div>Details</div>
+                <div><label>Leave Type</label> {{ $data->LeaveType }}</div>
+                <div><label>Date:</label> {{ $data->StartDate == $data->EndDate ? date('F d, Y', strtotime($data->StartDate)) : (date('F d', strtotime($data->StartDate)).' - '.date('F d, Y', strtotime($data->EndDate))) }}</div>
+                <div><label>Reason:</label> {{ $data->Reason }}</div>
+            </div>
+            <br><br>
+            <div class="form-group">
+                <a href="{{ route('external.leaveRequest.approve', ['Id' => $data->Id]) }}" class="btn-approve">Approve</a>
+                <a href="{{ route('external.leaveRequest.reject', ['Id' => $data->Id]) }}" class="btn-reject">Reject</a>
+            </div>
+        @endif
+
         <br><br><br>
         <div>
             <label for="">Regards,</label><br>

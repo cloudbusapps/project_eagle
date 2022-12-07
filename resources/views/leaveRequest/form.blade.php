@@ -13,7 +13,7 @@
     $disabledField = '';
 
     $pending         = $pending ?? false;
-    $currentApprover = $currentApprover ?? false;
+    $currentApprover = null;
 
     // ADD
     $action = route('leaveRequest.save');
@@ -25,7 +25,8 @@
     if (in_array($event, ['view', 'edit']))  // VIEW & EDIT
     {
         if ($event == 'view') {
-            if (($pending || $data['Status'] == 2) && $data['UserId'] == Auth::id()) { // PENDING OR REJECTED
+            $pending = $data['UserId'] == Auth::id() && $pending;
+            if (($pending || $data['Status'] == 3) && $data['UserId'] == Auth::id()) { // PENDING OR REJECTED
                 $action = route('leaveRequest.revise', ['Id' => $data['Id']]) ;
                 $method = "GET";
                 $button = '<button type="submit" class="btn btn-warning btnReviseForm">Revise</button>';
@@ -43,15 +44,16 @@
             <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
         }
 
-        $DocumentNumber = $data['DocumentNumber'];
-        $UserId         = $data['UserId'];
-        $LeaveTypeId    = $data['LeaveTypeId'];
-        $StartDate      = $data['StartDate'];
-        $EndDate        = $data['EndDate'];
-        $Reason         = $data['Reason'];
-        $Status         = $data['Status'];
-        $LeaveDuration  = $data['LeaveDuration'];
-        $LeaveBalance   = $data['LeaveBalance'];
+        $DocumentNumber  = $data['DocumentNumber'];
+        $UserId          = $data['UserId'];
+        $LeaveTypeId     = $data['LeaveTypeId'];
+        $StartDate       = $data['StartDate'];
+        $EndDate         = $data['EndDate'];
+        $Reason          = $data['Reason'];
+        $Status          = $data['Status'];
+        $LeaveDuration   = $data['LeaveDuration'];
+        $LeaveBalance    = $data['LeaveBalance'];
+        $currentApprover = $data['ApproverId'];
     } 
 
     if ($currentApprover == Auth::id() && isEditAllowed($MODULE_ID)) {
@@ -445,7 +447,7 @@
                 e.preventDefault();
     
                 let confirmation = $.confirm({
-                    title: `<h5>APPROVE LEAVE REQUEST</h5>`,
+                    title: `<h5>APPROVE LEAVE</h5>`,
                     content: `
                     <div class="form-group">
                         <label>Remarks</label>    
@@ -490,7 +492,7 @@
                 e.preventDefault();
     
                 let confirmation = $.confirm({
-                    title: `<h5>REJECT LEAVE REQUEST</h5>`,
+                    title: `<h5>REJECT LEAVE</h5>`,
                     content: `
                     <div class="form-group">
                         <label>Remarks <code>*</code></label>    

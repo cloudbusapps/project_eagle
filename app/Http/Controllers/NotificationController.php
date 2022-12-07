@@ -37,15 +37,17 @@ class NotificationController extends Controller
 
         Notification::send($user, new OvertimeEmail($project));
     }
-    // ADDED
-    public function updateNotif($Id)
+    
+
+    public function updateNotification($Id)
     {
         $notification = DB::table('notifications')
             ->where('id', '=', $Id)
             ->where('read_at', '=', null)
             ->update(['read_at' => now()]);
         if ($notification > 0) {
-            return redirect()->back();
+            return response()->json(['status' => 'success']);
         }
+        return response()->json(['status'=> 'fail']);
     }
 }

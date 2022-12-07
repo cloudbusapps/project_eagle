@@ -47,6 +47,26 @@ function showToast(type = 'success', text = '') {
 // ----- END SHOW TOAST -----
 
 
+// ----- VIEW NOTIFICATION -----
+function viewNotification(id = '', link = '') {
+    $.ajax({
+        url: `/notification/update/${id}`,
+        method: 'POST',
+        async: false,
+        dataType: 'json',
+        success: function(data) {
+            let { status } = data;
+            if (status == 'success') {
+                window.location.replace(link);
+            } else {
+                showToast('danger', 'Something went wrong.');
+            }
+        }
+    })
+}
+// ----- END VIEW NOTIFICATION -----
+
+
 // ----- INITIALIZE SELECT2 -----
 function initSelect2() {
     $(`[select2]`).select2();

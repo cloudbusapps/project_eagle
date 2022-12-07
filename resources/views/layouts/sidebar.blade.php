@@ -10,7 +10,7 @@
   $notifications = DB::table('notifications')
     ->where('notifiable_id', '=', Auth::id())
     ->where('read_at', '=', null)
-    ->orderBy('created_at',"ASC")
+    ->orderBy('created_at', 'DESC')
     ->limit(5)
     ->get();
 ?>
@@ -165,16 +165,16 @@
                         <div class="card-header p-3">
                             <h6 class="card-title mb-0">Notifications</h6>
                         </div>
-                        <div class="tab-content card-body custom_scroll">
+                        <div class="tab-content card-body custom_scroll px-3 py-2">
                             <div class="tab-pane fade show active">
                                 @if (count($notifications) > 0)
                                     <ul class="list-unstyled list mb-0">
                                         @foreach ($notifications as $notification)
                                             <?php $data = json_decode($notification->data); ?>
                                             <li class="py-2 mb-1 border-bottom">
-                                                <a href="{{ $data->Link ?? '#' }}"
-                                                    class="d-flex btnNotif"
-                                                    data-id="{{ $notification->id }}">
+                                                <div class="d-flex btnViewNotification"
+                                                    style="cursor: pointer;"
+                                                    onclick="viewNotification('{{ $notification->id }}', '{{ $data->Link ?? '#' }}')">
                                                     <img src="{{ $data->Icon ?? '/assets/img/icons/default.png' }}" height="30" width="30">
                                                     <div class="flex-fill ms-3">
                                                         <p class="mb-0">
@@ -182,23 +182,8 @@
                                                         </p>
                                                         <small>{{ activityTime($notification->created_at) }}</small>
                                                     </div>
-                                                </a>
+                                                </div>
                                             </li>
-                                            {{-- <li class="py-2 mb-1 border-bottom">
-                                                <a href="{{ route('notifications.updateNotif', ['Id' => $notification->id]) }}"
-                                                    class="d-flex btnNotif"
-                                                    data-id="{{ $notification->id }}">
-                                                    <div class="avatar rounded-circle no-thumbnail"><i
-                                                            class="fa fa-warning fa-lg"></i></div>
-                                                    <div class="flex-fill ms-3">
-                                                        <p class="mb-0">
-                                                          <b class="text-danger">Deadline Overdue</b>
-                                                          <?= $data->Description ?>
-                                                        </p>
-                                                        <small>{{ activityTime($notification->created_at) }}</small>
-                                                    </div>
-                                                </a>
-                                            </li> --}}
                                         @endforeach
 
                                     </ul>
@@ -237,4 +222,3 @@
       </nav>
     </div>
   </header>
-  

@@ -35,19 +35,21 @@
 
 
     function isFormPending($ModuleId = 0, $TableId = '') {
-        $data = ModuleFormApprover::select(DB::raw('CASE WHEN SUM("Status") = 0 THEN \'0\' ELSE \'1\' END AS status'))
+        $data = ModuleFormApprover::select(DB::raw('CASE WHEN SUM("Status") = 1 THEN \'true\' ELSE \'false\' END AS status'))
             ->where('ModuleId', $ModuleId)
             ->where('TableId', $TableId)
-            ->limit(1)
-            ->get();
-        return ($data && count($data)) ? $data[0]->status == '0' : false;
+            ->first();
+        return $data ? $data->status == 'true' : false;
     }
 
     function getFormStatus($ModuleId = 0, $TableId = '') {
         $approvers = ModuleFormApprover::where('ModuleId', $ModuleId)
             ->where('TableId', $TableId)
             ->get(['Status']);
-        $status = 0; $approvedCount = 0;
+
+        $status = 1; 
+        $approvedCount = 0;
+        
         if ($approvers && count($approvers)) {
             foreach ($approvers as $dt) {
                 if ($dt['Status'] == 3) $status = 3; // REJECTED
@@ -61,20 +63,12 @@
     }
 
     function getCurrentApprover($ModuleId = 0, $TableId = '') {
-        $output = [];
-
-        $approvers = ModuleFormApprover::select('module_form_approvers.ApproverId', 'u.FirstName', 'u.LastName')
+        $approver = ModuleFormApprover::select('module_form_approvers.ApproverId', 'u.FirstName', 'u.LastName')
             ->leftJoin('users AS u', 'u.Id', 'module_form_approvers.ApproverId')
             ->where('ModuleId', $ModuleId)
             ->where('TableId', $TableId)
-            ->where('module_form_approvers.Status', 0)
+            ->where('module_form_approvers.Status', 1)
             ->orderBy('Level', 'ASC')
-            ->limit(1)
-            ->get();
-
-        if ($approvers && count($approvers)) {
-            $output = $approvers[0];
-        }
-
-        return $output;
+            ->first();
+        return $approver ?? [];
     }

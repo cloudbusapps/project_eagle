@@ -101,12 +101,7 @@
                                             }}
                                         </td>
                                         <td>{{ $dt->Reason }}</td>
-                                        <td>
-                                            {{ $dt->currentApprover ? 
-                                                $dt->currentApprover->FirstName.' '.$dt->currentApprover->LastName :
-                                                '-'
-                                            }}
-                                        </td>
+                                        <td>{{ $dt->aFirstName.' '.$dt->aLastName }}</td>
                                         <td><?= getStatusDisplay($dt->Status) ?></td>
                                     </tr>
                                 @endforeach
@@ -115,6 +110,8 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        @if ($forApprovalData && count($forApprovalData))
                         <div class="tab-pane fade {{ in_array(Session::get('tab'), ['For Approval']) ? 'show active' : '' }}" id="for-approval" role="tabpanel">
                             <table class="table table-striped table-hover" id="tableLeaveRequestForApproval">
                                 <thead>
@@ -149,12 +146,7 @@
                                             }}
                                         </td>
                                         <td>{{ $dt->Reason }}</td>
-                                        <td>
-                                            {{ $dt->currentApprover ? 
-                                                $dt->currentApprover->FirstName.' '.$dt->currentApprover->LastName :
-                                                '-'
-                                            }}
-                                        </td>
+                                        <td>{{ $dt->aFirstName.' '.$dt->aLastName }}</td>
                                         <td><?= getStatusDisplay($dt->Status) ?></td>
                                     </tr>
                                 @endforeach
@@ -163,6 +155,8 @@
                                 </tbody>
                             </table>
                         </div>
+                        @endif
+
                         <div class="tab-pane fade {{ in_array(Session::get('tab'), ['Calendar']) ? 'show active' : '' }}" id="calendar-content" role="tabpanel">
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -170,9 +164,9 @@
 
                                         @foreach ($leaveTypes as $dt)
                                         <?php 
-                                            $className = $dt['Name'] == "Vacation Leave" ? 'text-success' : ($dt['Name'] == "Sick Leave" ? 'text-danger' : 'text-info'); 
+                                            $className = $dt['Id'] == config('constant.ID.LEAVE_TYPES.VACATION_LEAVE') ? 'text-success' : ($dt['Id'] == config('constant.ID.LEAVE_TYPES.SICK_LEAVE') ? 'text-danger' : 'text-info'); 
                                         ?>
-                                        <label class="{{ $className }} mx-2"><input type="checkbox" class="leaveTypes" leaveType="{{ $dt['Name'] }}" checked> {{ $dt['Name'] }}</label>
+                                        <label class="{{ $className }} mx-2"><input type="checkbox" class="leaveTypes" leaveType="{{ $dt['Id'] }}" checked> {{ $dt['Name'] }}</label>
                                         @endforeach
 
                                     </div>
