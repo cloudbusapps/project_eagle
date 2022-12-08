@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('Title');
             $table->text('Description');
             $table->date('Date');
-            $table->uuid('Created_By_Id');
-            $table->uuid('Updated_By_Id');
+            $table->uuid('CreatedById');
+            $table->uuid('UpdatedById');
             $table->timestamps();
 
             $table->foreign('UserId')->references('Id')->on('users');

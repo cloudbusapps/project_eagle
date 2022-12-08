@@ -21,8 +21,8 @@ class UserSkill extends Model
     protected $fillable = [
         'UserId',
         'Title',
-        'Created_By_Id',
-        'Updated_By_Id'
+        'CreatedById',
+        'UpdatedById'
     ];
 
     protected static function boot() {
@@ -31,10 +31,10 @@ class UserSkill extends Model
         static::creating(function($model) {
             if(isNull($model->Id)) {
                 $model->Id = Str::uuid();
-                $model->Created_By_Id = Auth::id() ?? null;
-                $model->Updated_By_Id = Auth::id() ?? null;
+                $model->CreatedById = Auth::id() ?? null;
+                $model->UpdatedById = Auth::id() ?? null;
             } else {
-                $model->Updated_By_Id = Auth::id() ?? null;
+                $model->UpdatedById = Auth::id() ?? null;
             }
         });
     }  

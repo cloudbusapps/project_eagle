@@ -20,7 +20,7 @@
                 <div class="col">
                     <h4 class="mb-0">Profile</h4>
                     <ol class="breadcrumb bg-transparent mb-0">
-                        <li class="breadcrumb-item"><a class="text-secondary" href="#">User</a></li>
+                        <li class="breadcrumb-item"><a class="text-secondary" href="{{ route('employeeDirectory') }}">Directory</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Profile</li>
                     </ol>
                 </div>
@@ -67,27 +67,10 @@
                         @endif
 
                         <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-                        
-                            @if (Session::get('tab') == 'Image')
-                                @if (Session::get('success'))
-                                    <div class="alert alert-success alert-dismissible fade show" role="alert"> 
-                                        <i class="bi bi-check-circle me-1"></i> 
-                                        <?= Session::get('success') ?>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                @endif
-                                @if (Session::get('fail'))
-                                    <div class="alert alert-danger alert-dismissible fade show" role="alert"> 
-                                        <i class="bi bi-exclamation-octagon me-1"></i>
-                                        <?= Session::get('danger') ?>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                @endif
-                            @endif
                             <img src="{{ asset('uploads/profile/' . $userData->Profile ?? 'default.png') }}" alt="Profile"
                                 class="rounded-circle" height="150" width="150">
                             <h4 class="mb-0">{{ $userData->FirstName .' '. $userData->LastName }}</h4>
-                            <small>{{ $userData->Title }}</small>
+                            <small>{{ $userData->designation }}</small>
                         </div>
                         <div class="card-footer">
                             <div class="text-center">
@@ -115,36 +98,51 @@
                         </div>
                         <div class="card-body">
                             <div class="skills py-2" style="font-size: 1.1rem">
-
-                            @if (Session::get('tab') == 'Skill')
-                                @if (Session::get('success'))
-                                    <div class="alert alert-success alert-dismissible fade show" role="alert"> 
-                                        <i class="bi bi-check-circle me-1"></i> 
-                                        <?= Session::get('success') ?>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                @endif
-                                @if (Session::get('fail'))
-                                    <div class="alert alert-danger alert-dismissible fade show" role="alert"> 
-                                        <i class="bi bi-exclamation-octagon me-1"></i>
-                                        <?= Session::get('danger') ?>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                @endif
-                            @endif
-
+                                
                             @if (count($skills))
                             @foreach ($skills as $skill)
                                 <span class="badge text-success"><i class="bi bi-check me-1"></i>{{ $skill['Title'] }}</span>
                             @endforeach
                             @else
-                                {{-- <div class="text-center py-2">
+                                <div class="text-center py-2">
                                     <img src="{{ asset('assets/img/modal/database-search.png') }}" height="80" width="80"  alt="No data found">
                                     <h6 class="mt-2">No data found.</h6>
-                                </div> --}}
+                                </div>
                             @endif
 
                             </div>
+                        </div>
+                    </div>
+                    <div class="card mt-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 card-title py-0">Leave Balance</h5>
+                            @if (Auth::user()->IsAdmin)
+                            <a href="#" class="text-secondary btnEditLeaveBalance" id="{{ $requestId }}">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            @endif
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-striped table-hover" id="tableLeaveBalance">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Leave Type</th>
+                                        <th>Remaining</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @foreach ($leaveBalance as $index => $dt)
+                                    <tr>
+                                        <td class="text-center">{{ $index + 1 }}</td>
+                                        <td>{{ $dt['Name'] }}</td>
+                                        <td class="text-center">{{ $dt['Balance'] ?? 0 }}</td>
+                                    </tr>
+                                    @endforeach
+
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -225,9 +223,9 @@
                                             </div>
                                         </div>
                                         <div class="row mb-1">
-                                            <div class="col-lg-4 col-sm-5 label ">Title:</div>
+                                            <div class="col-lg-4 col-sm-5 label ">Designation:</div>
                                             <div class="col-lg-8 col-sm-7">
-                                                {{ $userData->Title ?? '-' }}
+                                                {{ $userData->designation ?? '-' }}
                                             </div>
                                         </div>
                                         <div class="row mb-1">
@@ -487,15 +485,6 @@
 
 </main>
 
-{{-- <iframe src="{{ route('user.generatePdf', [
-    'userData' => $userData,
-    'certifications' => $certifications,
-    'skills' => $skills,
-    'awards' => $awards,
-    'experiences' => $experiences,
-    'educations' => $educations,
-]) }}" frameborder="1" height="100px"></iframe> --}}
-
 
 
 <script src="{{ asset('assets/js/webcam.min.js') }}"></script>
@@ -647,17 +636,24 @@
             let Id = $(this).attr('id');
             $('#custom-modal .modal-dialog').removeClass('modal-lg').addClass('modal-md');
             $('#custom-modal .modal-title').text('Edit Skills');
-            $.ajax({
-                method: 'GET',
-                url: `/user/profile/getFormSkill/${Id}/`,
-                async: false,
-                dataType: 'html',
-                encode: true,
-                success: function(result) {
-                    $('#custom-modal .modal-body').html(result);
-                    $('#custom-modal').modal('show');
-                }
-            })
+            $('#custom-modal .modal-body').html(PRELOADER);
+            $('#custom-modal').modal('show');
+
+            setTimeout(() => {
+                $.ajax({
+                    method: 'GET',
+                    url: `/user/profile/getFormSkill/${Id}/`,
+                    async: false,
+                    dataType: 'html',
+                    encode: true,
+                    success: function(result) {
+                        $('#custom-modal .modal-body').html(result);
+                    },
+                    error: function() {
+                        $('#custom-modal .modal-body').html(`<h6 class="text-danger">There's an error occured. Please try again later...</h6>`);
+                    }
+                })
+            }, 500);
         })
         // ----- END BUTTON EDIT SKILL -----
 
@@ -758,17 +754,24 @@
             let Id = $(this).attr('id');
             $('#custom-modal .modal-dialog').removeClass('modal-lg').addClass('modal-md');
             $('#custom-modal .modal-title').text('Edit Profile Image');
-            $.ajax({
-                method: 'GET',
-                url: `/user/profile/edit/image/${Id}`,
-                async: false,
-                dataType: 'html',
-                encode: true,
-                success: function(result) {
-                    $('#custom-modal .modal-body').html(result);
-                    $('#custom-modal').modal('show');
-                }
-            })
+            $('#custom-modal .modal-body').html(PRELOADER);
+            $('#custom-modal').modal('show');
+
+            setTimeout(() => {
+                $.ajax({
+                    method: 'GET',
+                    url: `/user/profile/edit/image/${Id}`,
+                    async: false,
+                    dataType: 'html',
+                    encode: true,
+                    success: function(result) {
+                        $('#custom-modal .modal-body').html(result);
+                    },
+                    error: function() {
+                        $('#custom-modal .modal-body').html(`<h6 class="text-danger">There's an error occured. Please try again later...</h6>`);
+                    }
+                })
+            }, 500);
         })
         // ----- END BUTTON EDIT IMAGE -----
 
@@ -853,6 +856,33 @@
             $('#myCamera').hide();
         })
         // ----- END BUTTON CANCEL CAPTURE -----
+
+
+        // ----- BUTTON LEAVE BALANCE -----
+        $(document).on('click', '.btnEditLeaveBalance', function() {
+            let Id = $(this).attr('id');
+            $('#custom-modal .modal-dialog').removeClass('modal-lg').addClass('modal-md');
+            $('#custom-modal .modal-title').text('Edit Leave Balance');
+            $('#custom-modal .modal-body').html(PRELOADER);
+            $('#custom-modal').modal('show');
+
+            setTimeout(() => {
+                $.ajax({
+                    method: 'GET',
+                    url: `/user/profile/edit/leave/${Id}`,
+                    async: false,
+                    dataType: 'html',
+                    encode: true,
+                    success: function(result) {
+                        $('#custom-modal .modal-body').html(result);
+                    },
+                    error: function() {
+                        $('#custom-modal .modal-body').html(`<h6 class="text-danger">There's an error occured. Please try again later...</h6>`);
+                    }
+                })
+            }, 500);
+        })
+        // ----- END BUTTON LEAVE BALANCE -----
 
     })
 

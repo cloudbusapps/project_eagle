@@ -69,10 +69,10 @@ class User extends Authenticatable
         static::creating(function($model) {
             if(isNull($model->Id)) {
                 $model->Id = Str::uuid();
-                $model->Created_By_Id = Auth::id() ?? null;
-                $model->Updated_By_Id = Auth::id() ?? null;
+                $model->CreatedById = Auth::id() ?? null;
+                $model->UpdatedById = Auth::id() ?? null;
             } else {
-                $model->Updated_By_Id = Auth::id() ?? null;
+                $model->UpdatedById = Auth::id() ?? null;
             }
         });
     } 
@@ -101,15 +101,15 @@ class User extends Authenticatable
 
     public function projects()
     {
-        return $this->hasMany(Project::class, 'Created_By_Id');
+        return $this->hasMany(Project::class, 'CreatedById');
     }
     public function tasks()
     {
-        return $this->hasMany(Task::class, 'Created_By_Id');
+        return $this->hasMany(Task::class, 'CreatedById');
     }
 
     public function projectsUpdate()
     {
-        return $this->belongsTo(Project::class, 'Updated_By_Id', 'Id');
+        return $this->belongsTo(Project::class, 'UpdatedById', 'Id');
     }
 }

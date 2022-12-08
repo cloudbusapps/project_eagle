@@ -2,6 +2,9 @@
 
 @section('content')
     <?php
+    
+    $canModify = Auth::user()->IsAdmin ? true : ($projectData->ProjectManagerId == Auth::id() ? true : false);
+    
     function secondsToTime($seconds)
     {
         $dtF = new \DateTime('@0');
@@ -13,8 +16,8 @@
         $seconds = $budgetedTime - $timeComplete;
         $dtF = new \DateTime('@0');
         $dtT = new \DateTime("@$seconds");
-        $sign =$budgetedTime > $timeComplete ? '': '-';
-        return $dtF->diff($dtT)->format('%ad : '.$sign.'%hhrs : %imins');
+        $sign = $budgetedTime > $timeComplete ? '' : '-';
+        return $dtF->diff($dtT)->format('%ad : ' . $sign . '%hhrs : %imins');
     }
     
     ?>
@@ -121,10 +124,13 @@
                             <a href="{{ url('projects/view') }}" class="btn btn-secondary">
                                 Cancel
                             </a>
-                            <a href="{{ route('projects.editProject', ['Id' => $projectData->Id]) }}" id="btnUpdate"
-                                class="btn btn-warning">
-                                <i class="bi bi-pencil"></i> Update Project
-                            </a>
+                            @if ($canModify)
+                                <a href="{{ route('projects.editProject', ['Id' => $projectData->Id]) }}" id="btnUpdate"
+                                    class="btn btn-warning">
+                                    <i class="bi bi-pencil"></i> Update Project
+                                </a>
+                            @endif
+
                         </div>
 
 
@@ -144,10 +150,13 @@
                                     id="btnAddTask" type="button" class="btn btn-outline-primary">
                                     Edit Resource
                                 </a> --}}
-                                <a href="{{ route('projects.addResource', ['Id' => $projectData->Id]) }}" id="btnAddTask"
-                                    type="button" class="btn btn-outline-primary">
-                                    <i class="bi bi-plus-lg"></i> Add Resource
-                                </a>
+                                @if ($canModify)
+                                    <a href="{{ route('projects.addResource', ['Id' => $projectData->Id]) }}"
+                                        id="btnAddTask" type="button" class="btn btn-outline-primary">
+                                        <i class="bi bi-plus-lg"></i> Add Resource
+                                    </a>
+                                @endif
+
                             </div>
 
 
@@ -160,7 +169,7 @@
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Name</th>
-                                    <th scope="col">Position</th>
+                                    <th scope="col">Title</th>
                                     <th scope="col">Budgeted Hours</th>
                                     <th scope="col">Actual Hours</th>
                                     <th scope="col">Available Hours</th>
@@ -182,7 +191,8 @@
                                         <td>{{ $user->timecompleteinsec ? secondsToTime($user->timecompleteinsec) : 0 }}
                                         </td>
 
-                                        <td>{{ $user->timecompleteinsec ? availableTime($user->durationinseconds, $user->timecompleteinsec) : 0 }}</td>
+                                        <td>{{ $user->timecompleteinsec ? availableTime($user->durationinseconds, $user->timecompleteinsec) : 0 }}
+                                        </td>
                                     </tr>
                                 @endforeach
 
@@ -199,12 +209,15 @@
                             <h4 class="font-weight-bold">
                                 User Story
                             </h4>
-                            <div class="text-end">
-                                <a href="{{ route('projects.addUserStory', ['Id' => $projectData->Id]) }}"
-                                    id="btnAddTask" type="button" class="btn btn-outline-primary">
-                                    <i class="bi bi-plus-lg"></i> New User Story
-                                </a>
-                            </div>
+                            @if ($canModify)
+                                <div class="text-end">
+                                    <a href="{{ route('projects.addUserStory', ['Id' => $projectData->Id]) }}"
+                                        id="btnAddTask" type="button" class="btn btn-outline-primary">
+                                        <i class="bi bi-plus-lg"></i> New
+                                    </a>
+                                </div>
+                            @endif
+
 
 
 

@@ -17,13 +17,13 @@ return new class extends Migration
             $table->uuid('Id');
             $table->uuid('UserId');
             $table->string('Title');
-            $table->uuid('Created_By_Id');
-            $table->uuid('Updated_By_Id');
+            $table->uuid('CreatedById');
+            $table->uuid('UpdatedById');
             $table->timestamps();
 
             $table->foreign('UserId')->references('Id')->on('users')->onDelete('cascade');
-            $table->foreign('Created_By_Id')->references('Id')->on('users')->onDelete('cascade');
-            $table->foreign('Updated_By_Id')->references('Id')->on('users')->onDelete('cascade');
+            $table->foreign('CreatedById')->references('Id')->on('users')->onDelete('cascade');
+            $table->foreign('UpdatedById')->references('Id')->on('users')->onDelete('cascade');
         });
     }
 

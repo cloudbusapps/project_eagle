@@ -18,8 +18,8 @@ return new class extends Migration
             $table->uuid('Admin_Id');
             $table->string('Title')->nullable(false);
             $table->string('Description')->nullable(true);
-            $table->uuid('Created_By_Id')->nullable(false);
-            $table->uuid('Updated_By_Id')->nullable(true);
+            $table->uuid('CreatedById')->nullable(false);
+            $table->uuid('UpdatedById')->nullable(true);
             $table->uuid('UserStoryId')->nullable(false);
             $table->date('StartDate')->nullable(false);
             $table->date('EndDate')->nullable(false);
@@ -33,9 +33,9 @@ return new class extends Migration
             $table->string('Status');
             $table->timestamps();
 
-            $table->foreign('Created_By_Id')->references('Id')->on('users');
-            $table->foreign('Updated_By_Id')->references('Id')->on('users');
-            $table->foreign('UserStoryId')->references('Id')->on('user_story')->onDelete('cascade');
+            $table->foreign('CreatedById')->references('Id')->on('users');
+            $table->foreign('UpdatedById')->references('Id')->on('users');
+            $table->foreign('UserStoryId')->references('Id')->on('user_story');
         });
     }
 

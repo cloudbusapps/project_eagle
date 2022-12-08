@@ -57,13 +57,6 @@
                                     </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <label for="LastName" class="col-sm-2">Last Name <code>*</code></label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="LastName" name="LastName" placeholder="Last Name" required
-                                            value="{{ old('LastName') ?? $userData['LastName'] }}">
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
                                     <label for="FirstName" class="col-sm-2">First Name <code>*</code></label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="FirstName" name="FirstName" placeholder="First Name" required
@@ -78,9 +71,16 @@
                                     </div>
                                 </div>
                                 <div class="row mb-3">
+                                    <label for="LastName" class="col-sm-2">Last Name <code>*</code></label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="LastName" name="LastName" placeholder="Last Name" required
+                                            value="{{ old('LastName') ?? $userData['LastName'] }}">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
                                     <label for="Gender" class="col-sm-2">Gender <code>*</code></label>
                                     <div class="col-sm-10">
-                                        <select class="form-control" id="Gender" name="Gender" required>
+                                        <select class="form-control" id="Gender" name="Gender" required select2>
                                             <option value="" selected disabled>Select Gender</option>
                                             <option value="Male" {{ (old('Gender') ?? $userData['Gender']) == 'Male' ? 'selected' : '' }}>Male</option>
                                             <option value="Female" {{ (old('Gender') ?? $userData['Gender']) == 'Female' ? 'selected' : '' }}>Female</option>
@@ -96,7 +96,7 @@
                                     </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <label for="ContactNumber" class="col-sm-2">Contact Number <code>*</code></label>
+                                    <label for="ContactNumber" class="col-sm-2">Contact No. <code>*</code></label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="ContactNumber" name="ContactNumber" placeholder="Contact Number" 
                                             value="{{ old('ContactNumber') ?? $userData['ContactNumber'] }}" required>
@@ -105,7 +105,7 @@
                                 <div class="row mb-3">
                                     <label for="DepartmentId" class="col-sm-2">Department <code>*</code></label>
                                     <div class="col-sm-10">
-                                        <select name="DepartmentId" id="DepartmentId" class="form-control" required>
+                                        <select name="DepartmentId" id="DepartmentId" class="form-control" data="{{ $departments }}" select2 required>
                                             <option value="" selected disabled>Select Department</option>
                                             
                                             @foreach ($departments as $dt)
@@ -117,15 +117,11 @@
                                 <div class="row mb-3">
                                     <label for="Title" class="col-sm-2">Designation <code>*</code></label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="Title" name="Title" placeholder="Title" required
-                                            value="{{ old('Title') ?? $userData['Title'] }}">
+                                        {{-- <input type="text" class="form-control" id="Title" name="Title" placeholder="Title" required
+                                            value="{{ old('Title') ?? $userData['Title'] }}"> --}}
 
-                                        <select name="Title" id="Title" class="form-control" required>
+                                        <select name="DesignationId" id="DesignationId" class="form-control" select2 required data="{{ $designations }}" DesignationId="{{ $userData['DesignationId'] }}">
                                             <option value="" selected disabled>Select Designation</option>
-                                            
-                                            {{-- @foreach ($designations as $dt)
-                                            <option value="{{ $dt['Title'] }}" {{ $dt['Title'] == $userData['Title'] ? 'selected' : '' }}>{{ $dt['Name'] }}</option>
-                                            @endforeach --}}
                                         </select>
                                     </div>
                                 </div>
@@ -159,6 +155,36 @@
 
     $(document).ready(function() {
         
+        let departmentList = JSON.parse($(`[name="DepartmentId"]`).attr('data'));
+        let designationList = JSON.parse($(`[name="DesignationId"]`).attr('data'));
+        $(`[name="DepartmentId"]`).trigger('change');
+
+        // ----- DESIGNATION OPTION -----
+        function designationOption(departmentId = null, designationId = null) {
+            let designationOptions = designationList.filter(dt => dt.DepartmentId == departmentId);
+            let html = `<option value="" selected disabled>Select Designation</option>`;
+            designationOptions.map(dt => {
+                let { Id, Name } = dt;
+                html += `<option value="${Id}" ${designationId == Id ? 'selected' : ''}>${Name}</option>`;
+            })
+            $(`[name="DesignationId"]`).html(html);
+            initSelect2();
+        }
+
+        let saveDepartmentId  = $(`[name="DepartmentId"]`).val();
+        let saveDesignationId = $(`[name="DesignationId"]`).attr('DesignationId');
+        designationOption(saveDepartmentId, saveDesignationId);
+        // ----- END DESIGNATION OPTION -----
+
+
+        // ----- SELECT DEPARTMENT -----
+        $(document).on('change', `[name="DepartmentId"]`, function() {
+            let departmentId = $(this).val();
+            designationOption(departmentId);
+        })
+        // ----- END SELECT DEPARTMENT -----
+
+
         // ----- SUBMIT FORM -----
         $(document).on('submit', '#fomrPersonalInformation', function(e) {
             let isValidated = $(this).attr('validated') == 'true';

@@ -92,9 +92,9 @@
                                     <div class="col-sm-10">
                                         <input type="date" class="form-control" id="StartDate" name="StartDate" placeholder="Start Date" required
                                             value="{{ old('StartDate') ?? $StartDate }}" max="{{ date('Y-m-d') }}"
-                                            onchange="let dateEnd = document.getElementById('EndDate');
-                                            dateEnd.setAttribute('min', this.value);
-                                            dateEnd.value = this.value">
+                                            onchange="let endDate = document.getElementById('EndDate');
+                                            endDate.setAttribute('min', this.value);
+                                            endDate.value = this.value">
                                     </div>
                                 </div>
                                 <div class="row mb-3">

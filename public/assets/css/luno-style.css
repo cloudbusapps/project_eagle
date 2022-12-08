@@ -20758,11 +20758,11 @@ fieldset:disabled .btn {
     }
 }
 html {
-    -webkit-user-select: none;
+    /* -webkit-user-select: none;
     -moz-user-select: none;
     -o-user-select: none;
     -ms-user-select: none;
-    user-select: none;
+    user-select: none; */
 }
 body {
     transition: ease 0.1s;
@@ -20897,7 +20897,9 @@ img:hover {
     color: var(--primary-color) !important;
 }
 .notifications .card .card-body.tab-content {
-    height: 330px;
+    /* height: 330px; */
+    max-height: 500px;
+    height: auto;
 }
 @media only screen and (max-width: 767px) {
     .notifications .card .card-body.tab-content {
@@ -24270,7 +24272,9 @@ button:focus:not(:focus-visible) {
     box-shadow: inset -2px 0px 10px 0px rgb(0 0 0 / 50%);;
 }
 .layout-1 .sidebar.version-2 .menu-list {
-    border: 0;
+    /* border: 0; */
+    border: 1px dotted gray;
+    margin-bottom: 10px;
 }
 .layout-1 .sidebar.version-2 .menu-list > li {
     border: 0;
@@ -29572,7 +29576,7 @@ button:focus:not(:focus-visible) {
 .daterangepicker .ranges li.active,
 .daterangepicker td.active,
 .daterangepicker td.active:hover {
-    background-color: var(--primary-color);
+    background-color: var(--primary-color) !important;
 }
 .daterangepicker td.in-range {
     background-color: rgba(var(--primary-rgb), 0.1);
@@ -31238,5 +31242,25 @@ label, div.label {
 }
 .timeline {
     padding-left: 5px;
+}
+.display-filename {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 5px;
+    color: white;
+    background: #0d6efd;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.m-link span {
+    font-size: 13px;
+}
+tr.active {
+    background-color: #4fb8c9;
+    border-color: #4fb8c9;
+}
+tr.active td {
+    color: white;
 }
 /* ----- END CUSTOM ----- */

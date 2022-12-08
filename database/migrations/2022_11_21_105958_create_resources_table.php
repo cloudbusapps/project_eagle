@@ -19,8 +19,8 @@ return new class extends Migration
             $table->uuid('UserId')->nullable(true);
             $table->timestamps();
 
-            $table->foreign('ProjectId')->references('Id')->on('projects')->onDelete('cascade');
-            $table->foreign('UserId')->references('Id')->on('users')->onDelete('cascade');
+            $table->foreign('ProjectId')->references('Id')->on('projects');
+            $table->foreign('UserId')->references('Id')->on('users');
         });
     }
 

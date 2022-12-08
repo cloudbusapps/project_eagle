@@ -21,8 +21,10 @@ use App\Http\Controllers\EmployeeDirectoryController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserStoryController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\OvertimeRequestController;
+use App\Http\Controllers\LeaveRequestController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\NotificationController;
 
 // AUTH
 Route::get('/', [LoginController::class, 'index'])->name('auth.login');
@@ -32,10 +34,9 @@ Route::get('/register', [RegisterController::class, 'index'])->name('auth.regist
 Route::post('/register', [RegisterController::class, 'save'])->name('auth.save');
 
 // AUTHENTICATION REQUIRED TO ACCESS MODULES
-Route::group(['middleware' => 'auth'], function() {
+Route::group(['middleware' => 'auth'], function () {
     // DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/test', [DashboardController::class, 'index'])->name('test');
 
     // USER
     Route::prefix('user')->group(function () {
@@ -49,38 +50,42 @@ Route::group(['middleware' => 'auth'], function() {
             Route::get('/edit/image/{Id}', [UserProfileController::class, 'editProfileImage'])->name('user.editProfileImage');
             Route::put('/edit/image/{Id}/update', [UserProfileController::class, 'updateProfileImage'])->name('user.updateProfileImage');
 
+            // LEAVE
+            Route::get('/edit/leave/{Id}', [UserProfileController::class, 'editLeaveBalance'])->name('user.editLeaveBalance');
+            Route::post('/edit/leave/{Id}/update', [UserProfileController::class, 'updateLeaveBalance'])->name('user.updateLeaveBalance');
+
             // PERSONAL INFORMATION
             Route::get('/edit/personalInformation/{Id}', [UserProfileController::class, 'editPersonalInformation'])->name('user.editPersonalInformation');
             Route::put('/edit/personalInformation/{Id}/update', [UserProfileController::class, 'updatePersonalInformation'])->name('user.updatePersonalInformation');
-        
+
             // CERTIFICATION
             Route::get('/add/certification/{Id}', [UserProfileController::class, 'addCertification'])->name('user.addCertification');
             Route::post('/add/certification/{Id}/save', [UserProfileController::class, 'saveCertification'])->name('user.saveCertification');
             Route::get('/edit/certification/{Id}', [UserProfileController::class, 'editCertification'])->name('user.editCertification');
             Route::put('/edit/certification/{Id}/update', [UserProfileController::class, 'updateCertification'])->name('user.updateCertification');
             Route::get('/delete/certification/{Id}', [UserProfileController::class, 'deleteCertification'])->name('user.deleteCertification');
-            
+
             // AWARD
             Route::get('/add/award/{Id}', [UserProfileController::class, 'addAward'])->name('user.addAward');
             Route::post('/add/award/{Id}/save', [UserProfileController::class, 'saveAward'])->name('user.saveAward');
             Route::get('/edit/award/{Id}', [UserProfileController::class, 'editAward'])->name('user.editAward');
             Route::put('/edit/award/{Id}/update', [UserProfileController::class, 'updateAward'])->name('user.updateAward');
             Route::get('/delete/award/{Id}', [UserProfileController::class, 'deleteAward'])->name('user.deleteAward');
-            
+
             // EXPERIENCE
             Route::get('/add/experience/{Id}', [UserProfileController::class, 'addExperience'])->name('user.addExperience');
             Route::post('/add/experience/{Id}/save', [UserProfileController::class, 'saveExperience'])->name('user.saveExperience');
             Route::get('/edit/experience/{Id}', [UserProfileController::class, 'editExperience'])->name('user.editExperience');
             Route::put('/edit/experience/{Id}/update', [UserProfileController::class, 'updateExperience'])->name('user.updateExperience');
             Route::get('/delete/experience/{Id}', [UserProfileController::class, 'deleteExperience'])->name('user.deleteExperience');
-            
+
             // EDUCATION
             Route::get('/add/education/{Id}', [UserProfileController::class, 'addEducation'])->name('user.addEducation');
             Route::post('/add/education/{Id}/save', [UserProfileController::class, 'saveEducation'])->name('user.saveEducation');
             Route::get('/edit/education/{Id}', [UserProfileController::class, 'editEducation'])->name('user.editEducation');
             Route::put('/edit/education/{Id}/update', [UserProfileController::class, 'updateEducation'])->name('user.updateEducation');
             Route::get('/delete/education/{Id}', [UserProfileController::class, 'deleteEducation'])->name('user.deleteEducation');
-        
+
             // SKILL
             Route::get('/getFormSkill/{Id}', [UserProfileController::class, 'getFormSkill'])->name('user.getFormSkill');
             Route::post('/saveSkill/{Id}', [UserProfileController::class, 'saveSkill'])->name('user.saveSkill');
@@ -88,7 +93,7 @@ Route::group(['middleware' => 'auth'], function() {
     });
 
     // EMPLOYEE DIRECTORY
-    Route::get('/employeeDirectory', [EmployeeDirectoryController::class, 'index'])->name('employeeDirectory');
+    Route::get('/directory', [EmployeeDirectoryController::class, 'index'])->name('employeeDirectory');
 
     //PROJECTS
     Route::prefix('projects')->group(function () {
@@ -122,33 +127,82 @@ Route::group(['middleware' => 'auth'], function() {
         Route::post('/add/resource/{Id}/save', [ProjectController::class, 'saveResource'])->name('projects.saveResource');
         Route::put('/update/resource/{Id}', [ProjectController::class, 'updateResource'])->name('projects.updateResource');
     });
-    
+
     // NOTIFICATION
     Route::prefix('notification')->group(function () {
-        Route::get('/update/{Id}', [DashboardController::class, 'updateNotif'])->name('notifications.updateNotif');
+        Route::post('/update/{Id}', [NotificationController::class, 'updateNotification'])->name('notifications.updateNotification');
+    });
+
+    // LEAVE
+    Route::prefix('leave')->group(function () {
+        Route::get('/', [LeaveRequestController::class, 'index'])->name('leaveRequest');
+        Route::get('/add', [LeaveRequestController::class, 'form'])->name('leaveRequest.add');
+        Route::post('/save', [LeaveRequestController::class, 'save'])->name('leaveRequest.save');
+        Route::get('/view/{Id}', [LeaveRequestController::class, 'view'])->name('leaveRequest.view');
+        Route::get('/revise/{Id}', [LeaveRequestController::class, 'revise'])->name('leaveRequest.revise');
+        Route::put('/revise/{Id}/update', [LeaveRequestController::class, 'update'])->name('leaveRequest.update');
+        Route::post('/approve/{Id}/{UserId}', [LeaveRequestController::class, 'approve'])->name('leaveRequest.approve');
+        Route::post('/reject/{Id}/{UserId}', [LeaveRequestController::class, 'reject'])->name('leaveRequest.reject');
+    });
+
+    // FORMS
+    Route::prefix('forms')->group(function () {
+        // OVERTIME REQUEST
+        Route::prefix('overtimeRequest')->group(function () {
+            Route::get('/', [OvertimeRequestController::class, 'index'])->name('overtimeRequest');
+            Route::get('/overtimeDetails/{Id}', [OvertimeRequestController::class, 'overtimeDetails'])->name('overtimeDetails');
+            Route::get('/add', [OvertimeRequestController::class, 'addOvertimeRequest'])->name('overtimeRequest.add');
+            Route::post('/save', [OvertimeRequestController::class, 'saveOvertimeRequest'])->name('overtimeRequest.save');
+            Route::get('/edit/{Id}', [OvertimeRequestController::class, 'editOvertimeRequest'])->name('overtimeRequest.edit');
+            Route::put('/edit/{Id}/update', [OvertimeRequestController::class, 'updateOvertimeRequest'])->name('overtimeRequest.update');
+            Route::get('/delete/{Id}', [OvertimeRequestController::class, 'deleteOvertimeRequest'])->name('overtimeRequest.delete');
+        });
     });
 });
 
+// CUSTOMER
+Route::prefix('customer')->group(function () {
+    Route::get('/', [CustomerController::class, 'index'])->name('customers');
+    Route::get('/add', [CustomerController::class, 'form'])->name('customers.add');
+    Route::post('/save', [CustomerController::class, 'save'])->name('customers.save');
+    Route::get('/edit/{Id}', [CustomerController::class, 'edit'])->name('customers.edit');
+    Route::put('/edit/{Id}/update', [CustomerController::class, 'update'])->name('customers.update');
+    Route::get('/delete/{Id}', [CustomerController::class, 'delete'])->name('customers.delete');
+});
+// END CUSTOMER
+
+
+// ----- EXTERNAL ACTIONS -----
+Route::prefix('leaveRequest')->group(function () {
+    Route::get('/approve/{Id}', [LeaveRequestController::class, 'externalApprove'])->name('external.leaveRequest.approve');
+    Route::get('/reject/{Id}', [LeaveRequestController::class, 'externalReject'])->name('external.leaveRequest.reject');
+});
+// ----- END EXTERNAL ACTIONS -----
+
 
 // ----- ADMIN -----
-use App\Http\Controllers\admin\ProjectManagementController;
-use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\admin\ModuleController;
+use App\Http\Controllers\admin\DepartmentController;
+use App\Http\Controllers\admin\DesignationController;
+use App\Http\Controllers\admin\ModuleApprovalController;
+use App\Http\Controllers\admin\LeaveTypeController;
+use App\Http\Controllers\admin\PermissionController;
 
-Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function() {
+Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function () {
     // MODULE
-    Route::prefix('modules')->group(function() {
-        Route::get('/', [ModuleController::class, 'index'])->name('modules');
-        Route::get('/add', [ModuleController::class, 'form'])->name('modules.add');
-        Route::post('/save', [ModuleController::class, 'save'])->name('modules.save');
-        Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('modules.edit');
-        Route::put('/edit/{id}/update', [ModuleController::class, 'update'])->name('modules.update');
-        Route::get('/delete/{id}', [ModuleController::class, 'delete'])->name('modules.delete');
+    Route::prefix('module')->group(function () {
+        Route::get('/', [ModuleController::class, 'index'])->name('module');
+        Route::get('/add', [ModuleController::class, 'form'])->name('module.add');
+        Route::post('/save', [ModuleController::class, 'save'])->name('module.save');
+        Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('module.edit');
+        Route::put('/edit/{id}/update', [ModuleController::class, 'update'])->name('module.update');
+        Route::get('/delete/{id}', [ModuleController::class, 'delete'])->name('module.delete');
     });
 
     // SETUP
-    Route::prefix('setup')->group(function() {
+    Route::prefix('setup')->group(function () {
         // DEPARTMENT
-        Route::prefix('department')->group(function() {
+        Route::prefix('department')->group(function () {
             Route::get('/', [DepartmentController::class, 'index'])->name('department');
             Route::get('/add', [DepartmentController::class, 'form'])->name('department.add');
             Route::post('/save', [DepartmentController::class, 'save'])->name('department.save');
@@ -158,7 +212,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
         });
 
         // DESIGNATION
-        Route::prefix('designation')->group(function() {
+        Route::prefix('designation')->group(function () {
             Route::get('/', [DesignationController::class, 'index'])->name('designation');
             Route::get('/add', [DesignationController::class, 'form'])->name('designation.add');
             Route::post('/save', [DesignationController::class, 'save'])->name('designation.save');
@@ -166,10 +220,35 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
             Route::put('/edit/{Id}/update', [DesignationController::class, 'update'])->name('designation.update');
             Route::get('/delete/{Id}', [DesignationController::class, 'delete'])->name('designation.delete');
         });
+
+        // LEAVE TYPE
+        Route::prefix('leaveType')->group(function () {
+            Route::get('/', [LeaveTypeController::class, 'index'])->name('leaveType');
+            Route::get('/add', [LeaveTypeController::class, 'form'])->name('leaveType.add');
+            Route::post('/save', [LeaveTypeController::class, 'save'])->name('leaveType.save');
+            Route::get('/edit/{Id}', [LeaveTypeController::class, 'edit'])->name('leaveType.edit');
+            Route::put('/edit/{Id}/update', [LeaveTypeController::class, 'update'])->name('leaveType.update');
+            Route::get('/delete/{Id}', [LeaveTypeController::class, 'delete'])->name('leaveType.delete');
+        });
+
+        // PERMISSION
+        Route::prefix('permission')->group(function() {
+            Route::get('/', [PermissionController::class, 'index'])->name('permission');
+            Route::get('/edit/{Id}', [PermissionController::class, 'edit'])->name('permission.edit');
+            Route::post('/edit/{Id}/save', [PermissionController::class, 'save'])->name('permission.save');
+        });
+
+        // APPROVAL
+        Route::prefix('moduleApproval')->group(function () {
+            Route::get('/', [ModuleApprovalController::class, 'index'])->name('moduleApproval');
+            Route::get('/edit/{id}', [ModuleApprovalController::class, 'edit'])->name('moduleApproval.edit');
+            Route::get('/edit/{id}/{designationId}', [ModuleApprovalController::class, 'editDesignation'])->name('moduleApproval.edit.designation');
+            Route::post('/edit/{id}/{designationId}/save', [ModuleApprovalController::class, 'saveDesignation'])->name('moduleApproval.edit.designation.save');
+        });
     });
 
     // PROJECT MANAGEMENT
-    Route::prefix('projectManagement')->group(function() {
+    Route::prefix('projectManagement')->group(function () {
         // DEFAULT
         Route::get('/', [ProjectManagementController::class, 'index'])->name('projectManagement');
         Route::get('/edit/{Id}', [ProjectManagementController::class, 'edit'])->name('pm.edit');

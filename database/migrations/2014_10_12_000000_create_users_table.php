@@ -24,14 +24,16 @@ return new class extends Migration
             $table->string('ContactNumber')->nullable();
             $table->string('Profile')->default('default.png');
             $table->uuid('DepartmentId')->nullable();
+            $table->uuid('DesignationId')->nullable();
             $table->string('Title')->nullable();
             $table->text('About')->nullable();
-            $table->boolean('IsAdmin')->default(false);
             $table->string('email')->unique();
             $table->date('email_verified_at')->nullable();
             $table->string('password');
-            $table->uuid('Created_By_Id')->nullable();
-            $table->uuid('Updated_By_Id')->nullable();
+            $table->boolean('IsAdmin')->default(false);
+            $table->integer('Status')->default(1); // [0 - Inactive, 1 - Active]
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
         });
     }
@@ -43,6 +45,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('users CASCADE');
     }
 };

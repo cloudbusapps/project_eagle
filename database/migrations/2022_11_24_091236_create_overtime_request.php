@@ -1,0 +1,45 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('overtime_requests', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->uuid('UserId');
+            // $table->increments('CodeId')->index->unique();
+            $table->string('Agenda');
+            $table->date('Date');
+            $table->time('TimeIn');
+            $table->time('TimeOut');
+            $table->string('Reason')->nullable(true);
+            $table->integer('Status')->default(0);
+            $table->json('ApproverId')->nullable(true);
+            $table->uuid('CreatedById');
+            $table->uuid('UpdatedById')->nullable(true);
+            $table->timestamps();
+
+            $table->foreign('UserId')->references('Id')->on('users');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('overtime_request');
+    }
+};

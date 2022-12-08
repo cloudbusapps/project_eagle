@@ -17,16 +17,20 @@
   </footer>
   </div>
 
-  <script src="{{ asset('assets/js/jquery-confirm.min.js') }}"></script>
-
   <!-- Jquery Page Js -->
   <script src="{{ asset('assets/js/theme.js') }}"></script>
   <!-- Plugin Js -->
   <script src="{{ asset('assets/js/bundle/apexcharts.bundle.js') }}"></script>
   <script src="{{ asset('assets/js/bundle/dataTables.bundle.js') }}"></script>
+  <script src="{{ asset('assets/js/bundle/daterangepicker.bundle.js') }}"></script>
   <!-- Vendor Script -->
-  <script src="{{ asset('assets/js/bundle/apexcharts.bundle.js') }}"></script>
   <script src="{{ asset('assets/js/moment.js') }}"></script>
+  <script src="{{ asset('assets/js/jquery-confirm.min.js') }}"></script>
+  <script src="{{ asset('assets/js/select2.min.js') }}"></script>
+  <script src="{{ asset('assets/js/bs5-toast.js') }}"></script>
+  
+  <!-- Custom -->
+  <script src="{{ asset('assets/js/custom.js') }}"></script>
 
   <script>
     function updateRealTime() {

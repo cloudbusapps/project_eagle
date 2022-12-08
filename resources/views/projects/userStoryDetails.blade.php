@@ -2,6 +2,7 @@
 
 @section('content')
     <?php
+    $canModify = Auth::user()->IsAdmin ? true : ($userStoryData->ProjectManagerId == Auth::id() ? true : false);
     $percentage = 0;
     $progressColor = 'bg-info';
     if ($userStoryData->PercentComplete != null) {
@@ -136,10 +137,13 @@
                                 class="btn btn-secondary">
                                 Cancel
                             </a>
-                            <a href="{{ route('projects.editUserStory', ['Id' => $userStoryData->Id]) }}" id="btnUpdate"
-                                class="btn btn-warning">
-                                <i class="bi bi-pencil"></i> Update User Story
-                            </a>
+                            @if ($canModify)
+                                <a href="{{ route('projects.editUserStory', ['Id' => $userStoryData->Id]) }}"
+                                    id="btnUpdate" class="btn btn-warning">
+                                    <i class="bi bi-pencil"></i> Update User Story
+                                </a>
+                            @endif
+
                         </div>
 
                     </div>
@@ -152,12 +156,15 @@
                             <h4 class="font-weight-bold">
                                 Tasks
                             </h4>
-                            <div class="text-end">
-                                <a href="{{ route('projects.addTask', ['Id' => $userStoryData->Id]) }}" id="btnAddTask"
-                                    type="button" class="btn btn-outline-primary">
-                                    <i class="bi bi-plus-lg"></i> New Tasks
-                                </a>
-                            </div>
+                            @if ($canModify)
+                                <div class="text-end">
+                                    <a href="{{ route('projects.addTask', ['Id' => $userStoryData->Id]) }}" id="btnAddTask"
+                                        type="button" class="btn btn-outline-primary">
+                                        <i class="bi bi-plus-lg"></i> New
+                                    </a>
+                                </div>
+                            @endif
+
 
 
 

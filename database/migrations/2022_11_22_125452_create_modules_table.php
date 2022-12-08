@@ -15,13 +15,17 @@ return new class extends Migration
     {
         Schema::create('modules', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('CategoryId')->nullable();
             $table->bigInteger('ParentId')->nullable();
             $table->string('Title');
+            $table->boolean('WithApproval')->default(false);
             $table->string('RouteName')->nullable();
             $table->string('Prefix');
             $table->string('Icon')->default('default.png');
-            $table->string('Status')->default('Active');
+            $table->integer('Status')->default(1);
             $table->integer('SortOrder')->default(1);
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
         });
     }

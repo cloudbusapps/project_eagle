@@ -124,7 +124,7 @@
     
                                     </div>
                                 </div>
-                                <div class="row mb-3">
+                                {{-- <div class="row mb-3">
                                     <label class="col-sm-2 label">Actual Start Date</label>
                                     <div class="col-sm-10">
                                         <input value="{{ old('UserStoryActualStartDate') ?? $ActualStartDate }}"
@@ -141,7 +141,7 @@
                                             type="date" class="form-control">
     
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="button-footer text-end">
                                 <a href="{{ route('projects.projectDetails', ['Id' => $projectId]) }}"
