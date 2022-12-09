@@ -13,7 +13,11 @@ use Illuminate\Support\Facades\DB;
 
 class EmployeeDirectoryController extends Controller
 {
+    private $ModuleId = 3;
+
     public function index(Request $request) {
+        isReadAllowed($this->ModuleId, true);
+
         $filterBy = $request->filterBy ?? "All";
         $searchFilter = $request->search ?? '';
         $search = strtolower($request->search);

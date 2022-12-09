@@ -20897,7 +20897,9 @@ img:hover {
     color: var(--primary-color) !important;
 }
 .notifications .card .card-body.tab-content {
-    height: 330px;
+    /* height: 330px; */
+    max-height: 500px;
+    height: auto;
 }
 @media only screen and (max-width: 767px) {
     .notifications .card .card-body.tab-content {
@@ -29574,7 +29576,7 @@ button:focus:not(:focus-visible) {
 .daterangepicker .ranges li.active,
 .daterangepicker td.active,
 .daterangepicker td.active:hover {
-    background-color: var(--primary-color);
+    background-color: var(--primary-color) !important;
 }
 .daterangepicker td.in-range {
     background-color: rgba(var(--primary-rgb), 0.1);

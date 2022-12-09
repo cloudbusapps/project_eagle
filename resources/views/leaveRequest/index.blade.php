@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ asset('assets/css/fullcalendar.css') }}">
 <script src="{{ asset('assets/js/fullcalendar.js') }}"></script>
 
-<main id="main" class="main" calendarData="{{ json_encode($calendar) }}">
+<main id="main" class="main" calendarData="{{ json_encode($calendarData) }}">
 
     <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
         <div class="container-fluid">
@@ -45,7 +45,7 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link {{ in_array(Session::get('tab'), ['My Forms', null]) ? 'active' : '' }}" id="my-forms-tab" data-bs-toggle="tab" data-bs-target="#my-forms" type="button" role="tab">My Forms</button>
                         </li>
-                        @if ($forApproval && count($forApproval))
+                        @if ($forApprovalData && count($forApprovalData))
                         <li class="nav-item" role="presentation">
                             <button class="nav-link {{ in_array(Session::get('tab'), ['For Approval']) ? 'active' : '' }}" id="for-approval-tab" data-bs-toggle="tab" data-bs-target="#for-approval" type="button" role="tab">For Approval</button>
                         </li>
@@ -59,9 +59,13 @@
                     <div class="tab-content pt-4 px-4">
                         <div class="tab-pane fade {{ in_array(Session::get('tab'), ['My Forms', null]) ? 'show active' : '' }}" id="my-forms" role="tabpanel">
                             <div class="w-100 text-end mb-3">
+                                
+                                @if (isCreateAllowed($MODULE_ID))
                                 <a href="{{ route('leaveRequest.add') }}" class="btn btn-outline-primary px-2 py-1">
                                     <i class="bi bi-plus-lg"></i> New
                                 </a>
+                                @endif
+
                             </div>
         
                             <table class="table table-striped table-hover" id="tableLeaveRequestMyForms">
@@ -73,13 +77,59 @@
                                         <th>Leave Type</th>
                                         <th>Date</th>
                                         <th>Reason</th>
+                                        <th>Current Approver</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
         
-                                @if (!empty($data))
-                                @foreach ($data as $index => $dt)
+                                @if (!empty($myData))
+                                @foreach ($myData as $index => $dt)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>
+                                            <a href="{{ route('leaveRequest.view', ['Id' => $dt->Id]) }}">
+                                                {{ $dt->DocumentNumber }}
+                                            </a>
+                                        </td>
+                                        <td>{{ $dt->FirstName.' '.$dt->LastName }}</td>
+                                        <td>{{ $dt->Name }}</td>
+                                        <td>
+                                            {{ $dt->StartDate == $dt->EndDate ? 
+                                                (date('F d, Y', strtotime($dt->StartDate))) :
+                                                (date('M d', strtotime($dt->StartDate)).' - '.date('M d, Y', strtotime($dt->EndDate)))
+                                            }}
+                                        </td>
+                                        <td>{{ $dt->Reason }}</td>
+                                        <td>{{ $dt->aFirstName.' '.$dt->aLastName }}</td>
+                                        <td><?= getStatusDisplay($dt->Status) ?></td>
+                                    </tr>
+                                @endforeach
+                                @endif
+        
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @if ($forApprovalData && count($forApprovalData))
+                        <div class="tab-pane fade {{ in_array(Session::get('tab'), ['For Approval']) ? 'show active' : '' }}" id="for-approval" role="tabpanel">
+                            <table class="table table-striped table-hover" id="tableLeaveRequestForApproval">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Document No.</th>
+                                        <th>Employee Name</th>
+                                        <th>Leave Type</th>
+                                        <th>Date</th>
+                                        <th>Reason</th>
+                                        <th>Current Approver</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+        
+                                @if (!empty($forApprovalData))
+                                @foreach ($forApprovalData as $index => $dt)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>
@@ -96,6 +146,7 @@
                                             }}
                                         </td>
                                         <td>{{ $dt->Reason }}</td>
+                                        <td>{{ $dt->aFirstName.' '.$dt->aLastName }}</td>
                                         <td><?= getStatusDisplay($dt->Status) ?></td>
                                     </tr>
                                 @endforeach
@@ -104,47 +155,8 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="tab-pane fade {{ in_array(Session::get('tab'), ['For Approval']) ? 'show active' : '' }}" id="for-approval" role="tabpanel">
-                            <table class="table table-striped table-hover" id="tableLeaveRequestForApproval">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Document No.</th>
-                                        <th>Employee Name</th>
-                                        <th>Leave Type</th>
-                                        <th>Date</th>
-                                        <th>Reason</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-        
-                                @if (!empty($forApproval))
-                                @foreach ($forApproval as $index => $dt)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>
-                                            <a href="{{ route('leaveRequest.view', ['Id' => $dt->Id]) }}">
-                                                {{ $dt->DocumentNumber }}
-                                            </a>
-                                        </td>
-                                        <td>{{ $dt->FirstName.' '.$dt->LastName }}</td>
-                                        <td>{{ $dt->LeaveType }}</td>
-                                        <td>
-                                            {{ $dt->StartDate == $dt->EndDate ? 
-                                            (date('F d, Y', strtotime($dt->StartDate))) :
-                                            (date('M d', strtotime($dt->StartDate)).' - '.date('M d, Y', strtotime($dt->EndDate)))
-                                            }}
-                                        </td>
-                                        <td>{{ $dt->Reason }}</td>
-                                        <td><?= getStatusDisplay($dt->Status) ?></td>
-                                    </tr>
-                                @endforeach
-                                @endif
-        
-                                </tbody>
-                            </table>
-                        </div>
+                        @endif
+
                         <div class="tab-pane fade {{ in_array(Session::get('tab'), ['Calendar']) ? 'show active' : '' }}" id="calendar-content" role="tabpanel">
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -152,9 +164,9 @@
 
                                         @foreach ($leaveTypes as $dt)
                                         <?php 
-                                            $className = $dt['Name'] == "Vacation Leave" ? 'text-success' : ($dt['Name'] == "Sick Leave" ? 'text-danger' : 'text-info'); 
+                                            $className = $dt['Id'] == config('constant.ID.LEAVE_TYPES.VACATION_LEAVE') ? 'text-success' : ($dt['Id'] == config('constant.ID.LEAVE_TYPES.SICK_LEAVE') ? 'text-danger' : 'text-info'); 
                                         ?>
-                                        <label class="{{ $className }} mx-2"><input type="checkbox" class="leaveTypes" leaveType="{{ $dt['Name'] }}" checked> {{ $dt['Name'] }}</label>
+                                        <label class="{{ $className }} mx-2"><input type="checkbox" class="leaveTypes" leaveType="{{ $dt['Id'] }}" checked> {{ $dt['Name'] }}</label>
                                         @endforeach
 
                                     </div>
@@ -261,7 +273,8 @@
                     { targets: 3,  width: 120 },
                     { targets: 4,  width: 120 },
                     { targets: 5,  width: 200 }, 
-                    { targets: 6,  width: 80  }, 
+                    { targets: 6,  width: 120 }, 
+                    { targets: 7,  width: 80  }, 
                 ],
             });
 
@@ -280,7 +293,8 @@
                     { targets: 3,  width: 120 },
                     { targets: 4,  width: 120 },
                     { targets: 5,  width: 200 }, 
-                    { targets: 6,  width: 80  }, 
+                    { targets: 6,  width: 120 }, 
+                    { targets: 7,  width: 80  }, 
                 ],
             });
 

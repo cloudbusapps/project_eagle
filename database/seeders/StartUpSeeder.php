@@ -32,6 +32,9 @@ class StartUpSeeder extends Seeder
         $FCDesignationId   = Str::uuid();
         $GMDesignationId   = Str::uuid();
 
+        $SickLeaveId     = config('constant.ID.LEAVE_TYPES.SICK_LEAVE');
+        $VacationLeaveId = config('constant.ID.LEAVE_TYPES.VACATION_LEAVE');
+
         // ----- DEPARTMENT -----
         DB::table('departments')->insert([
             [
@@ -188,16 +191,16 @@ class StartUpSeeder extends Seeder
         // ----- LEAVE TYPE -----
         DB::table('leave_types')->insert([
             [
-                'Id'            => Str::uuid(),
-                'Name'          => 'Vacation Leave',
-                'Status'        => 1,
+                'Id'          => $VacationLeaveId,
+                'Name'        => 'Vacation Leave',
+                'Status'      => 1,
                 'CreatedById' => $UserId,
                 'UpdatedById' => $UserId,
             ],
             [
-                'Id'            => Str::uuid(),
-                'Name'          => 'Sick Leave',
-                'Status'        => 1,
+                'Id'          => $SickLeaveId,
+                'Name'        => 'Sick Leave',
+                'Status'      => 1,
                 'CreatedById' => $UserId,
                 'UpdatedById' => $UserId,
             ],

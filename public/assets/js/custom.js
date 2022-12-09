@@ -9,13 +9,6 @@ const PRELOADER = `
 // ----- END PRELOADER -----
 
 
-// ----- INITIALIZE SELECT2 -----
-function initSelect2() {
-    $(`[select2]`).select2();
-}
-// ----- END INITIALIZE SELECT2 -----
-
-
 // ----- SHOW TOAST -----
 function showToast(type = 'success', text = '') {
     if (type == 'success') {
@@ -53,6 +46,51 @@ function showToast(type = 'success', text = '') {
 }
 // ----- END SHOW TOAST -----
 
+
+// ----- VIEW NOTIFICATION -----
+function viewNotification(id = '', link = '') {
+    $.ajax({
+        url: `/notification/update/${id}`,
+        method: 'POST',
+        async: false,
+        dataType: 'json',
+        success: function(data) {
+            let { status } = data;
+            if (status == 'success') {
+                window.location.replace(link);
+            } else {
+                showToast('danger', 'Something went wrong.');
+            }
+        }
+    })
+}
+// ----- END VIEW NOTIFICATION -----
+
+
+// ----- INITIALIZE SELECT2 -----
+function initSelect2() {
+    $(`[select2]`).select2();
+}
+// ----- END INITIALIZE SELECT2 -----
+
+
+// ----- INITIALIZE DATERANGEPICKER -----
+function initDateRangePicker() {
+    $(`[daterangepicker]`).daterangepicker({
+        opens: 'left',
+        showDropdowns: true,
+        locale: {
+            format: 'MMMM DD, YYYY'
+        }
+    }, function(start, end, label) {
+        console.log(start.format('YYYY-MM-DD'));
+        console.log(end.format('YYYY-MM-DD'));
+    });
+}
+// ----- END INITIALIZE DATERANGEPICKER -----
+
+
+
 $(document).ready(function() {
 
     $.ajaxSetup({
@@ -61,6 +99,12 @@ $(document).ready(function() {
         }
     });
 
-    initSelect2(); // Initialize select2
+    // ----- INIT ALL -----
+    function initAll() {
+        initSelect2(); // Initialize select2
+        initDateRangePicker();
+    }
+    initAll();
+    // ----- END INIT ALL -----
 
 })

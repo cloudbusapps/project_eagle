@@ -23,8 +23,8 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserStoryController;
 use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\LeaveRequestController;
-use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\NotificationController;
 
 // AUTH
 Route::get('/', [LoginController::class, 'index'])->name('auth.login');
@@ -130,7 +130,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     // NOTIFICATION
     Route::prefix('notification')->group(function () {
-        Route::get('/update/{Id}', [NotificationController::class, 'updateNotif'])->name('notifications.updateNotif');
+        Route::post('/update/{Id}', [NotificationController::class, 'updateNotification'])->name('notifications.updateNotification');
     });
 
     // LEAVE
