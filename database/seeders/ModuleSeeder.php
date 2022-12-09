@@ -18,6 +18,8 @@ class ModuleSeeder extends Seeder
      */
     public function run()
     {
+        $truncate = Module::truncate();
+
         $UserId = Str::uuid();
 
         $data = [
@@ -212,7 +214,7 @@ class ModuleSeeder extends Seeder
                 'ParentId'      => null,
                 'Title'         => 'Customer',
                 'WithApproval'  => false,
-                'Icon'          => 'default.png',
+                'Icon'          => 'customer.png',
                 'RouteName'     => 'customers',
                 'Prefix'        => 'customer',
                 'Status'        => 1,
