@@ -107,7 +107,7 @@ class CustomerController extends Controller
 
         if ($customer->save()) {
             return redirect()
-                ->route('customers')
+                ->route('customers.edit', ['Id' => $customer->Id])
                 ->with('success', "<b>{$customerName}</b> successfully saved!");
         } else {
             return redirect()
@@ -119,6 +119,7 @@ class CustomerController extends Controller
     {
         $customerData = Customer::find($Id)->first();
         $customerName             = $customerData->CustomerName;
+        $Id             = $customerData->Id;
         if (isset($request->checkbox)) {
             $customerData->Status  = 2;
         } else {
@@ -127,7 +128,7 @@ class CustomerController extends Controller
 
         if ($customerData->update()) {
             return redirect()
-                ->route('customers')
+                ->route('customers.edit', ['Id' => $Id])
                 ->with('success', "<b>{$customerName}</b> successfully updated!");
         } else {
             return redirect()

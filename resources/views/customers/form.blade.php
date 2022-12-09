@@ -39,6 +39,56 @@
     ?>
 
     <style>
+        :root {
+            --backgroundColor: gray;
+            --borderSize: 30px;
+        }
+
+        .divSquare {
+            position: relative;
+            width: 70px;
+            height: 60px;
+            background: var(--backgroundColor);
+            margin-left: 20px;
+            margin-right: 20px;
+            margin-bottom: 5px
+        }
+
+        .divSquare:before {
+            content: '';
+            position: absolute;
+            left: 100%;
+            top: 0;
+            border-top: var(--borderSize) solid transparent;
+            border-bottom: var(--borderSize) solid transparent;
+            border-left: var(--borderSize) solid var(--backgroundColor)
+        }
+
+        .divSquare:after {
+            content: '';
+            position: absolute;
+            right: 100%;
+            top: 0;
+            border-top: var(--borderSize) solid var(--backgroundColor);
+            border-bottom: var(--borderSize) solid var(--backgroundColor);
+            border-left: var(--borderSize) solid transparent
+        }
+
+        .activeStatus {
+            background: green;
+            color: green;
+            --backgroundColor: green;
+        }
+
+        .dswCon strong{
+            font-size: 1rem;
+            text-align: center;
+            color:aqua;
+        }
+
+
+
+
         #customerForm fieldset:not(:first-of-type) {
             display: none;
         }
@@ -347,15 +397,28 @@
                                         <label for="inputText" class="col-sm-2 label">Current Progress for DSW
                                             <code>*</code></label>
                                         <div class="col-sm-10">
-                                            <select required select2 name="DSW" id="DSW" class="form-select">
-                                                <option value="" selected disabled>Select Status</option>
-                                                <option value="1">Ongoing DSW</option>
-                                                <option value="2">Completed DSW</option>
-                                                <option value="3">For Consolidation of Reqs</option>
-                                                <option value="4">Completeted Requirements Consolidation</option>
-                                                <option value="5">Completed Sol Doc</option>
-
-                                            </select>
+                                            <div class="row">
+                                                <div class="col-sm-2 dwsCon">
+                                                    <div class="divSquare activeStatus"></div>
+                                                    <strong>Ongoing DSW</strong>
+                                                </div>
+                                                <div class="col-sm-2 dwsCon">
+                                                    <div class="divSquare"></div>
+                                                    <strong>Completed DSW</strong>
+                                                </div>
+                                                <div class="col-sm-2 dwsCon">
+                                                    <div class="divSquare"></div>
+                                                    <strong>For Consolidation of Reqs</strong>
+                                                </div>
+                                                <div class="col-sm-2 dwsCon">
+                                                    <div class="divSquare"></div>
+                                                    <strong>Completeted Requirements Consolidation</strong>
+                                                </div>
+                                                <div class="col-sm-2 dwsCon">
+                                                    <div class="divSquare"></div>
+                                                    <strong>Completed Sol Doc</strong>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 @endif
@@ -440,6 +503,10 @@
             const status = "{{ $Status }}";
             for (let i = 0; i <= status; i++) {
                 $("#progressbar li").eq(i).addClass("active");
+            }
+            const statuss = 3;
+            for (let i = 0; i <= statuss; i++) {
+                $(".divSquare").eq(i).addClass("activeStatus");
             }
 
 
