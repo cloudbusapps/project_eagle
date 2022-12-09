@@ -41,7 +41,7 @@
                 <div class="card-body">
                   <div class="text-muted text-uppercase small">Total Projects</div>
                   <div class="mt-1">
-                    <a href="{{ route('projects.view') }}" class="fw-bold h4 mb-0">{{ $total['projects'] ?? 0 }}</a>
+                    <a href="{{ route('projects') }}" class="fw-bold h4 mb-0">{{ $total['projects'] ?? 0 }}</a>
                   </div>
                 </div>
               </div>

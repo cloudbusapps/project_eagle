@@ -98,7 +98,7 @@ Route::group(['middleware' => 'auth'], function () {
     //PROJECTS
     Route::prefix('projects')->group(function () {
         // DEFAULT
-        Route::get('/projectView', [ProjectController::class, 'view'])->name('projects.view');
+        Route::get('/projectView', [ProjectController::class, 'view'])->name('projects');
         Route::get('/projectDetails/{Id}', [ProjectController::class, 'viewProjectDetails'])->name('projects.projectDetails');
         Route::post('/add', [ProjectController::class, 'add'])->name('projects.add');
         Route::put('/update/{Id}', [ProjectController::class, 'update'])->name('projects.update');
