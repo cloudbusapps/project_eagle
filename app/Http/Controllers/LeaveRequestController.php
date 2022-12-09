@@ -383,8 +383,9 @@ class LeaveRequestController extends Controller
         ];
 
         if ($ModuleFormApprover->update($data) && $LeaveRequest->save()) {
-            $this->sendMail($Id);
-            $LeaveRequest->Status = getFormStatus($this->MODULE_ID, $Id);
+            $newStatus = 3;
+            $this->sendMail($Id, false, $newStatus);
+            $LeaveRequest->Status = $newStatus;
             if ($LeaveRequest->save()) {
                 return redirect()
                     ->route('leaveRequest')
