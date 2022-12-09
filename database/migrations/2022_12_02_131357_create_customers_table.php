@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('Notes')->nullable(true);
             $table->string('Link')->nullable(true);
             $table->boolean('IsComplex')->nullable(true);
+            $table->integer('DSWStatus')->nullable(true);
             $table->integer('Status')->nullable(true);
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();
