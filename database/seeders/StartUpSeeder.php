@@ -204,6 +204,20 @@ class StartUpSeeder extends Seeder
                 'CreatedById' => $UserId,
                 'UpdatedById' => $UserId,
             ],
+            [
+                'Id'          => Str::uuid(),
+                'Name'        => 'Offset Leave',
+                'Status'      => 1,
+                'CreatedById' => $UserId,
+                'UpdatedById' => $UserId,
+            ],
+            [
+                'Id'          => Str::uuid(),
+                'Name'        => 'Emergency Leave',
+                'Status'      => 1,
+                'CreatedById' => $UserId,
+                'UpdatedById' => $UserId,
+            ],
         ]);
         // ----- END LEAVE TYPE -----
     }

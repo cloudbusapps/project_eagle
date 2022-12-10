@@ -187,6 +187,7 @@ use App\Http\Controllers\admin\DesignationController;
 use App\Http\Controllers\admin\ModuleApprovalController;
 use App\Http\Controllers\admin\LeaveTypeController;
 use App\Http\Controllers\admin\PermissionController;
+use App\Http\Controllers\admin\ComplexityController;
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function () {
     // MODULE
@@ -245,18 +246,16 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
             Route::get('/edit/{id}/{designationId}', [ModuleApprovalController::class, 'editDesignation'])->name('moduleApproval.edit.designation');
             Route::post('/edit/{id}/{designationId}/save', [ModuleApprovalController::class, 'saveDesignation'])->name('moduleApproval.edit.designation.save');
         });
-    });
 
-    // PROJECT MANAGEMENT
-    Route::prefix('projectManagement')->group(function () {
-        // DEFAULT
-        Route::get('/', [ProjectManagementController::class, 'index'])->name('projectManagement');
-        Route::get('/edit/{Id}', [ProjectManagementController::class, 'edit'])->name('pm.edit');
-        Route::put('/edit/{Id}/update/{ProjectCostId?}', [ProjectManagementController::class, 'update'])->name('pm.update');
-
-        // RESOURCE COST
-        Route::get('/resourceCost/edit/{Id}', [ProjectManagementController::class, 'resourceCostEdit'])->name('pm.resourceCost.edit');
-        Route::put('/resourceCost/edit/{Id}/update/{ResourceCostId?}', [ProjectManagementController::class, 'resourceCostUpdate'])->name('pm.resourceCost.update');
+         // COMPLEXITY
+         Route::prefix('complexity')->group(function () {
+            Route::get('/', [ComplexityController::class, 'index'])->name('complexity');
+            Route::get('/add', [ComplexityController::class, 'form'])->name('complexity.add');
+            Route::post('/save', [ComplexityController::class, 'save'])->name('complexity.save');
+            Route::get('/edit/{Id}', [ComplexityController::class, 'edit'])->name('complexity.edit');
+            Route::put('/edit/{Id}/update', [ComplexityController::class, 'update'])->name('complexity.update');
+            Route::get('/delete/{Id}', [ComplexityController::class, 'delete'])->name('complexity.delete');
+        });
     });
 });
 // ----- END ADMIN -----

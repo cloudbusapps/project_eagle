@@ -67,7 +67,8 @@ class LeaveRequestController extends Controller
                 'className' => $dt['LeaveTypeId'] == config('constant.ID.LEAVE_TYPES.VACATION_LEAVE') ? 'bg-success' : ($dt['LeaveTypeId'] == config('constant.ID.LEAVE_TYPES.SICK_LEAVE') ? 'bg-danger' : 'bg-info'),
                 'leaveType' => $dt['LeaveTypeId'],
                 'color'     => 'black',
-                'allDay'    => true
+                'allDay'    => true,
+                'url'       => route('leaveRequest.view', ['Id' => $dt['Id']]),
             ];
         }
 
@@ -220,6 +221,8 @@ class LeaveRequestController extends Controller
     }
 
     public function view($Id) {
+        isReadAllowed($this->MODULE_ID, true);
+        
         $leaveRequestData = LeaveRequest::select('leave_requests.*', 'lt.Name', 'u.FirstName', 'u.LastName', 'ApproverId', 'u2.FirstName AS aFirstName', 'u2.LastName AS aLastName')
             ->leftJoin('leave_types AS lt', 'leave_requests.LeaveTypeId', 'lt.Id')
             ->leftJoin('users AS u', 'u.Id', 'leave_requests.UserId')
@@ -232,21 +235,22 @@ class LeaveRequestController extends Controller
             ->leftJoin('users AS u2', 'u2.Id', 'mfa.ApproverId')
             ->where('leave_requests.Id', $Id)
             ->first();
+        $pending = isFormPending($this->MODULE_ID, $Id);
 
         $data = [
-            'title' => "View Leave",
-            'data' => $leaveRequestData,
-            'files' => LeaveRequestFiles::where('LeaveRequestId', $Id)->get(),
+            'title'    => "View Leave",
+            'data'     => $leaveRequestData,
+            'files'    => LeaveRequestFiles::where('LeaveRequestId', $Id)->get(),
             'approvers' => ModuleFormApprover::select('module_form_approvers.*', 'u.FirstName', 'u.LastName')
                 ->leftJoin('users AS u', 'u.Id', 'ApproverId')
                 ->where('ModuleId', $this->MODULE_ID)
                 ->where('TableId', $Id)
                 ->orderBy('Level', 'ASC')
                 ->get(),
-            'pending' => isFormPending($this->MODULE_ID, $Id),
-            'event' => 'view',
+            'pending'    => $pending,
+            'event'      => 'view',
             'leaveTypes' => LeaveType::where('Status', 1)->get(),
-            'MODULE_ID' => $this->MODULE_ID,
+            'MODULE_ID'  => $this->MODULE_ID,
         ];
 
         return view('leaveRequest.form', $data);
@@ -255,19 +259,34 @@ class LeaveRequestController extends Controller
     public function revise($Id) {
         isEditAllowed($this->MODULE_ID, true);
 
-        $data = LeaveRequest::select('leave_requests.*', 'lt.Name AS LeaveType', 'u.FirstName', 'u.LastName')
+        // $data = LeaveRequest::select('leave_requests.*', 'lt.Name AS LeaveType', 'u.FirstName', 'u.LastName')
+        //     ->leftJoin('leave_types AS lt', 'leave_requests.LeaveTypeId', 'lt.Id')
+        //     ->leftJoin('users AS u', 'u.Id', 'UserId')
+        //     ->where('leave_requests.Id', $Id)
+        //     ->first();
+
+        $leaveRequestData = LeaveRequest::select('leave_requests.*', 'lt.Name', 'u.FirstName', 'u.LastName', 'ApproverId', 'u2.FirstName AS aFirstName', 'u2.LastName AS aLastName')
             ->leftJoin('leave_types AS lt', 'leave_requests.LeaveTypeId', 'lt.Id')
-            ->leftJoin('users AS u', 'u.Id', 'UserId')
+            ->leftJoin('users AS u', 'u.Id', 'leave_requests.UserId')
+            ->leftJoin('module_form_approvers AS mfa', function($join) {
+                $join->on('mfa.TableId', 'leave_requests.Id')
+                    ->where('mfa.ModuleId', $this->MODULE_ID)
+                    ->where('mfa.Status', 1)
+                    ->where('leave_requests.Status', '=', 1);
+            })
+            ->leftJoin('users AS u2', 'u2.Id', 'mfa.ApproverId')
             ->where('leave_requests.Id', $Id)
             ->first();
+        $pending = (!$leaveRequestData->ApproverId && $leaveRequestData->Status == 1) || isFormPending($this->MODULE_ID, $Id);
 
-        if (isFormPending($this->MODULE_ID, $Id) || $data->Status == 3) {
+        if ($pending || $leaveRequestData->Status == 3) {
             $data = [
                 'title' => "Revise Leave",
-                'data'  => $data,
+                'data'  => $leaveRequestData,
                 'files' => LeaveRequestFiles::where('LeaveRequestId', $Id)->get(),
                 'currentApprover' => null,
                 'event'      => 'edit',
+                'pending'    => $pending,
                 'leaveTypes' => LeaveType::where('Status', 1)->get(),
             ];
             return view('leaveRequest.form', $data);
