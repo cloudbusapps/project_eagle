@@ -112,7 +112,6 @@ class CustomerController extends Controller
     }
     function update(Request $request, $Id)
     {
-        return 1;
         $customerData = Customer::find($Id);
         $customerName             = $customerData->CustomerName;
         $Id             = $customerData->Id;
@@ -135,6 +134,8 @@ class CustomerController extends Controller
             } else if ($customerData->DSWStatus == 2) {
                 $customerData->DSWStatus = 3;
             } else if ($customerData->DSWStatus == 3) {
+                $customerData->DSWStatus = 4;
+            } else if ($customerData->DSWStatus == 4) {
                 $customerData->Status = 3;
             }
         } else if ($customerData->Status == 3) {
@@ -179,7 +180,7 @@ class CustomerController extends Controller
         foreach ($complexity as $index => $complex) {
             $temp = [
                 'Id' => $complex->Id,
-                'Name' => $complex->Name,
+                'Title' => $complex->Title,
                 'Status'  => $complex->Status,
                 'CreatedById'  => $complex->CreatedById,
                 'UpdatedById'  => $complex->UpdatedById,
@@ -199,7 +200,7 @@ class CustomerController extends Controller
                     $temp['Details'][] = [
                         'Id'        => $complexityDetail->Id,
                         'ComplexityId'     => $complexityDetail->ComplexityId,
-                        'Details'    => $complexityDetail->Details,
+                        'Title'    => $complexityDetail->Title,
                         'Status'  => $complexityDetail->Status,
                         'CreatedById'  => $complexityDetail->CreatedById,
                         'UpdatedById'  => $complexityDetail->UpdatedById,

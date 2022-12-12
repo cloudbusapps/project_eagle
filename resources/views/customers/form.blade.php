@@ -41,18 +41,23 @@
 
     <style>
         :root {
-            --backgroundColor: gray;
-            --borderSize: 30px;
+            --backgroundColor: lightgrey;
+            --borderSize: 40px;
+            --active-color: {{ $DSWStatus == 4 ? 'green' : '#eed202' }};
         }
 
         .divSquare {
             position: relative;
-            width: 70px;
-            height: 60px;
+            width: 80%;
+            height: 80px;
             background: var(--backgroundColor);
             margin-left: 20px;
             margin-right: 20px;
-            margin-bottom: 5px
+            margin-bottom: 5px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .divSquare:before {
@@ -76,23 +81,22 @@
         }
 
         .activeStatus {
-            background: green;
-            color: green;
-            --backgroundColor: green;
+            background: var(--active-color);
+            color: var(--active-color);
+            --backgroundColor: var(--active-color);
         }
 
-        .dswCon strong {
-            font-size: 1rem;
-            text-align: center;
-            color: aqua;
+        .dwsCon {
+            margin-right: 20px;
+            flex: 1;
         }
 
+        .dwsCon strong {
+            font-size: 0.8rem;
 
-
-
-        #customerForm fieldset:not(:first-of-type) {
-            display: none;
+            color: white;
         }
+
 
         /*The background card*/
         .card {
@@ -200,16 +204,16 @@
         /*Color number of the step and the connector before it*/
         #progressbar li.active:before,
         #progressbar li.active:after {
-            background: green;
+            background: {{ $Status == 8 ? 'green' : '#eed202' }};
         }
 
         /* TABLE */
-        #RaSTable {
+        #tableContainer {
             overflow-x: auto;
             max-width: 100%;
         }
 
-        #RaSTable table thead {
+        #tableContainer table thead {
             background-color: #f8f6f2;
         }
     </style>
@@ -275,7 +279,7 @@
                                 <li class="active" id="Information"><strong>Information</strong></li>
                                 <li id="Complexity"><strong>Complexity</strong></li>
                                 {{-- IF COMPLEX --}}
-                                <li id="DSW"><strong>DSW</strong></li>
+                                <li id="DSW"><strong>Deployment Strategy Workshop</strong></li>
                                 {{-- END COMPLEX --}}
                                 <li id="BP"><strong>Business Process</strong></li>
                                 <li id="RaS"><strong>Requirements and Solutions</strong></li>
@@ -303,14 +307,6 @@
                                                 placeholder="Industry">
                                         </div>
                                     </div>
-                                    {{-- <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Project Name <code>*</code></label>
-                                        <div class="col-sm-10">
-                                            <input {{ $editable }} value="{{ old('Industry') ?? $Industry }}" required
-                                                type="text" class="form-control" name="Industry" id="Industry"
-                                                placeholder="Industry">
-                                        </div>
-                                    </div> --}}
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Address <code>*</code></label>
                                         <div class="col-sm-10">
@@ -388,14 +384,14 @@
                                                 <tbody>
                                                     @foreach ($complexities as $index => $complexity)
                                                         <tr>
-                                                            <td>{{ $complexity['Name'] }}
+                                                            <td>{{ $complexity['Title'] }}
 
                                                                 @if (count($complexity['Details']) > 0)
                                                                     <table class="table table-bordered">
                                                                         @foreach ($complexity['Details'] as $SubDetail)
                                                                             <tr>
                                                                                 <td>
-                                                                                    <li>{{ $SubDetail['Details'] }}</li>
+                                                                                    <li>{{ $SubDetail['Title'] }}</li>
                                                                                 </td>
                                                                                 <td>
                                                                                     <div
@@ -431,20 +427,29 @@
                                         <div class="col-sm-10">
                                             <div class="row">
                                                 <div class="col-sm-2 dwsCon">
-                                                    <div class="divSquare activeStatus"></div>
-                                                    <strong>Ongoing DSW</strong>
+                                                    <div class="divSquare activeStatus">
+                                                        <strong>DSW Started</strong>
+                                                    </div>
                                                 </div>
                                                 <div class="col-sm-2 dwsCon">
-                                                    <div class="divSquare"></div>
-                                                    <strong>Completed DSW</strong>
+                                                    <div class="divSquare">
+                                                        <strong>Ongoing DSW</strong>
+                                                    </div>
                                                 </div>
                                                 <div class="col-sm-2 dwsCon">
-                                                    <div class="divSquare"></div>
-                                                    <strong>For Consolidation of Reqs</strong>
+                                                    <div class="divSquare">
+                                                        <strong>Completed DSW</strong>
+                                                    </div>
                                                 </div>
                                                 <div class="col-sm-2 dwsCon">
-                                                    <div class="divSquare"></div>
-                                                    <strong>Completeted Requirements Consolidation</strong>
+                                                    <div class="divSquare">
+                                                        <strong>For Consolidation of Requirements</strong>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 dwsCon">
+                                                    <div class="divSquare">
+                                                        <strong>Completeted Requirements Consolidation</strong>
+                                                    </div>
                                                 </div>
                                                 {{-- <div class="col-sm-2 dwsCon">
                                                     <div class="divSquare"></div>
@@ -471,37 +476,69 @@
                                     </div>
                                 @endif
                                 @if ($Status == 4)
-                                    <div id="RaSTable">
-                                        <table cellpadding="0" cellspacing="0" class="table table-bordered">
-                                            <thead>
-                                                <th scope="col">Requirement List</th>
-                                                <th scope="col">Description</th>
-                                                <th scope="col">Salesforce Features</th>
-                                                <th scope="col">Solutions Overview</th>
-                                                <th scope="col">Out of Scope</th>
-                                                <th scope="col">Assumptions/Comments</th>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td><input></td>
-                                                    <td>
-                                                        <textarea></textarea>
-                                                    </td>
-                                                    <td>
-                                                        <textarea></textarea>
-                                                    </td>
-                                                    <td>
-                                                        <textarea></textarea>
-                                                    </td>
-                                                    <td>
-                                                        <textarea></textarea>
-                                                    </td>
-                                                    <td>
-                                                        <textarea></textarea>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">In-Scope</h5>
+                                            <div id="tableContainer">
+                                                <table id="inScopeTable" cellpadding="0" cellspacing="0"
+                                                    class="table table-bordered">
+                                                    <thead>
+                                                        <th scope="col">Requirement List</th>
+                                                        <th scope="col">Description</th>
+                                                        <th scope="col">Salesforce Modules</th>
+                                                        <th scope="col">Solutions Overview</th>
+                                                        <th scope="col">Assumptions</th>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><input></td>
+                                                            <td>
+                                                                <textarea></textarea>
+                                                            </td>
+                                                            <td>
+                                                                <textarea></textarea>
+                                                            </td>
+                                                            <td>
+                                                                <textarea></textarea>
+                                                            </td>
+                                                            <td>
+                                                                <textarea></textarea>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+
+                                                <button class="btn btn-outline-primary btnAddRow" type="button">
+                                                    <i class="fas fa-plus"></i> Add Row
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Limitations</h5>
+                                            <div id="tableContainer">
+                                                <table id="outScopeTable" cellpadding="0" cellspacing="0"
+                                                    class="table table-bordered">
+                                                    <thead>
+                                                        <th scope="col">Out of Scope</th>
+                                                        <th scope="col">Comments</th>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <textarea></textarea>
+                                                            </td>
+                                                            <td>
+                                                                <textarea></textarea>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
                                 @endif
                                 @if ($Status == 5)
@@ -659,6 +696,29 @@
                 }
             });
 
+            // ----- BUTTON ADD ROW -----
+            $(document).on('click', '.btnAddRow', function() {
+                let html = `
+                <tr>
+            <td><input name="list"></td>
+                                   <td>
+                                      <textarea></textarea>
+                                       </td>
+                                   <td>
+                            <textarea></textarea>
+                          <td>
+            <textarea></textarea>
+                 </td>
+                   <td>
+                   <textarea></textarea>
+                </td>
+                 </tr>`;
+
+                $('#inScopeTable tbody').append(html);
+                initSelect2();
+            })
+            // ----- END BUTTON ADD ROW -----
+
             // CHECKBOX IF COMPLEX OR NOT
 
             $(document).on('click', 'input[name="complexCheckBox"]', function() {
@@ -720,23 +780,25 @@
             // ----- SUBMIT FORM -----
             $(document).on('submit', '#customerForm', function(e) {
 
-                e.preventDefault();
                 let isValidated = $(this).attr('validated') == "true";
                 let todo = $(this).attr('todo');
 
                 // FOR COMPLEXITY PART
                 if (status == 1) {
+
                     if ($('input[name="complexCheckBox"]:not(:checked)').length == 2) {
-                        return showToast('danger', 'Choose the complexity of the Project');
+                        showToast('danger', 'Choose the complexity of the Project');
                     }
                     if ($('input[name="checkbox"]:checked').length === 0 && $('#isComplex').prop(
                             'checked')) {
-                        return showToast('danger', 'Check atleast one(1) in the checklist');
+                        showToast('danger', 'Check atleast one(1) in the checklist');
                     }
+
                 }
 
                 if (!isValidated) {
 
+                    e.preventDefault();
                     let content = todo == 'insert' ? `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
                     <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
