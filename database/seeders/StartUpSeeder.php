@@ -22,16 +22,24 @@ class StartUpSeeder extends Seeder
      */
     public function run()
     {
+        // ADMIN
         $DepartmentId  = Str::uuid();
         $DesignationId = Str::uuid();
         $UserId        = Str::uuid();
 
+        // DEPARTMENT
         $CloudDepartmentId = config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION');
         $TCDepartmentId    = config('constant.ID.DEPARTMENTS.TECHNOLOGY_CONSULTING');
-        $TCDesignationId   = Str::uuid();
-        $FCDesignationId   = Str::uuid();
-        $GMDesignationId   = Str::uuid();
 
+        // DESIGNATION
+        $PMDesignationId   = config('constant.ID.DESIGNATIONS.PROJECT_MANAGER');
+        $GMDesignationId   = config('constant.ID.DESIGNATIONS.BA_HEAD');
+        $BADesignationId   = config('constant.ID.DESIGNATIONS.BUSINESS_ANALYST');
+        $TCDesignationId   = config('constant.ID.DESIGNATIONS.TECHNICAL_CONSULTANT');
+        $FCDesignationId   = config('constant.ID.DESIGNATIONS.FUNCTIONAL_CONSULTANT');
+        $CMDesignationId   = config('constant.ID.DESIGNATIONS.CUSTOMER_MANAGER');
+
+        // LEAVE TYPES
         $SickLeaveId     = config('constant.ID.LEAVE_TYPES.SICK_LEAVE');
         $VacationLeaveId = config('constant.ID.LEAVE_TYPES.VACATION_LEAVE');
 
@@ -83,9 +91,21 @@ class StartUpSeeder extends Seeder
                 'Status'       => 1
             ],
             [
-                'Id'           => Str::uuid(),
+                'Id'           => $BADesignationId,
                 'DepartmentId' => $CloudDepartmentId,
                 'Name'         => 'Business Analyst',
+                'Status'       => 1
+            ],
+            [
+                'Id'           => $PMDesignationId,
+                'DepartmentId' => $TCDepartmentId,
+                'Name'         => 'Project Manager',
+                'Status'       => 1
+            ],
+            [
+                'Id'           => $CMDesignationId,
+                'DepartmentId' => $TCDepartmentId,
+                'Name'         => 'Customer Manager',
                 'Status'       => 1
             ],
         ]);
@@ -220,5 +240,10 @@ class StartUpSeeder extends Seeder
             ],
         ]);
         // ----- END LEAVE TYPE -----
+
+
+        // ----- PROJECT PHASES -----
+        $this->call(ProjectPhaseSeeder::class);
+        // ----- END PROJECT PHASES -----
     }
 }
