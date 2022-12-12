@@ -3,8 +3,9 @@
 @section('content')
 
 <?php
-    $Name = $todo = null;
+    $Title = $todo = null;
     $Status = 1;
+    $details = $details ?? [];
 
     if (isset($data) && !empty($data)) {
         $todo   = "update";
@@ -12,7 +13,7 @@
         $action = route('complexity.update', ['Id' => $data['Id']]);
         $button = '<a href="/admin/setup/complexity/delete/'.$data['Id'].'" class="btn btn-danger btnDeleteForm">Delete</a>
         <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
-        $Name   = (!empty($data)) ? ($data['Name'] ?? '') : '';
+        $Title  = (!empty($data)) ? ($data['Title'] ?? '') : '';
         $Status = (!empty($data)) ? ($data['Status'] ?? '') : '';
     } else {
         $todo   = "insert";
@@ -66,10 +67,10 @@
                         <div class="card">
                             <div class="card-body pt-3">
                                 <div class="row my-3">
-                                    <label for="Name" class="col-sm-2">Complexity <code>*</code></label>
+                                    <label for="Title" class="col-sm-2">Complexity <code>*</code></label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="Name" name="Name" placeholder="Complexity Name"
-                                            value="{{ old('Name') ?? $Name }}" required>
+                                        <input type="text" class="form-control" id="Title" name="Title" placeholder="Complexity Title"
+                                            value="{{ old('Title') ?? $Title }}" required>
                                     </div>
                                 </div>
                                 <div class="row my-3">
@@ -105,7 +106,7 @@
                                                             </button>
                                                         </td>
                                                         <td>
-                                                            <input class="form-control" name="SubDetail[]" placeholder="Title" value="{{ $dt['Details'] }}" required>
+                                                            <input class="form-control" name="SubDetail[]" placeholder="Title" value="{{ $dt['Title'] }}" required>
                                                         </td>
                                                         <td>
                                                             <select class="form-control" name="SubStatus[]" select2>

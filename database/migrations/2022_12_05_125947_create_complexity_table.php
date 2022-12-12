@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('complexity', function (Blueprint $table) {
             $table->uuid('Id')->primary();
-            $table->string('Name');
+            $table->string('Title');
             $table->integer('Status')->default(1);
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();

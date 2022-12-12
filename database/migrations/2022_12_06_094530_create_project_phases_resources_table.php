@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('complexity_details', function (Blueprint $table) {
+        Schema::create('project_phases_resources', function (Blueprint $table) {
             $table->uuid('Id')->primary();
-            $table->uuid('ComplexityId');
-            $table->string('Title');
-            $table->integer('Status')->default(1);
+            $table->uuid('ProjectPhaseId');
+            $table->uuid('DesignationId');
+            $table->decimal('Percentage', 10, 2)->default(0.00);
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('complexity_details');
+        Schema::dropIfExists('project_phases_resources');
     }
 };
