@@ -110,6 +110,10 @@
               <a class="ms-link {{ 'complexity' == $setupModule ? 'active' : '' }}" 
                 href="{{ route('complexity') }}">Complexity</a>
             </li>
+            <li>
+              <a class="ms-link {{ 'projectPhase' == $setupModule ? 'active' : '' }}" 
+                href="{{ route('projectPhase') }}">Project Phases</a>
+            </li>
           </ul>
         </li>
         {{-- 

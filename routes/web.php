@@ -188,6 +188,7 @@ use App\Http\Controllers\admin\ModuleApprovalController;
 use App\Http\Controllers\admin\LeaveTypeController;
 use App\Http\Controllers\admin\PermissionController;
 use App\Http\Controllers\admin\ComplexityController;
+use App\Http\Controllers\admin\ProjectPhaseController;
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function () {
     // MODULE
@@ -247,14 +248,24 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
             Route::post('/edit/{id}/{designationId}/save', [ModuleApprovalController::class, 'saveDesignation'])->name('moduleApproval.edit.designation.save');
         });
 
-         // COMPLEXITY
-         Route::prefix('complexity')->group(function () {
+        // COMPLEXITY
+        Route::prefix('complexity')->group(function () {
             Route::get('/', [ComplexityController::class, 'index'])->name('complexity');
             Route::get('/add', [ComplexityController::class, 'form'])->name('complexity.add');
             Route::post('/save', [ComplexityController::class, 'save'])->name('complexity.save');
             Route::get('/edit/{Id}', [ComplexityController::class, 'edit'])->name('complexity.edit');
             Route::put('/edit/{Id}/update', [ComplexityController::class, 'update'])->name('complexity.update');
             Route::get('/delete/{Id}', [ComplexityController::class, 'delete'])->name('complexity.delete');
+        });
+
+        // PROJECT PHASE
+        Route::prefix('projectPhase')->group(function () {
+            Route::get('/', [ProjectPhaseController::class, 'index'])->name('projectPhase');
+            Route::get('/add', [ProjectPhaseController::class, 'form'])->name('projectPhase.add');
+            Route::post('/save', [ProjectPhaseController::class, 'save'])->name('projectPhase.save');
+            Route::get('/edit/{Id}', [ProjectPhaseController::class, 'edit'])->name('projectPhase.edit');
+            Route::put('/edit/{Id}/update', [ProjectPhaseController::class, 'update'])->name('projectPhase.update');
+            Route::get('/delete/{Id}', [ProjectPhaseController::class, 'delete'])->name('projectPhase.delete');
         });
     });
 });

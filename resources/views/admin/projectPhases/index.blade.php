@@ -39,16 +39,17 @@
             <div class="card">
                 <div class="card-body">
                     <div class="w-100 text-end mb-3">
-                        <a href="{{ route('complexity.add') }}" class="btn btn-outline-primary px-2 py-1">
+                        <a href="{{ route('projectPhase.add') }}" class="btn btn-outline-primary px-2 py-1">
                             <i class="bi bi-plus-lg"></i> New
                         </a>
                     </div>
 
-                    <table class="table table-striped table-hover" id="tableComplexity">
+                    <table class="table table-striped table-hover" id="tableProjectPhase">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Title</th>
+                                <th>Percentage</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -63,10 +64,11 @@
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>
-                                    <a href="{{ route('complexity.edit', ['Id' => $dt->Id]) }}">
+                                    <a href="{{ route('projectPhase.edit', ['Id' => $dt->Id]) }}">
                                         {{ $dt->Title }}
                                     </a>
                                 </td>
+                                <td>{{ $dt->Percentage }}%</td>
                                 <td><?= $status ?></td>
                             </tr>
                         @endforeach
@@ -86,7 +88,7 @@
     $(document).ready(function() {
         
         // ----- DATATABLES -----
-        let tableComplexity = $('#tableComplexity')
+        let tableProjectPhase = $('#tableProjectPhase')
             .css({ "min-width": "99%" })
             .removeAttr("width")
             .DataTable({
@@ -97,7 +99,8 @@
                 columnDefs: [
                     { targets: 0,  width: 10  },
                     { targets: 1,  width: 150 },
-                    { targets: 2,  width: 100 },
+                    { targets: 2,  width: 150 },
+                    { targets: 3,  width: 100 },
                 ],
             });
         // ----- END DATATABLES -----

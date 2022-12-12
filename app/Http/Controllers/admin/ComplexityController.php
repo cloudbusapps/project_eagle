@@ -33,12 +33,12 @@ class ComplexityController extends Controller
 
     public function save(Request $request) {
         $validator = $request->validate([
-            'Name' => ['required', 'string', 'max:500'],
+            'Title' => ['required', 'string', 'max:500'],
         ]);
         
-        $Name = $request->Name;
+        $Title = $request->Title;
         $Complexity = new Complexity;
-        $Complexity->Name   = $request->Name;
+        $Complexity->Title   = $request->Title;
         $Complexity->Status = $request->Status;
 
         if ($Complexity->save()) {
@@ -52,7 +52,7 @@ class ComplexityController extends Controller
                     $subData[] = [
                         'Id'           => Str::uuid(),
                         'ComplexityId' => $Id,
-                        'Details'      => $detail,
+                        'Title'        => $detail,
                         'Status'       => $SubStatus[$i],
                         'CreatedById'  => Auth::id(),
                         'UpdatedById'  => Auth::id(),
@@ -63,7 +63,7 @@ class ComplexityController extends Controller
 
             return redirect()
                 ->route('complexity')
-                ->with('success', "<b>{$Name}</b> successfully saved!");
+                ->with('success', "<b>{$Title}</b> successfully saved!");
         } 
     }
 
@@ -78,12 +78,12 @@ class ComplexityController extends Controller
 
     public function update(Request $request, $Id) {
         $validator = $request->validate([
-            'Name' => ['required', 'string', 'max:255']
+            'Title' => ['required', 'string', 'max:255']
         ]);
         
-        $Name = $request->Name;
+        $Title = $request->Title;
         $Complexity = Complexity::find($Id);
-        $Complexity->Name   = $request->Name;
+        $Complexity->Title   = $request->Title;
         $Complexity->Status = $request->Status;
 
         if ($Complexity->save()) {
@@ -97,7 +97,7 @@ class ComplexityController extends Controller
                     $subData[] = [
                         'Id'           => Str::uuid(),
                         'ComplexityId' => $Id,
-                        'Details'      => $detail,
+                        'Title'        => $detail,
                         'Status'       => $SubStatus[$i],
                         'CreatedById'  => Auth::id(),
                         'UpdatedById'  => Auth::id(),
@@ -108,23 +108,25 @@ class ComplexityController extends Controller
 
             return redirect()
                 ->route('complexity')
-                ->with('success', "<b>{$Name}</b> successfully updated!");
+                ->with('success', "<b>{$Title}</b> successfully updated!");
         } 
 
     }
 
     public function delete($Id) {
         $Complexity = Complexity::find($Id);
-        $Name = $Complexity->Name;
+        $Title = $Complexity->Title;
 
         if ($Complexity->delete()) {
+            $delete = ComplexityDetails::where('ComplexityId', $Id)->delete();
+            
             return redirect()
                 ->route('complexity')
-                ->with('success', "<b>{$Name}</b> successfully deleted!");
+                ->with('success', "<b>{$Title}</b> successfully deleted!");
         } else {
             return redirect()
                 ->back()
-                ->withErrors(["{$Name} is currently in used!"])
+                ->withErrors(["{$Title} is currently in used!"])
                 ->withInput();
         }
     }
