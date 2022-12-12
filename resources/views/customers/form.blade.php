@@ -279,7 +279,7 @@
                                 {{-- END COMPLEX --}}
                                 <li id="BP"><strong>Business Process</strong></li>
                                 <li id="RaS"><strong>Requirements and Solutions</strong></li>
-                                <li id="ProjectInclusion"><strong>Project Inclusion</strong></li>
+                                <li id="ProjectInclusion"><strong>Project Phase</strong></li>
                                 <li id="Assessment"><strong>Assessment</strong></li>
                                 <li id="Proposal"><strong>Proposal</strong></li>
                                 <li id="Success"><strong>Success</strong></li>
@@ -363,44 +363,54 @@
                                 @endif
                                 @if ($Status == 1)
                                     <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Requirements <code>*</code></label>
+                                        <label for="inputText" class="col-sm-2 label">Not Complex </label>
+
                                         <div class="col-sm-10">
-                                            <table id="mainTable" class="table table-bordered">
+
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="notComplex"
+                                                    name="complexCheckBox">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-2 label">Complex </label>
+
+                                        <div class="col-sm-10">
+                                            <input type="checkbox" class="custom-control-input" id="isComplex"
+                                                name="complexCheckBox">
+                                            <table style="display: none" id="mainTable" class="table table-bordered">
                                                 <thead>
                                                     <tr>
                                                         <th colspan="2" scope="col">Name</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach ($requirements as $index => $requirement)
+                                                    @foreach ($complexities as $index => $complexity)
                                                         <tr>
-                                                            <td>{{ $requirement->Name }}
+                                                            <td>{{ $complexity['Name'] }}
 
-                                                                @if ($requirement->hasDetails > 0)
+                                                                @if (count($complexity['Details']) > 0)
                                                                     <table class="table table-bordered">
-                                                                        @foreach ($subRequirements as $SubDetail)
-                                                                            @if ($requirement->Id == $SubDetail->RequirementId)
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        <li>{{ $SubDetail->Details }}</li>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <div
-                                                                                            class="custom-control custom-checkbox">
-                                                                                            <input type="checkbox"
-                                                                                                class="custom-control-input"
-                                                                                                id="subCheck"
-                                                                                                name="checkbox">
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            @endif
+                                                                        @foreach ($complexity['Details'] as $SubDetail)
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <li>{{ $SubDetail['Details'] }}</li>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <div
+                                                                                        class="custom-control custom-checkbox">
+                                                                                        <input type="checkbox"
+                                                                                            class="custom-control-input"
+                                                                                            id="subCheck"
+                                                                                            name="checkbox">
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
                                                                         @endforeach
                                                                     </table>
                                                                 @endif
-
                                                             </td>
-
                                                             <td>
                                                                 <div class="custom-control custom-checkbox">
                                                                     <input type="checkbox" class="custom-control-input"
@@ -498,7 +508,7 @@
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Inclusions <code>*</code></label>
                                         <div class="col-sm-10">
-                                            <table id="mainTable" class="table table-bordered">
+                                            <table id="" class="table table-bordered">
                                                 <thead>
                                                     <tr>
                                                         <th colspan="2" scope="col">Name</th>
@@ -649,15 +659,26 @@
                 }
             });
 
+            // CHECKBOX IF COMPLEX OR NOT
+
+            $(document).on('click', 'input[name="complexCheckBox"]', function() {
+                $('input[name="complexCheckBox"]').not(this).prop('checked', false);
+                checkDisabled();
+            });
+
+            function checkDisabled() {
+                const table = $('#mainTable');
+                $('#isComplex').prop('checked') ? table.show() : table.hide();
+            }
+
+
+
             // PLACEHOLDER FOR SELECT2
             $(".form-select").select2({
                 placeholder: "Select one or more consultant"
             });
 
             // PROGRESS BAR
-
-            // PATH DEPENDS ON STATUS
-            // 0 - INFORMATION,1 - COMPLEXITY
             const status = "{{ $Status }}";
             for (let i = 0; i <= status; i++) {
                 $("#progressbar li").eq(i).addClass("active");
@@ -698,11 +719,23 @@
 
             // ----- SUBMIT FORM -----
             $(document).on('submit', '#customerForm', function(e) {
+
+                e.preventDefault();
                 let isValidated = $(this).attr('validated') == "true";
                 let todo = $(this).attr('todo');
 
+                // FOR COMPLEXITY PART
+                if (status == 1) {
+                    if ($('input[name="complexCheckBox"]:not(:checked)').length == 2) {
+                        return showToast('danger', 'Choose the complexity of the Project');
+                    }
+                    if ($('input[name="checkbox"]:checked').length === 0 && $('#isComplex').prop(
+                            'checked')) {
+                        return showToast('danger', 'Check atleast one(1) in the checklist');
+                    }
+                }
+
                 if (!isValidated) {
-                    e.preventDefault();
 
                     let content = todo == 'insert' ? `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">

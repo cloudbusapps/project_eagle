@@ -36,26 +36,17 @@ class CustomerController extends Controller
     function edit($Id)
     {
         $customerData = Customer::find($Id);
-        $users = User::all();
-        $requirements = DB::table('requirements')
-            ->select('requirements.*', DB::raw('COUNT(sr."Details") as "hasDetails"'))
-            ->leftJoin('sub_requirements AS sr', 'sr.RequirementId', 'requirements.Id')
-            ->groupBy('requirements.Id')
-            ->orderBy('hasDetails', 'asc')
-            ->get();
-        $subRequirements = DB::table('sub_requirements')
-            ->select('sub_requirements.*')
-            ->get();
-
+        if ($customerData->Status == 6) {
+            $data = [
+                'users'           => User::all(),
+            ];
+        }
         $data = [
-
             'title'           => $this->getTitle($customerData->Status),
             'type'            => 'edit',
             'data'            => $customerData,
-            'users'           => $users,
             'Id'              => $Id,
-            'requirements'    => $requirements,
-            'subRequirements' => $subRequirements
+            'complexities'    => $this->getComplexityData()
 
         ];
 
@@ -74,7 +65,7 @@ class CustomerController extends Controller
             case 4:
                 return 'Requirements and Solutions';
             case 5:
-                return 'Project Inclusion';
+                return 'Project Phase';
             case 6:
                 return 'Assessment';
             case 7:
@@ -121,12 +112,14 @@ class CustomerController extends Controller
     }
     function update(Request $request, $Id)
     {
+        return 1;
         $customerData = Customer::find($Id);
         $customerName             = $customerData->CustomerName;
         $Id             = $customerData->Id;
 
         // CHECKING IF COMPLEX
         if ($customerData->Status == 1) {
+
             if (isset($request->checkbox)) {
                 $customerData->Status  = 2;
                 $customerData->DSWStatus  = 0;
@@ -134,7 +127,6 @@ class CustomerController extends Controller
                 $customerData->Status  = 3;
             }
         } else if ($customerData->Status == 2) {
-
             // IF COMPLEX
             if ($customerData->DSWStatus == 0) {
                 $customerData->DSWStatus = 1;
@@ -151,8 +143,7 @@ class CustomerController extends Controller
             $customerData->Status = 5;
         } else if ($customerData->Status == 5) {
             $customerData->Status = 6;
-        }
-         else if ($customerData->Status == 6) {
+        } else if ($customerData->Status == 6) {
             $customerData->Status = 7;
         }
 
@@ -174,5 +165,54 @@ class CustomerController extends Controller
 
     function delete($Id)
     {
+    }
+
+
+
+    // HELPER FOR CUSTOMER CONTROLLER
+    function getComplexityData()
+    {
+        $data = [];
+
+        $complexity = DB::table('complexity')->get();
+
+        foreach ($complexity as $index => $complex) {
+            $temp = [
+                'Id' => $complex->Id,
+                'Name' => $complex->Name,
+                'Status'  => $complex->Status,
+                'CreatedById'  => $complex->CreatedById,
+                'UpdatedById'  => $complex->UpdatedById,
+                'created_at'  => $complex->created_at,
+                'updated_at'  => $complex->updated_at,
+                'Details' => []
+            ];
+
+            $complexityDetails = DB::table('complexity_details')
+                ->where('Status', 1)
+                ->where('ComplexityId', $complex->Id)
+                ->get();
+
+            foreach ($complexityDetails as $complexityDetail) {
+
+                if ($complexityDetail->ComplexityId == $complex->Id) {
+                    $temp['Details'][] = [
+                        'Id'        => $complexityDetail->Id,
+                        'ComplexityId'     => $complexityDetail->ComplexityId,
+                        'Details'    => $complexityDetail->Details,
+                        'Status'  => $complexityDetail->Status,
+                        'CreatedById'  => $complexityDetail->CreatedById,
+                        'UpdatedById'  => $complexityDetail->UpdatedById,
+                        'created_at'  => $complexityDetail->created_at,
+                        'updated_at'  => $complexityDetail->updated_at,
+                    ];
+                }
+            }
+            $data[] = $temp;
+        }
+        // echo "<pre>";
+        // print_r($complexity);
+        // exit;
+        return $data;
     }
 }
