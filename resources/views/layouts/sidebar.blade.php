@@ -106,6 +106,10 @@
               <a class="ms-link {{ 'moduleApproval' == $setupModule ? 'active' : '' }}" 
                 href="{{ route('moduleApproval') }}">Approval</a>
             </li>
+            <li>
+              <a class="ms-link {{ 'complexity' == $setupModule ? 'active' : '' }}" 
+                href="{{ route('complexity') }}">Complexity</a>
+            </li>
           </ul>
         </li>
         {{-- 

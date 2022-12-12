@@ -25,8 +25,8 @@
     if (in_array($event, ['view', 'edit']))  // VIEW & EDIT
     {
         if ($event == 'view') {
-            $pending = $data['UserId'] == Auth::id() && $pending;
-            if (($pending || $data['Status'] == 3) && $data['UserId'] == Auth::id()) { // PENDING OR REJECTED
+            $noApprover = !$data['ApproverId'] && $data['Status'] == 1;
+            if (($noApprover || $pending || $data['Status'] == 3) && $data['UserId'] == Auth::id()) { // PENDING OR REJECTED
                 $action = route('leaveRequest.revise', ['Id' => $data['Id']]) ;
                 $method = "GET";
                 $button = '<button type="submit" class="btn btn-warning btnReviseForm">Revise</button>';
@@ -115,7 +115,7 @@
                     </div>
                     @endif
 
-                    @if (!$currentApprover == Auth::id() || $pending)
+                    @if (!$currentApprover == Auth::id() || $UserId == Auth::id())
                     <form action="{{ $action }}" 
                         method="POST" 
                         enctype="multipart/form-data" 
@@ -212,8 +212,8 @@
                                         <input type="file" class="form-control" id="File" name="File[]" placeholder="Attachment" multiple>
                                         @endif
 
-                                        @if (isset($files) && count($files))
                                         <div class="row mt-1" id="displayFile">
+                                        @if (isset($files) && count($files))
                                         @foreach ($files as $file)
                                             <div class="py-2 col-sm-6 col-md-4 parent" filename="{{ $file['File'] }}">
                                                 <div class="display-filename">
@@ -224,8 +224,8 @@
                                                 </div>
                                             </div>
                                         @endforeach
-                                        </div>
                                         @endif
+                                        </div>
 
                                     </div>
                                 </div>
@@ -251,7 +251,7 @@
                             </div>
                         </div>
 
-                    @if (!$currentApprover == Auth::id() || $pending)
+                    @if (!$currentApprover == Auth::id() || $UserId == Auth::id())
                     </form>
                     @endif
 

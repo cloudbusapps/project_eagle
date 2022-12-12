@@ -13,9 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('requirements', function (Blueprint $table) {
+        Schema::create('complexity', function (Blueprint $table) {
             $table->uuid('Id')->primary();
             $table->string('Name');
+            $table->integer('Status')->default(1);
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('requirements');
+        Schema::dropIfExists('complexity');
     }
 };
