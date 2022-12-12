@@ -3,7 +3,7 @@
 @section('content')
     <?php
     $PreviewStatus = '';
-    $CustomerName = $Status = $ProjectName = $Address = $Industry = $Type = $ContactPerson = $Product = $Notes = $Link = $Complex = '';
+    $CustomerName = $DSWStatus = $Status = $ProjectName = $Address = $Industry = $Type = $ContactPerson = $Product = $Notes = $Link = $Complex = '';
     $editable = '';
     if ($type === 'insert') {
         $Status = 0;
@@ -25,7 +25,8 @@
         $Notes = !empty($data) ? $data['Notes'] ?? '' : '';
         $Complex = !empty($data) ? $data['Complex'] ?? '' : '';
         $Status = !empty($data) ? $data['Status'] ?? '' : '';
-        $button = '<button type="submit" class="btn btn-primary btnUpdateForm">Save</button>';
+        $DSWStatus = !empty($data) ? $data['DSWStatus'] ?? '' : '';
+        $button = '<button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>';
         // <a href="forms/customers/delete/' .
         // $Id .
         // '" class="btn btn-danger btnDeleteForm">Delete</a>
@@ -80,10 +81,10 @@
             --backgroundColor: green;
         }
 
-        .dswCon strong{
+        .dswCon strong {
             font-size: 1rem;
             text-align: center;
-            color:aqua;
+            color: aqua;
         }
 
 
@@ -116,7 +117,7 @@
         #progressbar li {
             list-style-type: none;
             font-size: 12px;
-            width: 14%;
+            width: 11%;
             float: left;
             position: relative;
             text-align: center;
@@ -149,9 +150,19 @@
             content: "\f0ad";
         }
 
+        #progressbar #ProjectInclusion:before {
+            font-family: FontAwesome;
+            content: "\f0ad";
+        }
+
         #progressbar #Assessment:before {
             font-family: FontAwesome;
             content: "\f007";
+        }
+
+        #progressbar #Proposal:before {
+            font-family: FontAwesome;
+            content: "\f0f6";
         }
 
         #progressbar #Success:before {
@@ -190,6 +201,16 @@
         #progressbar li.active:before,
         #progressbar li.active:after {
             background: green;
+        }
+
+        /* TABLE */
+        #RaSTable {
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        #RaSTable table thead {
+            background-color: #f8f6f2;
         }
     </style>
 
@@ -258,12 +279,13 @@
                                 {{-- END COMPLEX --}}
                                 <li id="BP"><strong>Business Process</strong></li>
                                 <li id="RaS"><strong>Requirements and Solutions</strong></li>
+                                <li id="ProjectInclusion"><strong>Project Inclusion</strong></li>
                                 <li id="Assessment"><strong>Assessment</strong></li>
+                                <li id="Proposal"><strong>Proposal</strong></li>
                                 <li id="Success"><strong>Success</strong></li>
                             </ul>
 
                             <div class="profile-overview">
-
                                 @if ($Status == 0)
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Customer Name <code>*</code></label>
@@ -414,15 +436,172 @@
                                                     <div class="divSquare"></div>
                                                     <strong>Completeted Requirements Consolidation</strong>
                                                 </div>
-                                                <div class="col-sm-2 dwsCon">
+                                                {{-- <div class="col-sm-2 dwsCon">
                                                     <div class="divSquare"></div>
                                                     <strong>Completed Sol Doc</strong>
-                                                </div>
+                                                </div> --}}
                                             </div>
                                         </div>
                                     </div>
                                 @endif
                                 @if ($Status == 3)
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-2 label">Attachment
+                                            <code>*</code></label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control" type="file" id="formFileMultiple" multiple />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-2 label">Notes <code>*</code></label>
+                                        <div class="col-sm-10">
+                                            <textarea {{ $editable }} style="height: 82px;" required type="text" class="form-control" name="Notes"
+                                                id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
+                                        </div>
+                                    </div>
+                                @endif
+                                @if ($Status == 4)
+                                    <div id="RaSTable">
+                                        <table cellpadding="0" cellspacing="0" class="table table-bordered">
+                                            <thead>
+                                                <th scope="col">Requirement List</th>
+                                                <th scope="col">Description</th>
+                                                <th scope="col">Salesforce Features</th>
+                                                <th scope="col">Solutions Overview</th>
+                                                <th scope="col">Out of Scope</th>
+                                                <th scope="col">Assumptions/Comments</th>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><input></td>
+                                                    <td>
+                                                        <textarea></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <textarea></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <textarea></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <textarea></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <textarea></textarea>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @endif
+                                @if ($Status == 5)
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-2 label">Inclusions <code>*</code></label>
+                                        <div class="col-sm-10">
+                                            <table id="mainTable" class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="2" scope="col">Name</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($requirements as $index => $requirement)
+                                                        <tr>
+                                                            <td>{{ $requirement->Name }}
+
+                                                                @if ($requirement->hasDetails > 0)
+                                                                    <table class="table table-bordered">
+                                                                        @foreach ($subRequirements as $SubDetail)
+                                                                            @if ($requirement->Id == $SubDetail->RequirementId)
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        <li>{{ $SubDetail->Details }}</li>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <div
+                                                                                            class="custom-control custom-checkbox">
+                                                                                            <input type="checkbox"
+                                                                                                class="custom-control-input"
+                                                                                                id="subCheck"
+                                                                                                name="checkbox">
+                                                                                        </div>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            @endif
+                                                                        @endforeach
+                                                                    </table>
+                                                                @endif
+
+                                                            </td>
+
+                                                            <td>
+                                                                <div class="custom-control custom-checkbox">
+                                                                    <input type="checkbox" class="custom-control-input"
+                                                                        id="mainCheck" name="checkbox">
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                @endif
+                                @if ($Status == 6)
+                                    <div class="mb-3" id="RaSTable">
+                                        <table cellpadding="0" cellspacing="0" class="table table-bordered">
+                                            <thead>
+                                                <th scope="col">Requirement List</th>
+                                                <th scope="col">Description</th>
+                                                <th scope="col">Salesforce Features</th>
+                                                <th scope="col">Solutions Overview</th>
+                                                <th scope="col">Manhour Assessment</th>
+                                                <th scope="col">Out of Scope</th>
+                                                <th scope="col">Assumptions/Comments</th>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><input></td>
+                                                    <td>
+                                                        <textarea></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <textarea></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <textarea></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <textarea></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <textarea></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <textarea></textarea>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="LeaveType" class="col-sm-2">Assigned Consultant(s)</label>
+                                        <div class="col-sm-10">
+                                            <select name="LeaveTypeId" id="LeaveTypeId" class="form-select" select2
+                                                required multiple>
+                                                <option value="" selected disabled>Select Consultant(s)</option>
+
+                                                @foreach ($users as $user)
+                                                    <option value="">
+                                                        {{ $user->FirstName . ' ' . $user->LastName }}
+                                                    </option>
+                                                @endforeach
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                @endif
+                                @if ($Status == 7)
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Notes <code>*</code></label>
                                         <div class="col-sm-10">
@@ -432,39 +611,18 @@
                                     </div>
 
                                     <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Attachment <code>*</code></label>
+                                        <label for="inputText" class="col-sm-2 label">Attachment
+                                            <code>*</code></label>
                                         <div class="col-sm-10">
                                             <input class="form-control" type="file" id="formFileMultiple" multiple />
                                         </div>
                                     </div>
                                 @endif
-                                @if ($Status == 4)
+                                @if ($Status == 8)
                                 @endif
-                                @if ($Status == 5)
-                                    <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Task <code>*</code></label>
-                                        <div class="col-sm-10">
-                                            <select required select2 name="UsersId" id="UsersIdSelect"
-                                                class="form-select" id="floatingSelect">
-                                                <option value="" selected disabled>Select Task</option>
-                                                @if (count($data) > 0)
-                                                    @foreach ($data as $task)
-                                                        <option value="{{ $task->Id }}">
-                                                            {{ $task->Title . ' ' . $task->Title }}
-                                                        </option>
-                                                    @endforeach
-                                                @endif
-
-                                            </select>
-                                        </div>
-                                    </div>
-                                @endif
-
-
                             </div>
                             <div class="button-footer text-end">
                                 <a href="{{ $cancelRoute }}" class="btn btn-secondary">Cancel</a>
-
                                 <?= $button ?>
                             </div>
 
@@ -504,8 +662,8 @@
             for (let i = 0; i <= status; i++) {
                 $("#progressbar li").eq(i).addClass("active");
             }
-            const statuss = 3;
-            for (let i = 0; i <= statuss; i++) {
+            const dswStatus = "{{ $DSWStatus }}";
+            for (let i = 0; i <= dswStatus; i++) {
                 $(".divSquare").eq(i).addClass("activeStatus");
             }
 

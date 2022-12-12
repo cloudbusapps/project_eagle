@@ -35,7 +35,8 @@ class CustomerController extends Controller
     }
     function edit($Id)
     {
-        $customerData = Customer::find($Id)->first();
+        $customerData = Customer::find($Id);
+        $users = User::all();
         $requirements = DB::table('requirements')
             ->select('requirements.*', DB::raw('COUNT(sr."Details") as "hasDetails"'))
             ->leftJoin('sub_requirements AS sr', 'sr.RequirementId', 'requirements.Id')
@@ -51,6 +52,7 @@ class CustomerController extends Controller
             'title'           => $this->getTitle($customerData->Status),
             'type'            => 'edit',
             'data'            => $customerData,
+            'users'           => $users,
             'Id'              => $Id,
             'requirements'    => $requirements,
             'subRequirements' => $subRequirements
@@ -72,9 +74,11 @@ class CustomerController extends Controller
             case 4:
                 return 'Requirements and Solutions';
             case 5:
-                return 'Assessment';
+                return 'Project Inclusion';
             case 6:
-                return 'Success';
+                return 'Assessment';
+            case 7:
+                return 'Proposal';
             default:
                 return 'Information';
         }
@@ -117,14 +121,45 @@ class CustomerController extends Controller
     }
     function update(Request $request, $Id)
     {
-        $customerData = Customer::find($Id)->first();
+        $customerData = Customer::find($Id);
         $customerName             = $customerData->CustomerName;
         $Id             = $customerData->Id;
-        if (isset($request->checkbox)) {
-            $customerData->Status  = 2;
-        } else {
-            $customerData->Status  = 3;
+
+        // CHECKING IF COMPLEX
+        if ($customerData->Status == 1) {
+            if (isset($request->checkbox)) {
+                $customerData->Status  = 2;
+                $customerData->DSWStatus  = 0;
+            } else {
+                $customerData->Status  = 3;
+            }
+        } else if ($customerData->Status == 2) {
+
+            // IF COMPLEX
+            if ($customerData->DSWStatus == 0) {
+                $customerData->DSWStatus = 1;
+            } else if ($customerData->DSWStatus == 1) {
+                $customerData->DSWStatus = 2;
+            } else if ($customerData->DSWStatus == 2) {
+                $customerData->DSWStatus = 3;
+            } else if ($customerData->DSWStatus == 3) {
+                $customerData->Status = 3;
+            }
+        } else if ($customerData->Status == 3) {
+            $customerData->Status = 4;
+        } else if ($customerData->Status == 4) {
+            $customerData->Status = 5;
+        } else if ($customerData->Status == 5) {
+            $customerData->Status = 6;
         }
+         else if ($customerData->Status == 6) {
+            $customerData->Status = 7;
+        }
+
+
+        // } else if ($customerData->Status  == 2 && $customerData->DSWStatus == 4) {
+        //     $customerData->Status = 3;
+        // }
 
         if ($customerData->update()) {
             return redirect()
