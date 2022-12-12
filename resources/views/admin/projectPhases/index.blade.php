@@ -50,6 +50,7 @@
                                 <th>#</th>
                                 <th>Title</th>
                                 <th>Percentage</th>
+                                <th>Required</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -59,6 +60,7 @@
                         @foreach ($data as $index => $dt)
                         <?php 
                             $status = $dt->Status == 1 ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-danger'>Inactive</span>";
+                            $required = $dt->Required == 1 ? "<span class='border border-success px-2 text-success'>Yes</span>" : "<span class='border border-danger px-2 text-danger'>No</span>";
                         ?>
 
                             <tr>
@@ -69,6 +71,7 @@
                                     </a>
                                 </td>
                                 <td>{{ $dt->Percentage }}%</td>
+                                <td><?= $required ?></td>
                                 <td><?= $status ?></td>
                             </tr>
                         @endforeach
@@ -100,7 +103,8 @@
                     { targets: 0,  width: 10  },
                     { targets: 1,  width: 150 },
                     { targets: 2,  width: 150 },
-                    { targets: 3,  width: 100 },
+                    { targets: 3,  width: 50  },
+                    { targets: 4,  width: 100 },
                 ],
             });
         // ----- END DATATABLES -----
