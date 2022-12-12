@@ -15,7 +15,7 @@ class Customer extends Model
     use HasFactory,Notifiable;
 
     protected $table = 'customers';
-    protected $primaryKey = 'Id';
+    public $primaryKey = 'Id';
     protected $KeyType = 'string';
     public $incrementing = false;
 

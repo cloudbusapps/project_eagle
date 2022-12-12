@@ -57,7 +57,6 @@
                                     <th scope="col">#</th>
                                     <th scope="col">Customer Name</th>
                                     <th scope="col">Industry</th>
-                                    <th scope="col">Project Name</th>
                                     <th scope="col">Contact Person</th>
                                 </tr>
                             </thead>
@@ -72,7 +71,6 @@
                                         </td>
 
                                         <td>{{ $data->Industry }}</td>
-                                        <td>{{ $data->ProjectName }}</td>
                                         <td>{{ $data->ContactPerson }}</td>
                                     </tr>
                                 @endforeach
