@@ -28,6 +28,8 @@ return new class extends Migration
             $table->boolean('IsComplex')->nullable(true);
             $table->integer('DSWStatus')->nullable(true);
             $table->integer('Status')->nullable(true);
+            $table->uuid('HeadId')->nullable();
+            $table->uuid('OICId')->nullable();
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();
             $table->timestamps();

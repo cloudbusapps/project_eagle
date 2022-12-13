@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\customer\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\EmployeeDirectoryController;
@@ -23,7 +24,6 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserStoryController;
 use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\LeaveRequestController;
-use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\NotificationController;
 
 // AUTH
@@ -234,7 +234,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
         });
 
         // PERMISSION
-        Route::prefix('permission')->group(function() {
+        Route::prefix('permission')->group(function () {
             Route::get('/', [PermissionController::class, 'index'])->name('permission');
             Route::get('/edit/{Id}', [PermissionController::class, 'edit'])->name('permission.edit');
             Route::post('/edit/{Id}/save', [PermissionController::class, 'save'])->name('permission.save');

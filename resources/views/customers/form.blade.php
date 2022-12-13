@@ -399,7 +399,8 @@
                                                                                         <input type="checkbox"
                                                                                             class="custom-control-input"
                                                                                             id="subCheck"
-                                                                                            name="checkbox">
+                                                                                            name="checkbox[]"
+                                                                                            value={{ $SubDetail['Id'] }}>
                                                                                     </div>
                                                                                 </td>
                                                                             </tr>
@@ -410,7 +411,8 @@
                                                             <td>
                                                                 <div class="custom-control custom-checkbox">
                                                                     <input type="checkbox" class="custom-control-input"
-                                                                        id="mainCheck" name="checkbox">
+                                                                        value={{ $complexity['Id'] }} id="mainCheck"
+                                                                        name="checkbox[]">
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -491,18 +493,18 @@
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td><input></td>
+                                                            <td><input name="Title[]"></td>
                                                             <td>
-                                                                <textarea></textarea>
+                                                                <textarea name="Description[]"></textarea>
                                                             </td>
                                                             <td>
-                                                                <textarea></textarea>
+                                                                <textarea name="Module[]"></textarea>
                                                             </td>
                                                             <td>
-                                                                <textarea></textarea>
+                                                                <textarea name="Solution[]"></textarea>
                                                             </td>
                                                             <td>
-                                                                <textarea></textarea>
+                                                                <textarea name="Assumption[]"></textarea>
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -529,14 +531,18 @@
                                                     <tbody>
                                                         <tr>
                                                             <td>
-                                                                <textarea></textarea>
+                                                                <textarea name="OutOfScope[]"></textarea>
                                                             </td>
                                                             <td>
-                                                                <textarea></textarea>
+                                                                <textarea name="Comment[]"></textarea>
                                                             </td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
+                                                <button class="btn btn-outline-primary btnAddRowLimitation"
+                                                    type="button">
+                                                    <i class="fas fa-plus"></i> Add Row
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -552,39 +558,37 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach ($requirements as $index => $requirement)
+                                                    @foreach ($ProjectPhase as $index => $pp)
                                                         <tr>
-                                                            <td>{{ $requirement->Name }}
+                                                            <td>{{ $pp['Title'] }}
 
-                                                                @if ($requirement->hasDetails > 0)
+                                                                @if (count($pp['Details']) > 0)
                                                                     <table class="table table-bordered">
-                                                                        @foreach ($subRequirements as $SubDetail)
-                                                                            @if ($requirement->Id == $SubDetail->RequirementId)
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        <li>{{ $SubDetail->Details }}</li>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <div
-                                                                                            class="custom-control custom-checkbox">
-                                                                                            <input type="checkbox"
-                                                                                                class="custom-control-input"
-                                                                                                id="subCheck"
-                                                                                                name="checkbox">
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            @endif
+                                                                        @foreach ($pp['Details'] as $SubDetail)
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <li>{{ $SubDetail['Title'] }}</li>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <div
+                                                                                        class="custom-control custom-checkbox">
+                                                                                        <input type="checkbox"
+                                                                                            class="custom-control-input"
+                                                                                            id="subCheck"
+                                                                                            name="checkbox[]"
+                                                                                            {{ $SubDetail['Required'] == 1 ? 'checked disabled' : '' }}>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
                                                                         @endforeach
                                                                     </table>
                                                                 @endif
-
                                                             </td>
-
                                                             <td>
                                                                 <div class="custom-control custom-checkbox">
                                                                     <input type="checkbox" class="custom-control-input"
-                                                                        id="mainCheck" name="checkbox">
+                                                                        id="mainCheck" name="checkbox[]"
+                                                                        {{ $pp['Required'] == 1 ? 'checked disabled' : '' }}>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -700,24 +704,41 @@
             $(document).on('click', '.btnAddRow', function() {
                 let html = `
                 <tr>
-            <td><input name="list"></td>
-                                   <td>
-                                      <textarea></textarea>
-                                       </td>
-                                   <td>
-                            <textarea></textarea>
-                          <td>
-            <textarea></textarea>
-                 </td>
-                   <td>
-                   <textarea></textarea>
-                </td>
-                 </tr>`;
+                    <td><input name="Title[]"></td>
+                    <td>
+                        <textarea name="Description[]"></textarea>
+                    </td>
+                    <td>
+                        <textarea name="Module[]"></textarea>
+                    </td>
+                    <td>
+                        <textarea name="Solution[]"></textarea>
+                    </td>
+                    <td>
+                        <textarea name="Assumption[]"></textarea>
+                    </td>
+                </tr>`;
 
                 $('#inScopeTable tbody').append(html);
                 initSelect2();
             })
             // ----- END BUTTON ADD ROW -----
+            // ----- BUTTON ADD LIMITATIONS ROW -----
+            $(document).on('click', '.btnAddRowLimitation', function() {
+                let html = `
+                <tr>
+                    <td>
+                        <textarea name="OutOfScope[]"></textarea>
+                    </td>
+                    <td>
+                        <textarea name="Comment[]"></textarea>
+                    </td>
+                </tr>`;
+
+                $('#outScopeTable tbody').append(html);
+                initSelect2();
+            })
+            // ----- END BUTTON ADD LIMITATIONS ROW -----
 
             // CHECKBOX IF COMPLEX OR NOT
 
@@ -787,11 +808,17 @@
                 if (status == 1) {
 
                     if ($('input[name="complexCheckBox"]:not(:checked)').length == 2) {
+                        e.preventDefault();
                         showToast('danger', 'Choose the complexity of the Project');
+                        isValidated = true;
+
                     }
-                    if ($('input[name="checkbox"]:checked').length === 0 && $('#isComplex').prop(
+                    if ($('input[name="checkbox[]"]:checked').length === 0 && $('#isComplex').prop(
                             'checked')) {
+                        e.preventDefault();
                         showToast('danger', 'Check atleast one(1) in the checklist');
+                        isValidated = true;
+
                     }
 
                 }
