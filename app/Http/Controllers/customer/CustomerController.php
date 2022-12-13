@@ -41,7 +41,7 @@ class CustomerController extends Controller
     function edit($Id)
     {
         $customerData = Customer::find($Id);
-        
+
         $data = [
             'title'           => $this->getTitle($customerData->Status),
             'type'            => 'edit',
@@ -52,16 +52,7 @@ class CustomerController extends Controller
             'users'           => User::all(),
 
         ];
-        if ($customerData->Status == 5) {
-            $data[] = [
-                'ProjectPhase'           => $this->getProjectPhase(),
-            ];
-        }
-        if ($customerData->Status == 6) {
-            $data = [
-                'users'           => User::all(),
-            ];
-        }
+
 
         return view('customers.form', $data);
     }
@@ -133,7 +124,7 @@ class CustomerController extends Controller
         if ($customerData->Status == 1) {
 
             if (isset($request->checkbox)) {
-                
+
                 $customerData->Status  = 2;
                 $customerData->DSWStatus  = 0;
             } else {
@@ -204,7 +195,7 @@ class CustomerController extends Controller
             }
             $customerData->Status = 5;
         } else if ($customerData->Status == 5) {
-            
+
             $customerData->Status = 6;
         } else if ($customerData->Status == 6) {
 

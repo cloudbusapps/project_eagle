@@ -599,56 +599,94 @@
                                     </div>
                                 @endif
                                 @if ($Status == 6)
-                                    <div class="mb-3" id="RaSTable">
-                                        <table cellpadding="0" cellspacing="0" class="table table-bordered">
-                                            <thead>
-                                                <th scope="col">Requirement List</th>
-                                                <th scope="col">Description</th>
-                                                <th scope="col">Salesforce Features</th>
-                                                <th scope="col">Solutions Overview</th>
-                                                <th scope="col">Manhour Assessment</th>
-                                                <th scope="col">Out of Scope</th>
-                                                <th scope="col">Assumptions/Comments</th>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td><input></td>
-                                                    <td>
-                                                        <textarea></textarea>
-                                                    </td>
-                                                    <td>
-                                                        <textarea></textarea>
-                                                    </td>
-                                                    <td>
-                                                        <textarea></textarea>
-                                                    </td>
-                                                    <td>
-                                                        <textarea></textarea>
-                                                    </td>
-                                                    <td>
-                                                        <textarea></textarea>
-                                                    </td>
-                                                    <td>
-                                                        <textarea></textarea>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">In-Scope</h5>
+                                            <div id="tableContainer" class="mb-3">
+                                                <table id="inScopeTable" cellpadding="0" cellspacing="0"
+                                                    class="table table-bordered">
+                                                    <thead>
+                                                        <th scope="col">Requirement List</th>
+                                                        <th scope="col">Description</th>
+                                                        <th scope="col">Salesforce Modules</th>
+                                                        <th scope="col">Solutions Overview</th>
+                                                        <th scope="col">Assumptions</th>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><input name="Title[]"></td>
+                                                            <td>
+                                                                <textarea name="Description[]"></textarea>
+                                                            </td>
+                                                            <td>
+                                                                <textarea name="Module[]"></textarea>
+                                                            </td>
+                                                            <td>
+                                                                <textarea name="Solution[]"></textarea>
+                                                            </td>
+                                                            <td>
+                                                                <textarea name="Assumption[]"></textarea>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <button class="btn btn-outline-primary btnAddRow" type="button">
+                                                <i class="fas fa-plus"></i> Add Row
+                                            </button>
+                                        </div>
+
                                     </div>
-                                    <div class="row mb-3">
-                                        <label for="LeaveType" class="col-sm-2">Assigned Consultant(s)</label>
-                                        <div class="col-sm-10">
-                                            <select name="LeaveTypeId" id="LeaveTypeId" class="form-select" select2
-                                                required multiple>
-                                                <option value="" selected disabled>Select Consultant(s)</option>
 
-                                                @foreach ($users as $user)
-                                                    <option value="">
-                                                        {{ $user->FirstName . ' ' . $user->LastName }}
-                                                    </option>
-                                                @endforeach
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Limitations</h5>
+                                            <div id="tableContainer" class="mb-3">
+                                                <table id="outScopeTable" cellpadding="0" cellspacing="0"
+                                                    class="table table-bordered">
+                                                    <thead>
+                                                        <th scope="col">Out of Scope</th>
+                                                        <th scope="col">Comments</th>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <textarea name="OutOfScope[]"></textarea>
+                                                            </td>
+                                                            <td>
+                                                                <textarea name="Comment[]"></textarea>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <button class="btn btn-outline-primary btnAddRowLimitation" type="button">
+                                                <i class="fas fa-plus"></i> Add Row
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Consultants</h5>
 
-                                            </select>
+                                            <div class="row mb-3">
+                                                <label class="col-sm-2">Assigned Consultant(s)</label>
+                                                <div class="col-sm-10">
+                                                    <select name="LeaveTypeId" id="LeaveTypeId" class="form-select"
+                                                        select2 required multiple>
+                                                        <option value="" selected disabled>Select Consultant(s)
+                                                        </option>
+
+                                                        @foreach ($users as $user)
+                                                            <option value="">
+                                                                {{ $user->FirstName . ' ' . $user->LastName }}
+                                                            </option>
+                                                        @endforeach
+
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 @endif
