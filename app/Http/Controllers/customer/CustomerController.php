@@ -30,20 +30,25 @@ class CustomerController extends Controller
 
     function form()
     {
+        $title = $this->getTitle();
         $data = [
-            'title'   => $this->getTitle(),
+            'title'   => $title[0],
             'data'    => User::all(),
             'type'    => 'insert',
         ];
 
         return view('customers.form', $data);
     }
-    function edit($Id)
+    function edit(Request $request, $Id)
     {
         $customerData = Customer::find($Id);
+        $progress = $request->progress ?? '';
+
+        $title = $this->getTitle($customerData->Status, $progress);
 
         $data = [
-            'title'           => $this->getTitle($customerData->Status),
+            'title'             => $title[0],
+            'currentViewStatus' => $title[1],
             'type'            => 'edit',
             'data'            => $customerData,
             'Id'              => $Id,
@@ -57,25 +62,26 @@ class CustomerController extends Controller
         return view('customers.form', $data);
     }
 
-    public function getTitle($Status = null)
+    public function getTitle($Status = 0, $Progress = '')
     {
-        switch ($Status) {
-            case 1:
-                return 'Complexity';
-            case 2:
-                return 'Deployment Strategy Workshop';
-            case 3:
-                return 'Business Process';
-            case 4:
-                return 'Requirements and Solutions';
-            case 5:
-                return 'Project Phase';
-            case 6:
-                return 'Assessment';
-            case 7:
-                return 'Proposal';
-            default:
-                return 'Information';
+        if ($Status == 0 || $Progress == 'information') {
+            return ['Information', 0];
+        } else if ($Status == 1 || $Progress == 'complexity') {
+            return ['Complexity', 1];
+        } else if ($Status == 2 || $Progress == 'dsw') {
+            return ['Deployment Strategy Workshop', 2];
+        } else if ($Status == 3 || $Progress == 'businessProcess') {
+            return ['Business Process', 3];
+        } else if ($Status == 4 || $Progress == 'requirementSolution') {
+            return ['Requirements and Solutions', 4];
+        } else if ($Status == 5 || $Progress == 'projectPhase') {
+            return ['Project Phase', 5];
+        } else if ($Status == 6 || $Progress == 'assessment') {
+            return ['Assessment', 6];
+        } else if ($Status == 7 || $Progress == 'proposal') {
+            return ['Proposal', 7];
+        } else {
+            return ['Success', 8];
         }
     }
 
