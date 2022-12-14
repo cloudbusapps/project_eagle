@@ -2,7 +2,7 @@
 
 @section('content')
     <?php
-    $PreviewStatus = '';
+    $PreviewStatus = $BusinessNotes = '';
     $CustomerName = $DSWStatus = $Status = $ProjectName = $Address = $Industry = $Type = $ContactPerson = $Product = $Notes = $Link = $Complex = '';
     $editable = '';
     if ($type === 'insert') {
@@ -26,6 +26,7 @@
         $Complex = !empty($data) ? $data['Complex'] ?? '' : '';
         $Status = !empty($data) ? $data['Status'] ?? '' : '';
         $DSWStatus = !empty($data) ? $data['DSWStatus'] ?? '' : '';
+        $BusinessNotes = !empty($data) ? $data['BusinessNotes'] ?? '' : '';
         $button = '<button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>';
         // <a href="forms/customers/delete/' .
         // $Id .
@@ -463,17 +464,18 @@
                                 @endif
                                 @if ($Status == 3)
                                     <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Attachment
+                                        <label for="File" class="col-sm-2 label">Attachment
                                             <code>*</code></label>
                                         <div class="col-sm-10">
-                                            <input class="form-control" type="file" id="formFileMultiple" multiple />
+                                            <input class="form-control" type="file" id="File" name="File[]"
+                                                multiple />
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Notes <code>*</code></label>
+                                        <label for="BusinessNotes" class="col-sm-2 label">Notes <code>*</code></label>
                                         <div class="col-sm-10">
-                                            <textarea {{ $editable }} style="height: 82px;" required type="text" class="form-control" name="Notes"
-                                                id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
+                                            <textarea {{ $editable }} style="height: 82px;" required type="text" class="form-control"
+                                                name="BusinessNotes" id="BusinessNotes" placeholder="Notes">{{ old('BusinessNotes') ?? $BusinessNotes }}</textarea>
                                         </div>
                                     </div>
                                 @endif
@@ -631,10 +633,6 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-
-                                            <button class="btn btn-outline-primary btnAddRow" type="button">
-                                                <i class="fas fa-plus"></i> Add Row
-                                            </button>
                                         </div>
 
                                     </div>
@@ -661,9 +659,6 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <button class="btn btn-outline-primary btnAddRowLimitation" type="button">
-                                                <i class="fas fa-plus"></i> Add Row
-                                            </button>
                                         </div>
                                     </div>
                                     <div class="card">
