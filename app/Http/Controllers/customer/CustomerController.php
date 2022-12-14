@@ -57,6 +57,7 @@ class CustomerController extends Controller
             'complexities'    => $this->getComplexityData(),
             'ProjectPhase'    => $this->getProjectPhase(),
             'users'           => User::all(),
+            ''
 
         ];
 
@@ -162,10 +163,8 @@ class CustomerController extends Controller
             $BusinessProcess = new CustomerBusinessProcess;
             $BusinessProcess->Note = $request->BusinessNotes;
             $BusinessProcess->CustomerId    = $Id;
-
             if ($BusinessProcess->save()) {
                 $BusinessProcessId = $BusinessProcess->Id;
-
                 $files = $request->file('File');
                 if ($files && count($files)) {
                     $businessProcessFiles = [];
@@ -193,6 +192,7 @@ class CustomerController extends Controller
 
             $customerData->Status = 4;
         } else if ($customerData->Status == 4) {
+
             $validator = $request->validate([
                 'Title' => ['required'],
                 'Description' => ['required'],

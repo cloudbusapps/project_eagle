@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('customer_complexity', function (Blueprint $table) {
             $table->uuid('Id')->primary();
             $table->uuid('CustomerId');
-            $table->longText('ComplexityId');
+            $table->string('Title');
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();
             $table->timestamps();

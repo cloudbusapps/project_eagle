@@ -3,8 +3,8 @@
 @section('content')
     <?php
     $currentViewStatus = $currentViewStatus ?? 0;
-
-    $PreviewStatus =$BusinessNotes = '';
+    
+    $PreviewStatus = $BusinessNotes = '';
     $CustomerName = $DSWStatus = $Status = $ProjectName = $Address = $Industry = $Type = $ContactPerson = $Product = $Notes = $Link = $Complex = '';
     $editable = '';
     if ($type === 'insert') {
@@ -249,24 +249,21 @@
                                 {{ $error }}
                             </div>
                         @endforeach
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                            aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
                 @if (Session::get('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <i class="bi bi-check-circle me-1"></i>
                         <?= Session::get('success') ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                            aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
                 @if (Session::get('fail'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="bi bi-exclamation-octagon me-1"></i>
                         <?= Session::get('danger') ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                            aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
 
@@ -274,22 +271,24 @@
 
                     <div class="card-body">
 
-                        <form validated="false" id="customerForm" class="row g-3" action="{{ $action }}"
-                            todo="{{ $todo }}" method="POST">
+                        <form enctype="multipart/form-data" validated="false" id="customerForm" class="row g-3"
+                            action="{{ $action }}" todo="{{ $todo }}" method="POST">
                             @csrf
                             @method($method)
-                            
+
                             <ul id="progressbar">
                                 <li id="Information">
                                     @if ($Status >= 0)
-                                        <a href="?progress=information" class="{{ $title == 'Information' ? 'active' : '' }}"><b>Information</b></a>
+                                        <a href="?progress=information"
+                                            class="{{ $title == 'Information' ? 'active' : '' }}"><b>Information</b></a>
                                     @else
                                         <strong>Information</strong>
                                     @endif
                                 </li>
                                 <li id="Complexity">
                                     @if ($Status >= 1)
-                                        <a href="?progress=complexity" class="{{ $title == 'Complexity' ? 'active' : '' }}"><b>Complexity</b></a>
+                                        <a href="?progress=complexity"
+                                            class="{{ $title == 'Complexity' ? 'active' : '' }}"><b>Complexity</b></a>
                                     @else
                                         <strong>Complexity</strong>
                                     @endif
@@ -297,7 +296,9 @@
                                 {{-- IF COMPLEX --}}
                                 <li id="DSW">
                                     @if ($Status >= 2)
-                                        <a href="?progress=dsw" class="{{ $title == 'Deployment Strategy Workshop' ? 'active' : '' }}"><b>Deployment Strategy Workshop</b></a>
+                                        <a href="?progress=dsw"
+                                            class="{{ $title == 'Deployment Strategy Workshop' ? 'active' : '' }}"><b>Deployment
+                                                Strategy Workshop</b></a>
                                     @else
                                         <strong>Deployment Strategy Workshop</strong>
                                     @endif
@@ -305,42 +306,51 @@
                                 {{-- END COMPLEX --}}
                                 <li id="BP">
                                     @if ($Status >= 3)
-                                        <a href="?progress=businessProcess" class="{{ $title == 'Business Process' ? 'active' : '' }}"><b>Business Process</b></a>
+                                        <a href="?progress=businessProcess"
+                                            class="{{ $title == 'Business Process' ? 'active' : '' }}"><b>Business
+                                                Process</b></a>
                                     @else
                                         <strong>Business Process</strong>
                                     @endif
                                 </li>
                                 <li id="RaS">
                                     @if ($Status >= 4)
-                                        <a href="?progress=requirementSolution" class="{{ $title == 'Requirements and Solutions' ? 'active' : '' }}"><b>Requirements and Solutions</b></a>
+                                        <a href="?progress=requirementSolution"
+                                            class="{{ $title == 'Requirements and Solutions' ? 'active' : '' }}"><b>Requirements
+                                                and Solutions</b></a>
                                     @else
                                         <strong>Requirements and Solutions</strong>
                                     @endif
                                 </li>
                                 <li id="ProjectInclusion">
                                     @if ($Status >= 5)
-                                        <a href="?progress=projectPhase" class="{{ $title == 'Project Phase' ? 'active' : '' }}"><b>Project Phase</b></a>
+                                        <a href="?progress=projectPhase"
+                                            class="{{ $title == 'Project Phase' ? 'active' : '' }}"><b>Project
+                                                Phase</b></a>
                                     @else
                                         <strong>Project Phase</strong>
                                     @endif
                                 </li>
                                 <li id="Assessment">
                                     @if ($Status >= 6)
-                                        <a href="?progress=assessment" class="{{ $title == 'Assessment' ? 'active' : '' }}"><b>Assessment</b></a>
+                                        <a href="?progress=assessment"
+                                            class="{{ $title == 'Assessment' ? 'active' : '' }}"><b>Assessment</b></a>
                                     @else
                                         <strong>Assessment</strong>
                                     @endif
                                 </li>
                                 <li id="Proposal">
                                     @if ($Status >= 7)
-                                        <a href="?progress=proposal" class="{{ $title == 'Proposal' ? 'active' : '' }}"><b>Proposal</b></a>
+                                        <a href="?progress=proposal"
+                                            class="{{ $title == 'Proposal' ? 'active' : '' }}"><b>Proposal</b></a>
                                     @else
                                         <strong>Proposal</strong>
                                     @endif
                                 </li>
                                 <li id="Success">
                                     @if ($Status >= 8)
-                                        <a href="?progress=success" class="{{ $title == 'Success' ? 'active' : '' }}"><b>Success</b></a>
+                                        <a href="?progress=success"
+                                            class="{{ $title == 'Success' ? 'active' : '' }}"><b>Success</b></a>
                                     @else
                                         <strong>Success</strong>
                                     @endif
@@ -374,12 +384,13 @@
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Contact Person <code>*</code></label>
+                                        <label for="inputText" class="col-sm-2 label">Contact Person
+                                            <code>*</code></label>
                                         <div class="col-sm-10">
                                             <input {{ $editable }}
                                                 value="{{ old('ContactPerson') ?? $ContactPerson }}" required
-                                                type="text" class="form-control" name="ContactPerson" id="ContactPerson"
-                                                placeholder="Contact Person">
+                                                type="text" class="form-control" name="ContactPerson"
+                                                id="ContactPerson" placeholder="Contact Person">
                                         </div>
                                     </div>
 
@@ -536,7 +547,7 @@
                                     <div class="card mb-3">
                                         <div class="card-body">
                                             <h5 class="card-title">In-Scope</h5>
-                                            <div id="tableContainer">
+                                            <div id="tableContainer" class="mb-3">
                                                 <table id="inScopeTable" cellpadding="0" cellspacing="0"
                                                     class="table table-bordered">
                                                     <thead>
@@ -565,10 +576,11 @@
                                                     </tbody>
                                                 </table>
 
-                                                <button class="btn btn-outline-primary btnAddRow" type="button">
-                                                    <i class="fas fa-plus"></i> Add Row
-                                                </button>
+
                                             </div>
+                                            <button class="btn btn-outline-primary btnAddRow" type="button">
+                                                <i class="fas fa-plus"></i> Add Row
+                                            </button>
                                         </div>
 
                                     </div>
@@ -576,7 +588,7 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <h5 class="card-title">Limitations</h5>
-                                            <div id="tableContainer">
+                                            <div id="tableContainer" class="mb-3">
                                                 <table id="outScopeTable" cellpadding="0" cellspacing="0"
                                                     class="table table-bordered">
                                                     <thead>
@@ -594,11 +606,11 @@
                                                         </tr>
                                                     </tbody>
                                                 </table>
-                                                <button class="btn btn-outline-primary btnAddRowLimitation"
-                                                    type="button">
-                                                    <i class="fas fa-plus"></i> Add Row
-                                                </button>
+
                                             </div>
+                                            <button class="btn btn-outline-primary btnAddRowLimitation" type="button">
+                                                <i class="fas fa-plus"></i> Add Row
+                                            </button>
                                         </div>
                                     </div>
                                 @elseif ($Status == 5 || Request::get('progress') == 'projectPhase')
@@ -663,6 +675,7 @@
                                                         <th scope="col">Description</th>
                                                         <th scope="col">Salesforce Modules</th>
                                                         <th scope="col">Solutions Overview</th>
+                                                        <th scope="col">Manhours</th>
                                                         <th scope="col">Assumptions</th>
                                                     </thead>
                                                     <tbody>
@@ -676,6 +689,9 @@
                                                             </td>
                                                             <td>
                                                                 <textarea name="Solution[]"></textarea>
+                                                            </td>
+                                                            <td>
+                                                                <textarea name="Manhours[]"></textarea>
                                                             </td>
                                                             <td>
                                                                 <textarea name="Assumption[]"></textarea>
@@ -757,10 +773,10 @@
                             </div>
 
                             @if ($Status == $currentViewStatus)
-                            <div class="button-footer text-end">
-                                <a href="{{ $cancelRoute }}" class="btn btn-secondary">Cancel</a>
-                                <?= $button ?>
-                            </div>
+                                <div class="button-footer text-end">
+                                    <a href="{{ $cancelRoute }}" class="btn btn-secondary">Cancel</a>
+                                    <?= $button ?>
+                                </div>
                             @endif
 
 
@@ -790,18 +806,18 @@
             $(document).on('click', '.btnAddRow', function() {
                 let html = `
                 <tr>
-                    <td><input name="Title[]"></td>
+                    <td><input required name="Title[]"></td>
                     <td>
-                        <textarea name="Description[]"></textarea>
+                        <textarea required name="Description[]"></textarea>
                     </td>
                     <td>
-                        <textarea name="Module[]"></textarea>
+                        <textarea required name="Module[]"></textarea>
                     </td>
                     <td>
-                        <textarea name="Solution[]"></textarea>
+                        <textarea required name="Solution[]"></textarea>
                     </td>
                     <td>
-                        <textarea name="Assumption[]"></textarea>
+                        <textarea required name="Assumption[]"></textarea>
                     </td>
                 </tr>`;
 
@@ -814,10 +830,10 @@
                 let html = `
                 <tr>
                     <td>
-                        <textarea name="OutOfScope[]"></textarea>
+                        <textarea required name="OutOfScope[]"></textarea>
                     </td>
                     <td>
-                        <textarea name="Comment[]"></textarea>
+                        <textarea required name="Comment[]"></textarea>
                     </td>
                 </tr>`;
 
