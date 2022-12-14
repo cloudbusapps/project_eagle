@@ -33,7 +33,7 @@ class ComplexityController extends Controller
 
     public function save(Request $request) {
         $validator = $request->validate([
-            'title' => ['required', 'string', 'max:500'],
+            'Title' => ['required', 'string', 'max:500'],
         ]);
         
         $Title = $request->Title;

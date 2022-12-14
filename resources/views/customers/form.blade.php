@@ -2,7 +2,9 @@
 
 @section('content')
     <?php
-    $PreviewStatus = $BusinessNotes = '';
+    $currentViewStatus = $currentViewStatus ?? 0;
+
+    $PreviewStatus =$BusinessNotes = '';
     $CustomerName = $DSWStatus = $Status = $ProjectName = $Address = $Industry = $Type = $ContactPerson = $Product = $Notes = $Link = $Complex = '';
     $editable = '';
     if ($type === 'insert') {
@@ -238,6 +240,36 @@
 
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0">
             <div class="container-fluid">
+
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @foreach ($errors->all() as $error)
+                            <div>
+                                <i class="bi bi-exclamation-octagon me-1"></i>
+                                {{ $error }}
+                            </div>
+                        @endforeach
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="Close"></button>
+                    </div>
+                @endif
+                @if (Session::get('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle me-1"></i>
+                        <?= Session::get('success') ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="Close"></button>
+                    </div>
+                @endif
+                @if (Session::get('fail'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-octagon me-1"></i>
+                        <?= Session::get('danger') ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="Close"></button>
+                    </div>
+                @endif
+
                 <div class="card">
 
                     <div class="card-body">
@@ -246,52 +278,77 @@
                             todo="{{ $todo }}" method="POST">
                             @csrf
                             @method($method)
-                            <div class="card-title">
-                                @if ($errors->any())
-                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                        @foreach ($errors->all() as $error)
-                                            <div>
-                                                <i class="bi bi-exclamation-octagon me-1"></i>
-                                                {{ $error }}
-                                            </div>
-                                        @endforeach
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                            aria-label="Close"></button>
-                                    </div>
-                                @endif
-                                @if (Session::get('success'))
-                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                        <i class="bi bi-check-circle me-1"></i>
-                                        <?= Session::get('success') ?>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                            aria-label="Close"></button>
-                                    </div>
-                                @endif
-                                @if (Session::get('fail'))
-                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                        <i class="bi bi-exclamation-octagon me-1"></i>
-                                        <?= Session::get('danger') ?>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                            aria-label="Close"></button>
-                                    </div>
-                                @endif
-                            </div>
+                            
                             <ul id="progressbar">
-                                <li class="active" id="Information"><strong>Information</strong></li>
-                                <li id="Complexity"><strong>Complexity</strong></li>
+                                <li id="Information">
+                                    @if ($Status >= 0)
+                                        <a href="?progress=information" class="{{ $title == 'Information' ? 'active' : '' }}"><b>Information</b></a>
+                                    @else
+                                        <strong>Information</strong>
+                                    @endif
+                                </li>
+                                <li id="Complexity">
+                                    @if ($Status >= 1)
+                                        <a href="?progress=complexity" class="{{ $title == 'Complexity' ? 'active' : '' }}"><b>Complexity</b></a>
+                                    @else
+                                        <strong>Complexity</strong>
+                                    @endif
+                                </li>
                                 {{-- IF COMPLEX --}}
-                                <li id="DSW"><strong>Deployment Strategy Workshop</strong></li>
+                                <li id="DSW">
+                                    @if ($Status >= 2)
+                                        <a href="?progress=dsw" class="{{ $title == 'Deployment Strategy Workshop' ? 'active' : '' }}"><b>Deployment Strategy Workshop</b></a>
+                                    @else
+                                        <strong>Deployment Strategy Workshop</strong>
+                                    @endif
+                                </li>
                                 {{-- END COMPLEX --}}
-                                <li id="BP"><strong>Business Process</strong></li>
-                                <li id="RaS"><strong>Requirements and Solutions</strong></li>
-                                <li id="ProjectInclusion"><strong>Project Phase</strong></li>
-                                <li id="Assessment"><strong>Assessment</strong></li>
-                                <li id="Proposal"><strong>Proposal</strong></li>
-                                <li id="Success"><strong>Success</strong></li>
+                                <li id="BP">
+                                    @if ($Status >= 3)
+                                        <a href="?progress=businessProcess" class="{{ $title == 'Business Process' ? 'active' : '' }}"><b>Business Process</b></a>
+                                    @else
+                                        <strong>Business Process</strong>
+                                    @endif
+                                </li>
+                                <li id="RaS">
+                                    @if ($Status >= 4)
+                                        <a href="?progress=requirementSolution" class="{{ $title == 'Requirements and Solutions' ? 'active' : '' }}"><b>Requirements and Solutions</b></a>
+                                    @else
+                                        <strong>Requirements and Solutions</strong>
+                                    @endif
+                                </li>
+                                <li id="ProjectInclusion">
+                                    @if ($Status >= 5)
+                                        <a href="?progress=projectPhase" class="{{ $title == 'Project Phase' ? 'active' : '' }}"><b>Project Phase</b></a>
+                                    @else
+                                        <strong>Project Phase</strong>
+                                    @endif
+                                </li>
+                                <li id="Assessment">
+                                    @if ($Status >= 6)
+                                        <a href="?progress=assessment" class="{{ $title == 'Assessment' ? 'active' : '' }}"><b>Assessment</b></a>
+                                    @else
+                                        <strong>Assessment</strong>
+                                    @endif
+                                </li>
+                                <li id="Proposal">
+                                    @if ($Status >= 7)
+                                        <a href="?progress=proposal" class="{{ $title == 'Proposal' ? 'active' : '' }}"><b>Proposal</b></a>
+                                    @else
+                                        <strong>Proposal</strong>
+                                    @endif
+                                </li>
+                                <li id="Success">
+                                    @if ($Status >= 8)
+                                        <a href="?progress=success" class="{{ $title == 'Success' ? 'active' : '' }}"><b>Success</b></a>
+                                    @else
+                                        <strong>Success</strong>
+                                    @endif
+                                </li>
                             </ul>
 
                             <div class="profile-overview">
-                                @if ($Status == 0)
+                                @if ($Status == 0 || Request::get('progress') == 'information')
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Customer Name <code>*</code></label>
                                         <div class="col-sm-10">
@@ -357,8 +414,7 @@
                                                 id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
                                         </div>
                                     </div>
-                                @endif
-                                @if ($Status == 1)
+                                @elseif ($Status == 1 || Request::get('progress') == 'complexity')
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Not Complex </label>
 
@@ -422,8 +478,7 @@
                                             </table>
                                         </div>
                                     </div>
-                                @endif
-                                @if ($Status == 2)
+                                @elseif ($Status == 2 || Request::get('progress') == 'dsw')
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Current Progress for DSW
                                             <code>*</code></label>
@@ -461,8 +516,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                @endif
-                                @if ($Status == 3)
+                                @elseif ($Status == 3 || Request::get('progress') == 'businessProcess')
                                     <div class="row mb-3">
                                         <label for="File" class="col-sm-2 label">Attachment
                                             <code>*</code></label>
@@ -478,8 +532,7 @@
                                                 name="BusinessNotes" id="BusinessNotes" placeholder="Notes">{{ old('BusinessNotes') ?? $BusinessNotes }}</textarea>
                                         </div>
                                     </div>
-                                @endif
-                                @if ($Status == 4)
+                                @elseif ($Status == 4 || Request::get('progress') == 'requirementSolution')
                                     <div class="card mb-3">
                                         <div class="card-body">
                                             <h5 class="card-title">In-Scope</h5>
@@ -548,8 +601,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                @endif
-                                @if ($Status == 5)
+                                @elseif ($Status == 5 || Request::get('progress') == 'projectPhase')
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Inclusions <code>*</code></label>
                                         <div class="col-sm-10">
@@ -599,8 +651,7 @@
                                             </table>
                                         </div>
                                     </div>
-                                @endif
-                                @if ($Status == 6)
+                                @elseif ($Status == 6 || Request::get('progress') == 'assessment')
                                     <div class="card mb-3">
                                         <div class="card-body">
                                             <h5 class="card-title">In-Scope</h5>
@@ -684,8 +735,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                @endif
-                                @if ($Status == 7)
+                                @elseif ($Status == 7 || Request::get('progress') == 'proposal')
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Notes <code>*</code></label>
                                         <div class="col-sm-10">
@@ -701,14 +751,17 @@
                                             <input class="form-control" type="file" id="formFileMultiple" multiple />
                                         </div>
                                     </div>
-                                @endif
-                                @if ($Status == 8)
+                                @elseif ($Status == 8 || Request::get('progress') == 'success')
+                                @else
                                 @endif
                             </div>
+
+                            @if ($Status == $currentViewStatus)
                             <div class="button-footer text-end">
                                 <a href="{{ $cancelRoute }}" class="btn btn-secondary">Cancel</a>
                                 <?= $button ?>
                             </div>
+                            @endif
 
 
 

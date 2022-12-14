@@ -242,6 +242,11 @@ class StartUpSeeder extends Seeder
         // ----- END LEAVE TYPE -----
 
 
+        // ----- COMPLEXITY -----
+        $this->call(ComplexitySeeder::class);
+        // ----- END COMPLEXITY -----
+
+
         // ----- PROJECT PHASES -----
         $this->call(ProjectPhaseSeeder::class);
         // ----- END PROJECT PHASES -----
