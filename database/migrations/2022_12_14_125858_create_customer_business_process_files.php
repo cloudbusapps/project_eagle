@@ -13,12 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('customer_complexity', function (Blueprint $table) {
+        Schema::create('customer_business_process_files', function (Blueprint $table) {
             $table->uuid('Id')->primary();
-            $table->uuid('CustomerId');
-            $table->string('Title');
-            $table->uuid('CreatedById')->nullable();
-            $table->uuid('UpdatedById')->nullable();
+            $table->uuid('CustomerId')->unsigned();
+            $table->string('File');
+            $table->longText('Note');
+            $table->uuid('CreatedById');
+            $table->uuid('UpdatedById');
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customer_complexity');
+        Schema::dropIfExists('customer_business_process_files');
     }
 };

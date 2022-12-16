@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\customer;
 
 use App\Http\Controllers\Controller;
+use App\Models\customer\CustomerBusinessProcess;
+use App\Models\customer\CustomerBusinessProcessFiles;
 use App\Models\customer\CustomerInscope;
 use App\Models\customer\CustomerLimitation;
 use Illuminate\Http\Request;
@@ -55,6 +57,7 @@ class CustomerController extends Controller
             'complexities'    => $this->getComplexityData(),
             'ProjectPhase'    => $this->getProjectPhase(),
             'users'           => User::all(),
+            ''
 
         ];
 
@@ -150,8 +153,46 @@ class CustomerController extends Controller
                 $customerData->Status = 3;
             }
         } else if ($customerData->Status == 3) {
+            $validator = $request->validate([
+                'BusinessNotes'        => ['required'],
+                'File'   => ['required'],
+            ]);
+            $destinationPath = 'uploads/businessProcess';
+
+
+            $BusinessProcess = new CustomerBusinessProcess;
+            $BusinessProcess->Note = $request->BusinessNotes;
+            $BusinessProcess->CustomerId    = $Id;
+            if ($BusinessProcess->save()) {
+                $BusinessProcessId = $BusinessProcess->Id;
+                $files = $request->file('File');
+                if ($files && count($files)) {
+                    $businessProcessFiles = [];
+                    foreach ($files as $index => $file) {
+                        $filenameArr = explode('.', $file->getClientOriginalName());
+                        $extension   = array_splice($filenameArr, count($filenameArr) - 1, 1);
+                        $filename    = 'BP-[' . $index . ']' . time() . '.' . $extension[0];
+
+                        $file->move($destinationPath, $filename);
+
+                        $businessProcessFiles[] = [
+                            'Id'             => Str::uuid(),
+                            'BusinessProcessId' => $BusinessProcessId,
+                            'File'           => $filename,
+                            'CreatedById'    => Auth::id(),
+                            'UpdatedById'    => Auth::id(),
+                        ];
+                    }
+
+                    CustomerBusinessProcessFiles::where('BusinessProcessId', $BusinessProcessId)->delete();
+                    CustomerBusinessProcessFiles::insert($businessProcessFiles);
+                }
+            }
+
+
             $customerData->Status = 4;
         } else if ($customerData->Status == 4) {
+
             $validator = $request->validate([
                 'Title' => ['required'],
                 'Description' => ['required'],
