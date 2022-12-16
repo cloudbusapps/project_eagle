@@ -28,7 +28,7 @@
         $Complex = !empty($data) ? $data['Complex'] ?? '' : '';
         $Status = !empty($data) ? $data['Status'] ?? '' : '';
         $DSWStatus = !empty($data) ? $data['DSWStatus'] ?? '' : '';
-        $BusinessNotes = !empty($data) ? $data['BusinessNotes'] ?? '' : '';
+        $BusinessNotes = !empty($businessProcessData) ? $businessProcessData['Note'] ?? '' : '';
         $button = '<button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>';
         // <a href="forms/customers/delete/' .
         // $Id .
@@ -543,6 +543,19 @@
                                                 name="BusinessNotes" id="BusinessNotes" placeholder="Notes">{{ old('BusinessNotes') ?? $BusinessNotes }}</textarea>
                                         </div>
                                     </div>
+                                    <div class="row mb-3">
+                                        <label for="BusinessNotes" class="col-sm-2 label">Files <code>*</code></label>
+                                        @foreach ($files as $file)
+                                            <div class="py-2 col-sm-6 col-md-4 parent" filename="{{ $file['File'] }}">
+                                                <div class="display-filename">
+                                                    <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
+                                                        class="text-white" target="_blank">{{ $file['File'] }}</a>
+                                                    <button type="button" class="btn-close btnRemoveFilename"></button>
+                                                </div>
+                                                {{ date('F d, Y', strtotime($file->created_at)) }}
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 @elseif ($Status == 4 || Request::get('progress') == 'requirementSolution')
                                     <div class="card mb-3">
                                         <div class="card-body">
@@ -558,21 +571,43 @@
                                                         <th scope="col">Assumptions</th>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <td><input name="Title[]"></td>
-                                                            <td>
-                                                                <textarea name="Description[]"></textarea>
-                                                            </td>
-                                                            <td>
-                                                                <textarea name="Module[]"></textarea>
-                                                            </td>
-                                                            <td>
-                                                                <textarea name="Solution[]"></textarea>
-                                                            </td>
-                                                            <td>
-                                                                <textarea name="Assumption[]"></textarea>
-                                                            </td>
-                                                        </tr>
+                                                        @if (!empty($reqSol) && count($reqSol) > 0)
+                                                            @foreach ($reqSol as $index => $inscope)
+                                                                <tr>
+                                                                    <td><input value={{ $inscope->Title }} name="Title[]">
+                                                                    </td>
+                                                                    <td>
+                                                                        <textarea name="Description[]">{{ $inscope->Description }}</textarea>
+                                                                    </td>
+                                                                    <td>
+                                                                        <textarea name="Module[]">{{ $inscope->Module }}</textarea>
+                                                                    </td>
+                                                                    <td>
+                                                                        <textarea name="Solution[]">{{ $inscope->Solution }}</textarea>
+                                                                    </td>
+                                                                    <td>
+                                                                        <textarea name="Assumption[]">{{ $inscope->Assumption }}</textarea>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        @else
+                                                            <tr>
+                                                                <td><input name="Title[]"></td>
+                                                                <td>
+                                                                    <textarea name="Description[]"></textarea>
+                                                                </td>
+                                                                <td>
+                                                                    <textarea name="Module[]"></textarea>
+                                                                </td>
+                                                                <td>
+                                                                    <textarea name="Solution[]"></textarea>
+                                                                </td>
+                                                                <td>
+                                                                    <textarea name="Assumption[]"></textarea>
+                                                                </td>
+                                                            </tr>
+                                                        @endif
+
                                                     </tbody>
                                                 </table>
 
@@ -596,14 +631,28 @@
                                                         <th scope="col">Comments</th>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <td>
-                                                                <textarea name="OutOfScope[]"></textarea>
-                                                            </td>
-                                                            <td>
-                                                                <textarea name="Comment[]"></textarea>
-                                                            </td>
-                                                        </tr>
+                                                        @if (!empty($limitations) && count($limitations) > 0)
+                                                            @foreach ($limitations as $index => $limitation)
+                                                                <tr>
+                                                                    <td>
+                                                                        <textarea name="OutOfScope[]">{{ $limitation->OutScope }}</textarea>
+                                                                    </td>
+                                                                    <td>
+                                                                        <textarea name="Comment[]">{{ $limitation->Comment }}</textarea>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        @else
+                                                            <tr>
+                                                                <td>
+                                                                    <textarea name="OutOfScope[]"></textarea>
+                                                                </td>
+                                                                <td>
+                                                                    <textarea name="Comment[]"></textarea>
+                                                                </td>
+                                                            </tr>
+                                                        @endif
+
                                                     </tbody>
                                                 </table>
 
@@ -679,24 +728,31 @@
                                                         <th scope="col">Assumptions</th>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <td><input name="Title[]"></td>
-                                                            <td>
-                                                                <textarea name="Description[]"></textarea>
-                                                            </td>
-                                                            <td>
-                                                                <textarea name="Module[]"></textarea>
-                                                            </td>
-                                                            <td>
-                                                                <textarea name="Solution[]"></textarea>
-                                                            </td>
-                                                            <td>
-                                                                <textarea name="Manhours[]"></textarea>
-                                                            </td>
-                                                            <td>
-                                                                <textarea name="Assumption[]"></textarea>
-                                                            </td>
-                                                        </tr>
+                                                        @if (!empty($reqSol) && count($reqSol) > 0)
+                                                            @foreach ($reqSol as $index => $inscope)
+                                                                <tr>
+                                                                    <td><input disabled value={{ $inscope->Title }}
+                                                                            name="Title[]">
+                                                                    </td>
+                                                                    <td>
+                                                                        <textarea disabled name="Description[]">{{ $inscope->Description }}</textarea>
+                                                                    </td>
+                                                                    <td>
+                                                                        <textarea disabled name="Module[]">{{ $inscope->Module }}</textarea>
+                                                                    </td>
+                                                                    <td>
+                                                                        <textarea disabled name="Solution[]">{{ $inscope->Solution }}</textarea>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input name="Manhours[]" value="{{ $inscope->Manhours }}">
+                                                                    </td>
+                                                                    <td>
+                                                                        <textarea disabled name="Assumption[]">{{ $inscope->Assumption }}</textarea>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        @endif
+
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -714,15 +770,21 @@
                                                         <th scope="col">Out of Scope</th>
                                                         <th scope="col">Comments</th>
                                                     </thead>
+
                                                     <tbody>
-                                                        <tr>
-                                                            <td>
-                                                                <textarea name="OutOfScope[]"></textarea>
-                                                            </td>
-                                                            <td>
-                                                                <textarea name="Comment[]"></textarea>
-                                                            </td>
-                                                        </tr>
+                                                        @if (!empty($limitations) && count($limitations) > 0)
+                                                            @foreach ($limitations as $index => $limitation)
+                                                                <tr>
+                                                                    <td>
+                                                                        <textarea disabled name="OutOfScope[]">{{ $limitation->OutScope }}</textarea>
+                                                                    </td>
+                                                                    <td>
+                                                                        <textarea disabled name="Comment[]">{{ $limitation->Comment }}</textarea>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        @endif
+
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -801,6 +863,17 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
+
+            // ----- REMOVE FILE -----
+            $(document).on('click', '.btnRemoveFilename', function() {
+                let $parent = $(this).closest('.parent');
+                let filename = $parent.attr('filename');
+
+                $parent.fadeOut(500, function() {
+                    $parent.remove();
+                })
+            })
+            // ----- END REMOVE FILE -----
 
             // ----- BUTTON ADD ROW -----
             $(document).on('click', '.btnAddRow', function() {
@@ -889,7 +962,6 @@
                     $('#mainTable').find('table:eq(' + i + ')').closest('tr').next('input:checkbox').prop(
                         'checked',
                         function() {
-                            console.log(this)
                             return $(this).next('table').find('input:unchecked').length === 0 ?
                                 true : false;
                         });

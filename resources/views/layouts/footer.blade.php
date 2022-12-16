@@ -32,6 +32,7 @@
   <!-- Custom -->
   <script src="{{ asset('assets/js/custom.js') }}"></script>
 
+
   <script>
     function updateRealTime() {
       $('#realTime').html(moment(new Date).format('hh:mm:ss A'));
