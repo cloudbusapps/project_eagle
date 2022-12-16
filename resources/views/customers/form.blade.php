@@ -112,7 +112,7 @@
 
         /*progressbar*/
         #progressbar {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
             overflow: hidden;
             color: lightgrey;
         }
@@ -426,49 +426,61 @@
                                         </div>
                                     </div>
                                 @elseif ($Status == 1 || Request::get('progress') == 'complexity')
+
                                     <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Not Complex </label>
-
+                                        <label for="inputText" class="col-sm-2 label">Is Capable?</label>
                                         <div class="col-sm-10">
-
                                             <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="notComplex"
-                                                    name="complexCheckBox">
+                                                <input type="checkbox" class="custom-control-input" name="IsCapable" 
+                                                    {{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'checked' : '' }}>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Complex </label>
+                                    <div class="row mb-3" id="isCapableDisplay" style="{{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? '' : 'display: none' }};">
+                                        <label for="inputText" class="col-sm-2 label">Is Complex?</label>
 
                                         <div class="col-sm-10">
-                                            <input type="checkbox" class="custom-control-input" id="isComplex"
-                                                name="complexCheckBox">
-                                            <table style="display: none" id="mainTable" class="table table-bordered">
+                                            <input type="checkbox" class="custom-control-input" id="IsComplex" name="IsComplex"
+                                                {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'checked' : '' }}>
+                                            <table style="display: {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'block' : 'none' }}" id="mainTable" class="table table-bordered table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th colspan="2" scope="col">Name</th>
+                                                        <th colspan="2" scope="col">COMPLEXITY</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    
+                                                    <?php 
+                                                        // echo '<pre>';
+                                                        // print_r($complexities);
+                                                        // exit;    
+                                                    ?>
+
                                                     @foreach ($complexities as $index => $complexity)
+                                                        <input type="hidden" name="complexity[{{ $complexity['Id'] }}][Id]" value="{{ $complexity['Id'] }}">
+                                                        <input type="hidden" name="complexity[{{ $complexity['Id'] }}][Title]" value="{{ $complexity['Title'] }}">
+
                                                         <tr>
                                                             <td>{{ $complexity['Title'] }}
 
                                                                 @if (count($complexity['Details']) > 0)
-                                                                    <table class="table table-bordered">
+                                                                    <table class="table table-bordered table-hover mt-2 mb-0">
                                                                         @foreach ($complexity['Details'] as $SubDetail)
+                                                                        <input type="hidden" name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Id]" value="{{ $SubDetail['Id'] }}">
+                                                                        <input type="hidden" name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Title]" value="{{ $SubDetail['Title'] }}">
+
                                                                             <tr>
                                                                                 <td>
                                                                                     <li>{{ $SubDetail['Title'] }}</li>
                                                                                 </td>
                                                                                 <td>
-                                                                                    <div
-                                                                                        class="custom-control custom-checkbox">
+                                                                                    <div class="custom-control custom-checkbox">
                                                                                         <input type="checkbox"
-                                                                                            class="custom-control-input"
+                                                                                            class="custom-control-input subComplexity"
                                                                                             id="subCheck"
-                                                                                            name="checkbox[]"
-                                                                                            value={{ $SubDetail['Id'] }}>
+                                                                                            name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Selected]"
+                                                                                            value={{ $SubDetail['Id'] }}
+                                                                                            {{ $SubDetail['Checked'] == 1 ? 'checked' : '' }}>
                                                                                     </div>
                                                                                 </td>
                                                                             </tr>
@@ -478,9 +490,10 @@
                                                             </td>
                                                             <td>
                                                                 <div class="custom-control custom-checkbox">
-                                                                    <input type="checkbox" class="custom-control-input"
+                                                                    <input type="checkbox" class="custom-control-input mainComplexity"
                                                                         value={{ $complexity['Id'] }} id="mainCheck"
-                                                                        name="checkbox[]">
+                                                                        name="complexity[{{ $complexity['Id'] }}][Selected]"
+                                                                        {{ $complexity['Checked'] == 1 ? 'checked' : '' }}>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -629,7 +642,7 @@
                                                             <td>{{ $pp['Title'] }}
 
                                                                 @if (count($pp['Details']) > 0)
-                                                                    <table class="table table-bordered">
+                                                                    <table class="table table-bordered mt-0 mb-0">
                                                                         @foreach ($pp['Details'] as $SubDetail)
                                                                             <tr>
                                                                                 <td>
@@ -844,14 +857,14 @@
 
             // CHECKBOX IF COMPLEX OR NOT
 
-            $(document).on('click', 'input[name="complexCheckBox"]', function() {
-                $('input[name="complexCheckBox"]').not(this).prop('checked', false);
+            $(document).on('click', 'input[name="IsComplex"]', function() {
+                $('input[name="IsComplex"]').not(this).prop('checked', false);
                 checkDisabled();
             });
 
             function checkDisabled() {
                 const table = $('#mainTable');
-                $('#isComplex').prop('checked') ? table.show() : table.hide();
+                $('#IsComplex').prop('checked') ? table.show() : table.hide();
             }
 
 
@@ -874,27 +887,27 @@
 
 
             // CHECKBOX
-            $.extend($.expr[':'], {
-                unchecked: function(obj) {
-                    return ((obj.type == 'checkbox' || obj.type == 'radio') && !$(obj).is(
-                        ':checked'));
-                }
-            });
+            // $.extend($.expr[':'], {
+            //     unchecked: function(obj) {
+            //         return ((obj.type == 'checkbox' || obj.type == 'radio') && !$(obj).is(
+            //             ':checked'));
+            //     }
+            // });
 
-            $("#mainTable input:checkbox").on('change', function() {
-                $(this).closest("td").prev('td').find('input:checkbox').prop('checked', $(this).prop(
-                    "checked"));
+            // $("#mainTable input:checkbox").on('change', function() {
+            //     $(this).closest("td").prev('td').find('input:checkbox').prop('checked', $(this).prop(
+            //         "checked"));
 
-                for (var i = $('#mainTable').find('td').length - 1; i >= 0; i--) {
-                    $('#mainTable').find('table:eq(' + i + ')').closest('tr').next('input:checkbox').prop(
-                        'checked',
-                        function() {
-                            console.log(this)
-                            return $(this).next('table').find('input:unchecked').length === 0 ?
-                                true : false;
-                        });
-                }
-            });
+            //     for (var i = $('#mainTable').find('td').length - 1; i >= 0; i--) {
+            //         $('#mainTable').find('table:eq(' + i + ')').closest('tr').next('input:checkbox').prop(
+            //             'checked',
+            //             function() {
+            //                 console.log(this)
+            //                 return $(this).next('table').find('input:unchecked').length === 0 ?
+            //                     true : false;
+            //             });
+            //     }
+            // });
 
 
 
@@ -908,21 +921,10 @@
 
                 // FOR COMPLEXITY PART
                 if (status == 1) {
-
-                    if ($('input[name="complexCheckBox"]:not(:checked)').length == 2) {
-                        e.preventDefault();
-                        showToast('danger', 'Choose the complexity of the Project');
-                        isValidated = true;
-
-                    }
-                    if ($('input[name="checkbox[]"]:checked').length === 0 && $('#isComplex').prop(
-                            'checked')) {
-                        e.preventDefault();
+                    if ($('input.mainComplexity:checked').length === 0 && $(`[name="IsComplex"]`).prop('checked')) {
                         showToast('danger', 'Check atleast one(1) in the checklist');
                         isValidated = true;
-
                     }
-
                 }
 
                 if (!isValidated) {
@@ -1007,6 +1009,37 @@
                 });
             })
             // ----- END BUTTON DELETE FORM -----
+
+
+            // ----- CHANGE WITH CAPABILITY -----
+            $(document).on('change', `[name="IsCapable"]`, function() {
+                let isChecked = this.checked;
+                isChecked ? $('#isCapableDisplay').show() : $('#isCapableDisplay').hide();
+            })
+            // ----- END CHANGE WITH CAPABILITY -----
+
+
+            // ----- CHANGE MAIN COMPLEXITY -----
+            $(document).on('change', `input[type=checkbox].mainComplexity`, function() {
+                let isChecked = this.checked;
+                let $table = $(this).closest('tr').find('table');
+                let hasChecked = $table.find(`[type=checkbox].subComplexity:checked`).length;
+                if (!isChecked) {
+                    $table.find(`[type=checkbox].subComplexity`).prop('checked', false);
+                } else {
+                    !hasChecked && $table.find(`[type=checkbox].subComplexity`).prop('checked', true);
+                }
+            })
+            // ----- END CHANGE MAIN COMPLEXITY -----
+
+
+            // ----- CHANGE SUB COMPLEXITY -----
+            $(document).on('change', `[type=checkbox].subComplexity`, function() {
+                let $table = $(this).closest('table');
+                let hasCheck = $table.find(`[type=checkbox].subComplexity:checked`).length;
+                $table.closest('tr').find(`input[type=checkbox].mainComplexity`).prop('checked', hasCheck).trigger('change');
+            })
+            // ----- END CHANGE SUB COMPLEXITY -----
 
         })
     </script>
