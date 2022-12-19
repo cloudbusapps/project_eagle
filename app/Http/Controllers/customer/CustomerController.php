@@ -46,11 +46,13 @@ class CustomerController extends Controller
         $customerData = Customer::find($Id);
         $progress = $request->progress ?? '';
 
-        $businessProcessData = CustomerBusinessProcess::select('customer_business_process.*')
+        $businessProcess = CustomerBusinessProcess::select('customer_business_process.*')
             ->where('customer_business_process.CustomerId', $Id)
-            ->leftJoin('customer_business_process_files AS cbpf', 'cbpf.BusinessProcessId', '=', 'customer_business_process.Id')
+            ->leftJoin('customer_business_process_files AS cbpf', 'cbpf.CustomerId', '=', 'customer_business_process.Id')
             ->first();
-        $files =$businessProcessData? CustomerBusinessProcessFiles::where('BusinessProcessId', $businessProcessData->Id)->orderBy('created_at', 'DESC')->get():[];
+        $businessProcessData = $businessProcess ? $businessProcess : '';
+        $files = $businessProcessData !== '' ? CustomerBusinessProcessFiles::where('CustomerId', $Id)->orderBy('created_at', 'DESC')->get() : [];
+
 
 
         $inscopes = CustomerInscope::where('CustomerId',$Id)->get();

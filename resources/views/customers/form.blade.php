@@ -28,11 +28,20 @@
         $Complex = !empty($data) ? $data['Complex'] ?? '' : '';
         $Status = !empty($data) ? $data['Status'] ?? '' : '';
         $DSWStatus = !empty($data) ? $data['DSWStatus'] ?? '' : '';
-        $BusinessNotes = !empty($data) ? $data['BusinessNotes'] ?? '' : '';
+        $BusinessNotes = !empty($businessProcessData) ? $businessProcessData['Note'] ?? '' : '';
+    
         $button = '<button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>';
         // <a href="forms/customers/delete/' .
         // $Id .
         // '" class="btn btn-danger btnDeleteForm">Delete</a>
+    
+        if ($Status == 6 || Request::get('progress') == 'assessment') {
+            $button = '
+                                                            <a href="#" class="btn btn-warning btnUpdate">Update</a>
+                                                            <button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>
+                                                            ';
+        }
+    
         $todo = 'update';
         $method = 'PUT';
         $action = route('customers.update', ['Id' => $Id, 'Status' => $Status]);
@@ -695,15 +704,22 @@
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <label for="BusinessNotes" class="col-sm-2 label">Files <code>*</code></label>
+                                        <label for="files" class="col-sm-2 label">Files<code>*</code></label>
                                         @foreach ($files as $file)
-                                            <div class="py-2 col-sm-6 col-md-4 parent" filename="{{ $file['File'] }}">
-                                                <div class="display-filename">
-                                                    <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
-                                                        class="text-white" target="_blank">{{ $file['File'] }}</a>
-                                                    <button type="button" class="btn-close btnRemoveFilename"></button>
+                                            <div class="col-md-3 parent" filename="{{ $file['File'] }}">
+                                                <div class="p-2 border border-1 rounded">
+                                                    <div class="d-flex justify-content-between">
+                                                        <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
+                                                            class="text-black fw-bold"
+                                                            target="_blank">{{ $file['File'] }}</a>
+                                                        <button type="button"
+                                                            class="btn-close btnRemoveFilename"></button>
+                                                    </div>
+                                                    <span style="font-size:14px" class="text-muted">
+                                                        {{ date('F d, Y', strtotime($file->created_at)) }}</span>
+
                                                 </div>
-                                                {{ date('F d, Y', strtotime($file->created_at)) }}
+
                                             </div>
                                         @endforeach
                                     </div>
@@ -907,7 +923,8 @@
                                                                         <textarea disabled name="Solution[]">{{ $inscope->Solution }}</textarea>
                                                                     </td>
                                                                     <td>
-                                                                        <input name="Manhours[]" value="{{ $inscope->Manhours }}">
+                                                                        <input type="number" name="Manhour[]"
+                                                                            value="{{ $inscope->Manhour }}">
                                                                     </td>
                                                                     <td>
                                                                         <textarea disabled name="Assumption[]">{{ $inscope->Assumption }}</textarea>
@@ -933,6 +950,7 @@
                                                         <th scope="col">Out of Scope</th>
                                                         <th scope="col">Comments</th>
                                                     </thead>
+
                                                     <tbody>
                                                         @if (!empty($limitations) && count($limitations) > 0)
                                                             @foreach ($limitations as $index => $limitation)
@@ -1097,6 +1115,7 @@
                 $('input[name="IsComplex"]').not(this).prop('checked', false);
                 checkDisabled();
             });
+
 
             function checkDisabled() {
                 const table = $('#mainTable');
