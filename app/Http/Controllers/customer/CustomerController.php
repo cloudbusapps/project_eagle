@@ -15,6 +15,7 @@ use App\Models\Customer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Auth;
+use Carbon\Carbon;
 
 class CustomerController extends Controller
 {
@@ -48,6 +49,16 @@ class CustomerController extends Controller
         $customerData = Customer::find($Id);
         $progress = $request->progress ?? '';
 
+        $businessProcessData = CustomerBusinessProcess::select('customer_business_process.*')
+            ->where('CustomerId', $Id)
+            ->leftJoin('customer_business_process_files AS cbpf', 'cbpf.BusinessProcessId', '=', 'customer_business_process.Id')
+            ->first();
+        $files =$businessProcessData? CustomerBusinessProcessFiles::where('BusinessProcessId', $businessProcessData->Id)->orderBy('created_at', 'DESC')->get():[];
+
+
+        $inscopes = CustomerInscope::where('CustomerId',$Id)->get();
+        $limitations = CustomerLimitation::where('CustomerId',$Id)->get();
+        
         $title = $this->getTitle($customerData->Status, $progress);
 
         $data = [
@@ -59,6 +70,10 @@ class CustomerController extends Controller
             'complexities'    => $this->getComplexityData($Id),
             'ProjectPhase'    => $this->getProjectPhase(),
             'users'           => User::all(),
+            'businessProcessData' => $businessProcessData,
+            'files' => $files,
+            'reqSol' => $inscopes,
+            'limitations' => $limitations,
 
         ];
 
@@ -176,7 +191,8 @@ class CustomerController extends Controller
     {
         $customerData = Customer::find($Id);
         $customerName = $customerData->CustomerName;
-        $Id            = $customerData->Id;
+        $Id           = $customerData->Id;
+        $now          = Carbon::now('utc')->toDateTimeString();
 
         // echo '<pre>';
         // print_r($request->all());
@@ -227,6 +243,7 @@ class CustomerController extends Controller
                             'File'           => $filename,
                             'CreatedById'    => Auth::id(),
                             'UpdatedById'    => Auth::id(),
+                            'created_at'    => $now,
                         ];
                     }
 

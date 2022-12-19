@@ -20,6 +20,8 @@ class CustomerBusinessProcessFiles extends Model
     protected $fillable = [
         'CustomerId',
         'File',
+        'created_at',
+        'updated_at',
     ];
 
     protected static function boot()
