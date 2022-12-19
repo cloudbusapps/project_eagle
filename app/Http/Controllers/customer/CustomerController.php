@@ -84,16 +84,16 @@ class CustomerController extends Controller
     {
         if ($Status == 0 || $Progress == 'information') {
             return ['Information', 0];
-        } else if ($Status == 1 || $Progress == 'capability') {
-            return ['Capability', 1];
-        } else if ($Status == 2 || $Progress == 'complexity') {
-            return ['Complexity', 2];
-        } else if ($Status == 3 || $Progress == 'dsw') {
-            return ['Deployment Strategy Workshop', 3];
-        } else if ($Status == 4 || $Progress == 'businessProcess') {
-            return ['Business Process', 4];
-        } else if ($Status == 5 || $Progress == 'requirementSolution') {
-            return ['Requirements and Solutions', 5];
+        } else if ($Status == 1 || $Progress == 'complexity') {
+            return ['Complexity', 1];
+        } else if ($Status == 2 || $Progress == 'dsw') {
+            return ['Deployment Strategy Workshop', 2];
+        } else if ($Status == 3 || $Progress == 'businessProcess') {
+            return ['Business Process', 3];
+        } else if ($Status == 4 || $Progress == 'requirementSolution') {
+            return ['Requirements and Solutions', 4];
+        } else if ($Status == 5 || $Progress == 'capability') {
+            return ['Capability', 5];
         } else if ($Status == 6 || $Progress == 'projectPhase') {
             return ['Project Phase', 6];
         } else if ($Status == 7 || $Progress == 'assessment') {
@@ -146,7 +146,7 @@ class CustomerController extends Controller
         $ThirdPartyStatus = $request->ThirdPartyStatus;
 
         if ($ThirdPartyStatus > 0) {
-            if ($ThirdPartyStatus == 3) { // COMPLETED THIRD PARTY REQUIREMENTS
+            if ($ThirdPartyStatus == 2) { // COMPLETED THIRD PARTY REQUIREMENTS
                 // SAVE THIRD PARTY TO MASTER LIST
                 if ($customerData->ThirdPartyId == config('constant.ID.THIRD_PARTIES.OTHERS')) {
                     DB::table('third_parties')->insert([
@@ -156,14 +156,14 @@ class CustomerController extends Controller
                         'UpdatedById' => Auth::id(),
                     ]);
                 }
-                $customerData->Status = 2; // PROCEED TO COMPLEXITY
+                $customerData->Status = 6; // PROCEED TO PROJECT PHASES
             }
             $customerData->ThirdPartyAttachment = $request->ThirdPartyAttachment;
             $customerData->ThirdPartyStatus     = $ThirdPartyStatus;
         } else {
             $IsCapable = isset($request->IsCapable) ? 1 : 0;
             if ($IsCapable) {
-                $customerData->Status = 2; // PROCEED TO COMPLEXITY
+                $customerData->Status = 6; // PROCEED TO PROJECT PHASES
             } else {
                 // THIRD PARTY
                 $validator = $request->validate([
@@ -174,7 +174,7 @@ class CustomerController extends Controller
                 $customerData->ThirdPartyId         = $request->ThirdPartyId;
                 $customerData->ThirdPartyName       = $request->ThirdPartyName;
                 $customerData->ThirdPartyAttachment = $request->ThirdPartyAttachment;
-                $customerData->ThirdPartyStatus     = 1; // PENDING
+                $customerData->ThirdPartyStatus     = 1; // FOR ACCREDITATION
             }
             $customerData->IsCapable = $IsCapable;
         }
@@ -220,13 +220,13 @@ class CustomerController extends Controller
             }
             CustomerComplexityDetails::insert($complexitySubData);
 
-            $customerData->Status    = 3; // PROCEED TO DSW
+            $customerData->Status    = 2; // PROCEED TO DSW
             $customerData->DSWStatus = 1; // STARTED DSW
         } 
 
         $customerData->IsComplex = $IsComplex;
         if (!$IsComplex) {
-            $customerData->Status    = 4; // PROCEED TO BUSINESS PROCESS
+            $customerData->Status    = 3; // PROCEED TO BUSINESS PROCESS
             $customerData->DSWStatus = 0; // NOT APPLICABLE DSW
         }
     }
@@ -242,7 +242,7 @@ class CustomerController extends Controller
         } else if ($customerData->DSWStatus == 4) { // FOR CONSOLIDATION
             $customerData->DSWStatus = 5;
         } else if ($customerData->DSWStatus == 5) { // COMPLETED REQUIREMENTS
-            $customerData->Status = 4; // PROCEED TO BUSINESS PROCESS
+            $customerData->Status = 3; // PROCEED TO BUSINESS PROCESS
         }
     }
 
@@ -253,20 +253,16 @@ class CustomerController extends Controller
         $Id           = $customerData->Id;
         $now          = Carbon::now('utc')->toDateTimeString();
 
-        // CAPABILITY
-        if ($customerData->Status == 1) {
-            $this->updateCapability($request, $Id, $customerData);
-        } 
         // COMPLEXITY
-        else if ($customerData->Status == 2) {
+        if ($customerData->Status == 1) {
             $this->updateComplexity($request, $Id, $customerData);
         }
         // DSW
-        else if ($customerData->Status == 3) {
+        else if ($customerData->Status == 2) {
             $this->updateDSW($request, $Id, $customerData);
         } 
-
-        else if ($customerData->Status == 4) {
+        // BUSINESS PROCESS
+        else if ($customerData->Status == 3) {
             $validator = $request->validate([
                 'BusinessNotes'        => ['required'],
                 'File'   => ['required'],
@@ -304,9 +300,10 @@ class CustomerController extends Controller
             }
 
 
-            $customerData->Status = 5;
+            $customerData->Status = 4;
         } 
-        else if ($customerData->Status == 5) {
+        // REQUIREMENTS AND SOLUTIONS
+        else if ($customerData->Status == 4) {
 
             $validator = $request->validate([
                 'Title' => ['required'],
@@ -355,21 +352,21 @@ class CustomerController extends Controller
                 }
                 CustomerLimitation::insert($limitationData);
             }
-            $customerData->Status = 6;
+            $customerData->Status = 5;
         } 
+        // CAPABILITY
+        else if ($customerData->Status == 5) {
+            $this->updateCapability($request, $Id, $customerData);
+        } 
+        // PROJECT PHASE
         else if ($customerData->Status == 6) {
-
             $customerData->Status = 7;
         } 
+        // ASSESSMENT
         else if ($customerData->Status == 7) {
-
             $customerData->Status = 8;
         }
 
-
-        // } else if ($customerData->Status  == 2 && $customerData->DSWStatus == 4) {
-        //     $customerData->Status = 3;
-        // }
 
         if ($customerData->update()) {
             return redirect()

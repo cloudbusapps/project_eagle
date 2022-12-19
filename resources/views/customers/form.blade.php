@@ -219,7 +219,7 @@
         /*Color number of the step and the connector before it*/
         #progressbar li.active:before,
         #progressbar li.active:after {
-            background: {{ $Status == 8 ? 'green' : '#eed202' }};
+            background: {{ $Status == 9 ? 'green' : '#eed202' }};
         }
 
         /* TABLE */
@@ -297,16 +297,8 @@
                                         <strong>Information</strong>
                                     @endif
                                 </li>
-                                <li id="Capability">
-                                    @if ($Status >= 1)
-                                        <a href="?progress=capability"
-                                            class="{{ $title == 'Capability' ? 'active' : '' }}"><b>Capability</b></a>
-                                    @else
-                                        <strong>Capability</strong>
-                                    @endif
-                                </li>
                                 <li id="Complexity">
-                                    @if ($Status >= 2)
+                                    @if ($Status >= 1)
                                         <a href="?progress=complexity"
                                             class="{{ $title == 'Complexity' ? 'active' : '' }}"><b>Complexity</b></a>
                                     @else
@@ -315,7 +307,7 @@
                                 </li>
                                 {{-- IF COMPLEX --}}
                                 <li id="DSW">
-                                    @if ($Status >= 3)
+                                    @if ($Status >= 2)
                                         <a href="?progress=dsw"
                                             class="{{ $title == 'Deployment Strategy Workshop' ? 'active' : '' }}"><b>Deployment
                                                 Strategy Workshop</b></a>
@@ -325,7 +317,7 @@
                                 </li>
                                 {{-- END COMPLEX --}}
                                 <li id="BP">
-                                    @if ($Status >= 4)
+                                    @if ($Status >= 3)
                                         <a href="?progress=businessProcess"
                                             class="{{ $title == 'Business Process' ? 'active' : '' }}"><b>Business
                                                 Process</b></a>
@@ -334,12 +326,20 @@
                                     @endif
                                 </li>
                                 <li id="RaS">
-                                    @if ($Status >= 5)
+                                    @if ($Status >= 4)
                                         <a href="?progress=requirementSolution"
                                             class="{{ $title == 'Requirements and Solutions' ? 'active' : '' }}"><b>Requirements
                                                 and Solutions</b></a>
                                     @else
                                         <strong>Requirements and Solutions</strong>
+                                    @endif
+                                </li>
+                                <li id="Capability">
+                                    @if ($Status >= 5)
+                                        <a href="?progress=capability"
+                                            class="{{ $title == 'Capability' ? 'active' : '' }}"><b>Capability</b></a>
+                                    @else
+                                        <strong>Capability</strong>
                                     @endif
                                 </li>
                                 <li id="ProjectInclusion">
@@ -475,98 +475,7 @@
                                     </div>
 
                                 <!-- ---------- END INFORMATION ---------- -->
-                                @elseif ($Status == 1 || Request::get('progress') == 'capability')
-                                <!-- ---------- CAPABILITY ---------- -->
-
-                                    <?php $capabilityDisableField = $data['IsCapable'] == 1 || $data['ThirdPartyStatus'] > 0 ? 'disabled' : ''; ?>
-
-                                    <div class="row mb-2">
-                                        <div class="col-12">
-                                            <div class="alert alert-info">
-                                                <b><i class="bi bi-info-circle-fill"></i> NOTE: </b>
-                                                <small>Assess if the team has capability to deploy.</small>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <div class="col-12">
-                                            <div class="card">
-                                                <div class="card-header py-3">
-                                                    <label>
-                                                        Is Capable?
-                                                        <input type="checkbox" name="IsCapable" 
-                                                            {{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'checked' : '' }}
-                                                            {{ $capabilityDisableField }}>
-                                                    </label>
-                                                </div>
-                                                <div class="card-body" id="isCapableDisplay"
-                                                    style="{{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
-                                                    <div class="row mb-3">
-                                                        <label for="" class="col-sm-2 label">Third Party <code>*</code></label>
-                                                        <div class="col-sm-10">
-                                                            <select name="ThirdPartyId" id="ThirdPartyId" class="form-select" select2 required
-                                                                {{ $capabilityDisableField }}>
-                                                                <option value="" selected disabled>Select Third Party</option>
-
-                                                                @foreach ($thirdParties as $dt)
-                                                                <option value="{{ $dt['Id'] }}"
-                                                                {{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == $dt['Id'] ? 'selected' : '' }}>
-                                                                    {{ $dt['Name'] }}
-                                                                </option>
-                                                                @endforeach
-
-                                                            </select>
-
-                                                            <div class="row" id="otherThirdPartyDisplay" style="{{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == config('constant.ID.THIRD_PARTIES.OTHERS') ? '' : 'display: none;' }}">
-                                                                <div class="col-12 mt-3">
-                                                                    <div class="alert alert-warning">
-                                                                        <b>For non-accredited third party, please complete the following requirements</b>
-                                                                        <ul>
-                                                                            <li>Apostilled Articles of Incorporation/ Certificate of Incorporation</li>
-                                                                            <li>Apostilled Tax Residency Certificate</li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-12">
-                                                                    <input type="text" class="form-control" name="ThirdPartyName" placeholder="Enter Third Party"
-                                                                        value="{{ isset($data['ThirdPartyName']) ? $data['ThirdPartyName'] : '' }}"
-                                                                        {{ $capabilityDisableField }}>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row mb-3">
-                                                        <label for="" class="col-sm-2 label">Attachment
-                                                            <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-html="true" title="Link attachment (e.g. Soldoc)"></i>
-                                                        </label>
-                                                        <div class="col-sm-10">
-                                                            <input type="url" class="form-control" name="ThirdPartyAttachment"
-                                                                value="{{ isset($data['ThirdPartyAttachment']) ? $data['ThirdPartyAttachment'] : '' }}">
-                                                        </div>
-                                                    </div>
-
-                                                    @if ($capabilityDisableField)
-                                                    <div class="row mb-3">
-                                                        <label for="" class="col-sm-2 label">Status <code>*</code></label>
-                                                        <div class="col-sm-10">
-                                                            <select name="ThirdPartyStatus" id="ThirdPartyStatus" required select2
-                                                                {{ $data['ThirdPartyStatus'] == 3 && $data['Status'] >= 2 ? 'disabled' : '' }}>
-                                                                <option value="" selected disabled>Select Status</option>
-                                                                <option value="1" {{ $data['ThirdPartyStatus'] == 1 ? 'selected' : '' }}>Pending</option>
-                                                                <option value="2" {{ $data['ThirdPartyStatus'] == 2 ? 'selected' : '' }}>Ongoing</option>
-                                                                <option value="3" {{ $data['ThirdPartyStatus'] == 3 ? 'selected' : '' }}>Completed</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    @endif
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <!-- ---------- END CAPABILITY ---------- -->
-                                @elseif ($Status == 2 || Request::get('progress') == 'complexity')
+                                @elseif ($Status == 1 || Request::get('progress') == 'complexity')
                                 <!-- ---------- COMPLEXITY ---------- -->
 
                                     <?php $complexDisableField = $data['Status'] > 2 ? 'disabled' : ''; ?>
@@ -639,7 +548,7 @@
                                         </div>
                                     </div>
                                 <!-- ---------- END COMPLEXITY ---------- -->
-                                @elseif ($Status == 3 || Request::get('progress') == 'dsw')
+                                @elseif ($Status == 2 || Request::get('progress') == 'dsw')
                                 <!-- ---------- DSW ---------- -->
 
                                     @if ($data['DSWStatus'] > 0)
@@ -685,7 +594,7 @@
                                     @endif
 
                                 <!-- ---------- END DSW ---------- -->
-                                @elseif ($Status == 4 || Request::get('progress') == 'businessProcess')
+                                @elseif ($Status == 3 || Request::get('progress') == 'businessProcess')
                                 <!-- ---------- BUSINESS PROCESS ---------- -->
 
                                     <div class="row mb-3">
@@ -725,7 +634,7 @@
                                     </div>
                                 
                                 <!-- ---------- END BUSINESS PROCESS ---------- -->    
-                                @elseif ($Status == 5 || Request::get('progress') == 'requirementSolution')
+                                @elseif ($Status == 4 || Request::get('progress') == 'requirementSolution')
                                 <!-- ---------- REQUIREMENT AND SOLUTIONS ---------- -->
 
                                     <div class="card mb-3">
@@ -835,6 +744,96 @@
                                     </div>
                                 
                                 <!-- ---------- END REQUIREMENT AND SOLUTIONS ---------- -->
+                                @elseif ($Status == 5 || Request::get('progress') == 'capability')
+                                <!-- ---------- CAPABILITY ---------- -->
+
+                                    <?php $capabilityDisableField = $data['IsCapable'] == 1 || $data['ThirdPartyStatus'] > 0 ? 'disabled' : ''; ?>
+
+                                    <div class="row mb-2">
+                                        <div class="col-12">
+                                            <div class="alert alert-info">
+                                                <b><i class="bi bi-info-circle-fill"></i> NOTE: </b>
+                                                <small>Assess if the team has capability to deploy.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <div class="card">
+                                                <div class="card-header py-3">
+                                                    <label>
+                                                        Is Capable?
+                                                        <input type="checkbox" name="IsCapable" 
+                                                            {{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'checked' : '' }}
+                                                            {{ $capabilityDisableField }}>
+                                                    </label>
+                                                </div>
+                                                <div class="card-body" id="isCapableDisplay"
+                                                    style="{{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
+                                                    <div class="row mb-3">
+                                                        <label for="" class="col-sm-2 label">Third Party <code>*</code></label>
+                                                        <div class="col-sm-10">
+                                                            <select name="ThirdPartyId" id="ThirdPartyId" class="form-select" select2 required
+                                                                {{ $capabilityDisableField }}>
+                                                                <option value="" selected disabled>Select Third Party</option>
+
+                                                                @foreach ($thirdParties as $dt)
+                                                                <option value="{{ $dt['Id'] }}"
+                                                                {{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == $dt['Id'] ? 'selected' : '' }}>
+                                                                    {{ $dt['Name'] }}
+                                                                </option>
+                                                                @endforeach
+
+                                                            </select>
+
+                                                            <div class="row" id="otherThirdPartyDisplay" style="{{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == config('constant.ID.THIRD_PARTIES.OTHERS') ? '' : 'display: none;' }}">
+                                                                <div class="col-12 mt-3">
+                                                                    <div class="alert alert-warning">
+                                                                        <b>For non-accredited third party, please complete the following requirements</b>
+                                                                        <ul>
+                                                                            <li>Apostilled Articles of Incorporation/ Certificate of Incorporation</li>
+                                                                            <li>Apostilled Tax Residency Certificate</li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12">
+                                                                    <input type="text" class="form-control" name="ThirdPartyName" placeholder="Enter Third Party"
+                                                                        value="{{ isset($data['ThirdPartyName']) ? $data['ThirdPartyName'] : '' }}"
+                                                                        {{ $capabilityDisableField }}>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <label for="" class="col-sm-2 label">Attachment
+                                                            <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-html="true" title="Link attachment (e.g. Soldoc)"></i>
+                                                        </label>
+                                                        <div class="col-sm-10">
+                                                            <input type="url" class="form-control" name="ThirdPartyAttachment"
+                                                                value="{{ isset($data['ThirdPartyAttachment']) ? $data['ThirdPartyAttachment'] : '' }}">
+                                                        </div>
+                                                    </div>
+
+                                                    @if ($capabilityDisableField)
+                                                    <div class="row mb-3">
+                                                        <label for="" class="col-sm-2 label">Status <code>*</code></label>
+                                                        <div class="col-sm-10">
+                                                            <select name="ThirdPartyStatus" id="ThirdPartyStatus" required select2
+                                                                {{ $data['ThirdPartyStatus'] == 3 && $data['Status'] >= 2 ? 'disabled' : '' }}>
+                                                                <option value="" selected disabled>Select Status</option>
+                                                                <option value="1" {{ $data['ThirdPartyStatus'] == 1 ? 'selected' : '' }}>For Accreditation</option>
+                                                                <option value="2" {{ $data['ThirdPartyStatus'] == 2 ? 'selected' : '' }}>Accredited</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    @endif
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <!-- ---------- END CAPABILITY ---------- -->
                                 @elseif ($Status == 6 || Request::get('progress') == 'projectPhase')
                                 <!-- ---------- PROJECT PHASE ---------- -->
 
