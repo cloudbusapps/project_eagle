@@ -13,12 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('module_approvals', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('ModuleId');
-            $table->uuid('DesignationId')->nullable();
-            $table->integer('Level');
-            $table->uuid('ApproverId')->nullable();
+        Schema::create('third_parties', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Name');
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
@@ -32,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('module_approvals');
+        Schema::dropIfExists('third_parties');
     }
 };

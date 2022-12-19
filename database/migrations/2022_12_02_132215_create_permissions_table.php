@@ -21,8 +21,8 @@ return new class extends Migration
             $table->integer('Create')->default(0);
             $table->integer('Edit')->default(0);
             $table->integer('Delete')->default(0);
-            $table->uuid('CreatedById');
-            $table->uuid('UpdatedById');
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
         });
     }

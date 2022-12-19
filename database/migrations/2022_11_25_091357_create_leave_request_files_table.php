@@ -17,8 +17,8 @@ return new class extends Migration
             $table->uuid('Id')->primary();
             $table->uuid('LeaveRequestId')->unsigned();
             $table->string('File');
-            $table->uuid('CreatedById');
-            $table->uuid('UpdatedById');
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
 
             // $table->foreign('LeaveRequestId')->references('Id')->on('leave_requests')->onDelete('cascade');

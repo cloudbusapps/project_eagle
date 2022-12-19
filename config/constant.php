@@ -20,5 +20,8 @@
                 'SICK_LEAVE'     => 'ad193685-e4fc-41e5-9212-12224fea6401',
                 'VACATION_LEAVE' => 'ad193685-e4fc-41e5-9212-12224fea6402',
             ],
+            'THIRD_PARTIES' => [
+                'OTHERS' => 'ad193685-e4fc-41e5-9212-12224fea0001',
+            ]
         ],
     ];

@@ -46,7 +46,7 @@
         :root {
             --backgroundColor: lightgrey;
             --borderSize: 40px;
-            --active-color: {{ $DSWStatus == 4 ? 'green' : '#eed202' }};
+            --active-color: {{ $DSWStatus == 5 ? 'green' : '#eed202' }};
         }
 
         .divSquare {
@@ -124,7 +124,7 @@
         #progressbar li {
             list-style-type: none;
             font-size: 12px;
-            width: 11%;
+            width: 10%;
             float: left;
             position: relative;
             text-align: center;
@@ -136,7 +136,10 @@
             content: "\f040";
             /* content: "\f05a"; */
         }
-
+        #progressbar #Capability:before {
+            font-family: FontAwesome;
+            content: "\f2db";
+        }
         #progressbar #Complexity:before {
             font-family: FontAwesome;
             content: "\f12e";
@@ -154,12 +157,12 @@
 
         #progressbar #RaS:before {
             font-family: FontAwesome;
-            content: "\f0ad";
+            content: "\f0ae";
         }
 
         #progressbar #ProjectInclusion:before {
             font-family: FontAwesome;
-            content: "\f0ad";
+            content: "\f542";
         }
 
         #progressbar #Assessment:before {
@@ -285,8 +288,16 @@
                                         <strong>Information</strong>
                                     @endif
                                 </li>
-                                <li id="Complexity">
+                                <li id="Capability">
                                     @if ($Status >= 1)
+                                        <a href="?progress=capability"
+                                            class="{{ $title == 'Capability' ? 'active' : '' }}"><b>Capability</b></a>
+                                    @else
+                                        <strong>Capability</strong>
+                                    @endif
+                                </li>
+                                <li id="Complexity">
+                                    @if ($Status >= 2)
                                         <a href="?progress=complexity"
                                             class="{{ $title == 'Complexity' ? 'active' : '' }}"><b>Complexity</b></a>
                                     @else
@@ -295,7 +306,7 @@
                                 </li>
                                 {{-- IF COMPLEX --}}
                                 <li id="DSW">
-                                    @if ($Status >= 2)
+                                    @if ($Status >= 3)
                                         <a href="?progress=dsw"
                                             class="{{ $title == 'Deployment Strategy Workshop' ? 'active' : '' }}"><b>Deployment
                                                 Strategy Workshop</b></a>
@@ -305,7 +316,7 @@
                                 </li>
                                 {{-- END COMPLEX --}}
                                 <li id="BP">
-                                    @if ($Status >= 3)
+                                    @if ($Status >= 4)
                                         <a href="?progress=businessProcess"
                                             class="{{ $title == 'Business Process' ? 'active' : '' }}"><b>Business
                                                 Process</b></a>
@@ -314,7 +325,7 @@
                                     @endif
                                 </li>
                                 <li id="RaS">
-                                    @if ($Status >= 4)
+                                    @if ($Status >= 5)
                                         <a href="?progress=requirementSolution"
                                             class="{{ $title == 'Requirements and Solutions' ? 'active' : '' }}"><b>Requirements
                                                 and Solutions</b></a>
@@ -323,7 +334,7 @@
                                     @endif
                                 </li>
                                 <li id="ProjectInclusion">
-                                    @if ($Status >= 5)
+                                    @if ($Status >= 6)
                                         <a href="?progress=projectPhase"
                                             class="{{ $title == 'Project Phase' ? 'active' : '' }}"><b>Project
                                                 Phase</b></a>
@@ -332,7 +343,7 @@
                                     @endif
                                 </li>
                                 <li id="Assessment">
-                                    @if ($Status >= 6)
+                                    @if ($Status >= 7)
                                         <a href="?progress=assessment"
                                             class="{{ $title == 'Assessment' ? 'active' : '' }}"><b>Assessment</b></a>
                                     @else
@@ -340,7 +351,7 @@
                                     @endif
                                 </li>
                                 <li id="Proposal">
-                                    @if ($Status >= 7)
+                                    @if ($Status >= 8)
                                         <a href="?progress=proposal"
                                             class="{{ $title == 'Proposal' ? 'active' : '' }}"><b>Proposal</b></a>
                                     @else
@@ -348,7 +359,7 @@
                                     @endif
                                 </li>
                                 <li id="Success">
-                                    @if ($Status >= 8)
+                                    @if ($Status >= 9)
                                         <a href="?progress=success"
                                             class="{{ $title == 'Success' ? 'active' : '' }}"><b>Success</b></a>
                                     @else
@@ -358,6 +369,34 @@
                             </ul>
 
                             <div class="profile-overview">
+
+                                @if ($Status != 0 && Request::get('progress') != 'information')
+                                <div class="row mb-4">
+                                    <div class="col-md-4 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="">Customer Name</label>
+                                            <input type="text" class="form-control" value="{{ $data['CustomerName'] }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="">Industry</label>
+                                            <input type="text" class="form-control" value="{{ $data['Industry'] }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="">Contact Person</label>
+                                            <input type="text" class="form-control" value="{{ $data['ContactPerson'] }}" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-body">
+                                @endif
+
+
+                                <!-- ---------- INFORMATION ---------- -->
                                 @if ($Status == 0 || Request::get('progress') == 'information')
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Customer Name <code>*</code></label>
@@ -399,9 +438,9 @@
                                         <div class="col-sm-10">
                                             <select required select2 name="Product" id="Product" class="form-select">
                                                 <option value="" selected disabled>Select Product</option>
-                                                <option value="1">Sales</option>
-                                                <option value="2">Service</option>
-                                                <option value="3">Marketing</option>
+                                                <option value="1" {{ isset($data['Product']) && $data['Product'] == 1 ? 'selected' : '' }}>Sales</option>
+                                                <option value="2" {{ isset($data['Product']) && $data['Product'] == 2 ? 'selected' : '' }}>Service</option>
+                                                <option value="3" {{ isset($data['Product']) && $data['Product'] == 3 ? 'selected' : '' }}>Marketing</option>
 
                                             </select>
                                         </div>
@@ -411,8 +450,8 @@
                                         <div class="col-sm-10">
                                             <select required select2 name="Type" id="Type" class="form-select">
                                                 <option value="" selected disabled>Select Type</option>
-                                                <option value="1">Deployment</option>
-                                                <option value="2">Enhancement</option>
+                                                <option value="1" {{ isset($data['Type']) && $data['Type'] == 1 ? 'selected' : '' }}>Deployment</option>
+                                                <option value="2" {{ isset($data['Type']) && $data['Type'] == 2 ? 'selected' : '' }}>Enhancement</option>
 
                                             </select>
                                         </div>
@@ -425,36 +464,122 @@
                                                 id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
                                         </div>
                                     </div>
-                                @elseif ($Status == 1 || Request::get('progress') == 'complexity')
 
-                                    <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Is Capable?</label>
-                                        <div class="col-sm-10">
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" name="IsCapable" 
-                                                    {{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'checked' : '' }}>
+                                <!-- ---------- END INFORMATION ---------- -->
+                                @elseif ($Status == 1 || Request::get('progress') == 'capability')
+                                <!-- ---------- CAPABILITY ---------- -->
+
+                                    <?php $capabilityDisableField = $data['IsCapable'] == 1 || $data['ThirdPartyStatus'] > 0 ? 'disabled' : ''; ?>
+
+                                    <div class="row mb-2">
+                                        <div class="col-12">
+                                            <div class="alert alert-info">
+                                                <b><i class="bi bi-info-circle-fill"></i> NOTE: </b>
+                                                <small>Assess if the team has capability to deploy.</small>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mb-3" id="isCapableDisplay" style="{{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? '' : 'display: none' }};">
-                                        <label for="inputText" class="col-sm-2 label">Is Complex?</label>
 
-                                        <div class="col-sm-10">
-                                            <input type="checkbox" class="custom-control-input" id="IsComplex" name="IsComplex"
-                                                {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'checked' : '' }}>
-                                            <table style="display: {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'block' : 'none' }}" id="mainTable" class="table table-bordered table-hover">
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <div class="card">
+                                                <div class="card-header py-3">
+                                                    <label>
+                                                        Is Capable?
+                                                        <input type="checkbox" name="IsCapable" 
+                                                            {{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'checked' : '' }}
+                                                            {{ $capabilityDisableField }}>
+                                                    </label>
+                                                </div>
+                                                <div class="card-body" id="isCapableDisplay"
+                                                    style="{{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
+                                                    <div class="row mb-3">
+                                                        <label for="" class="col-sm-2 label">Third Party <code>*</code></label>
+                                                        <div class="col-sm-10">
+                                                            <select name="ThirdPartyId" id="ThirdPartyId" class="form-select" select2 required
+                                                                {{ $capabilityDisableField }}>
+                                                                <option value="" selected disabled>Select Third Party</option>
+
+                                                                @foreach ($thirdParties as $dt)
+                                                                <option value="{{ $dt['Id'] }}"
+                                                                {{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == $dt['Id'] ? 'selected' : '' }}>
+                                                                    {{ $dt['Name'] }}
+                                                                </option>
+                                                                @endforeach
+
+                                                            </select>
+
+                                                            <div class="row" id="otherThirdPartyDisplay" style="{{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == config('constant.ID.THIRD_PARTIES.OTHERS') ? '' : 'display: none;' }}">
+                                                                <div class="col-12 mt-3">
+                                                                    <div class="alert alert-warning">
+                                                                        <b>For non-accredited third party, please complete the following requirements</b>
+                                                                        <ul>
+                                                                            <li>Apostilled Articles of Incorporation/ Certificate of Incorporation</li>
+                                                                            <li>Apostilled Tax Residency Certificate</li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12">
+                                                                    <input type="text" class="form-control" name="ThirdPartyName" placeholder="Enter Third Party"
+                                                                        value="{{ isset($data['ThirdPartyName']) ? $data['ThirdPartyName'] : '' }}"
+                                                                        {{ $capabilityDisableField }}>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <label for="" class="col-sm-2 label">Attachment
+                                                            <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-html="true" title="Link attachment (e.g. Soldoc)"></i>
+                                                        </label>
+                                                        <div class="col-sm-10">
+                                                            <input type="url" class="form-control" name="ThirdPartyAttachment"
+                                                                value="{{ isset($data['ThirdPartyAttachment']) ? $data['ThirdPartyAttachment'] : '' }}">
+                                                        </div>
+                                                    </div>
+
+                                                    @if ($capabilityDisableField)
+                                                    <div class="row mb-3">
+                                                        <label for="" class="col-sm-2 label">Status <code>*</code></label>
+                                                        <div class="col-sm-10">
+                                                            <select name="ThirdPartyStatus" id="ThirdPartyStatus" required select2
+                                                                {{ $data['ThirdPartyStatus'] == 3 && $data['Status'] >= 2 ? 'disabled' : '' }}>
+                                                                <option value="" selected disabled>Select Status</option>
+                                                                <option value="1" {{ $data['ThirdPartyStatus'] == 1 ? 'selected' : '' }}>Pending</option>
+                                                                <option value="2" {{ $data['ThirdPartyStatus'] == 2 ? 'selected' : '' }}>Ongoing</option>
+                                                                <option value="3" {{ $data['ThirdPartyStatus'] == 3 ? 'selected' : '' }}>Completed</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    @endif
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <!-- ---------- END CAPABILITY ---------- -->
+                                @elseif ($Status == 2 || Request::get('progress') == 'complexity')
+                                <!-- ---------- COMPLEXITY ---------- -->
+
+                                    <?php $complexDisableField = $data['Status'] > 2 ? 'disabled' : ''; ?>
+
+                                    <div class="row mb-2">
+                                        <div class="col-12">
+                                            <div class="alert alert-info">
+                                                <b><i class="bi bi-info-circle-fill"></i> NOTE: </b>
+                                                <small>Determine if the requirements is complex</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <table id="mainTable" class="table table-bordered table-hover">
                                                 <thead>
                                                     <tr>
                                                         <th colspan="2" scope="col">COMPLEXITY</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    
-                                                    <?php 
-                                                        // echo '<pre>';
-                                                        // print_r($complexities);
-                                                        // exit;    
-                                                    ?>
 
                                                     @foreach ($complexities as $index => $complexity)
                                                         <input type="hidden" name="complexity[{{ $complexity['Id'] }}][Id]" value="{{ $complexity['Id'] }}">
@@ -473,14 +598,15 @@
                                                                                 <td>
                                                                                     <li>{{ $SubDetail['Title'] }}</li>
                                                                                 </td>
-                                                                                <td>
+                                                                                <td class="text-center">
                                                                                     <div class="custom-control custom-checkbox">
                                                                                         <input type="checkbox"
                                                                                             class="custom-control-input subComplexity"
                                                                                             id="subCheck"
                                                                                             name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Selected]"
                                                                                             value={{ $SubDetail['Id'] }}
-                                                                                            {{ $SubDetail['Checked'] == 1 ? 'checked' : '' }}>
+                                                                                            {{ $SubDetail['Checked'] == 1 ? 'checked' : '' }}
+                                                                                            {{ $complexDisableField }}>
                                                                                     </div>
                                                                                 </td>
                                                                             </tr>
@@ -488,12 +614,13 @@
                                                                     </table>
                                                                 @endif
                                                             </td>
-                                                            <td>
+                                                            <td class="text-center">
                                                                 <div class="custom-control custom-checkbox">
                                                                     <input type="checkbox" class="custom-control-input mainComplexity"
                                                                         value={{ $complexity['Id'] }} id="mainCheck"
                                                                         name="complexity[{{ $complexity['Id'] }}][Selected]"
-                                                                        {{ $complexity['Checked'] == 1 ? 'checked' : '' }}>
+                                                                        {{ $complexity['Checked'] == 1 ? 'checked' : '' }}
+                                                                        {{ $complexDisableField }}>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -502,7 +629,11 @@
                                             </table>
                                         </div>
                                     </div>
-                                @elseif ($Status == 2 || Request::get('progress') == 'dsw')
+                                <!-- ---------- END COMPLEXITY ---------- -->
+                                @elseif ($Status == 3 || Request::get('progress') == 'dsw')
+                                <!-- ---------- DSW ---------- -->
+
+                                    @if ($data['DSWStatus'] > 0)
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Current Progress for DSW
                                             <code>*</code></label>
@@ -540,7 +671,14 @@
                                             </div>
                                         </div>
                                     </div>
-                                @elseif ($Status == 3 || Request::get('progress') == 'businessProcess')
+                                    @else
+                                    <h6 class="text-danger text-center">Deployment Strategy Workshop is not available for customer requirements</h6>
+                                    @endif
+
+                                <!-- ---------- END DSW ---------- -->
+                                @elseif ($Status == 4 || Request::get('progress') == 'businessProcess')
+                                <!-- ---------- BUSINESS PROCESS ---------- -->
+
                                     <div class="row mb-3">
                                         <label for="File" class="col-sm-2 label">Attachment
                                             <code>*</code></label>
@@ -569,7 +707,11 @@
                                             </div>
                                         @endforeach
                                     </div>
-                                @elseif ($Status == 4 || Request::get('progress') == 'requirementSolution')
+                                
+                                <!-- ---------- END BUSINESS PROCESS ---------- -->    
+                                @elseif ($Status == 5 || Request::get('progress') == 'requirementSolution')
+                                <!-- ---------- REQUIREMENT AND SOLUTIONS ---------- -->
+
                                     <div class="card mb-3">
                                         <div class="card-body">
                                             <h5 class="card-title">In-Scope</h5>
@@ -675,7 +817,11 @@
                                             </button>
                                         </div>
                                     </div>
-                                @elseif ($Status == 5 || Request::get('progress') == 'projectPhase')
+                                
+                                <!-- ---------- END REQUIREMENT AND SOLUTIONS ---------- -->
+                                @elseif ($Status == 6 || Request::get('progress') == 'projectPhase')
+                                <!-- ---------- PROJECT PHASE ---------- -->
+
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Inclusions <code>*</code></label>
                                         <div class="col-sm-10">
@@ -725,7 +871,11 @@
                                             </table>
                                         </div>
                                     </div>
-                                @elseif ($Status == 6 || Request::get('progress') == 'assessment')
+                                
+                                <!-- ---------- END PROJECT PHASE ---------- -->
+                                @elseif ($Status == 7 || Request::get('progress') == 'assessment')
+                                <!-- ---------- ASSESSMENT ---------- -->
+
                                     <div class="card mb-3">
                                         <div class="card-body">
                                             <h5 class="card-title">In-Scope</h5>
@@ -825,7 +975,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                @elseif ($Status == 7 || Request::get('progress') == 'proposal')
+                                
+                                <!-- ---------- END ASSESSMENT ---------- -->
+                                @elseif ($Status == 8 || Request::get('progress') == 'proposal')
+                                <!-- ---------- PROPOSAL ---------- -->
+
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Notes <code>*</code></label>
                                         <div class="col-sm-10">
@@ -841,9 +995,19 @@
                                             <input class="form-control" type="file" id="formFileMultiple" multiple />
                                         </div>
                                     </div>
-                                @elseif ($Status == 8 || Request::get('progress') == 'success')
+                                
+                                <!-- ---------- END PROPOSAL ---------- -->
+                                @elseif ($Status == 9 || Request::get('progress') == 'success')
                                 @else
                                 @endif
+
+
+
+                                @if ($Status != 0 && Request::get('progress') != 'information')
+                                    </div>
+                                </div>
+                                @endif
+
                             </div>
 
                             @if ($Status == $currentViewStatus)
@@ -951,7 +1115,7 @@
             for (let i = 0; i <= status; i++) {
                 $("#progressbar li").eq(i).addClass("active");
             }
-            const dswStatus = "{{ $DSWStatus }}";
+            const dswStatus = parseFloat("{{ $DSWStatus }}") - 1;
             for (let i = 0; i <= dswStatus; i++) {
                 $(".divSquare").eq(i).addClass("activeStatus");
             }
@@ -1086,9 +1250,30 @@
             // ----- CHANGE WITH CAPABILITY -----
             $(document).on('change', `[name="IsCapable"]`, function() {
                 let isChecked = this.checked;
-                isChecked ? $('#isCapableDisplay').show() : $('#isCapableDisplay').hide();
+                if (isChecked) {
+                    $('#isCapableDisplay').hide()
+                    $(`[name="ThirdPartyId"]`).attr('required', false).val('');
+                    $(`[name="ThirdPartyName"]`).attr('required', false).val('');
+                } else {
+                    $(`[name="ThirdPartyId"]`).attr('required', true).trigger('change');
+                    $('#isCapableDisplay').show();
+                }
             })
             // ----- END CHANGE WITH CAPABILITY -----
+
+
+            // ----- CHANGE THIRD PARTY -----
+            $(document).on('change', `[name="ThirdPartyId"]`, function() {
+                let thirdPartyName = $('option:selected', this).text()?.trim();
+                if (thirdPartyName == "Others") {
+                    $('#otherThirdPartyDisplay').show();
+                    $(`[name="ThirdPartyName"]`).attr('required', true).val('');
+                } else {
+                    $('#otherThirdPartyDisplay').hide();
+                    $(`[name="ThirdPartyName"]`).attr('required', false).val(thirdPartyName);
+                }
+            })
+            // ----- END CHANGE THIRD PARTY -----
 
 
             // ----- CHANGE MAIN COMPLEXITY -----

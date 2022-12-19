@@ -250,5 +250,17 @@ class StartUpSeeder extends Seeder
         // ----- PROJECT PHASES -----
         $this->call(ProjectPhaseSeeder::class);
         // ----- END PROJECT PHASES -----
+
+
+        DB::table('third_parties')->insert([
+            [
+                'Id'          => config('constant.ID.THIRD_PARTIES.OTHERS'),
+                'Name'        => 'Others',
+                'CreatedById' => $UserId,
+                'UpdatedById' => $UserId,
+                'created_at'  => now(),
+                'updated_at'  => now(),
+            ]
+        ]);
     }
 }

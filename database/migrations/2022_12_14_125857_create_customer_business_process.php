@@ -17,8 +17,8 @@ return new class extends Migration
             $table->uuid('Id')->primary();
             $table->uuid('CustomerId')->unsigned();
             $table->longText('Note');
-            $table->uuid('CreatedById');
-            $table->uuid('UpdatedById');
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
         });
     }

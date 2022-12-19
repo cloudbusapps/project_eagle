@@ -15,11 +15,12 @@ return new class extends Migration
     {
         Schema::create('customer_business_process_files', function (Blueprint $table) {
             $table->uuid('Id')->primary();
+            $table->uuid('BusinessProcessId')->unsigned();
             $table->uuid('CustomerId')->unsigned();
             $table->string('File');
             $table->longText('Note');
-            $table->uuid('CreatedById');
-            $table->uuid('UpdatedById');
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
         });
     }
