@@ -29,10 +29,19 @@
         $Status = !empty($data) ? $data['Status'] ?? '' : '';
         $DSWStatus = !empty($data) ? $data['DSWStatus'] ?? '' : '';
         $BusinessNotes = !empty($businessProcessData) ? $businessProcessData['Note'] ?? '' : '';
+    
         $button = '<button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>';
         // <a href="forms/customers/delete/' .
         // $Id .
         // '" class="btn btn-danger btnDeleteForm">Delete</a>
+    
+        if ($Status == 6 || Request::get('progress') == 'assessment') {
+            $button = '
+                                                            <a href="#" class="btn btn-warning btnUpdate">Update</a>
+                                                            <button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>
+                                                            ';
+        }
+    
         $todo = 'update';
         $method = 'PUT';
         $action = route('customers.update', ['Id' => $Id, 'Status' => $Status]);
@@ -426,55 +435,68 @@
                                         </div>
                                     </div>
                                 @elseif ($Status == 1 || Request::get('progress') == 'complexity')
-
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Is Capable?</label>
                                         <div class="col-sm-10">
                                             <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" name="IsCapable" 
+                                                <input type="checkbox" class="custom-control-input" name="IsCapable"
                                                     {{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'checked' : '' }}>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mb-3" id="isCapableDisplay" style="{{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? '' : 'display: none' }};">
+                                    <div class="row mb-3" id="isCapableDisplay"
+                                        style="{{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? '' : 'display: none' }};">
                                         <label for="inputText" class="col-sm-2 label">Is Complex?</label>
 
                                         <div class="col-sm-10">
-                                            <input type="checkbox" class="custom-control-input" id="IsComplex" name="IsComplex"
+                                            <input type="checkbox" class="custom-control-input" id="IsComplex"
+                                                name="IsComplex"
                                                 {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'checked' : '' }}>
-                                            <table style="display: {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'block' : 'none' }}" id="mainTable" class="table table-bordered table-hover">
+                                            <table
+                                                style="display: {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'block' : 'none' }}"
+                                                id="mainTable" class="table table-bordered table-hover">
                                                 <thead>
                                                     <tr>
                                                         <th colspan="2" scope="col">COMPLEXITY</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    
-                                                    <?php 
-                                                        // echo '<pre>';
-                                                        // print_r($complexities);
-                                                        // exit;    
+
+                                                    <?php
+                                                    // echo '<pre>';
+                                                    // print_r($complexities);
+                                                    // exit;
                                                     ?>
 
                                                     @foreach ($complexities as $index => $complexity)
-                                                        <input type="hidden" name="complexity[{{ $complexity['Id'] }}][Id]" value="{{ $complexity['Id'] }}">
-                                                        <input type="hidden" name="complexity[{{ $complexity['Id'] }}][Title]" value="{{ $complexity['Title'] }}">
+                                                        <input type="hidden"
+                                                            name="complexity[{{ $complexity['Id'] }}][Id]"
+                                                            value="{{ $complexity['Id'] }}">
+                                                        <input type="hidden"
+                                                            name="complexity[{{ $complexity['Id'] }}][Title]"
+                                                            value="{{ $complexity['Title'] }}">
 
                                                         <tr>
                                                             <td>{{ $complexity['Title'] }}
 
                                                                 @if (count($complexity['Details']) > 0)
-                                                                    <table class="table table-bordered table-hover mt-2 mb-0">
+                                                                    <table
+                                                                        class="table table-bordered table-hover mt-2 mb-0">
                                                                         @foreach ($complexity['Details'] as $SubDetail)
-                                                                        <input type="hidden" name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Id]" value="{{ $SubDetail['Id'] }}">
-                                                                        <input type="hidden" name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Title]" value="{{ $SubDetail['Title'] }}">
+                                                                            <input type="hidden"
+                                                                                name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Id]"
+                                                                                value="{{ $SubDetail['Id'] }}">
+                                                                            <input type="hidden"
+                                                                                name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Title]"
+                                                                                value="{{ $SubDetail['Title'] }}">
 
                                                                             <tr>
                                                                                 <td>
                                                                                     <li>{{ $SubDetail['Title'] }}</li>
                                                                                 </td>
                                                                                 <td>
-                                                                                    <div class="custom-control custom-checkbox">
+                                                                                    <div
+                                                                                        class="custom-control custom-checkbox">
                                                                                         <input type="checkbox"
                                                                                             class="custom-control-input subComplexity"
                                                                                             id="subCheck"
@@ -490,7 +512,8 @@
                                                             </td>
                                                             <td>
                                                                 <div class="custom-control custom-checkbox">
-                                                                    <input type="checkbox" class="custom-control-input mainComplexity"
+                                                                    <input type="checkbox"
+                                                                        class="custom-control-input mainComplexity"
                                                                         value={{ $complexity['Id'] }} id="mainCheck"
                                                                         name="complexity[{{ $complexity['Id'] }}][Selected]"
                                                                         {{ $complexity['Checked'] == 1 ? 'checked' : '' }}>
@@ -557,15 +580,22 @@
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <label for="BusinessNotes" class="col-sm-2 label">Files <code>*</code></label>
+                                        <label for="files" class="col-sm-2 label">Files<code>*</code></label>
                                         @foreach ($files as $file)
-                                            <div class="py-2 col-sm-6 col-md-4 parent" filename="{{ $file['File'] }}">
-                                                <div class="display-filename">
-                                                    <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
-                                                        class="text-white" target="_blank">{{ $file['File'] }}</a>
-                                                    <button type="button" class="btn-close btnRemoveFilename"></button>
+                                            <div class="col-md-3 parent" filename="{{ $file['File'] }}">
+                                                <div class="p-2 border border-1 rounded">
+                                                    <div class="d-flex justify-content-between">
+                                                        <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
+                                                            class="text-black fw-bold"
+                                                            target="_blank">{{ $file['File'] }}</a>
+                                                        <button type="button"
+                                                            class="btn-close btnRemoveFilename"></button>
+                                                    </div>
+                                                    <span style="font-size:14px" class="text-muted">
+                                                        {{ date('F d, Y', strtotime($file->created_at)) }}</span>
+
                                                 </div>
-                                                {{ date('F d, Y', strtotime($file->created_at)) }}
+
                                             </div>
                                         @endforeach
                                     </div>
@@ -757,7 +787,8 @@
                                                                         <textarea disabled name="Solution[]">{{ $inscope->Solution }}</textarea>
                                                                     </td>
                                                                     <td>
-                                                                        <input name="Manhours[]" value="{{ $inscope->Manhours }}">
+                                                                        <input type="number" name="Manhour[]"
+                                                                            value="{{ $inscope->Manhour }}">
                                                                     </td>
                                                                     <td>
                                                                         <textarea disabled name="Assumption[]">{{ $inscope->Assumption }}</textarea>
@@ -935,10 +966,34 @@
                 checkDisabled();
             });
 
+
             function checkDisabled() {
                 const table = $('#mainTable');
                 $('#IsComplex').prop('checked') ? table.show() : table.hide();
             }
+
+            // UPDATE FOR ASSESSMENT
+
+            $(document).on('click', '.btnUpdate', function(e) {
+                e.preventDefault();
+                var manhourValue = [];
+                $("input[name='Manhour[]']").each(function() {
+                    manhourValue.push($(this).val());
+                });
+                var method = 'PUT';
+                $.ajax({
+                    type: method,
+                    url: "1/updateManhour",
+                    data: {
+                        manhourValue
+                    },
+                    dataType: 'json',
+                    async: false,
+                    success: function(e) {
+                        console.log(e)
+                    }
+                })
+            });
 
 
 
@@ -994,7 +1049,8 @@
 
                 // FOR COMPLEXITY PART
                 if (status == 1) {
-                    if ($('input.mainComplexity:checked').length === 0 && $(`[name="IsComplex"]`).prop('checked')) {
+                    if ($('input.mainComplexity:checked').length === 0 && $(`[name="IsComplex"]`).prop(
+                            'checked')) {
                         showToast('danger', 'Check atleast one(1) in the checklist');
                         isValidated = true;
                     }
@@ -1110,7 +1166,8 @@
             $(document).on('change', `[type=checkbox].subComplexity`, function() {
                 let $table = $(this).closest('table');
                 let hasCheck = $table.find(`[type=checkbox].subComplexity:checked`).length;
-                $table.closest('tr').find(`input[type=checkbox].mainComplexity`).prop('checked', hasCheck).trigger('change');
+                $table.closest('tr').find(`input[type=checkbox].mainComplexity`).prop('checked', hasCheck)
+                    .trigger('change');
             })
             // ----- END CHANGE SUB COMPLEXITY -----
 

@@ -49,16 +49,17 @@ class CustomerController extends Controller
         $customerData = Customer::find($Id);
         $progress = $request->progress ?? '';
 
-        $businessProcessData = CustomerBusinessProcess::select('customer_business_process.*')
-            ->where('CustomerId', $Id)
-            ->leftJoin('customer_business_process_files AS cbpf', 'cbpf.BusinessProcessId', '=', 'customer_business_process.Id')
+        $businessProcess = CustomerBusinessProcess::select('customer_business_process.*')
+            ->where('customer_business_process.CustomerId', $Id)
+            ->leftJoin('customer_business_process_files AS cbpf', 'cbpf.CustomerId', '=', 'customer_business_process.Id')
             ->first();
-        $files =$businessProcessData? CustomerBusinessProcessFiles::where('BusinessProcessId', $businessProcessData->Id)->orderBy('created_at', 'DESC')->get():[];
+        $businessProcessData = $businessProcess ? $businessProcess : '';
+        $files = $businessProcessData !== '' ? CustomerBusinessProcessFiles::where('CustomerId', $Id)->orderBy('created_at', 'DESC')->get() : [];
 
 
-        $inscopes = CustomerInscope::where('CustomerId',$Id)->get();
-        $limitations = CustomerLimitation::where('CustomerId',$Id)->get();
-        
+        $inscopes = CustomerInscope::where('CustomerId', $Id)->get();
+        $limitations = CustomerLimitation::where('CustomerId', $Id)->get();
+
         $title = $this->getTitle($customerData->Status, $progress);
 
         $data = [
@@ -140,7 +141,8 @@ class CustomerController extends Controller
         }
     }
 
-    function updateComplexity($request, $Id, $customerData) {
+    function updateComplexity($request, $Id, $customerData)
+    {
         $IsCapable = isset($request->IsCapable) ? 1 : 0;
         if ($IsCapable) {
             $IsComplex = isset($request->IsComplex) ? 1 : 0;
@@ -186,6 +188,13 @@ class CustomerController extends Controller
             $customerData->Status  = 3; // TEMP
         }
     }
+    function updateManhour(Request $request, $Id)
+    {
+        // $validator = $request->validate([
+        //     'Title' => ['required'],
+        // ]);
+        return $request;
+    }
 
     function update(Request $request, $Id)
     {
@@ -226,7 +235,6 @@ class CustomerController extends Controller
             $BusinessProcess->Note = $request->BusinessNotes;
             $BusinessProcess->CustomerId    = $Id;
             if ($BusinessProcess->save()) {
-                $BusinessProcessId = $BusinessProcess->Id;
                 $files = $request->file('File');
                 if ($files && count($files)) {
                     $businessProcessFiles = [];
@@ -239,15 +247,16 @@ class CustomerController extends Controller
 
                         $businessProcessFiles[] = [
                             'Id'             => Str::uuid(),
-                            'BusinessProcessId' => $BusinessProcessId,
+                            'CustomerId' => $Id,
                             'File'           => $filename,
+                            'Note'           => $request->BusinessNotes,
                             'CreatedById'    => Auth::id(),
                             'UpdatedById'    => Auth::id(),
                             'created_at'    => $now,
                         ];
                     }
 
-                    CustomerBusinessProcessFiles::where('BusinessProcessId', $BusinessProcessId)->delete();
+                    CustomerBusinessProcessFiles::where('CustomerId', $Id)->delete();
                     CustomerBusinessProcessFiles::insert($businessProcessFiles);
                 }
             }
@@ -340,7 +349,7 @@ class CustomerController extends Controller
         $data = [];
 
         $complexity = DB::table('complexity AS c')
-            ->leftJoin('customer_complexity AS cc', function($join) use ($Id) {
+            ->leftJoin('customer_complexity AS cc', function ($join) use ($Id) {
                 $join->on('cc.ComplexityId', 'c.Id');
                 $join->on('cc.CustomerId', DB::raw("'{$Id}'"));
             })
@@ -356,7 +365,7 @@ class CustomerController extends Controller
             ];
 
             $complexityDetails = DB::table('complexity_details AS cd')
-                ->leftJoin('customer_complexity_details AS ccd', function($join) use ($Id) {
+                ->leftJoin('customer_complexity_details AS ccd', function ($join) use ($Id) {
                     $join->on('ccd.ComplexityDetailId', 'cd.Id');
                     $join->on('ccd.CustomerId', DB::raw("'{$Id}'"));
                 })
