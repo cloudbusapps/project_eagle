@@ -37,9 +37,9 @@
     
         if ($Status == 6 || Request::get('progress') == 'assessment') {
             $button = '
-                                                            <a href="#" class="btn btn-warning btnUpdate">Update</a>
-                                                            <button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>
-                                                            ';
+                                                                        <a href="#" class="btn btn-warning btnUpdate">Update</a>
+                                                                        <button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>
+                                                                        ';
         }
     
         $todo = 'update';
@@ -774,6 +774,8 @@
                                                         @if (!empty($reqSol) && count($reqSol) > 0)
                                                             @foreach ($reqSol as $index => $inscope)
                                                                 <tr>
+                                                                    <input name="RowId[]" type="hidden"
+                                                                        value="{{ $inscope->Id }}">
                                                                     <td><input disabled value={{ $inscope->Title }}
                                                                             name="Title[]">
                                                                     </td>
@@ -976,16 +978,17 @@
 
             $(document).on('click', '.btnUpdate', function(e) {
                 e.preventDefault();
-                var manhourValue = [];
-                $("input[name='Manhour[]']").each(function() {
-                    manhourValue.push($(this).val());
+                let data = [];
+                $("input[name='RowId[]']").each(function(index) {
+                    data.push($("input[name='Manhour[]']").eq(index).val());
                 });
+                return console.log(data)
                 var method = 'PUT';
                 $.ajax({
                     type: method,
-                    url: "1/updateManhour",
+                    url: `"{{ $Id }}"/updateManhour`,
                     data: {
-                        manhourValue
+                        data
                     },
                     dataType: 'json',
                     async: false,

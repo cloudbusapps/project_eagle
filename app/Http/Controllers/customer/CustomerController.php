@@ -193,7 +193,13 @@ class CustomerController extends Controller
         // $validator = $request->validate([
         //     'Title' => ['required'],
         // ]);
-        return $request;
+        foreach ($request->manhourValue as $manhour) {
+            $score = Score::find($row['id']);
+            $score->jan_ap = $row['jan_ap'];
+            $score->jan_hm = $row['jan_hm'];
+            $score->save();
+        }
+        return $request->manhourValue;
     }
 
     function update(Request $request, $Id)
