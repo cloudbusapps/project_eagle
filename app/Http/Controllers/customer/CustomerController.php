@@ -7,6 +7,8 @@ use App\Models\customer\CustomerBusinessProcess;
 use App\Models\customer\CustomerBusinessProcessFiles;
 use App\Models\customer\CustomerInscope;
 use App\Models\customer\CustomerLimitation;
+use App\Models\customer\CustomerComplexity;
+use App\Models\customer\CustomerComplexityDetails;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Customer;
@@ -65,7 +67,7 @@ class CustomerController extends Controller
             'type'            => 'edit',
             'data'            => $customerData,
             'Id'              => $Id,
-            'complexities'    => $this->getComplexityData(),
+            'complexities'    => $this->getComplexityData($Id),
             'ProjectPhase'    => $this->getProjectPhase(),
             'users'           => User::all(),
             'businessProcessData' => $businessProcessData,
@@ -137,23 +139,68 @@ class CustomerController extends Controller
                 ->with('fail', "Something went wrong, please try again");
         }
     }
-    function update(Request $request, $Id)
-    {
-        $now = Carbon::now('utc')->toDateTimeString();
-        $customerData = Customer::find($Id);
-        $customerName             = $customerData->CustomerName;
-        $Id             = $customerData->Id;
 
-        // CHECKING IF COMPLEX
-        if ($customerData->Status == 1) {
+    function updateComplexity($request, $Id, $customerData) {
+        $IsCapable = isset($request->IsCapable) ? 1 : 0;
+        if ($IsCapable) {
+            $IsComplex = isset($request->IsComplex) ? 1 : 0;
+            $customerData->IsCapable = $IsCapable;
+            $customerData->IsComplex = $IsComplex;
 
-            if (isset($request->checkbox)) {
+            $complexity = $request->complexity ?? [];
+            if ($IsComplex && count($complexity)) {
+                $complexitySubData = [];
+                foreach ($complexity as $key => $dt) {
+                    $CustomerComplexityId = Str::uuid();
+                    $data = [
+                        'Id'           => $CustomerComplexityId,
+                        'CustomerId'   => $Id,
+                        'ComplexityId' => $dt['Id'],
+                        'Title'        => $dt['Title'],
+                        'Checked'      => isset($dt['Selected']) ? 1 : 0,
+                    ];
+                    $insert = CustomerComplexity::insert($data);
 
-                $customerData->Status  = 2;
-                $customerData->DSWStatus  = 0;
+                    if (isset($dt['Sub']) && count($dt['Sub'])) {
+                        foreach ($dt['Sub'] as $key2 => $dt2) {
+                            $complexitySubData[] = [
+                                'Id'                   => Str::uuid(),
+                                'CustomerComplexityId' => $CustomerComplexityId,
+                                'CustomerId'           => $Id,
+                                'ComplexityId'         => $dt['Id'],
+                                'ComplexityDetailId'   => $dt2['Id'],
+                                'Title'                => $dt2['Title'],
+                                'Checked'              => isset($dt2['Selected']) ? 1 : 0,
+                            ];
+                        }
+                    }
+                }
+                CustomerComplexityDetails::insert($complexitySubData);
+
+                $customerData->Status    = 2;
+                $customerData->DSWStatus = 0;
             } else {
                 $customerData->Status  = 3;
             }
+        } else {
+            $customerData->Status  = 3; // TEMP
+        }
+    }
+
+    function update(Request $request, $Id)
+    {
+        $customerData = Customer::find($Id);
+        $customerName = $customerData->CustomerName;
+        $Id           = $customerData->Id;
+        $now          = Carbon::now('utc')->toDateTimeString();
+
+        // echo '<pre>';
+        // print_r($request->all());
+        // exit;
+
+        // CHECKING IF COMPLEX
+        if ($customerData->Status == 1) {
+            $this->updateComplexity($request, $Id, $customerData);
         } else if ($customerData->Status == 2) {
             // IF COMPLEX
             if ($customerData->DSWStatus == 0) {
@@ -288,48 +335,51 @@ class CustomerController extends Controller
 
 
     // HELPER FOR CUSTOMER CONTROLLER
-    function getComplexityData()
+    function getComplexityData($Id = null)
     {
         $data = [];
 
-        $complexity = DB::table('complexity')->get();
+        $complexity = DB::table('complexity AS c')
+            ->leftJoin('customer_complexity AS cc', function($join) use ($Id) {
+                $join->on('cc.ComplexityId', 'c.Id');
+                $join->on('cc.CustomerId', DB::raw("'{$Id}'"));
+            })
+            ->where('Status', 1)
+            ->get(['c.*', 'cc.Checked']);
 
         foreach ($complexity as $index => $complex) {
             $temp = [
-                'Id' => $complex->Id,
-                'Title' => $complex->Title,
-                'Status'  => $complex->Status,
-                'CreatedById'  => $complex->CreatedById,
-                'UpdatedById'  => $complex->UpdatedById,
-                'created_at'  => $complex->created_at,
-                'updated_at'  => $complex->updated_at,
+                'Id'      => $complex->Id,
+                'Title'   => $complex->Title,
+                'Checked' => $complex->Checked,
                 'Details' => []
             ];
 
-            $complexityDetails = DB::table('complexity_details')
+            $complexityDetails = DB::table('complexity_details AS cd')
+                ->leftJoin('customer_complexity_details AS ccd', function($join) use ($Id) {
+                    $join->on('ccd.ComplexityDetailId', 'cd.Id');
+                    $join->on('ccd.CustomerId', DB::raw("'{$Id}'"));
+                })
                 ->where('Status', 1)
-                ->where('ComplexityId', $complex->Id)
-                ->get();
+                ->where('cd.ComplexityId', $complex->Id)
+                ->get(['cd.*', 'ccd.Checked']);
 
             foreach ($complexityDetails as $complexityDetail) {
 
                 if ($complexityDetail->ComplexityId == $complex->Id) {
                     $temp['Details'][] = [
-                        'Id'        => $complexityDetail->Id,
-                        'ComplexityId'     => $complexityDetail->ComplexityId,
-                        'Title'    => $complexityDetail->Title,
-                        'Status'  => $complexityDetail->Status,
-                        'CreatedById'  => $complexityDetail->CreatedById,
-                        'UpdatedById'  => $complexityDetail->UpdatedById,
-                        'created_at'  => $complexityDetail->created_at,
-                        'updated_at'  => $complexityDetail->updated_at,
+                        'Id'           => $complexityDetail->Id,
+                        'ComplexityId' => $complexityDetail->ComplexityId,
+                        'Title'        => $complexityDetail->Title,
+                        'Status'       => $complexityDetail->Status,
+                        'Checked'      => $complexityDetail->Checked,
                     ];
                 }
             }
             $data[] = $temp;
         }
         // echo "<pre>";
-        // print_r($complexity);
+        // print_r($data);
         // exit;
         return $data;
     }

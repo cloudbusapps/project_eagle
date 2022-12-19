@@ -13,10 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('customer_complexity', function (Blueprint $table) {
+        Schema::create('customer_complexity_details', function (Blueprint $table) {
             $table->uuid('Id')->primary();
+            $table->uuid('CustomerComplexityId');
             $table->uuid('CustomerId');
             $table->uuid('ComplexityId');
+            $table->uuid('ComplexityDetailId');
             $table->string('Title');
             $table->integer('Checked')->default(0);
             $table->uuid('CreatedById')->nullable();
@@ -32,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customer_complexity');
+        Schema::dropIfExists('customer_complexity_details');
     }
 };
