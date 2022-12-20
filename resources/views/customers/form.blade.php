@@ -13,6 +13,7 @@
         $method = 'POST';
         $action = route('customers.save');
         $cancelRoute = route('customers');
+        $Id = '';
         $button = '<button type="submit" class="btn btn-primary btnSubmitForm">Save</button>';
     } elseif ($type === 'edit') {
         // INITIALIZATION
@@ -37,11 +38,11 @@
         // $Id .
         // '" class="btn btn-danger btnDeleteForm">Delete</a>
     
-        if ($Status == 6 || Request::get('progress') == 'assessment') {
+        if ($Status == 7 || Request::get('progress') == 'assessment') {
             $button = '
-            <a href="#" class="btn btn-warning btnUpdate">Update</a>
-            <button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>
-             ';
+                                                        <a href="#" class="btn btn-warning btnUpdate">Update</a>
+                                                        <button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>
+                                                         ';
         }
     
         $todo = 'update';
@@ -490,7 +491,11 @@
                                                 id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
                                         </div>
                                     </div>
-                                <<<<<<< HEAD @elseif ($Status == 1 || Request::get('progress') == 'complexity') <div class="row mb-3">
+
+                                    <!-- ---------- END INFORMATION ---------- -->
+                                @elseif ($Status == 1 || Request::get('progress') == 'complexity')
+                                <!-- ---------- COMPLEXITY ---------- -->
+                                    <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Is Capable?</label>
                                         <div class="col-sm-10">
                                             <div class="custom-control custom-checkbox">
@@ -498,50 +503,40 @@
                                                     {{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'checked' : '' }}>
                                             </div>
                                         </div>
-                            </div>
-                            <div class="row mb-3" id="isCapableDisplay"
-                                style="{{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? '' : 'display: none' }};">
-                                <label for="inputText" class="col-sm-2 label">Is Complex?</label>
+                                    </div>
+                                    <div class="row mb-3" id="isCapableDisplay"
+                                        style="{{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? '' : 'display: none' }};">
+                                        <label for="inputText" class="col-sm-2 label">Is Complex?</label>
 
-                                <div class="col-sm-10">
-                                    <input type="checkbox" class="custom-control-input" id="IsComplex" name="IsComplex"
-                                        {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'checked' : '' }}>
-                                    <table
-                                        style="display: {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'block' : 'none' }}"
-                                        id="mainTable" class="table table-bordered table-hover">
-                                        =======
+                                        <div class="col-sm-10">
+                                            <input type="checkbox" class="custom-control-input" id="IsComplex"
+                                                name="IsComplex"
+                                                {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'checked' : '' }}>
 
-                                        <!-- ---------- END INFORMATION ---------- -->
-                                    @elseif ($Status == 1 || Request::get('progress') == 'complexity')
-                                        <!-- ---------- COMPLEXITY ---------- -->
+                                            
 
-                                        <?php $complexDisableField = $data['Status'] > 2 ? 'disabled' : ''; ?>
+                                            <?php $complexDisableField = $data['Status'] > 2 ? 'disabled' : ''; ?>
 
-                                        <div class="row mb-2">
-                                            <div class="col-12">
-                                                <div class="alert alert-info">
-                                                    <b><i class="bi bi-info-circle-fill"></i> NOTE: </b>
-                                                    <small>Determine if the requirements is complex</small>
+                                            <div class="row mb-2">
+                                                <div class="col-12">
+                                                    <div class="alert alert-info">
+                                                        <b><i class="bi bi-info-circle-fill"></i> NOTE: </b>
+                                                        <small>Determine if the requirements is complex</small>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <div class="row mb-3">
-                                            <div class="col-12">
-                                                <table id="mainTable" class="table table-bordered table-hover">
-                                                    >>>>>>> db78414929a1f8b4fdb05a57437644bfd2d3494f
-                                                    <thead>
-                                                        <tr>
-                                                            <th colspan="2" scope="col">COMPLEXITY</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <<<<<<< HEAD <?php
-                                                        // echo '<pre>';
-                                                        // print_r($complexities);
-                                                        // exit;
-                                                        ?>=======>>>>>>>
-                                                            db78414929a1f8b4fdb05a57437644bfd2d3494f
+                                            <div class="row mb-3">
+                                                <div class="col-12">
+                                                    <table
+                                                        style="display: {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'block' : 'none' }}"
+                                                        id="mainTable" class="table table-bordered table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th colspan="2" scope="col">COMPLEXITY</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
 
                                                             @foreach ($complexities as $index => $complexity)
                                                                 <input type="hidden"
@@ -554,561 +549,584 @@
                                                                 <tr>
                                                                     <td>{{ $complexity['Title'] }}
 
-                                                                @if (count($complexity['Details']) > 0)
-                                                                    <table class="table table-bordered table-hover mt-2 mb-0">
-                                                                        @foreach ($complexity['Details'] as $SubDetail)
-                                                                            <input type="hidden"
-                                                                                name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Id]"
-                                                                                value="{{ $SubDetail['Id'] }}">
-                                                                            <input type="hidden"
-                                                                                name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Title]"
-                                                                                value="{{ $SubDetail['Title'] }}">
+                                                                        @if (count($complexity['Details']) > 0)
+                                                                            <table
+                                                                                class="table table-bordered table-hover mt-2 mb-0">
+                                                                                @foreach ($complexity['Details'] as $SubDetail)
+                                                                                    <input type="hidden"
+                                                                                        name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Id]"
+                                                                                        value="{{ $SubDetail['Id'] }}">
+                                                                                    <input type="hidden"
+                                                                                        name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Title]"
+                                                                                        value="{{ $SubDetail['Title'] }}">
 
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <li>{{ $SubDetail['Title'] }}</li>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <div class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox"
-                                                                                            class="custom-control-input subComplexity"
-                                                                                            id="subCheck"
-                                                                                            name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Selected]"
-                                                                                            value={{ $SubDetail['Id'] }}
-                                                                                            {{ $SubDetail['Checked'] == 1 ? 'checked' : '' }}
-                                                                                            {{ $complexDisableField }}>
-                                                                                    </div>
-                                                                                </td>
-                                                                            </tr>
-                                                                        @endforeach
-                                                                    </table>
-                                                                @endif
-                                                            </td>
-                                                            <td>
-                                                                <div class="custom-control custom-checkbox">
-                                                                    <input type="checkbox" class="custom-control-input mainComplexity"
-                                                                        value={{ $complexity['Id'] }} id="mainCheck"
-                                                                        name="complexity[{{ $complexity['Id'] }}][Selected]"
-                                                                        {{ $complexity['Checked'] == 1 ? 'checked' : '' }}>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <li>{{ $SubDetail['Title'] }}
+                                                                                            </li>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <div
+                                                                                                class="custom-control custom-checkbox">
+                                                                                                <input type="checkbox"
+                                                                                                    class="custom-control-input subComplexity"
+                                                                                                    id="subCheck"
+                                                                                                    name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Selected]"
+                                                                                                    value={{ $SubDetail['Id'] }}
+                                                                                                    {{ $SubDetail['Checked'] == 1 ? 'checked' : '' }}
+                                                                                                    {{ $complexDisableField }}>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                @endforeach
+                                                                            </table>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="custom-control custom-checkbox">
+                                                                            <input type="checkbox"
+                                                                                class="custom-control-input mainComplexity"
+                                                                                value={{ $complexity['Id'] }}
+                                                                                id="mainCheck"
+                                                                                name="complexity[{{ $complexity['Id'] }}][Selected]"
+                                                                                {{ $complexity['Checked'] == 1 ? 'checked' : '' }}>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                <!-- ---------- END COMPLEXITY ---------- -->
+                                            <!-- ---------- END COMPLEXITY ---------- -->
                                 @elseif ($Status == 2 || Request::get('progress') == 'dsw')
-                                <!-- ---------- DSW ---------- -->
-
-                                    @if ($data['DSWStatus'] > 0)
-                                    <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Current Progress for DSW
-                                            <code>*</code></label>
-                                        <div class="col-sm-10">
-                                            <div class="row">
-                                                <div class="col-sm-2 dwsCon">
-                                                    <div class="divSquare activeStatus">
-                                                        <strong>DSW Started</strong>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-2 dwsCon">
-                                                    <div class="divSquare">
-                                                        <strong>Ongoing DSW</strong>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-2 dwsCon">
-                                                    <div class="divSquare">
-                                                        <strong>Completed DSW</strong>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-2 dwsCon">
-                                                    <div class="divSquare">
-                                                        <strong>For Consolidation of Requirements</strong>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-2 dwsCon">
-                                                    <div class="divSquare">
-                                                        <strong>Completeted Requirements Consolidation</strong>
-                                                    </div>
-                                                </div>
-                                                {{-- <div class="col-sm-2 dwsCon">
+                                            <!-- ---------- DSW ---------- -->
+                                            @if ($data['DSWStatus'] > 0)
+                                                <div class="row mb-3">
+                                                    <label for="inputText" class="col-sm-2 label">Current Progress for
+                                                        DSW
+                                                        <code>*</code></label>
+                                                    <div class="col-sm-10">
+                                                        <div class="row">
+                                                            <div class="col-sm-2 dwsCon">
+                                                                <div class="divSquare activeStatus">
+                                                                    <strong>DSW Started</strong>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-2 dwsCon">
+                                                                <div class="divSquare">
+                                                                    <strong>Ongoing DSW</strong>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-2 dwsCon">
+                                                                <div class="divSquare">
+                                                                    <strong>Completed DSW</strong>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-2 dwsCon">
+                                                                <div class="divSquare">
+                                                                    <strong>For Consolidation of Requirements</strong>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-2 dwsCon">
+                                                                <div class="divSquare">
+                                                                    <strong>Completeted Requirements
+                                                                        Consolidation</strong>
+                                                                </div>
+                                                            </div>
+                                                            {{-- <div class="col-sm-2 dwsCon">
                                                     <div class="divSquare"></div>
                                                     <strong>Completed Sol Doc</strong>
                                                 </div> --}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                @elseif ($Status == 3 || Request::get('progress') == 'businessProcess')
-                                <!-- ---------- BUSINESS PROCESS ---------- -->
-
-                                    <div class="row mb-3">
-                                        <label for="File" class="col-sm-2 label">Attachment
-                                            <code>*</code></label>
-                                        <div class="col-sm-10">
-                                            <input class="form-control" type="file" id="File" name="File[]"
-                                                multiple />
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <label for="BusinessNotes" class="col-sm-2 label">Notes <code>*</code></label>
-                                        <div class="col-sm-10">
-                                            <textarea {{ $editable }} style="height: 82px;" required type="text" class="form-control"
-                                                name="BusinessNotes" id="BusinessNotes" placeholder="Notes">{{ old('BusinessNotes') ?? $BusinessNotes }}</textarea>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <label for="files" class="col-sm-2 label">Files<code>*</code></label>
-                                        @foreach ($files as $file)
-                                            <div class="col-md-3 parent" filename="{{ $file['File'] }}">
-                                                <div class="p-2 border border-1 rounded">
-                                                    <div class="d-flex justify-content-between">
-                                                        <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
-                                                            class="text-black fw-bold"
-                                                            target="_blank">{{ $file['File'] }}</a>
-                                                        <button type="button"
-                                                            class="btn-close btnRemoveFilename"></button>
+                                                        </div>
                                                     </div>
-                                                    <span style="font-size:14px" class="text-muted">
-                                                        {{ date('F d, Y', strtotime($file->created_at)) }}</span>
-
                                                 </div>
+                                            @endif
+                                        @elseif ($Status == 3 || Request::get('progress') == 'businessProcess')
+                                            <!-- ---------- BUSINESS PROCESS ---------- -->
 
+                                            <div class="row mb-3">
+                                                <label for="File" class="col-sm-2 label">Attachment
+                                                    <code>*</code></label>
+                                                <div class="col-sm-10">
+                                                    <input class="form-control" type="file" id="File"
+                                                        name="File[]" multiple />
+                                                </div>
                                             </div>
-                                        @endforeach
-                                    </div>
-                                
-                                <!-- ---------- END BUSINESS PROCESS ---------- -->    
-                                @elseif ($Status == 4 || Request::get('progress') == 'requirementSolution')
-                                <!-- ---------- REQUIREMENT AND SOLUTIONS ---------- -->
-
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <h5 class="card-title">In-Scope</h5>
-                                            <div id="tableContainer" class="mb-3">
-                                                <table id="inScopeTable" cellpadding="0" cellspacing="0"
-                                                    class="table table-bordered">
-                                                    <thead>
-                                                        <th scope="col">Requirement List</th>
-                                                        <th scope="col">Description</th>
-                                                        <th scope="col">Salesforce Modules</th>
-                                                        <th scope="col">Solutions Overview</th>
-                                                        <th scope="col">Assumptions</th>
-                                                    </thead>
-                                                    <tbody>
-                                                        @if (!empty($reqSol) && count($reqSol) > 0)
-                                                            @foreach ($reqSol as $index => $inscope)
-                                                                <tr>
-                                                                    <td><input value={{ $inscope->Title }} name="Title[]">
-                                                                    </td>
-                                                                    <td>
-                                                                        <textarea name="Description[]">{{ $inscope->Description }}</textarea>
-                                                                    </td>
-                                                                    <td>
-                                                                        <textarea name="Module[]">{{ $inscope->Module }}</textarea>
-                                                                    </td>
-                                                                    <td>
-                                                                        <textarea name="Solution[]">{{ $inscope->Solution }}</textarea>
-                                                                    </td>
-                                                                    <td>
-                                                                        <textarea name="Assumption[]">{{ $inscope->Assumption }}</textarea>
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-                                                        @else
-                                                            <tr>
-                                                                <td><input name="Title[]"></td>
-                                                                <td>
-                                                                    <textarea name="Description[]"></textarea>
-                                                                </td>
-                                                                <td>
-                                                                    <textarea name="Module[]"></textarea>
-                                                                </td>
-                                                                <td>
-                                                                    <textarea name="Solution[]"></textarea>
-                                                                </td>
-                                                                <td>
-                                                                    <textarea name="Assumption[]"></textarea>
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-
-                                                        </tbody>
-                                                    </table>
-
-
+                                            <div class="row mb-3">
+                                                <label for="BusinessNotes" class="col-sm-2 label">Notes
+                                                    <code>*</code></label>
+                                                <div class="col-sm-10">
+                                                    <textarea {{ $editable }} style="height: 82px;" required type="text" class="form-control"
+                                                        name="BusinessNotes" id="BusinessNotes" placeholder="Notes">{{ old('BusinessNotes') ?? $BusinessNotes }}</textarea>
                                                 </div>
-                                                <button class="btn btn-outline-primary btnAddRow" type="button">
-                                                    <i class="fas fa-plus"></i> Add Row
-                                                </button>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <label for="files" class="col-sm-2 label">Files<code>*</code></label>
+                                                @foreach ($files as $file)
+                                                    <div class="col-md-3 parent" filename="{{ $file['File'] }}">
+                                                        <div class="p-2 border border-1 rounded">
+                                                            <div class="d-flex justify-content-between">
+                                                                <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
+                                                                    class="text-black fw-bold"
+                                                                    target="_blank">{{ $file['File'] }}</a>
+                                                                <button type="button"
+                                                                    class="btn-close btnRemoveFilename"></button>
+                                                            </div>
+                                                            <span style="font-size:14px" class="text-muted">
+                                                                {{ date('F d, Y', strtotime($file->created_at)) }}</span>
+
+                                                        </div>
+
+                                                    </div>
+                                                @endforeach
                                             </div>
 
-                                        </div>
+                                            <!-- ---------- END BUSINESS PROCESS ---------- -->
+                                        @elseif ($Status == 4 || Request::get('progress') == 'requirementSolution')
+                                            <!-- ---------- REQUIREMENT AND SOLUTIONS ---------- -->
 
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <h5 class="card-title">Limitations</h5>
-                                                <div id="tableContainer" class="mb-3">
-                                                    <table id="outScopeTable" cellpadding="0" cellspacing="0"
-                                                        class="table table-bordered">
-                                                        <thead>
-                                                            <th scope="col">Out of Scope</th>
-                                                            <th scope="col">Comments</th>
-                                                        </thead>
-                                                        <tbody>
-                                                            @if (!empty($limitations) && count($limitations) > 0)
-                                                                @foreach ($limitations as $index => $limitation)
+                                            <div class="card mb-3">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">In-Scope</h5>
+                                                    <div id="tableContainer" class="mb-3">
+                                                        <table id="inScopeTable" cellpadding="0" cellspacing="0"
+                                                            class="table table-bordered">
+                                                            <thead>
+                                                                <th scope="col">Requirement List</th>
+                                                                <th scope="col">Description</th>
+                                                                <th scope="col">Salesforce Modules</th>
+                                                                <th scope="col">Solutions Overview</th>
+                                                                <th scope="col">Assumptions</th>
+                                                            </thead>
+                                                            <tbody>
+                                                                @if (!empty($reqSol) && count($reqSol) > 0)
+                                                                    @foreach ($reqSol as $index => $inscope)
+                                                                        <tr>
+                                                                            <td><input value={{ $inscope->Title }}
+                                                                                    name="Title[]">
+                                                                            </td>
+                                                                            <td>
+                                                                                <textarea name="Description[]">{{ $inscope->Description }}</textarea>
+                                                                            </td>
+                                                                            <td>
+                                                                                <textarea name="Module[]">{{ $inscope->Module }}</textarea>
+                                                                            </td>
+                                                                            <td>
+                                                                                <textarea name="Solution[]">{{ $inscope->Solution }}</textarea>
+                                                                            </td>
+                                                                            <td>
+                                                                                <textarea name="Assumption[]">{{ $inscope->Assumption }}</textarea>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                @else
                                                                     <tr>
+                                                                        <td><input name="Title[]"></td>
                                                                         <td>
-                                                                            <textarea name="OutOfScope[]">{{ $limitation->OutScope }}</textarea>
+                                                                            <textarea name="Description[]"></textarea>
                                                                         </td>
                                                                         <td>
-                                                                            <textarea name="Comment[]">{{ $limitation->Comment }}</textarea>
+                                                                            <textarea name="Module[]"></textarea>
+                                                                        </td>
+                                                                        <td>
+                                                                            <textarea name="Solution[]"></textarea>
+                                                                        </td>
+                                                                        <td>
+                                                                            <textarea name="Assumption[]"></textarea>
                                                                         </td>
                                                                     </tr>
-                                                                @endforeach
-                                                            @else
-                                                                <tr>
-                                                                    <td>
-                                                                        <textarea name="OutOfScope[]"></textarea>
-                                                                    </td>
-                                                                    <td>
-                                                                        <textarea name="Comment[]"></textarea>
-                                                                    </td>
-                                                                </tr>
-                                                            @endif
+                                                                @endif
 
-                                                        </tbody>
-                                                    </table>
+                                                            </tbody>
+                                                        </table>
 
-                                                </div>
-                                                <button class="btn btn-outline-primary btnAddRowLimitation"
-                                                    type="button">
-                                                    <i class="fas fa-plus"></i> Add Row
-                                                </button>
-                                            </div>
-                                        </div>
 
-                                        <!-- ---------- END REQUIREMENT AND SOLUTIONS ---------- -->
-                                    @elseif ($Status == 5 || Request::get('progress') == 'capability')
-                                        <!-- ---------- CAPABILITY ---------- -->
-
-                                        <?php $capabilityDisableField = $data['IsCapable'] == 1 || $data['ThirdPartyStatus'] > 0 ? 'disabled' : ''; ?>
-
-                                        <div class="row mb-2">
-                                            <div class="col-12">
-                                                <div class="alert alert-info">
-                                                    <b><i class="bi bi-info-circle-fill"></i> NOTE: </b>
-                                                    <small>Assess if the team has capability to deploy.</small>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mb-3">
-                                            <div class="col-12">
-                                                <div class="card">
-                                                    <div class="card-header py-3">
-                                                        <label>
-                                                            Is Capable?
-                                                            <input type="checkbox" name="IsCapable"
-                                                                {{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'checked' : '' }}
-                                                                {{ $capabilityDisableField }}>
-                                                        </label>
                                                     </div>
-                                                    <div class="card-body" id="isCapableDisplay"
-                                                        style="{{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
-                                                        <div class="row mb-3">
-                                                            <label for="" class="col-sm-2 label">Third Party
-                                                                <code>*</code></label>
-                                                            <div class="col-sm-10">
-                                                                <select name="ThirdPartyId" id="ThirdPartyId"
-                                                                    class="form-select" select2 required
-                                                                    {{ $capabilityDisableField }}>
-                                                                    <option value="" selected disabled>Select Third
-                                                                        Party</option>
+                                                    <button class="btn btn-outline-primary btnAddRow" type="button">
+                                                        <i class="fas fa-plus"></i> Add Row
+                                                    </button>
+                                                </div>
 
-                                                                    @foreach ($thirdParties as $dt)
-                                                                        <option value="{{ $dt['Id'] }}"
-                                                                            {{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == $dt['Id'] ? 'selected' : '' }}>
-                                                                            {{ $dt['Name'] }}
-                                                                        </option>
+                                            </div>
+
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Limitations</h5>
+                                                    <div id="tableContainer" class="mb-3">
+                                                        <table id="outScopeTable" cellpadding="0" cellspacing="0"
+                                                            class="table table-bordered">
+                                                            <thead>
+                                                                <th scope="col">Out of Scope</th>
+                                                                <th scope="col">Comments</th>
+                                                            </thead>
+                                                            <tbody>
+                                                                @if (!empty($limitations) && count($limitations) > 0)
+                                                                    @foreach ($limitations as $index => $limitation)
+                                                                        <tr>
+                                                                            <td>
+                                                                                <textarea name="OutOfScope[]">{{ $limitation->OutScope }}</textarea>
+                                                                            </td>
+                                                                            <td>
+                                                                                <textarea name="Comment[]">{{ $limitation->Comment }}</textarea>
+                                                                            </td>
+                                                                        </tr>
                                                                     @endforeach
+                                                                @else
+                                                                    <tr>
+                                                                        <td>
+                                                                            <textarea name="OutOfScope[]"></textarea>
+                                                                        </td>
+                                                                        <td>
+                                                                            <textarea name="Comment[]"></textarea>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endif
 
-                                                                </select>
+                                                            </tbody>
+                                                        </table>
 
-                                                                <div class="row" id="otherThirdPartyDisplay"
-                                                                    style="{{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == config('constant.ID.THIRD_PARTIES.OTHERS') ? '' : 'display: none;' }}">
-                                                                    <div class="col-12 mt-3">
-                                                                        <div class="alert alert-warning">
-                                                                            <b>For non-accredited third party, please
-                                                                                complete the following requirements</b>
-                                                                            <ul>
-                                                                                <li>Apostilled Articles of Incorporation/
-                                                                                    Certificate of Incorporation</li>
-                                                                                <li>Apostilled Tax Residency Certificate
-                                                                                </li>
-                                                                            </ul>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-12">
-                                                                        <input type="text" class="form-control"
-                                                                            name="ThirdPartyName"
-                                                                            placeholder="Enter Third Party"
-                                                                            value="{{ isset($data['ThirdPartyName']) ? $data['ThirdPartyName'] : '' }}"
-                                                                            {{ $capabilityDisableField }}>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row mb-3">
-                                                            <label for="" class="col-sm-2 label">Attachment
-                                                                <i class="bi bi-info-circle" data-bs-toggle="tooltip"
-                                                                    data-bs-html="true"
-                                                                    title="Link attachment (e.g. Soldoc)"></i>
+                                                    </div>
+                                                    <button class="btn btn-outline-primary btnAddRowLimitation"
+                                                        type="button">
+                                                        <i class="fas fa-plus"></i> Add Row
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- ---------- END REQUIREMENT AND SOLUTIONS ---------- -->
+                                        @elseif ($Status == 5 || Request::get('progress') == 'capability')
+                                            <!-- ---------- CAPABILITY ---------- -->
+
+                                            <?php $capabilityDisableField = $data['IsCapable'] == 1 || $data['ThirdPartyStatus'] > 0 ? 'disabled' : ''; ?>
+
+                                            <div class="row mb-2">
+                                                <div class="col-12">
+                                                    <div class="alert alert-info">
+                                                        <b><i class="bi bi-info-circle-fill"></i> NOTE: </b>
+                                                        <small>Assess if the team has capability to deploy.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <div class="col-12">
+                                                    <div class="card">
+                                                        <div class="card-header py-3">
+                                                            <label>
+                                                                Is Capable?
+                                                                <input type="checkbox" name="IsCapable"
+                                                                    {{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'checked' : '' }}
+                                                                    {{ $capabilityDisableField }}>
                                                             </label>
-                                                            <div class="col-sm-10">
-                                                                <input type="url" class="form-control"
-                                                                    name="ThirdPartyAttachment"
-                                                                    value="{{ isset($data['ThirdPartyAttachment']) ? $data['ThirdPartyAttachment'] : '' }}">
-                                                            </div>
                                                         </div>
-
-                                                        @if ($capabilityDisableField)
+                                                        <div class="card-body" id="isCapableDisplay"
+                                                            style="{{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
                                                             <div class="row mb-3">
-                                                                <label for="" class="col-sm-2 label">Status
+                                                                <label for="" class="col-sm-2 label">Third
+                                                                    Party
                                                                     <code>*</code></label>
                                                                 <div class="col-sm-10">
-                                                                    <select name="ThirdPartyStatus" id="ThirdPartyStatus"
-                                                                        required select2
-                                                                        {{ $data['ThirdPartyStatus'] == 3 && $data['Status'] >= 2 ? 'disabled' : '' }}>
+                                                                    <select name="ThirdPartyId" id="ThirdPartyId"
+                                                                        class="form-select" select2 required
+                                                                        {{ $capabilityDisableField }}>
                                                                         <option value="" selected disabled>Select
-                                                                            Status</option>
-                                                                        <option value="1"
-                                                                            {{ $data['ThirdPartyStatus'] == 1 ? 'selected' : '' }}>
-                                                                            For Accreditation</option>
-                                                                        <option value="2"
-                                                                            {{ $data['ThirdPartyStatus'] == 2 ? 'selected' : '' }}>
-                                                                            Accredited</option>
+                                                                            Third
+                                                                            Party</option>
+
+                                                                        @foreach ($thirdParties as $dt)
+                                                                            <option value="{{ $dt['Id'] }}"
+                                                                                {{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == $dt['Id'] ? 'selected' : '' }}>
+                                                                                {{ $dt['Name'] }}
+                                                                            </option>
+                                                                        @endforeach
+
                                                                     </select>
+
+                                                                    <div class="row" id="otherThirdPartyDisplay"
+                                                                        style="{{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == config('constant.ID.THIRD_PARTIES.OTHERS') ? '' : 'display: none;' }}">
+                                                                        <div class="col-12 mt-3">
+                                                                            <div class="alert alert-warning">
+                                                                                <b>For non-accredited third party,
+                                                                                    please
+                                                                                    complete the following
+                                                                                    requirements</b>
+                                                                                <ul>
+                                                                                    <li>Apostilled Articles of
+                                                                                        Incorporation/
+                                                                                        Certificate of Incorporation
+                                                                                    </li>
+                                                                                    <li>Apostilled Tax Residency
+                                                                                        Certificate
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-12">
+                                                                            <input type="text" class="form-control"
+                                                                                name="ThirdPartyName"
+                                                                                placeholder="Enter Third Party"
+                                                                                value="{{ isset($data['ThirdPartyName']) ? $data['ThirdPartyName'] : '' }}"
+                                                                                {{ $capabilityDisableField }}>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        @endif
+                                                            <div class="row mb-3">
+                                                                <label for="" class="col-sm-2 label">Attachment
+                                                                    <i class="bi bi-info-circle" data-bs-toggle="tooltip"
+                                                                        data-bs-html="true"
+                                                                        title="Link attachment (e.g. Soldoc)"></i>
+                                                                </label>
+                                                                <div class="col-sm-10">
+                                                                    <input type="url" class="form-control"
+                                                                        name="ThirdPartyAttachment"
+                                                                        value="{{ isset($data['ThirdPartyAttachment']) ? $data['ThirdPartyAttachment'] : '' }}">
+                                                                </div>
+                                                            </div>
 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- ---------- END CAPABILITY ---------- -->
-                                    @elseif ($Status == 6 || Request::get('progress') == 'projectPhase')
-                                        <!-- ---------- PROJECT PHASE ---------- -->
-
-                                        <div class="row mb-3">
-                                            <label for="inputText" class="col-sm-2 label">Inclusions
-                                                <code>*</code></label>
-                                            <div class="col-sm-10">
-                                                <table id="" class="table table-bordered">
-                                                    <thead>
-                                                        <tr>
-                                                            <th colspan="2" scope="col">Name</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach ($ProjectPhase as $index => $pp)
-                                                            <tr>
-                                                                <td>{{ $pp['Title'] }}
-
-                                                                    @if (count($pp['Details']) > 0)
-                                                                        <table class="table table-bordered mt-0 mb-0">
-                                                                            @foreach ($pp['Details'] as $SubDetail)
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        <li>{{ $SubDetail['Title'] }}</li>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <div
-                                                                                            class="custom-control custom-checkbox">
-                                                                                            <input type="checkbox"
-                                                                                                class="custom-control-input"
-                                                                                                id="subCheck"
-                                                                                                name="checkbox[]"
-                                                                                                {{ $SubDetail['Required'] == 1 ? 'checked disabled' : '' }}>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            @endforeach
-                                                                        </table>
-                                                                    @endif
-                                                                </td>
-                                                                <td>
-                                                                    <div class="custom-control custom-checkbox">
-                                                                        <input type="checkbox"
-                                                                            class="custom-control-input" id="mainCheck"
-                                                                            name="checkbox[]"
-                                                                            {{ $pp['Required'] == 1 ? 'checked disabled' : '' }}>
+                                                            @if ($capabilityDisableField)
+                                                                <div class="row mb-3">
+                                                                    <label for="" class="col-sm-2 label">Status
+                                                                        <code>*</code></label>
+                                                                    <div class="col-sm-10">
+                                                                        <select name="ThirdPartyStatus"
+                                                                            id="ThirdPartyStatus" required select2
+                                                                            {{ $data['ThirdPartyStatus'] == 3 && $data['Status'] >= 2 ? 'disabled' : '' }}>
+                                                                            <option value="" selected disabled>
+                                                                                Select
+                                                                                Status</option>
+                                                                            <option value="1"
+                                                                                {{ $data['ThirdPartyStatus'] == 1 ? 'selected' : '' }}>
+                                                                                For Accreditation</option>
+                                                                            <option value="2"
+                                                                                {{ $data['ThirdPartyStatus'] == 2 ? 'selected' : '' }}>
+                                                                                Accredited</option>
+                                                                        </select>
                                                                     </div>
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-
-                                        <!-- ---------- END PROJECT PHASE ---------- -->
-                                    @elseif ($Status == 7 || Request::get('progress') == 'assessment')
-                                        <!-- ---------- ASSESSMENT ---------- -->
-
-                                        <div class="card mb-3">
-                                            <div class="card-body">
-                                                <h5 class="card-title">In-Scope</h5>
-                                                <div id="tableContainer" class="mb-3">
-                                                    <table id="inScopeTable" cellpadding="0" cellspacing="0"
-                                                        class="table table-bordered">
-                                                        <thead>
-                                                            <th scope="col">Requirement List</th>
-                                                            <th scope="col">Description</th>
-                                                            <th scope="col">Salesforce Modules</th>
-                                                            <th scope="col">Solutions Overview</th>
-                                                            <th scope="col">Manhours</th>
-                                                            <th scope="col">Assumptions</th>
-                                                        </thead>
-                                                        <tbody>
-                                                            @if (!empty($reqSol) && count($reqSol) > 0)
-                                                                @foreach ($reqSol as $index => $inscope)
-                                                                    <tr>
-                                                                        <input name="RowId[]" type="hidden"
-                                                                            value="{{ $inscope->Id }}">
-                                                                        <td><input disabled value={{ $inscope->Title }}
-                                                                                name="Title[]">
-                                                                        </td>
-                                                                        <td>
-                                                                            <textarea disabled name="Description[]">{{ $inscope->Description }}</textarea>
-                                                                        </td>
-                                                                        <td>
-                                                                            <textarea disabled name="Module[]">{{ $inscope->Module }}</textarea>
-                                                                        </td>
-                                                                        <td>
-                                                                            <textarea disabled name="Solution[]">{{ $inscope->Solution }}</textarea>
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="number" name="Manhour[]"
-                                                                                value="{{ $inscope->Manhour }}">
-                                                                        </td>
-                                                                        <td>
-                                                                            <textarea disabled name="Assumption[]">{{ $inscope->Assumption }}</textarea>
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
+                                                                </div>
                                                             @endif
 
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                        <div class="card mb-3">
-                                            <div class="card-body">
-                                                <h5 class="card-title">Limitations</h5>
-                                                <div id="tableContainer" class="mb-3">
-                                                    <table id="outScopeTable" cellpadding="0" cellspacing="0"
-                                                        class="table table-bordered">
-                                                        <thead>
-                                                            <th scope="col">Out of Scope</th>
-                                                            <th scope="col">Comments</th>
-                                                        </thead>
-
-                                                        <tbody>
-                                                            @if (!empty($limitations) && count($limitations) > 0)
-                                                                @foreach ($limitations as $index => $limitation)
-                                                                    <tr>
-                                                                        <td>
-                                                                            <textarea disabled name="OutOfScope[]">{{ $limitation->OutScope }}</textarea>
-                                                                        </td>
-                                                                        <td>
-                                                                            <textarea disabled name="Comment[]">{{ $limitation->Comment }}</textarea>
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            @endif
-
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <h5 class="card-title">Consultants</h5>
-
-                                                <div class="row mb-3">
-                                                    <label class="col-sm-2">Assigned Consultant(s)</label>
-                                                    <div class="col-sm-10">
-                                                        <select name="LeaveTypeId" id="LeaveTypeId" class="form-select"
-                                                            select2 required multiple>
-                                                            <option value="" selected disabled>Select Consultant(s)
-                                                            </option>
-
-                                                            @foreach ($users as $user)
-                                                                <option value="">
-                                                                    {{ $user->FirstName . ' ' . $user->LastName }}
-                                                                </option>
-                                                            @endforeach
-
-                                                        </select>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                            <!-- ---------- END CAPABILITY ---------- -->
+                                        @elseif ($Status == 6 || Request::get('progress') == 'projectPhase')
+                                            <!-- ---------- PROJECT PHASE ---------- -->
 
-                                        <!-- ---------- END ASSESSMENT ---------- -->
-                                    @elseif ($Status == 8 || Request::get('progress') == 'proposal')
-                                        <!-- ---------- PROPOSAL ---------- -->
+                                            <div class="row mb-3">
+                                                <label for="inputText" class="col-sm-2 label">Inclusions
+                                                    <code>*</code></label>
+                                                <div class="col-sm-10">
+                                                    <table id="" class="table table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th colspan="2" scope="col">Name</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach ($ProjectPhase as $index => $pp)
+                                                                <tr>
+                                                                    <td>{{ $pp['Title'] }}
 
-                                        <div class="row mb-3">
-                                            <label for="inputText" class="col-sm-2 label">Notes <code>*</code></label>
-                                            <div class="col-sm-10">
-                                                <textarea {{ $editable }} style="height: 82px;" required type="text" class="form-control" name="Notes"
-                                                    id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
+                                                                        @if (count($pp['Details']) > 0)
+                                                                            <table class="table table-bordered mt-0 mb-0">
+                                                                                @foreach ($pp['Details'] as $SubDetail)
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <li>{{ $SubDetail['Title'] }}
+                                                                                            </li>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <div
+                                                                                                class="custom-control custom-checkbox">
+                                                                                                <input type="checkbox"
+                                                                                                    class="custom-control-input"
+                                                                                                    id="subCheck"
+                                                                                                    name="checkbox[]"
+                                                                                                    {{ $SubDetail['Required'] == 1 ? 'checked disabled' : '' }}>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                @endforeach
+                                                                            </table>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="custom-control custom-checkbox">
+                                                                            <input type="checkbox"
+                                                                                class="custom-control-input"
+                                                                                id="mainCheck" name="checkbox[]"
+                                                                                {{ $pp['Required'] == 1 ? 'checked disabled' : '' }}>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                    <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Attachment
-                                            <code>*</code></label>
-                                        <div class="col-sm-10">
-                                            <input class="form-control" type="file" id="formFileMultiple" multiple />
-                                        </div>
-                                    </div>
-                                @elseif ($Status == 8 || Request::get('progress') == 'success')
-                                @else
+                                            <!-- ---------- END PROJECT PHASE ---------- -->
+                                        @elseif ($Status == 7 || Request::get('progress') == 'assessment')
+                                            <!-- ---------- ASSESSMENT ---------- -->
+
+                                            <div class="card mb-3">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">In-Scope</h5>
+                                                    <div id="tableContainer" class="mb-3">
+                                                        <table id="inScopeTable" cellpadding="0" cellspacing="0"
+                                                            class="table table-bordered">
+                                                            <thead>
+                                                                <th scope="col">Requirement List</th>
+                                                                <th scope="col">Description</th>
+                                                                <th scope="col">Salesforce Modules</th>
+                                                                <th scope="col">Solutions Overview</th>
+                                                                <th scope="col">Manhours</th>
+                                                                <th scope="col">Assumptions</th>
+                                                            </thead>
+                                                            <tbody>
+                                                                @if (!empty($reqSol) && count($reqSol) > 0)
+                                                                    @foreach ($reqSol as $index => $inscope)
+                                                                        <tr>
+                                                                            <input name="RowId[]" type="hidden"
+                                                                                value="{{ $inscope->Id }}">
+                                                                            <td><input disabled value={{ $inscope->Title }}
+                                                                                    name="Title[]">
+                                                                            </td>
+                                                                            <td>
+                                                                                <textarea disabled name="Description[]">{{ $inscope->Description }}</textarea>
+                                                                            </td>
+                                                                            <td>
+                                                                                <textarea disabled name="Module[]">{{ $inscope->Module }}</textarea>
+                                                                            </td>
+                                                                            <td>
+                                                                                <textarea disabled name="Solution[]">{{ $inscope->Solution }}</textarea>
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="number" name="Manhour[]"
+                                                                                    value="{{ $inscope->Manhour }}">
+                                                                            </td>
+                                                                            <td>
+                                                                                <textarea disabled name="Assumption[]">{{ $inscope->Assumption }}</textarea>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                @endif
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="card mb-3">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Limitations</h5>
+                                                    <div id="tableContainer" class="mb-3">
+                                                        <table id="outScopeTable" cellpadding="0" cellspacing="0"
+                                                            class="table table-bordered">
+                                                            <thead>
+                                                                <th scope="col">Out of Scope</th>
+                                                                <th scope="col">Comments</th>
+                                                            </thead>
+
+                                                            <tbody>
+                                                                @if (!empty($limitations) && count($limitations) > 0)
+                                                                    @foreach ($limitations as $index => $limitation)
+                                                                        <tr>
+                                                                            <td>
+                                                                                <textarea disabled name="OutOfScope[]">{{ $limitation->OutScope }}</textarea>
+                                                                            </td>
+                                                                            <td>
+                                                                                <textarea disabled name="Comment[]">{{ $limitation->Comment }}</textarea>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                @endif
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Consultants</h5>
+
+                                                    <div class="row mb-3">
+                                                        <label class="col-sm-2">Assigned Consultant(s)</label>
+                                                        <div class="col-sm-10">
+                                                            <select name="LeaveTypeId" id="LeaveTypeId"
+                                                                class="form-select" select2 required multiple>
+                                                                <option value="" selected disabled>Select
+                                                                    Consultant(s)
+                                                                </option>
+
+                                                                @foreach ($users as $user)
+                                                                    <option value="">
+                                                                        {{ $user->FirstName . ' ' . $user->LastName }}
+                                                                    </option>
+                                                                @endforeach
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- ---------- END ASSESSMENT ---------- -->
+                                        @elseif ($Status == 8 || Request::get('progress') == 'proposal')
+                                            <!-- ---------- PROPOSAL ---------- -->
+
+                                            <div class="row mb-3">
+                                                <label for="inputText" class="col-sm-2 label">Notes
+                                                    <code>*</code></label>
+                                                <div class="col-sm-10">
+                                                    <textarea {{ $editable }} style="height: 82px;" required type="text" class="form-control" name="Notes"
+                                                        id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <label for="inputText" class="col-sm-2 label">Attachment
+                                                    <code>*</code></label>
+                                                <div class="col-sm-10">
+                                                    <input class="form-control" type="file" id="formFileMultiple"
+                                                        multiple />
+                                                </div>
+                                            </div>
+                                        @elseif ($Status == 8 || Request::get('progress') == 'success')
+                                        @else
                                 @endif
 
 
 
                                 @if ($Status != 0 && Request::get('progress') != 'information')
-                                    </div>
-                                </div>
-                                @endif
-
                             </div>
-
-                    @if ($Status == $currentViewStatus)
-                        <div class="button-footer text-end">
-                            <a href="{{ $cancelRoute }}" class="btn btn-secondary">Cancel</a>
-                            <?= $button ?>
-                        </div>
+                    </div>
                     @endif
-
-
-
-                    </form>
 
                 </div>
 
+                @if ($Status == $currentViewStatus)
+                    <div class="button-footer text-end">
+                        <a href="{{ $cancelRoute }}" class="btn btn-secondary">Cancel</a>
+                        <?= $button ?>
+                    </div>
+                @endif
+
+
+
+                </form>
+
             </div>
+
+        </div>
         </div>
         </div>
 
