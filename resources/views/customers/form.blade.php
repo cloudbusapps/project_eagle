@@ -13,6 +13,7 @@
         $method = 'POST';
         $action = route('customers.save');
         $cancelRoute = route('customers');
+        $Id = '';
         $button = '<button type="submit" class="btn btn-primary btnSubmitForm">Save</button>';
     } elseif ($type === 'edit') {
         // INITIALIZATION
@@ -30,16 +31,18 @@
         $DSWStatus = !empty($data) ? $data['DSWStatus'] ?? '' : '';
         $BusinessNotes = !empty($businessProcessData) ? $businessProcessData['Note'] ?? '' : '';
     
+        $BusinessNotes = !empty($businessProcessData) ? $businessProcessData['Note'] ?? '' : '';
+    
         $button = '<button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>';
         // <a href="forms/customers/delete/' .
         // $Id .
         // '" class="btn btn-danger btnDeleteForm">Delete</a>
     
-        if ($Status == 6 || Request::get('progress') == 'assessment') {
+        if ($Status == 7 || Request::get('progress') == 'assessment') {
             $button = '
-                                                            <a href="#" class="btn btn-warning btnUpdate">Update</a>
-                                                            <button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>
-                                                            ';
+                                                        <a href="#" class="btn btn-warning btnUpdate">Update</a>
+                                                        <button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>
+                                                         ';
         }
     
         $todo = 'update';
@@ -145,10 +148,12 @@
             content: "\f040";
             /* content: "\f05a"; */
         }
+
         #progressbar #Capability:before {
             font-family: FontAwesome;
             content: "\f2db";
         }
+
         #progressbar #Complexity:before {
             font-family: FontAwesome;
             content: "\f12e";
@@ -1151,6 +1156,30 @@
                 const table = $('#mainTable');
                 $('#IsComplex').prop('checked') ? table.show() : table.hide();
             }
+
+            // UPDATE FOR ASSESSMENT
+
+            $(document).on('click', '.btnUpdate', function(e) {
+                e.preventDefault();
+                let data = [];
+                $("input[name='RowId[]']").each(function(index) {
+                    data.push($("input[name='Manhour[]']").eq(index).val());
+                });
+                return console.log(data)
+                var method = 'PUT';
+                $.ajax({
+                    type: method,
+                    url: `"{{ $Id }}"/updateManhour`,
+                    data: {
+                        data
+                    },
+                    dataType: 'json',
+                    async: false,
+                    success: function(e) {
+                        console.log(e)
+                    }
+                })
+            });
 
 
 
