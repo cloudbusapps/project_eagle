@@ -478,27 +478,20 @@
                                                 id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
                                         </div>
                                     </div>
-
-                                <!-- ---------- END INFORMATION ---------- -->
-                                @elseif ($Status == 1 || Request::get('progress') == 'complexity')
-                                <!-- ---------- COMPLEXITY ---------- -->
-                                <div class="row mb-3" id="isCapableDisplay"
-                                style="{{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? '' : 'display: none' }};">
-                                <label for="inputText" class="col-sm-2 label">Is Complex?</label>
-
-                                <div class="col-sm-10">
-                                    <input type="checkbox" class="custom-control-input" id="IsComplex"
-                                        name="IsComplex"
-                                        {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'checked' : '' }}>
-                                    <table
-                                        style="display: {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'block' : 'none' }}"
-                                        id="mainTable" class="table table-bordered table-hover">
-                                        =======
+                               
 
                                         <!-- ---------- END INFORMATION ---------- -->
                                     @elseif ($Status == 1 || Request::get('progress') == 'complexity')
                                         <!-- ---------- COMPLEXITY ---------- -->
-
+                                        <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-2 label">Is Complex?</label>
+        
+                                        <div class="col-sm-10">
+                                            <input type="checkbox" class="custom-control-input" id="IsComplex"
+                                                name="IsComplex"
+                                                {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'checked' : '' }}>
+                                        </div>
+                                        </div>
                                         <?php $complexDisableField = $data['Status'] > 2 ? 'disabled' : ''; ?>
 
                                     <div class="row mb-2">
@@ -512,7 +505,7 @@
 
                                     <div class="row mb-3">
                                         <div class="col-12">
-                                            <table id="mainTable" class="table table-bordered table-hover">
+                                            <table style="display: {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'block' : 'none' }}" id="mainTable" class="table table-bordered table-hover">
                                                 <thead>
                                                     <tr>
                                                         <th colspan="2" scope="col">COMPLEXITY</th>
