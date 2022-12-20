@@ -70,7 +70,7 @@ class ProjectPhaseSeeder extends Seeder
                 'Id'         => $ppId3,
                 'Title'      => 'Build',
                 'Percentage' => 100,
-                'Required'   => 0,
+                'Required'   => 1,
                 'Status'     => 1,
             ],
             [
@@ -91,14 +91,14 @@ class ProjectPhaseSeeder extends Seeder
                 'Id'         => $ppId6,
                 'Title'      => 'Change Management',
                 'Percentage' => 5,
-                'Required'   => 0,
+                'Required'   => 1,
                 'Status'     => 1,
             ],
             [
                 'Id'         => $ppId7,
                 'Title'      => 'Training',
                 'Percentage' => 10,
-                'Required'   => 0,
+                'Required'   => 1,
                 'Status'     => 1,
             ],
             [

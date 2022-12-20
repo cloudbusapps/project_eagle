@@ -63,7 +63,7 @@
                             <tbody>
                                 @foreach ($data as $index => $data)
                                     <tr>
-                                        <th scope="row">{{ $index + 1 }}</th>
+                                        <td>{{ $index + 1 }}</td>
 
                                         <td>
                                             <a href="{{ route('customers.edit', ['Id' => $data->Id]) }}">

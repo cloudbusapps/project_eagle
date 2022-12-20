@@ -617,8 +617,10 @@
                                                 name="BusinessNotes" id="BusinessNotes" placeholder="Notes">{{ old('BusinessNotes') ?? $BusinessNotes }}</textarea>
                                         </div>
                                     </div>
+
+                                    @if ($Status > 3)
                                     <div class="row mb-3">
-                                        <label for="files" class="col-sm-2 label">Files<code>*</code></label>
+                                        <label for="files" class="col-sm-2 label">Files</label>
                                         @foreach ($files as $file)
                                             <div class="col-md-3 parent" filename="{{ $file['File'] }}">
                                                 <div class="p-2 border border-1 rounded">
@@ -637,6 +639,7 @@
                                             </div>
                                         @endforeach
                                     </div>
+                                    @endif
                                 
                                 <!-- ---------- END BUSINESS PROCESS ---------- -->    
                                 @elseif ($Status == 4 || Request::get('progress') == 'requirementSolution')
@@ -668,7 +671,7 @@
                                                                         <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
                                                                     </td>
                                                                     <td>
-                                                                        <input value={{ $inscope->Title }} name="Title[]" class="form-control">
+                                                                        <textarea name="Title[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Title }}</textarea>
                                                                     </td>
                                                                     <td>
                                                                         <textarea name="Description[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Description }}</textarea>
@@ -690,7 +693,7 @@
                                                                     <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
                                                                 </td>
                                                                 <td>
-                                                                    <input name="Title[]" class="form-control">
+                                                                    <textarea name="Title[]" class="form-control" rows="3" style="resize: none;"></textarea>
                                                                 </td>
                                                                 <td>
                                                                     <textarea name="Description[]" class="form-control" rows="3" style="resize: none;"></textarea>
@@ -779,123 +782,224 @@
 
                                     <?php $capabilityDisableField = $data['IsCapable'] == 1 || $data['ThirdPartyStatus'] > 0 ? 'disabled' : ''; ?>
 
-                                    <div class="row mb-2">
-                                        <div class="col-12">
-                                            <div class="alert alert-info">
-                                                <b><i class="bi bi-info-circle-fill"></i> NOTE: </b>
-                                                <small>Assess if the team has capability to deploy.</small>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     <div class="row mb-3">
-                                        <div class="col-12">
-                                            <div class="card">
-                                                <div class="card-header py-3">
-                                                    <label>
-                                                        Is Capable?
-                                                        <input type="checkbox" name="IsCapable" 
-                                                            {{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'checked' : '' }}
+                                        <label for="" class="col-sm-2 label">Capability <code>*</code></label>
+                                        <div class="col-sm-10">
+                                            <select name="IsCapable" id="IsCapable" select2 required
+                                                {{ $capabilityDisableField }}>
+                                                <option value="" selected disabled>Select Capability</option>
+                                                <option value="1" {{ $data['IsCapable'] == 1 ? 'selected' : '' }}>Full Capability</option>
+                                                <option value="2" {{ $data['IsCapable'] == 2 ? 'selected' : '' }}>Hybrid Capability</option>
+                                                <option value="0" {{ $data['IsCapable'] == 0 ? 'selected' : '' }}>No Capability</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div id="isCapableDisplay" style="{{ !isset($data['IsCapable']) || $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
+                                        <div class="row mb-3">
+                                            <label for="" class="col-sm-2 label">Third Party <code>*</code></label>
+                                            <div class="col-sm-10">
+                                                <select name="ThirdPartyId" id="ThirdPartyId" class="form-select" select2 required
+                                                    {{ $capabilityDisableField }}>
+                                                    <option value="" selected disabled>Select Third Party</option>
+
+                                                    @foreach ($thirdParties as $dt)
+                                                    <option value="{{ $dt['Id'] }}"
+                                                    {{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == $dt['Id'] ? 'selected' : '' }}>
+                                                        {{ $dt['Name'] }}
+                                                    </option>
+                                                    @endforeach
+
+                                                </select>
+
+                                                <div class="row" id="otherThirdPartyDisplay" style="{{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == config('constant.ID.THIRD_PARTIES.OTHERS') ? '' : 'display: none;' }}">
+                                                    <div class="col-12 mt-3">
+                                                        <div class="alert alert-warning">
+                                                            <b>For non-accredited third party, please complete the following requirements</b>
+                                                            <ul>
+                                                                <li>Apostilled Articles of Incorporation/ Certificate of Incorporation</li>
+                                                                <li>Apostilled Tax Residency Certificate</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <input type="text" class="form-control" name="ThirdPartyName" placeholder="Enter Third Party"
+                                                            value="{{ isset($data['ThirdPartyName']) ? $data['ThirdPartyName'] : '' }}"
                                                             {{ $capabilityDisableField }}>
-                                                    </label>
+                                                    </div>
                                                 </div>
-                                                <div class="card-body" id="isCapableDisplay"
-                                                    style="{{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
-                                                    <div class="row mb-3">
-                                                        <label for="" class="col-sm-2 label">Third Party <code>*</code></label>
-                                                        <div class="col-sm-10">
-                                                            <select name="ThirdPartyId" id="ThirdPartyId" class="form-select" select2 required
-                                                                {{ $capabilityDisableField }}>
-                                                                <option value="" selected disabled>Select Third Party</option>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label for="" class="col-sm-2 label">Attachment
+                                                <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-html="true" title="Link attachment (e.g. Soldoc)"></i>
+                                            </label>
+                                            <div class="col-sm-10">
+                                                <input type="url" class="form-control" name="ThirdPartyAttachment"
+                                                    value="{{ isset($data['ThirdPartyAttachment']) ? $data['ThirdPartyAttachment'] : '' }}">
+                                            </div>
+                                        </div>
 
-                                                                @foreach ($thirdParties as $dt)
-                                                                <option value="{{ $dt['Id'] }}"
-                                                                {{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == $dt['Id'] ? 'selected' : '' }}>
-                                                                    {{ $dt['Name'] }}
-                                                                </option>
+                                        @if ($capabilityDisableField)
+                                        <div class="row mb-3">
+                                            <label for="" class="col-sm-2 label">Status <code>*</code></label>
+                                            <div class="col-sm-10">
+                                                <select name="ThirdPartyStatus" id="ThirdPartyStatus" required select2
+                                                    {{ $data['ThirdPartyStatus'] == 3 && $data['Status'] >= 2 ? 'disabled' : '' }}>
+                                                    <option value="" selected disabled>Select Status</option>
+                                                    <option value="1" {{ $data['ThirdPartyStatus'] == 1 ? 'selected' : '' }}>For Accreditation</option>
+                                                    <option value="2" {{ $data['ThirdPartyStatus'] == 2 ? 'selected' : '' }}>Accredited</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        @endif
+
+                                        <div class="row mb-2">
+                                            <div class="col-12">
+                                                <div class="alert alert-info">
+                                                    <b><i class="bi bi-info-circle-fill"></i> NOTE: </b>
+                                                    <small>Select the checbox to assign the requirement to third party</small>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card mb-3">
+                                            <div class="card-header py-3">
+                                                <h5 class="card-title mb-0">IN-SCOPE</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div id="tableContainer" class="mb-3">
+                                                    <table id="inScopeTable" cellpadding="0" cellspacing="0"
+                                                        class="table table-bordered table-hover" style="min-width: 1200px; width: 100%; max-width: 1500px;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="width: 100px;">Third Party</th>
+                                                                <th style="width: 220px;">Requirement List</th>
+                                                                <th style="width: 220px">Description</th>
+                                                                <th style="width: 220px">Salesforce Modules</th>
+                                                                <th style="width: 220px">Solutions Overview</th>
+                                                                <th style="width: 220px">Assumptions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @if (!empty($reqSol) && count($reqSol) > 0)
+                                                                @foreach ($reqSol as $index => $inscope)
+                                                                    <input type="hidden" name="InScope[{{ $inscope['Id'] }}][Id]" value="{{ $inscope['Id'] }}">
+
+                                                                    <tr>
+                                                                        <td class="text-center">
+                                                                            <input type="checkbox" name="InScope[{{ $inscope['Id'] }}][Checked]"
+                                                                                {{ $inscope->ThirdParty == 1 ? 'checked' : '' }}
+                                                                                {{ $capabilityDisableField }}>
+                                                                        </td>
+                                                                        <td>
+                                                                            <small style="white-space: break-spaces;">{{ $inscope->Title }}</small>
+                                                                        </td>
+                                                                        <td>
+                                                                            <small style="white-space: break-spaces;">{{ $inscope->Description }}</small>
+                                                                        </td>
+                                                                        <td>
+                                                                            <small style="white-space: break-spaces;">{{ $inscope->Module }}</small>
+                                                                        </td>
+                                                                        <td>
+                                                                            <small style="white-space: break-spaces;">{{ $inscope->Solution }}</small>
+                                                                        </td>
+                                                                        <td>
+                                                                            <small style="white-space: break-spaces;">{{ $inscope->Assumption }}</small>
+                                                                        </td>
+                                                                    </tr>
                                                                 @endforeach
+                                                            @endif
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+    
+                                        </div>
+    
+                                        <div class="card mb-3">
+                                            <div class="card-header py-3">
+                                                <h5 class="card-title mb-0">LIMITATIONS</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div id="tableContainer" class="mb-3">
+                                                    <table id="outScopeTable" cellpadding="0" cellspacing="0"
+                                                        class="table table-bordered table-hover" style="min-width: 100%; width: 100%; max-width: 1000px;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="width: 15%;">Third Party</th>
+                                                                <th scope="col" style="width: 42.5%;">Out of Scope</th>
+                                                                <th scope="col" style="width: 42.5%;">Comments</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @if (!empty($limitations) && count($limitations) > 0)
+                                                                @foreach ($limitations as $index => $limitation)
+                                                                    <input type="hidden" name="Limitation[{{ $limitation['Id'] }}][Id]" value="{{ $limitation['Id'] }}">
 
-                                                            </select>
-
-                                                            <div class="row" id="otherThirdPartyDisplay" style="{{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == config('constant.ID.THIRD_PARTIES.OTHERS') ? '' : 'display: none;' }}">
-                                                                <div class="col-12 mt-3">
-                                                                    <div class="alert alert-warning">
-                                                                        <b>For non-accredited third party, please complete the following requirements</b>
-                                                                        <ul>
-                                                                            <li>Apostilled Articles of Incorporation/ Certificate of Incorporation</li>
-                                                                            <li>Apostilled Tax Residency Certificate</li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-12">
-                                                                    <input type="text" class="form-control" name="ThirdPartyName" placeholder="Enter Third Party"
-                                                                        value="{{ isset($data['ThirdPartyName']) ? $data['ThirdPartyName'] : '' }}"
-                                                                        {{ $capabilityDisableField }}>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row mb-3">
-                                                        <label for="" class="col-sm-2 label">Attachment
-                                                            <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-html="true" title="Link attachment (e.g. Soldoc)"></i>
-                                                        </label>
-                                                        <div class="col-sm-10">
-                                                            <input type="url" class="form-control" name="ThirdPartyAttachment"
-                                                                value="{{ isset($data['ThirdPartyAttachment']) ? $data['ThirdPartyAttachment'] : '' }}">
-                                                        </div>
-                                                    </div>
-
-                                                    @if ($capabilityDisableField)
-                                                    <div class="row mb-3">
-                                                        <label for="" class="col-sm-2 label">Status <code>*</code></label>
-                                                        <div class="col-sm-10">
-                                                            <select name="ThirdPartyStatus" id="ThirdPartyStatus" required select2
-                                                                {{ $data['ThirdPartyStatus'] == 3 && $data['Status'] >= 2 ? 'disabled' : '' }}>
-                                                                <option value="" selected disabled>Select Status</option>
-                                                                <option value="1" {{ $data['ThirdPartyStatus'] == 1 ? 'selected' : '' }}>For Accreditation</option>
-                                                                <option value="2" {{ $data['ThirdPartyStatus'] == 2 ? 'selected' : '' }}>Accredited</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    @endif
-
+                                                                    <tr>
+                                                                        <td class="text-center">
+                                                                            <input type="checkbox" name="Limitation[{{ $limitation['Id'] }}][Checked]"
+                                                                                {{ $limitation->ThirdParty == 1 ? 'checked' : '' }}
+                                                                                {{ $capabilityDisableField }}>
+                                                                        </td>
+                                                                        <td>
+                                                                            <small style="white-space: break-spaces;">{{ $limitation->OutScope }}</small>
+                                                                        </td>
+                                                                        <td>
+                                                                            <small style="white-space: break-spaces;">{{ $limitation->Comment }}</small>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            @endif
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+
                                 <!-- ---------- END CAPABILITY ---------- -->
                                 @elseif ($Status == 6 || Request::get('progress') == 'projectPhase')
                                 <!-- ---------- PROJECT PHASE ---------- -->
 
                                     <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Inclusions <code>*</code></label>
-                                        <div class="col-sm-10">
-                                            <table id="" class="table table-bordered">
+                                        <div class="col-12">
+                                            <table id="mainTable" class="table table-bordered table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th colspan="2" scope="col">Name</th>
+                                                        <th colspan="2" scope="col">PROJECT PHASES</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     @foreach ($ProjectPhase as $index => $pp)
+                                                        <input type="hidden" name="projectPhase[{{ $pp['Id'] }}][Id]" value="{{ $pp['Id'] }}">
+                                                        <input type="hidden" name="projectPhase[{{ $pp['Id'] }}][Title]" value="{{ $pp['Title'] }}">
+                                                        <input type="hidden" name="projectPhase[{{ $pp['Id'] }}][Percentage]" value="{{ $pp['Percentage'] }}">
+                                                        <input type="hidden" name="projectPhase[{{ $pp['Id'] }}][Required]" value="{{ $pp['Required'] }}">
+
                                                         <tr>
                                                             <td>{{ $pp['Title'] }}
 
                                                                 @if (count($pp['Details']) > 0)
-                                                                    <table class="table table-bordered mt-0 mb-0">
+                                                                    <table class="table table-bordered table-hover mt-2 mb-0">
                                                                         @foreach ($pp['Details'] as $SubDetail)
+                                                                        <input type="hidden" name="projectPhase[{{ $pp['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Id]" value="{{ $SubDetail['Id'] }}">
+                                                                        <input type="hidden" name="projectPhase[{{ $pp['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Title]" value="{{ $SubDetail['Title'] }}">
+                                                                        <input type="hidden" name="projectPhase[{{ $pp['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Required]" value="{{ $SubDetail['Required'] }}">
+
                                                                             <tr>
                                                                                 <td>
                                                                                     <li>{{ $SubDetail['Title'] }}</li>
                                                                                 </td>
-                                                                                <td>
+                                                                                <td class="text-center">
                                                                                     <div
                                                                                         class="custom-control custom-checkbox">
                                                                                         <input type="checkbox"
                                                                                             class="custom-control-input"
                                                                                             id="subCheck"
-                                                                                            name="checkbox[]"
-                                                                                            {{ $SubDetail['Required'] == 1 ? 'checked disabled' : '' }}>
+                                                                                            name="projectPhase[{{ $pp['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Checked]"
+                                                                                            {{ $SubDetail['Required'] == 1 ? 'checked disabled' : ($SubDetail['Checked'] == 1 ? 'checked' : '') }}>
                                                                                     </div>
                                                                                 </td>
                                                                             </tr>
@@ -903,11 +1007,12 @@
                                                                     </table>
                                                                 @endif
                                                             </td>
-                                                            <td>
+                                                            <td class="text-center">
                                                                 <div class="custom-control custom-checkbox">
                                                                     <input type="checkbox" class="custom-control-input"
-                                                                        id="mainCheck" name="checkbox[]"
-                                                                        {{ $pp['Required'] == 1 ? 'checked disabled' : '' }}>
+                                                                        id="mainCheck" 
+                                                                        name="projectPhase[{{ $pp['Id'] }}][Checked]"
+                                                                        {{ $pp['Required'] == 1 ? 'checked disabled' : ($pp['Checked'] == 1 ? 'checked' : '') }}>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -922,103 +1027,117 @@
                                 <!-- ---------- ASSESSMENT ---------- -->
 
                                     <div class="card mb-3">
+                                        <div class="card-header py-3">
+                                            <h5 class="card-title mb-0">RESOURCES</h5>
+                                            <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-html="true" title="Assign consultant(s)"></i>
+                                        </div>
                                         <div class="card-body">
-                                            <h5 class="card-title">In-Scope</h5>
+                                            <select name="ResourcesId[]" id="ResourcesId" class="form-select"
+                                                select2 required multiple>
+
+                                                @foreach ($users as $user)
+                                                    <option value="{{ $user->Id }}">
+                                                        {{ $user->FirstName . ' ' . $user->LastName }}
+                                                    </option>
+                                                @endforeach
+
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="card mb-3">
+                                        <div class="card-header py-3">
+                                            <h5 class="card-title mb-0">IN-SCOPE</h5>
+                                        </div>
+                                        <div class="card-body">
                                             <div id="tableContainer" class="mb-3">
                                                 <table id="inScopeTable" cellpadding="0" cellspacing="0"
-                                                    class="table table-bordered">
+                                                    class="table table-bordered table-hover" style="min-width: 1400px; width: 100%; max-width: 1500px;">
                                                     <thead>
-                                                        <th scope="col">Requirement List</th>
-                                                        <th scope="col">Description</th>
-                                                        <th scope="col">Salesforce Modules</th>
-                                                        <th scope="col">Solutions Overview</th>
-                                                        <th scope="col">Manhours</th>
-                                                        <th scope="col">Assumptions</th>
+                                                        <tr>
+                                                            <th style="width: 100px;">Third Party</th>
+                                                            <th style="width: 220px;">Requirement List</th>
+                                                            <th style="width: 220px">Description</th>
+                                                            <th style="width: 220px">Salesforce Modules</th>
+                                                            <th style="width: 220px">Solutions Overview</th>
+                                                            <th style="width: 200px;">Manhours</th>
+                                                            <th style="width: 220px">Assumptions</th>
+                                                        </tr>
                                                     </thead>
                                                     <tbody>
                                                         @if (!empty($reqSol) && count($reqSol) > 0)
                                                             @foreach ($reqSol as $index => $inscope)
                                                                 <tr>
-                                                                    <td><input disabled value={{ $inscope->Title }}
-                                                                            name="Title[]">
+                                                                    <td class="text-center">
+                                                                        <input type="checkbox" name="InScope[{{ $inscope['Id'] }}][Checked]"
+                                                                            {{ $inscope->ThirdParty == 1 ? 'checked' : '' }}
+                                                                            disabled>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea disabled name="Description[]">{{ $inscope->Description }}</textarea>
+                                                                        <small style="white-space: break-spaces;">{{ $inscope->Title }}</small>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea disabled name="Module[]">{{ $inscope->Module }}</textarea>
+                                                                        <small style="white-space: break-spaces;">{{ $inscope->Description }}</small>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea disabled name="Solution[]">{{ $inscope->Solution }}</textarea>
+                                                                        <small style="white-space: break-spaces;">{{ $inscope->Module }}</small>
                                                                     </td>
                                                                     <td>
-                                                                        <input type="number" name="Manhour[]"
+                                                                        <small style="white-space: break-spaces;">{{ $inscope->Solution }}</small>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input type="number" name="Manhour[]" class="form-control"
                                                                             value="{{ $inscope->Manhour }}">
                                                                     </td>
                                                                     <td>
-                                                                        <textarea disabled name="Assumption[]">{{ $inscope->Assumption }}</textarea>
+                                                                        <small style="white-space: break-spaces;">{{ $inscope->Assumption }}</small>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
                                                         @endif
-
                                                     </tbody>
                                                 </table>
                                             </div>
                                         </div>
-
                                     </div>
 
                                     <div class="card mb-3">
+                                        <div class="card-header py-3">
+                                            <h5 class="card-title mb-0">LIMITATIONS</h5>
+                                        </div>
                                         <div class="card-body">
-                                            <h5 class="card-title">Limitations</h5>
                                             <div id="tableContainer" class="mb-3">
                                                 <table id="outScopeTable" cellpadding="0" cellspacing="0"
-                                                    class="table table-bordered">
+                                                    class="table table-bordered table-hover" style="min-width: 100%; width: 100%; max-width: 1000px;">
                                                     <thead>
-                                                        <th scope="col">Out of Scope</th>
-                                                        <th scope="col">Comments</th>
+                                                        <tr>
+                                                            <th style="width: 15%;">Third Party</th>
+                                                            <th scope="col" style="width: 42.5%;">Out of Scope</th>
+                                                            <th scope="col" style="width: 42.5%;">Comments</th>
+                                                        </tr>
                                                     </thead>
-
                                                     <tbody>
                                                         @if (!empty($limitations) && count($limitations) > 0)
                                                             @foreach ($limitations as $index => $limitation)
+                                                                <input type="hidden" name="Limitation[{{ $limitation['Id'] }}][Id]" value="{{ $limitation['Id'] }}">
+
                                                                 <tr>
-                                                                    <td>
-                                                                        <textarea disabled name="OutOfScope[]">{{ $limitation->OutScope }}</textarea>
+                                                                    <td class="text-center">
+                                                                        <input type="checkbox" name="Limitation[{{ $limitation['Id'] }}][Checked]"
+                                                                            {{ $limitation->ThirdParty == 1 ? 'checked' : '' }}
+                                                                            disabled>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea disabled name="Comment[]">{{ $limitation->Comment }}</textarea>
+                                                                        <small style="white-space: break-spaces;">{{ $limitation->OutScope }}</small>
+                                                                    </td>
+                                                                    <td>
+                                                                        <small style="white-space: break-spaces;">{{ $limitation->Comment }}</small>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
                                                         @endif
-
                                                     </tbody>
                                                 </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <h5 class="card-title">Consultants</h5>
-
-                                            <div class="row mb-3">
-                                                <label class="col-sm-2">Assigned Consultant(s)</label>
-                                                <div class="col-sm-10">
-                                                    <select name="LeaveTypeId" id="LeaveTypeId" class="form-select"
-                                                        select2 required multiple>
-                                                        <option value="" selected disabled>Select Consultant(s)
-                                                        </option>
-
-                                                        @foreach ($users as $user)
-                                                            <option value="">
-                                                                {{ $user->FirstName . ' ' . $user->LastName }}
-                                                            </option>
-                                                        @endforeach
-
-                                                    </select>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1105,7 +1224,9 @@
                     <td class="text-center">
                         <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
                     </td>
-                    <td><input required name="Title[]" class="form-control"></td>
+                    <td>
+                        <textarea name="Title[]" class="form-control" rows="3" style="resize: none;"></textarea>    
+                    </td>
                     <td>
                         <textarea required name="Description[]" class="form-control" rows="3" style="resize: none;"></textarea>
                     </td>
@@ -1257,50 +1378,10 @@
             // ----- END SUBMIT FORM -----
 
 
-
-            // ----- BUTTON DELETE FORM -----
-            $(document).on('click', '.btnDeleteForm', function(e) {
-                e.preventDefault();
-                let href = $(this).attr('href');
-
-                let confirmation = $.confirm({
-                    title: false,
-                    content: `
-                <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                    <img src="/assets/img/modal/delete.svg" class="py-5" height="200" width="200">
-                    <b class="mt-4">Are you sure you want to delete this customer?</b>
-                </div>`,
-                    buttons: {
-
-                        no: {
-                            btnClass: 'btn-default',
-                        },
-                        yes: {
-                            btnClass: 'btn-blue',
-                            keys: ['enter'],
-                            action: function() {
-
-                                confirmation.buttons.yes.setText(
-                                    `<span class="spinner-border spinner-border-sm"></span> Please wait...`
-                                );
-                                confirmation.buttons.yes.disable();
-                                confirmation.buttons.no.hide();
-
-                                window.location.replace(href);
-
-                                return false;
-                            }
-                        },
-                    }
-                });
-            })
-            // ----- END BUTTON DELETE FORM -----
-
-
             // ----- CHANGE WITH CAPABILITY -----
             $(document).on('change', `[name="IsCapable"]`, function() {
-                let isChecked = this.checked;
-                if (isChecked) {
+                let IsCapable = $(this).val();
+                if (IsCapable == 1) {
                     $('#isCapableDisplay').hide()
                     $(`[name="ThirdPartyId"]`).attr('required', false).val('');
                     $(`[name="ThirdPartyName"]`).attr('required', false).val('');
