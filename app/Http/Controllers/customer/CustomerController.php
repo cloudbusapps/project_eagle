@@ -55,9 +55,9 @@ class CustomerController extends Controller
 
 
 
-        $inscopes = CustomerInscope::where('CustomerId',$Id)->get();
-        $limitations = CustomerLimitation::where('CustomerId',$Id)->get();
-        
+        $inscopes = CustomerInscope::where('CustomerId', $Id)->get();
+        $limitations = CustomerLimitation::where('CustomerId', $Id)->get();
+
         $title = $this->getTitle($customerData->Status, $progress);
 
         $data = [
@@ -141,7 +141,7 @@ class CustomerController extends Controller
         }
     }
 
-    function updateCapability($request, $Id, $customerData) 
+    function updateCapability($request, $Id, $customerData)
     {
         $ThirdPartyStatus = $request->ThirdPartyStatus;
 
@@ -170,7 +170,7 @@ class CustomerController extends Controller
                     'ThirdPartyId'   => ['required'],
                     'ThirdPartyName' => ['required'],
                 ]);
-                
+
                 $customerData->ThirdPartyId         = $request->ThirdPartyId;
                 $customerData->ThirdPartyName       = $request->ThirdPartyName;
                 $customerData->ThirdPartyAttachment = $request->ThirdPartyAttachment;
@@ -180,7 +180,7 @@ class CustomerController extends Controller
         }
     }
 
-    function updateComplexity($request, $Id, $customerData) 
+    function updateComplexity($request, $Id, $customerData)
     {
         $IsComplex = 0;
 
@@ -222,7 +222,7 @@ class CustomerController extends Controller
 
             $customerData->Status    = 2; // PROCEED TO DSW
             $customerData->DSWStatus = 1; // STARTED DSW
-        } 
+        }
 
         $customerData->IsComplex = $IsComplex;
         if (!$IsComplex) {
@@ -231,7 +231,7 @@ class CustomerController extends Controller
         }
     }
 
-    function updateDSW($request, $Id, $customerData) 
+    function updateDSW($request, $Id, $customerData)
     {
         if ($customerData->DSWStatus == 1) { // DSW STARTED
             $customerData->DSWStatus = 2;
@@ -244,6 +244,19 @@ class CustomerController extends Controller
         } else if ($customerData->DSWStatus == 5) { // COMPLETED REQUIREMENTS
             $customerData->Status = 3; // PROCEED TO BUSINESS PROCESS
         }
+    }
+    function updateManhour(Request $request, $Id)
+    {
+        // $validator = $request->validate([
+        //     'Title' => ['required'],
+        // ]);
+        foreach ($request->manhourValue as $manhour) {
+            $score = Score::find($row['id']);
+            $score->jan_ap = $row['jan_ap'];
+            $score->jan_hm = $row['jan_hm'];
+            $score->save();
+        }
+        return $request->manhourValue;
     }
 
     function update(Request $request, $Id)
@@ -260,7 +273,7 @@ class CustomerController extends Controller
         // DSW
         else if ($customerData->Status == 2) {
             $this->updateDSW($request, $Id, $customerData);
-        } 
+        }
         // BUSINESS PROCESS
         else if ($customerData->Status == 3) {
             $validator = $request->validate([
@@ -288,6 +301,7 @@ class CustomerController extends Controller
                             'Id'             => Str::uuid(),
                             'CustomerId'     => $Id,
                             'File'           => $filename,
+                            'Note'           => $request->BusinessNotes,
                             'CreatedById'    => Auth::id(),
                             'UpdatedById'    => Auth::id(),
                             'created_at'     => $now,
@@ -301,7 +315,7 @@ class CustomerController extends Controller
 
 
             $customerData->Status = 4;
-        } 
+        }
         // REQUIREMENTS AND SOLUTIONS
         else if ($customerData->Status == 4) {
 
@@ -353,15 +367,15 @@ class CustomerController extends Controller
                 CustomerLimitation::insert($limitationData);
             }
             $customerData->Status = 5;
-        } 
+        }
         // CAPABILITY
         else if ($customerData->Status == 5) {
             $this->updateCapability($request, $Id, $customerData);
-        } 
+        }
         // PROJECT PHASE
         else if ($customerData->Status == 6) {
             $customerData->Status = 7;
-        } 
+        }
         // ASSESSMENT
         else if ($customerData->Status == 7) {
             $customerData->Status = 8;
@@ -391,7 +405,7 @@ class CustomerController extends Controller
         $data = [];
 
         $complexity = DB::table('complexity AS c')
-            ->leftJoin('customer_complexity AS cc', function($join) use ($Id) {
+            ->leftJoin('customer_complexity AS cc', function ($join) use ($Id) {
                 $join->on('cc.ComplexityId', 'c.Id');
                 $join->on('cc.CustomerId', DB::raw("'{$Id}'"));
             })
@@ -407,7 +421,7 @@ class CustomerController extends Controller
             ];
 
             $complexityDetails = DB::table('complexity_details AS cd')
-                ->leftJoin('customer_complexity_details AS ccd', function($join) use ($Id) {
+                ->leftJoin('customer_complexity_details AS ccd', function ($join) use ($Id) {
                     $join->on('ccd.ComplexityDetailId', 'cd.Id');
                     $join->on('ccd.CustomerId', DB::raw("'{$Id}'"));
                 })

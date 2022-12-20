@@ -20,6 +20,7 @@ return new class extends Migration
             $table->longText('Description');
             $table->string('Module');
             $table->longText('Solution');
+            $table->integer('Manhour')->nullable(true);
             $table->longText('Assumption');
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();

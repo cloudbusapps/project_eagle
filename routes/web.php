@@ -167,6 +167,7 @@ Route::prefix('customer')->group(function () {
     Route::post('/save', [CustomerController::class, 'save'])->name('customers.save');
     Route::get('/edit/{Id}', [CustomerController::class, 'edit'])->name('customers.edit');
     Route::put('/edit/{Id}/update', [CustomerController::class, 'update'])->name('customers.update');
+    Route::put('/edit/{Id}/updateManhour', [CustomerController::class, 'updateManhour'])->name('customers.updateManhour');
     Route::get('/delete/{Id}', [CustomerController::class, 'delete'])->name('customers.delete');
 });
 // END CUSTOMER
