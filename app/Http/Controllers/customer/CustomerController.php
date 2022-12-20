@@ -9,6 +9,7 @@ use App\Models\customer\CustomerInscope;
 use App\Models\customer\CustomerLimitation;
 use App\Models\customer\CustomerComplexity;
 use App\Models\customer\CustomerComplexityDetails;
+use App\Models\admin\ThirdParty;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Customer;
@@ -21,16 +22,12 @@ class CustomerController extends Controller
 {
     function index()
     {
-        if (session()->has('LoggedUser')) {
-            $customerData = Customer::all();
-            $data = [
-                'title'   => "Customer",
-                'data'    => $customerData
-            ];
-            return view('customers.index', $data);
-        } else {
-            return view('/auth/login');
-        }
+        $customerData = Customer::all();
+        $data = [
+            'title'   => "Customer",
+            'data'    => $customerData
+        ];
+        return view('customers.index', $data);
     }
 
     function form()
@@ -52,9 +49,13 @@ class CustomerController extends Controller
         $businessProcess = CustomerBusinessProcess::select('customer_business_process.*')
             ->where('customer_business_process.CustomerId', $Id)
             ->leftJoin('customer_business_process_files AS cbpf', 'cbpf.CustomerId', '=', 'customer_business_process.Id')
+        $businessProcess = CustomerBusinessProcess::select('customer_business_process.*')
+            ->where('customer_business_process.CustomerId', $Id)
+            ->leftJoin('customer_business_process_files AS cbpf', 'cbpf.CustomerId', '=', 'customer_business_process.Id')
             ->first();
         $businessProcessData = $businessProcess ? $businessProcess : '';
         $files = $businessProcessData !== '' ? CustomerBusinessProcessFiles::where('CustomerId', $Id)->orderBy('created_at', 'DESC')->get() : [];
+
 
 
         $inscopes = CustomerInscope::where('CustomerId', $Id)->get();
@@ -63,19 +64,19 @@ class CustomerController extends Controller
         $title = $this->getTitle($customerData->Status, $progress);
 
         $data = [
-            'title'             => $title[0],
-            'currentViewStatus' => $title[1],
-            'type'            => 'edit',
-            'data'            => $customerData,
-            'Id'              => $Id,
-            'complexities'    => $this->getComplexityData($Id),
-            'ProjectPhase'    => $this->getProjectPhase(),
-            'users'           => User::all(),
+            'title'               => $title[0],
+            'currentViewStatus'   => $title[1],
+            'type'                => 'edit',
+            'data'                => $customerData,
+            'Id'                  => $Id,
+            'complexities'        => $this->getComplexityData($Id),
+            'ProjectPhase'        => $this->getProjectPhase(),
+            'users'               => User::all(),
             'businessProcessData' => $businessProcessData,
-            'files' => $files,
-            'reqSol' => $inscopes,
-            'limitations' => $limitations,
-
+            'files'               => $files,
+            'reqSol'              => $inscopes,
+            'limitations'         => $limitations,
+            'thirdParties'        => ThirdParty::orderBy('created_at', 'DESC')->get(),
         ];
 
 
@@ -94,14 +95,16 @@ class CustomerController extends Controller
             return ['Business Process', 3];
         } else if ($Status == 4 || $Progress == 'requirementSolution') {
             return ['Requirements and Solutions', 4];
-        } else if ($Status == 5 || $Progress == 'projectPhase') {
-            return ['Project Phase', 5];
-        } else if ($Status == 6 || $Progress == 'assessment') {
-            return ['Assessment', 6];
-        } else if ($Status == 7 || $Progress == 'proposal') {
-            return ['Proposal', 7];
+        } else if ($Status == 5 || $Progress == 'capability') {
+            return ['Capability', 5];
+        } else if ($Status == 6 || $Progress == 'projectPhase') {
+            return ['Project Phase', 6];
+        } else if ($Status == 7 || $Progress == 'assessment') {
+            return ['Assessment', 7];
+        } else if ($Status == 8 || $Progress == 'proposal') {
+            return ['Proposal', 8];
         } else {
-            return ['Success', 8];
+            return ['Success', 9];
         }
     }
 
@@ -141,51 +144,108 @@ class CustomerController extends Controller
         }
     }
 
-    function updateComplexity($request, $Id, $customerData)
+    function updateCapability($request, $Id, $customerData) 
     {
-        $IsCapable = isset($request->IsCapable) ? 1 : 0;
-        if ($IsCapable) {
-            $IsComplex = isset($request->IsComplex) ? 1 : 0;
+        $ThirdPartyStatus = $request->ThirdPartyStatus;
+
+        if ($ThirdPartyStatus > 0) {
+            if ($ThirdPartyStatus == 2) { // COMPLETED THIRD PARTY REQUIREMENTS
+                // SAVE THIRD PARTY TO MASTER LIST
+                if ($customerData->ThirdPartyId == config('constant.ID.THIRD_PARTIES.OTHERS')) {
+                    DB::table('third_parties')->insert([
+                        'Id'          => Str::uuid(),
+                        'Name'        => $customerData->ThirdPartyName,
+                        'CreatedById' => Auth::id(),
+                        'UpdatedById' => Auth::id(),
+                    ]);
+                }
+                $customerData->Status = 6; // PROCEED TO PROJECT PHASES
+            }
+            $customerData->ThirdPartyAttachment = $request->ThirdPartyAttachment;
+            $customerData->ThirdPartyStatus     = $ThirdPartyStatus;
+        } else {
+            $IsCapable = isset($request->IsCapable) ? 1 : 0;
+            if ($IsCapable) {
+                $customerData->Status = 6; // PROCEED TO PROJECT PHASES
+            } else {
+                // THIRD PARTY
+                $validator = $request->validate([
+                    'ThirdPartyId'   => ['required'],
+                    'ThirdPartyName' => ['required'],
+                ]);
+                
+                $customerData->ThirdPartyId         = $request->ThirdPartyId;
+                $customerData->ThirdPartyName       = $request->ThirdPartyName;
+                $customerData->ThirdPartyAttachment = $request->ThirdPartyAttachment;
+                $customerData->ThirdPartyStatus     = 1; // FOR ACCREDITATION
+            }
             $customerData->IsCapable = $IsCapable;
-            $customerData->IsComplex = $IsComplex;
+        }
+    }
 
-            $complexity = $request->complexity ?? [];
-            if ($IsComplex && count($complexity)) {
-                $complexitySubData = [];
-                foreach ($complexity as $key => $dt) {
-                    $CustomerComplexityId = Str::uuid();
-                    $data = [
-                        'Id'           => $CustomerComplexityId,
-                        'CustomerId'   => $Id,
-                        'ComplexityId' => $dt['Id'],
-                        'Title'        => $dt['Title'],
-                        'Checked'      => isset($dt['Selected']) ? 1 : 0,
-                    ];
-                    $insert = CustomerComplexity::insert($data);
+    function updateComplexity($request, $Id, $customerData) 
+    {
+        $IsComplex = 0;
 
-                    if (isset($dt['Sub']) && count($dt['Sub'])) {
-                        foreach ($dt['Sub'] as $key2 => $dt2) {
-                            $complexitySubData[] = [
-                                'Id'                   => Str::uuid(),
-                                'CustomerComplexityId' => $CustomerComplexityId,
-                                'CustomerId'           => $Id,
-                                'ComplexityId'         => $dt['Id'],
-                                'ComplexityDetailId'   => $dt2['Id'],
-                                'Title'                => $dt2['Title'],
-                                'Checked'              => isset($dt2['Selected']) ? 1 : 0,
-                            ];
-                        }
+        $complexity = $request->complexity ?? [];
+        if (count($complexity)) {
+            CustomerComplexity::where('CustomerId', $Id);
+            CustomerComplexityDetails::where('CustomerId', $Id);
+
+            $complexitySubData = [];
+            foreach ($complexity as $key => $dt) {
+                $CustomerComplexityId = Str::uuid();
+                $Checked = isset($dt['Selected']) ? 1 : 0;
+                if ($Checked) $IsComplex = 1;
+
+                $data = [
+                    'Id'           => $CustomerComplexityId,
+                    'CustomerId'   => $Id,
+                    'ComplexityId' => $dt['Id'],
+                    'Title'        => $dt['Title'],
+                    'Checked'      => $Checked,
+                ];
+                $insert = CustomerComplexity::insert($data);
+
+                if (isset($dt['Sub']) && count($dt['Sub'])) {
+                    foreach ($dt['Sub'] as $key2 => $dt2) {
+                        $complexitySubData[] = [
+                            'Id'                   => Str::uuid(),
+                            'CustomerComplexityId' => $CustomerComplexityId,
+                            'CustomerId'           => $Id,
+                            'ComplexityId'         => $dt['Id'],
+                            'ComplexityDetailId'   => $dt2['Id'],
+                            'Title'                => $dt2['Title'],
+                            'Checked'              => isset($dt2['Selected']) ? 1 : 0,
+                        ];
                     }
                 }
-                CustomerComplexityDetails::insert($complexitySubData);
-
-                $customerData->Status    = 2;
-                $customerData->DSWStatus = 0;
-            } else {
-                $customerData->Status  = 3;
             }
-        } else {
-            $customerData->Status  = 3; // TEMP
+            CustomerComplexityDetails::insert($complexitySubData);
+
+            $customerData->Status    = 2; // PROCEED TO DSW
+            $customerData->DSWStatus = 1; // STARTED DSW
+        } 
+
+        $customerData->IsComplex = $IsComplex;
+        if (!$IsComplex) {
+            $customerData->Status    = 3; // PROCEED TO BUSINESS PROCESS
+            $customerData->DSWStatus = 0; // NOT APPLICABLE DSW
+        }
+    }
+
+    function updateDSW($request, $Id, $customerData) 
+    {
+        if ($customerData->DSWStatus == 1) { // DSW STARTED
+            $customerData->DSWStatus = 2;
+        } else if ($customerData->DSWStatus == 2) { // ONGOING DSW
+            $customerData->DSWStatus = 3;
+        } else if ($customerData->DSWStatus == 3) { // COMPLETED DSW
+            $customerData->DSWStatus = 4;
+        } else if ($customerData->DSWStatus == 4) { // FOR CONSOLIDATION
+            $customerData->DSWStatus = 5;
+        } else if ($customerData->DSWStatus == 5) { // COMPLETED REQUIREMENTS
+            $customerData->Status = 3; // PROCEED TO BUSINESS PROCESS
         }
     }
     function updateManhour(Request $request, $Id)
@@ -209,27 +269,16 @@ class CustomerController extends Controller
         $Id           = $customerData->Id;
         $now          = Carbon::now('utc')->toDateTimeString();
 
-        // echo '<pre>';
-        // print_r($request->all());
-        // exit;
-
-        // CHECKING IF COMPLEX
+        // COMPLEXITY
         if ($customerData->Status == 1) {
             $this->updateComplexity($request, $Id, $customerData);
-        } else if ($customerData->Status == 2) {
-            // IF COMPLEX
-            if ($customerData->DSWStatus == 0) {
-                $customerData->DSWStatus = 1;
-            } else if ($customerData->DSWStatus == 1) {
-                $customerData->DSWStatus = 2;
-            } else if ($customerData->DSWStatus == 2) {
-                $customerData->DSWStatus = 3;
-            } else if ($customerData->DSWStatus == 3) {
-                $customerData->DSWStatus = 4;
-            } else if ($customerData->DSWStatus == 4) {
-                $customerData->Status = 3;
-            }
-        } else if ($customerData->Status == 3) {
+        }
+        // DSW
+        else if ($customerData->Status == 2) {
+            $this->updateDSW($request, $Id, $customerData);
+        } 
+        // BUSINESS PROCESS
+        else if ($customerData->Status == 3) {
             $validator = $request->validate([
                 'BusinessNotes'        => ['required'],
                 'File'   => ['required'],
@@ -253,12 +302,12 @@ class CustomerController extends Controller
 
                         $businessProcessFiles[] = [
                             'Id'             => Str::uuid(),
-                            'CustomerId' => $Id,
+                            'CustomerId'     => $Id,
                             'File'           => $filename,
                             'Note'           => $request->BusinessNotes,
                             'CreatedById'    => Auth::id(),
                             'UpdatedById'    => Auth::id(),
-                            'created_at'    => $now,
+                            'created_at'     => $now,
                         ];
                     }
 
@@ -269,7 +318,9 @@ class CustomerController extends Controller
 
 
             $customerData->Status = 4;
-        } else if ($customerData->Status == 4) {
+        } 
+        // REQUIREMENTS AND SOLUTIONS
+        else if ($customerData->Status == 4) {
 
             $validator = $request->validate([
                 'Title' => ['required'],
@@ -319,18 +370,20 @@ class CustomerController extends Controller
                 CustomerLimitation::insert($limitationData);
             }
             $customerData->Status = 5;
-        } else if ($customerData->Status == 5) {
-
-            $customerData->Status = 6;
-        } else if ($customerData->Status == 6) {
-
+        } 
+        // CAPABILITY
+        else if ($customerData->Status == 5) {
+            $this->updateCapability($request, $Id, $customerData);
+        } 
+        // PROJECT PHASE
+        else if ($customerData->Status == 6) {
             $customerData->Status = 7;
+        } 
+        // ASSESSMENT
+        else if ($customerData->Status == 7) {
+            $customerData->Status = 8;
         }
 
-
-        // } else if ($customerData->Status  == 2 && $customerData->DSWStatus == 4) {
-        //     $customerData->Status = 3;
-        // }
 
         if ($customerData->update()) {
             return redirect()

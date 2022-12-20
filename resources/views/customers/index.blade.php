@@ -9,7 +9,7 @@
                     <div class="col">
                         <h4 class="mb-0">{{ $title }}</h4>
                         <ol class="breadcrumb bg-transparent mb-0">
-                            <li class="breadcrumb-item"><a class="text-secondary" href="#">Customers</a></li>
+                            <li class="breadcrumb-item"><a class="text-secondary" href="{{ route('dashboard') }}">Dashboard</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
                         </ol>
                     </div>

@@ -25,10 +25,46 @@ return new class extends Migration
             $table->integer('Type')->nullable(true);
             $table->string('Notes')->nullable(true);
             $table->string('Link')->nullable(true);
-            $table->integer('IsCapable')->default(0);
-            $table->integer('IsComplex')->default(0);
-            $table->integer('DSWStatus')->nullable(true);
+            $table->integer('IsCapable')->nullable();
+            $table->integer('IsComplex')->nullable();
+            $table->string('ThirdPartyId')->nullable();
+            $table->string('ThirdPartyName')->nullable();
+            $table->text('ThirdPartyAttachment')->nullable();
+
+            /**
+             * ----- THIRD PARTY STATUS -----
+             * 0 or null - Not Applicable
+             * 1 - Pending
+             * 2 - Ongoing
+             * 3 - Completed
+             */
+            $table->integer('ThirdPartyStatus')->nullable();
+
+            /**
+             * ----- DSW STATUS -----
+             * 0 or null - Not Applicable
+             * 1 - Started DSW
+             * 2 - Ongoing DSW
+             * 3 - Completed DSW
+             * 4 - For Consolidation
+             * 5 - Completed Requirements Consolidation
+             */
+            $table->integer('DSWStatus')->nullable();
+
+            /**
+             * ----- STATUS -----
+             * 0 - Information
+             * 1 - Capability
+             * 2 - Complexity
+             * 3 - DSW
+             * 4 - Business Process
+             * 5 - Requirement and Solution
+             * 6 - Project Phases
+             * 7 - Assessment
+             * 8 - Proposal
+             */
             $table->integer('Status')->nullable(true);
+
             $table->uuid('HeadId')->nullable();
             $table->uuid('OICId')->nullable();
             $table->uuid('CreatedById')->nullable();

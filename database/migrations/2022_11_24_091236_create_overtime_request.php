@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('Reason')->nullable(true);
             $table->integer('Status')->default(0);
             $table->json('ApproverId')->nullable(true);
-            $table->uuid('CreatedById');
+            $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable(true);
             $table->timestamps();
 
