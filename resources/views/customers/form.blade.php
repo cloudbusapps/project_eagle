@@ -469,7 +469,7 @@
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Notes <code>*</code></label>
                                         <div class="col-sm-10">
-                                            <textarea {{ $editable }} style="height: 82px;" required type="text" class="form-control" name="Notes"
+                                            <textarea {{ $editable }} style="resize: none;" rows="3" required type="text" class="form-control" name="Notes"
                                                 id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
                                         </div>
                                     </div>
@@ -608,7 +608,7 @@
                                     <div class="row mb-3">
                                         <label for="BusinessNotes" class="col-sm-2 label">Notes <code>*</code></label>
                                         <div class="col-sm-10">
-                                            <textarea {{ $editable }} style="height: 82px;" required type="text" class="form-control"
+                                            <textarea {{ $editable }} style="resize: none;" rows="3" required type="text" class="form-control"
                                                 name="BusinessNotes" id="BusinessNotes" placeholder="Notes">{{ old('BusinessNotes') ?? $BusinessNotes }}</textarea>
                                         </div>
                                     </div>
@@ -638,52 +638,66 @@
                                 <!-- ---------- REQUIREMENT AND SOLUTIONS ---------- -->
 
                                     <div class="card mb-3">
+                                        <div class="card-header py-3">
+                                            <h5 class="card-title mb-0">IN-SCOPE</h5>
+                                        </div>
                                         <div class="card-body">
-                                            <h5 class="card-title">In-Scope</h5>
                                             <div id="tableContainer" class="mb-3">
                                                 <table id="inScopeTable" cellpadding="0" cellspacing="0"
-                                                    class="table table-bordered">
+                                                    class="table table-bordered" style="min-width: 1200px; width: 100%; max-width: 1500px;">
                                                     <thead>
-                                                        <th scope="col">Requirement List</th>
-                                                        <th scope="col">Description</th>
-                                                        <th scope="col">Salesforce Modules</th>
-                                                        <th scope="col">Solutions Overview</th>
-                                                        <th scope="col">Assumptions</th>
+                                                        <tr>
+                                                            <th style="width: 10px;"></th>
+                                                            <th style="width: 20%;">Requirement List</th>
+                                                            <th style="width: 20%">Description</th>
+                                                            <th style="width: 20%">Salesforce Modules</th>
+                                                            <th style="width: 20%">Solutions Overview</th>
+                                                            <th style="width: 20%">Assumptions</th>
+                                                        </tr>
                                                     </thead>
                                                     <tbody>
                                                         @if (!empty($reqSol) && count($reqSol) > 0)
                                                             @foreach ($reqSol as $index => $inscope)
                                                                 <tr>
-                                                                    <td><input value={{ $inscope->Title }} name="Title[]">
+                                                                    <td class="text-center">
+                                                                        <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea name="Description[]">{{ $inscope->Description }}</textarea>
+                                                                        <input value={{ $inscope->Title }} name="Title[]" class="form-control">
                                                                     </td>
                                                                     <td>
-                                                                        <textarea name="Module[]">{{ $inscope->Module }}</textarea>
+                                                                        <textarea name="Description[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Description }}</textarea>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea name="Solution[]">{{ $inscope->Solution }}</textarea>
+                                                                        <textarea name="Module[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Module }}</textarea>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea name="Assumption[]">{{ $inscope->Assumption }}</textarea>
+                                                                        <textarea name="Solution[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Solution }}</textarea>
+                                                                    </td>
+                                                                    <td>
+                                                                        <textarea name="Assumption[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Assumption }}</textarea>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
                                                         @else
                                                             <tr>
-                                                                <td><input name="Title[]"></td>
-                                                                <td>
-                                                                    <textarea name="Description[]"></textarea>
+                                                                <td class="text-center">
+                                                                    <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
                                                                 </td>
                                                                 <td>
-                                                                    <textarea name="Module[]"></textarea>
+                                                                    <input name="Title[]" class="form-control">
                                                                 </td>
                                                                 <td>
-                                                                    <textarea name="Solution[]"></textarea>
+                                                                    <textarea name="Description[]" class="form-control" rows="3" style="resize: none;"></textarea>
                                                                 </td>
                                                                 <td>
-                                                                    <textarea name="Assumption[]"></textarea>
+                                                                    <textarea name="Module[]" class="form-control" rows="3" style="resize: none;"></textarea>
+                                                                </td>
+                                                                <td>
+                                                                    <textarea name="Solution[]" class="form-control" rows="3" style="resize: none;"></textarea>
+                                                                </td>
+                                                                <td>
+                                                                    <textarea name="Assumption[]" class="form-control" rows="3" style="resize: none;"></textarea>
                                                                 </td>
                                                             </tr>
                                                         @endif
@@ -700,35 +714,46 @@
 
                                     </div>
 
-                                    <div class="card">
+                                    <div class="card mt-3">
+                                        <div class="card-header py-3">
+                                            <h5 class="card-title mb-0">LIMITATIONS</h5>
+                                        </div>
                                         <div class="card-body">
-                                            <h5 class="card-title">Limitations</h5>
                                             <div id="tableContainer" class="mb-3">
                                                 <table id="outScopeTable" cellpadding="0" cellspacing="0"
-                                                    class="table table-bordered">
+                                                    class="table table-bordered" style="min-width: 100%; width: 100%; max-width: 1000px;">
                                                     <thead>
-                                                        <th scope="col">Out of Scope</th>
-                                                        <th scope="col">Comments</th>
+                                                        <tr>
+                                                            <th style="width: 10px;"></th>
+                                                            <th scope="col" style="width: 50%;">Out of Scope</th>
+                                                            <th scope="col" style="width: 50%;">Comments</th>
+                                                        </tr>
                                                     </thead>
                                                     <tbody>
                                                         @if (!empty($limitations) && count($limitations) > 0)
                                                             @foreach ($limitations as $index => $limitation)
                                                                 <tr>
-                                                                    <td>
-                                                                        <textarea name="OutOfScope[]">{{ $limitation->OutScope }}</textarea>
+                                                                    <td class="text-center">
+                                                                        <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea name="Comment[]">{{ $limitation->Comment }}</textarea>
+                                                                        <textarea class="form-control" rows="3" style="resize: none;" name="OutOfScope[]">{{ $limitation->OutScope }}</textarea>
+                                                                    </td>
+                                                                    <td>
+                                                                        <textarea class="form-control" rows="3" style="resize: none;" name="Comment[]">{{ $limitation->Comment }}</textarea>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
                                                         @else
                                                             <tr>
-                                                                <td>
-                                                                    <textarea name="OutOfScope[]"></textarea>
+                                                                <td class="text-center">
+                                                                    <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
                                                                 </td>
                                                                 <td>
-                                                                    <textarea name="Comment[]"></textarea>
+                                                                    <textarea class="form-control" rows="3" style="resize: none;" name="OutOfScope[]"></textarea>
+                                                                </td>
+                                                                <td>
+                                                                    <textarea class="form-control" rows="3" style="resize: none;" name="Comment[]"></textarea>
                                                                 </td>
                                                             </tr>
                                                         @endif
@@ -1000,7 +1025,7 @@
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Notes <code>*</code></label>
                                         <div class="col-sm-10">
-                                            <textarea {{ $editable }} style="height: 82px;" required type="text" class="form-control" name="Notes"
+                                            <textarea {{ $editable }} style="resize: none;" rows="3" required type="text" class="form-control" name="Notes"
                                                 id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
                                         </div>
                                     </div>
@@ -1072,18 +1097,21 @@
             $(document).on('click', '.btnAddRow', function() {
                 let html = `
                 <tr>
-                    <td><input required name="Title[]"></td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
+                    </td>
+                    <td><input required name="Title[]" class="form-control"></td>
                     <td>
-                        <textarea required name="Description[]"></textarea>
+                        <textarea required name="Description[]" class="form-control" rows="3" style="resize: none;"></textarea>
                     </td>
                     <td>
-                        <textarea required name="Module[]"></textarea>
+                        <textarea required name="Module[]" class="form-control" rows="3" style="resize: none;"></textarea>
                     </td>
                     <td>
-                        <textarea required name="Solution[]"></textarea>
+                        <textarea required name="Solution[]" class="form-control" rows="3" style="resize: none;"></textarea>
                     </td>
                     <td>
-                        <textarea required name="Assumption[]"></textarea>
+                        <textarea required name="Assumption[]" class="form-control" rows="3" style="resize: none;"></textarea>
                     </td>
                 </tr>`;
 
@@ -1095,11 +1123,14 @@
             $(document).on('click', '.btnAddRowLimitation', function() {
                 let html = `
                 <tr>
-                    <td>
-                        <textarea required name="OutOfScope[]"></textarea>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
                     </td>
                     <td>
-                        <textarea required name="Comment[]"></textarea>
+                        <textarea required name="OutOfScope[]" class="form-control" rows="3" style="resize: none;"></textarea>
+                    </td>
+                    <td>
+                        <textarea required name="Comment[]" class="form-control" rows="3" style="resize: none;"></textarea>
                     </td>
                 </tr>`;
 
@@ -1137,34 +1168,6 @@
             for (let i = 0; i <= dswStatus; i++) {
                 $(".divSquare").eq(i).addClass("activeStatus");
             }
-
-
-
-            // CHECKBOX
-            // $.extend($.expr[':'], {
-            //     unchecked: function(obj) {
-            //         return ((obj.type == 'checkbox' || obj.type == 'radio') && !$(obj).is(
-            //             ':checked'));
-            //     }
-            // });
-
-            // $("#mainTable input:checkbox").on('change', function() {
-            //     $(this).closest("td").prev('td').find('input:checkbox').prop('checked', $(this).prop(
-            //         "checked"));
-
-            //     for (var i = $('#mainTable').find('td').length - 1; i >= 0; i--) {
-            //         $('#mainTable').find('table:eq(' + i + ')').closest('tr').next('input:checkbox').prop(
-            //             'checked',
-            //             function() {
-            //                 console.log(this)
-            //                 return $(this).next('table').find('input:unchecked').length === 0 ?
-            //                     true : false;
-            //             });
-            //     }
-            // });
-
-
-
 
 
             // ----- SUBMIT FORM -----
@@ -1315,6 +1318,21 @@
                 $table.closest('tr').find(`input[type=checkbox].mainComplexity`).prop('checked', hasCheck).trigger('change');
             })
             // ----- END CHANGE SUB COMPLEXITY -----
+
+
+            // ----- DELETE TABLE ROW -----
+            $(document).on('click', '.btnDeleteRow', function() {
+                let hasData = $(this).closest('table').find('tbody tr').length > 1;
+                if (hasData) {
+                    let $parent = $(this).closest('tr');
+                    $parent.fadeOut(500, function() {
+                        $parent.remove();
+                    })
+                } else {
+                    showToast('danger', 'Table must have at least one row data.');
+                }
+            })
+            // ----- END DELETE TABLE ROW -----
 
         })
     </script>
