@@ -22,8 +22,12 @@ use Carbon\Carbon;
 
 class CustomerController extends Controller
 {
+    private $MODULE_ID = 18;
+
     function index()
     {
+        isReadAllowed($this->MODULE_ID, true);
+
         $customerData = Customer::all();
         $data = [
             'title'   => "Customer",
@@ -34,6 +38,8 @@ class CustomerController extends Controller
 
     function form()
     {
+        isCreateAllowed($this->MODULE_ID, true);
+
         $title = $this->getTitle();
         $data = [
             'title'   => $title[0],
@@ -76,6 +82,7 @@ class CustomerController extends Controller
             'reqSol'              => $inscopes,
             'limitations'         => $limitations,
             'thirdParties'        => ThirdParty::orderBy('created_at', 'DESC')->get(),
+            'MODULE_ID'           => $this->MODULE_ID,
         ];
 
 

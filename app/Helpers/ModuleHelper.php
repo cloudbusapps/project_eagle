@@ -1,6 +1,7 @@
 <?php
 
     use App\Models\admin\Module;
+    use App\Models\admin\Department;
 
     /**
      * It returns an array of modules that are allowed to be read by the user.
@@ -218,4 +219,17 @@
             $strNumber = str_repeat('0', $baseNumber - $strLength).$strNumber;
         }
         return "{$prefix}-{$strNumber}";
+    }
+
+
+    /**
+     * It returns the UserId of the DepartmentHead of the Department with the given DepartmentId.
+     * 
+     * @param DepartmentId The id of the department you want to get the head of.
+     * 
+     * @return The return value is the UserId of the Department.
+     */
+    function getDepartmentHeadId($DepartmentId = '') {
+        $data = Department::find($DepartmentId);
+        return $data ? $data->UserId : null;
     }
