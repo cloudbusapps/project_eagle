@@ -646,10 +646,10 @@
 
                                                     </div>
                                                 @endforeach
-                                            </div>
+                                    </div>
 
                                             <!-- ---------- END BUSINESS PROCESS ---------- -->
-                                        @elseif ($Status == 4 || Request::get('progress') == 'requirementSolution')
+                                @elseif ($Status == 4 || Request::get('progress') == 'requirementSolution')
                                             <!-- ---------- REQUIREMENT AND SOLUTIONS ---------- -->
 
                                     <div class="card mb-3">
@@ -700,7 +700,7 @@
                                                                     <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
                                                                 </td>
                                                                 <td>
-                                                                    <input name="Title[]" class="form-control">
+                                                                    <textarea name="Title[]" class="form-control" rows="3" style="resize: none;"></textarea>
                                                                 </td>
                                                                 <td>
                                                                     <textarea name="Description[]" class="form-control" rows="3" style="resize: none;"></textarea>
@@ -949,24 +949,24 @@
                                                         @if (!empty($reqSol) && count($reqSol) > 0)
                                                             @foreach ($reqSol as $index => $inscope)
                                                                 <tr>
-                                                                    <td><input disabled value={{ $inscope->Title }}
-                                                                            name="Title[]">
+                                                                    <td>
+                                                                        <textarea disabled name="Title[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Title }}</textarea>
+                                                                      </td>
+                                                                    <td>
+                                                                        <textarea disabled name="Description[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Description }}</textarea>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea disabled name="Description[]">{{ $inscope->Description }}</textarea>
+                                                                        <textarea disabled name="Module[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Module }}</textarea>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea disabled name="Module[]">{{ $inscope->Module }}</textarea>
-                                                                    </td>
-                                                                    <td>
-                                                                        <textarea disabled name="Solution[]">{{ $inscope->Solution }}</textarea>
+                                                                        <textarea disabled name="Solution[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Solution }}</textarea>
                                                                     </td>
                                                                     <td>
                                                                         <input type="number" name="Manhour[]"
-                                                                            value="{{ $inscope->Manhour }}">
+                                                                            value="{{ $inscope->Manhour }}" class="form-control" rows="3" style="resize: none;">
                                                                     </td>
                                                                     <td>
-                                                                        <textarea disabled name="Assumption[]">{{ $inscope->Assumption }}</textarea>
+                                                                        <textarea disabled name="Assumption[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Assumption }}</textarea>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
