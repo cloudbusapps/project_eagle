@@ -22,6 +22,7 @@ return new class extends Migration
             $table->longText('Solution');
             $table->integer('Manhour')->nullable(true);
             $table->longText('Assumption');
+            $table->integer('ThirdParty')->default(0); // 1 - Assigned to TP, 0 - No
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
@@ -35,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customer_requirements');
+        Schema::dropIfExists('customer_inscope_requirements');
     }
 };

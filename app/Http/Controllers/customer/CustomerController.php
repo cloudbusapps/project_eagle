@@ -10,6 +10,8 @@ use App\Models\customer\CustomerInscope;
 use App\Models\customer\CustomerLimitation;
 use App\Models\customer\CustomerComplexity;
 use App\Models\customer\CustomerComplexityDetails;
+use App\Models\customer\CustomerProjectPhases;
+use App\Models\customer\CustomerProjectPhasesDetails;
 use App\Models\admin\ThirdParty;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -21,8 +23,12 @@ use Carbon\Carbon;
 
 class CustomerController extends Controller
 {
+    private $MODULE_ID = 18;
+
     function index()
     {
+        isReadAllowed($this->MODULE_ID, true);
+
         $customerData = Customer::all();
         $data = [
             'title'   => "Customer",
@@ -33,6 +39,8 @@ class CustomerController extends Controller
 
     function form()
     {
+        isCreateAllowed($this->MODULE_ID, true);
+
         $title = $this->getTitle();
         $data = [
             'title'   => $title[0],
@@ -69,14 +77,15 @@ class CustomerController extends Controller
             'data'                => $customerData,
             'Id'                  => $Id,
             'complexities'        => $this->getComplexityData($Id),
-            'ProjectPhase'        => $this->getProjectPhase(),
+            'ProjectPhase'        => $this->getProjectPhase($Id),
             'users'               => User::all(),
             'businessProcessData' => $businessProcessData,
             'files'               => $files,
             'reqSol'              => $inscopes,
             'limitations'         => $limitations,
             'thirdParties'        => ThirdParty::orderBy('created_at', 'DESC')->get(),
-            'assignedConsultants'  => $assignedConsultants
+            'MODULE_ID'           => $this->MODULE_ID,
+            'assignedConsultants'  => $assignedConsultants,
         ];
 
 
@@ -148,6 +157,19 @@ class CustomerController extends Controller
     {
         $ThirdPartyStatus = $request->ThirdPartyStatus;
 
+        // $InScope = $request->InScope ?? [];
+        // if (!empty($InScope) && count($InScope)) {
+        //     foreach ($InScope as $key => $dt) {
+        //         $Checked = isset($InScope[$key]['Checked']) ? 1 : 0;
+        //         // CustomerInscope::where('Id', $dt['Id'])
+        //         //     ->first()
+        //         //     ->update(['ThirdParty' => $Checked]);
+        //         echo '<pre>';
+        //         print_r(['Id' => $dt['Id'], 'Checked' => $Checked]);
+        //     }
+        // }
+        // exit;
+
         if ($ThirdPartyStatus > 0) {
             if ($ThirdPartyStatus == 2) { // COMPLETED THIRD PARTY REQUIREMENTS
                 // SAVE THIRD PARTY TO MASTER LIST
@@ -164,8 +186,8 @@ class CustomerController extends Controller
             $customerData->ThirdPartyAttachment = $request->ThirdPartyAttachment;
             $customerData->ThirdPartyStatus     = $ThirdPartyStatus;
         } else {
-            $IsCapable = isset($request->IsCapable) ? 1 : 0;
-            if ($IsCapable) {
+            $IsCapable = $request->IsCapable;
+            if ($IsCapable == 1) {
                 $customerData->Status = 6; // PROCEED TO PROJECT PHASES
             } else {
                 // THIRD PARTY
@@ -178,7 +200,24 @@ class CustomerController extends Controller
                 $customerData->ThirdPartyName       = $request->ThirdPartyName;
                 $customerData->ThirdPartyAttachment = $request->ThirdPartyAttachment;
                 $customerData->ThirdPartyStatus     = 1; // FOR ACCREDITATION
+
+                $InScope = $request->InScope ?? [];
+                if (!empty($InScope) && count($InScope)) {
+                    foreach ($InScope as $key => $dt) {
+                        $Checked = isset($InScope[$key]['Checked']) ? 1 : 0;
+                        CustomerInscope::where('Id', $dt['Id'])->update(['ThirdParty' => $Checked]);
+                    }
+                }
+
+                $Limitation = $request->Limitation ?? [];
+                if (!empty($Limitation) && count($Limitation)) {
+                    foreach ($Limitation as $key => $dt) {
+                        $Checked = isset($Limitation[$key]['Checked']) ? 1 : 0;
+                        CustomerLimitation::where('Id', $dt['Id'])->update(['ThirdParty' => $Checked]);
+                    }
+                }
             }
+
             $customerData->IsCapable = $IsCapable;
         }
     }
@@ -248,6 +287,151 @@ class CustomerController extends Controller
             $customerData->Status = 3; // PROCEED TO BUSINESS PROCESS
         }
     }
+
+    function updateBusinessProcess($request, $Id, $customerData)
+    {
+        $now = Carbon::now('utc')->toDateTimeString();
+
+        $validator = $request->validate([
+            'BusinessNotes' => ['required'],
+            'File'          => ['required'],
+        ]);
+        $destinationPath = 'uploads/businessProcess';
+
+        $BusinessProcess = new CustomerBusinessProcess;
+        $BusinessProcess->Note = $request->BusinessNotes;
+        $BusinessProcess->CustomerId = $Id;
+        if ($BusinessProcess->save()) {
+            $files = $request->file('File');
+            if ($files && count($files)) {
+                $businessProcessFiles = [];
+                foreach ($files as $index => $file) {
+                    $filenameArr = explode('.', $file->getClientOriginalName());
+                    $extension   = array_splice($filenameArr, count($filenameArr) - 1, 1);
+                    $filename    = 'BP-[' . $index . ']' . time() . '.' . $extension[0];
+
+                    $file->move($destinationPath, $filename);
+
+                    $businessProcessFiles[] = [
+                        'Id'             => Str::uuid(),
+                        'CustomerId'     => $Id,
+                        'File'           => $filename,
+                        'Note'           => $request->BusinessNotes,
+                        'CreatedById'    => Auth::id(),
+                        'UpdatedById'    => Auth::id(),
+                        'created_at'     => now(),
+                    ];
+                }
+
+                CustomerBusinessProcessFiles::where('CustomerId', $Id)->delete();
+                CustomerBusinessProcessFiles::insert($businessProcessFiles);
+            }
+        }
+
+        $customerData->Status = 4;
+    }
+
+    function updateRequirementSolution($request, $Id, $customerData)
+    {
+        $validator = $request->validate([
+            'Title'       => ['required'],
+            'Description' => ['required'],
+            'Module'      => ['required'],
+            'Solution'    => ['required'],
+            'Assumption'  => ['required'],
+            'OutOfScope'  => ['required'],
+            'Comment'     => ['required'],
+        ]);
+
+        $Title       = $request->Title;
+        $Description = $request->Description;
+        $Module      = $request->Module;
+        $Solution    = $request->Solution;
+        $Assumption  = $request->Assumption;
+        $OutOfScope  = $request->OutOfScope;
+        $Comment     = $request->Comment;
+
+        if ($Title && count($Title)) {
+            $inscopeData = [];
+            $limitationData = [];
+            foreach ($Title as $i => $title) {
+                $inscopeData[] = [
+                    'Id'          => Str::uuid(),
+                    'CustomerId'  => $Id,
+                    'Title'       => $title,
+                    'Description' => $Description[$i],
+                    'Module'      => $Module[$i],
+                    'Solution'    => $Solution[$i],
+                    'Assumption'  => $Assumption[$i],
+                    'CreatedById' => Auth::id(),
+                    'UpdatedById' => Auth::id(),
+                ];
+            }
+
+            CustomerInscope::insert($inscopeData);
+            foreach ($OutOfScope as $i => $outscope) {
+                $limitationData[] = [
+                    'Id'          => Str::uuid(),
+                    'CustomerId'  => $Id,
+                    'OutScope'    => $outscope,
+                    'Comment'     => $Comment[$i],
+                    'CreatedById' => Auth::id(),
+                    'UpdatedById' => Auth::id(),
+                ];
+            }
+            CustomerLimitation::insert($limitationData);
+        }
+
+        $customerData->Status = 5;
+    }
+
+    function updateProjectPhase($request, $Id, $customerData)
+    {
+        $projectPhase = $request->projectPhase ?? [];
+        if (!empty($projectPhase) && count($projectPhase)) {
+
+            CustomerProjectPhases::where('CustomerId', $Id)->delete();
+            CustomerProjectPhasesDetails::where('CustomerId', $Id)->delete();
+
+            foreach ($projectPhase as $key => $dt) {
+                $CustomerProjectPhaseId = Str::uuid();
+                $ProjectPhaseId         = $dt['Id'];
+                $data = [
+                    'Id'             => $CustomerProjectPhaseId,
+                    'CustomerId'     => $Id,
+                    'ProjectPhaseId' => $ProjectPhaseId,
+                    'Title'          => $dt['Title'],
+                    'Percentage'     => $dt['Percentage'],
+                    'Checked'        => $dt['Required'] == 1 || isset($dt['Checked']) ? 1 : 0,
+                    'CreatedById'    => Auth::id(),
+                    'UpdatedById'    => Auth::id(),
+                ];
+                CustomerProjectPhases::insert($data);
+
+                if (isset($dt['Sub']) && count($dt['Sub'])) {
+                    $subData = [];
+                    foreach ($dt['Sub'] as $dt2) {
+                        $subData[] = [
+                            'Id'                     => Str::uuid(),
+                            'CustomerProjectPhaseId' => $CustomerProjectPhaseId,
+                            'CustomerId'             => $Id,
+                            'ProjectPhaseId'         => $ProjectPhaseId,
+                            'ProjectPhaseDetailId'   => $dt2['Id'],
+                            'Title'                  => $dt2['Title'],
+                            'Checked'                => $dt2['Required'] == 1 || isset($dt2['Checked']) ? 1 : 0,
+                            'CreatedById'            => Auth::id(),
+                            'UpdatedById'            => Auth::id(),
+                        ];
+                    }
+                    CustomerProjectPhasesDetails::insert($subData);
+                }
+
+            }
+        }
+
+        $customerData->Status = 7;
+    }
+
     function updateManhour(Request $request, $Id)
     {
         // $validator = $request->validate([
@@ -272,7 +456,6 @@ class CustomerController extends Controller
         $customerData = Customer::find($Id);
         $customerName = $customerData->CustomerName;
         $Id           = $customerData->Id;
-        $now          = Carbon::now('utc')->toDateTimeString();
 
         // COMPLEXITY
         if ($customerData->Status == 1) {
@@ -284,97 +467,11 @@ class CustomerController extends Controller
         }
         // BUSINESS PROCESS
         else if ($customerData->Status == 3) {
-            $validator = $request->validate([
-                'BusinessNotes'        => ['required'],
-                'File'   => ['required'],
-            ]);
-            $destinationPath = 'uploads/businessProcess';
-
-
-            $BusinessProcess = new CustomerBusinessProcess;
-            $BusinessProcess->Note = $request->BusinessNotes;
-            $BusinessProcess->CustomerId    = $Id;
-            if ($BusinessProcess->save()) {
-                $files = $request->file('File');
-                if ($files && count($files)) {
-                    $businessProcessFiles = [];
-                    foreach ($files as $index => $file) {
-                        $filenameArr = explode('.', $file->getClientOriginalName());
-                        $extension   = array_splice($filenameArr, count($filenameArr) - 1, 1);
-                        $filename    = 'BP-[' . $index . ']' . time() . '.' . $extension[0];
-
-                        $file->move($destinationPath, $filename);
-
-                        $businessProcessFiles[] = [
-                            'Id'             => Str::uuid(),
-                            'CustomerId'     => $Id,
-                            'File'           => $filename,
-                            'Note'           => $request->BusinessNotes,
-                            'CreatedById'    => Auth::id(),
-                            'UpdatedById'    => Auth::id(),
-                            'created_at'     => $now,
-                        ];
-                    }
-
-                    CustomerBusinessProcessFiles::where('CustomerId', $Id)->delete();
-                    CustomerBusinessProcessFiles::insert($businessProcessFiles);
-                }
-            }
-
-
-            $customerData->Status = 4;
+            $this->updateBusinessProcess($request, $Id, $customerData);
         }
         // REQUIREMENTS AND SOLUTIONS
         else if ($customerData->Status == 4) {
-
-            $validator = $request->validate([
-                'Title' => ['required'],
-                'Description' => ['required'],
-                'Module' => ['required'],
-                'Solution' => ['required'],
-                'Assumption' => ['required'],
-                'OutOfScope' => ['required'],
-                'Comment' => ['required'],
-            ]);
-
-            $Title = $request->Title;
-            $Description = $request->Description;
-            $Module = $request->Module;
-            $Solution = $request->Solution;
-            $Assumption = $request->Assumption;
-            $OutOfScope = $request->OutOfScope;
-            $Comment = $request->Comment;
-            if ($Title && count($Title)) {
-                $inscopeData = [];
-                $limitationData = [];
-                foreach ($Title as $i => $title) {
-                    $inscopeData[] = [
-                        'Id'           => Str::uuid(),
-                        'CustomerId' => $Id,
-                        'Title'        => $title,
-                        'Description'       => $Description[$i],
-                        'Module'       => $Module[$i],
-                        'Solution'       => $Solution[$i],
-                        'Assumption'       => $Assumption[$i],
-                        'CreatedById'  => Auth::id(),
-                        'UpdatedById'  => Auth::id(),
-                    ];
-                }
-
-                CustomerInscope::insert($inscopeData);
-                foreach ($OutOfScope as $i => $outscope) {
-                    $limitationData[] = [
-                        'Id'           => Str::uuid(),
-                        'CustomerId' => $Id,
-                        'OutScope'        => $outscope,
-                        'Comment'        => $Comment[$i],
-                        'CreatedById'  => Auth::id(),
-                        'UpdatedById'  => Auth::id(),
-                    ];
-                }
-                CustomerLimitation::insert($limitationData);
-            }
-            $customerData->Status = 5;
+            $this->updateRequirementSolution($request, $Id, $customerData);
         }
         // CAPABILITY
         else if ($customerData->Status == 5) {
@@ -382,7 +479,7 @@ class CustomerController extends Controller
         }
         // PROJECT PHASE
         else if ($customerData->Status == 6) {
-            $customerData->Status = 7;
+            $this->updateProjectPhase($request, $Id, $customerData);
         }
         // ASSESSMENT
         else if ($customerData->Status == 7) {
@@ -466,57 +563,59 @@ class CustomerController extends Controller
             }
             $data[] = $temp;
         }
-        // echo "<pre>";
-        // print_r($data);
-        // exit;
+
         return $data;
     }
-    function getProjectPhase()
+
+    function getProjectPhase($Id = null)
     {
         $data = [];
 
-        $projectPhase = DB::table('project_phases')->get();
+        $projectPhase = DB::table('project_phases AS pp')
+            ->leftJoin('customer_project_phases AS cpp', function ($join) use ($Id) {
+                $join->on('cpp.ProjectPhaseId',  'pp.Id');
+                $join->on('cpp.CustomerId', DB::raw("'{$Id}'"));
+            })
+            ->where('Status', 1)
+            ->get(['pp.*', 'cpp.Checked']);
 
         foreach ($projectPhase as $index => $pp) {
             $temp = [
-                'Id' => $pp->Id,
-                'Title' => $pp->Title,
-                'Status'  => $pp->Status,
-                'Required'  => $pp->Required,
-                'Percentage'  => $pp->Percentage,
-                'CreatedById'  => $pp->CreatedById,
-                'UpdatedById'  => $pp->UpdatedById,
-                'created_at'  => $pp->created_at,
-                'updated_at'  => $pp->updated_at,
-                'Details' => []
+                'Id'         => $pp->Id,
+                'Title'      => $pp->Title,
+                'Status'     => $pp->Status,
+                'Required'   => $pp->Required,
+                'Percentage' => $pp->Percentage,
+                'Checked'    => $pp->Checked,
+                'Details'    => []
             ];
 
-            $projectPhasesDetails = DB::table('project_phases_details')
+            $projectPhasesDetails = DB::table('project_phases_details AS ppd')
+                ->leftJoin('customer_project_phases_details AS cppd', function ($join) use ($Id) {
+                    $join->on('cppd.ProjectPhaseDetailId', 'ppd.Id');
+                    $join->on('cppd.CustomerId', DB::raw("'{$Id}'"));
+                })
                 ->where('Status', 1)
-                ->where('ProjectPhaseId', $pp->Id)
-                ->get();
+                ->where('ppd.ProjectPhaseId', $pp->Id)
+                ->get(['ppd.*', 'cppd.Checked']);
 
             foreach ($projectPhasesDetails as $ppd) {
 
                 if ($ppd->ProjectPhaseId == $pp->Id) {
                     $temp['Details'][] = [
-                        'Id'        => $ppd->Id,
-                        'ProjectPhaseId'     => $ppd->ProjectPhaseId,
-                        'Title'    => $ppd->Title,
-                        'Status'  => $ppd->Status,
-                        'Required'  => $ppd->Required,
-                        'CreatedById'  => $ppd->CreatedById,
-                        'UpdatedById'  => $ppd->UpdatedById,
-                        'created_at'  => $ppd->created_at,
-                        'updated_at'  => $ppd->updated_at,
+                        'Id'             => $ppd->Id,
+                        'ProjectPhaseId' => $ppd->ProjectPhaseId,
+                        'Title'          => $ppd->Title,
+                        'Status'         => $ppd->Status,
+                        'Required'       => $ppd->Required,
+                        'Checked'        => $ppd->Checked,
                     ];
                 }
             }
             $data[] = $temp;
         }
-        // echo "<pre>";
-        // print_r($complexity);
-        // exit;
+
         return $data;
     }
+
 }
