@@ -426,17 +426,17 @@ class CustomerController extends Controller
                     }
                     CustomerProjectPhasesDetails::insert($subData);
                 }
-
             }
         }
 
         $customerData->Status = 7;
     }
 
-    function updateConsultant(Request $request, $Id){
-        
+    function updateConsultant(Request $request, $Id)
+    {
+
         $consultants = $request->selectedConsultants;
-        
+
         if ($consultants && count($consultants)) {
             $consultantsData = [];
             foreach ($consultants as $i => $consultant) {
@@ -456,7 +456,7 @@ class CustomerController extends Controller
             return response()->json(['url' => url('customer/edit/' . $Id)]);
         } else {
             $request->session()->flash('fail', 'Something went wrong, try again later');
-                return response()->json(['url' => url('customer/edit/' . $Id)]);
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
         }
     }
 
@@ -468,14 +468,14 @@ class CustomerController extends Controller
         foreach ($request->data as $assessment) {
             $inscope = CustomerInscope::find($assessment['rowId']);
             $inscope->Manhour = $assessment['manhourValue'];
-           $update = $inscope->save();
+            $update = $inscope->save();
         }
         if ($update) {
             $request->session()->flash('success', 'Manhour updated');
             return response()->json(['url' => url('customer/edit/' . $Id)]);
         } else {
             $request->session()->flash('fail', 'Something went wrong, try again later');
-                return response()->json(['url' => url('customer/edit/' . $Id)]);
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
         }
     }
 
@@ -511,28 +511,26 @@ class CustomerController extends Controller
         }
         // ASSESSMENT
         else if ($customerData->Status == 7) {
-        //  FOR CONSULTANT: CHECK IF ANY FIELD ID NULL
-        $hasNull = CustomerInscope::where('CustomerId',$Id)
-        ->whereNull('Manhour')
-        ->get();
-        if(count($hasNull)>0){
-            return redirect()
-            ->route('customers.edit', ['Id' => $Id])
-            ->with('fail', "<b>Fill out</b> all the manhours");
-        } else{
-            $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)->get();
-            // IF USER IS DEPT.HEAD GO TO PROPOSAL
-            if(Auth::id()==getDepartmentHeadId(config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION'))){
-                $customerData->Status = 7;
-            } else if($assignedConsultants->contains('UserId',Auth::id())){
-                // NOTIFY DEPT. HEAD
+            //  FOR CONSULTANT: CHECK IF ANY FIELD ID NULL
+            $hasNull = CustomerInscope::where('CustomerId', $Id)
+                ->whereNull('Manhour')
+                ->get();
+            if (count($hasNull) > 0) {
+                return redirect()
+                    ->route('customers.edit', ['Id' => $Id])
+                    ->with('fail', "<b>Fill out</b> all the manhours");
+            } else {
+                $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)->get();
+                // IF USER IS DEPT.HEAD GO TO PROPOSAL
+                if (Auth::id() == getDepartmentHeadId(config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION'))) {
+                    $customerData->Status = 7;
+                } else if ($assignedConsultants->contains('UserId', Auth::id())) {
+                    // NOTIFY DEPT. HEAD
 
+                }
             }
-        }
-        
-        }// ASSESSMENT
+        } // ASSESSMENT
         else if ($customerData->Status == 8) {
-
         }
 
 
@@ -658,11 +656,11 @@ class CustomerController extends Controller
 
         $customerProjectPhase = DB::table('customer_project_phases AS ccp')
             ->leftJoin('project_phases AS pp', function ($join) use ($Id) {
-                $join->on('ccp.ProjectPhaseId','pp.Id');
-                $join->on('ccp.CustomerId', DB::raw("'{$Id}'"));
+                $join->on('ccp.ProjectPhaseId', 'pp.Id');
+                $join->on('ccp.ProjectPhaseId', 'pp.Id');
             })
             ->where('pp.Status', 1)
-            ->get(['ccp.*','pp.Title AS ProjectPhaseTitle','pp.Status']);
+            ->get(['ccp.*', 'pp.Title AS ProjectPhaseTitle', 'pp.Status']);
 
         foreach ($customerProjectPhase as $index => $cpp) {
             $temp = [
@@ -679,12 +677,12 @@ class CustomerController extends Controller
 
             $customerProjectPhasesDetails = DB::table('customer_project_phases_details AS cppd')
                 ->leftJoin('project_phases_details AS ppd', function ($join) use ($Id) {
-                    $join->on('cppd.ProjectPhaseDetailId','ppd.Id');
+                    $join->on('cppd.ProjectPhaseDetailId', 'ppd.Id');
                     $join->on('cppd.CustomerId', DB::raw("'{$Id}'"));
                 })
                 ->where('ppd.Status', 1)
                 ->where('cppd.CustomerProjectPhaseId', $cpp->Id)
-                ->get(['cppd.*', 'ppd.Title AS ProjectPhaseDetailTitle','ppd.Status']);
+                ->get(['cppd.*', 'ppd.Title AS ProjectPhaseDetailTitle', 'ppd.Status']);
 
             foreach ($customerProjectPhasesDetails as $cppd) {
 
@@ -701,33 +699,44 @@ class CustomerController extends Controller
                 }
             }
 
-            // $projectPhaseResources = DB::table('project_phases_resources AS ppr')
-            //     ->leftJoin('project_phases_details AS ppd', function ($join) use ($Id) {
-            //         $join->on('cppd.ProjectPhaseDetailId','ppd.Id');
-            //         $join->on('cppd.CustomerId', DB::raw("'{$Id}'"));
-            //     })
-            //     ->where('ppd.Status', 1)
-            //     ->where('cppd.CustomerProjectPhaseId', $cpp->Id)
-            //     ->get(['cppd.*', 'ppd.Title AS ProjectPhaseDetailTitle','ppd.Status']);
+            $projectPhaseResources = DB::table('project_phases_resources AS ppr')
+                ->leftJoin('customer_project_phases AS cpp', function ($join) use ($Id) {
+                    $join->on('ppr.ProjectPhaseId', 'cpp.ProjectPhaseId');
+                })
+                ->leftJoin('project_phases AS pp', function ($join) use ($Id) {
+                    $join->on('cpp.ProjectPhaseId', 'pp.Id');
+                })
+                ->leftJoin('designations AS d', function ($join) use ($Id) {
+                    $join->on('ppr.DesignationId', 'd.Id');
+                })
+                ->where('pp.Status', 1)
+                ->where('d.Status', 1)
+                ->get(['ppr.*', 'd.Name']);
 
-            // foreach ($projectPhaseResources as $ppr) {
+            foreach ($projectPhaseResources as $ppr) {
 
-            //     if ($cppd->CustomerProjectPhaseId == $cpp->Id) {
-            //         $temp['Resources'][] = [
-            //             'Id'                      => $ppr->Id,
-            //             'ProjectPhaseId'          => $ppr->ProjectPhaseId,
-            //             'Title'                   => $ppr->Title,
-            //             'ProjectPhaseDetailTitle' => $ppr->ProjectPhaseDetailTitle,
-            //             'Status'                  => $ppr->Status,
-            //             // 'Required'                => $cppd->Required,
-            //             'Checked'                 => $ppr->Checked,
-            //         ];
-            //     }
-            // }
+               $initial = $this->getInitials($ppr->Name);
+                if ($ppr->ProjectPhaseId == $cpp->ProjectPhaseId) {
+                    $temp['Resources'][] = [
+                        'Id'                      => $ppr->Id,
+                        'ppId'                      => $cpp->ProjectPhaseId,
+                        'Name'          => $initial,
+                        'Percentage'                   => $ppr->Percentage
+                    ];
+                }
+            }
+
             $data[] = $temp;
         }
 
         return $data;
     }
 
+    function getInitials($name){
+        $string = $name;
+        $expr = '/(?<=\s|^)\w/iu';
+        preg_match_all($expr, $string, $matches);
+        $result = implode('', $matches[0]);
+        return strtoupper($result);
+    }
 }

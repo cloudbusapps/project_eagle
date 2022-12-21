@@ -1267,8 +1267,11 @@
                                                                     style="white-space: break-spaces;">{{ $cpp['Title'] }}</small>
                                                             </td>
                                                             <td>
+                                                                @foreach ($cpp['Resources'] as $resources)
                                                                 <small
-                                                                    style="white-space: break-spaces;"></small>
+                                                                style="white-space: break-spaces;">{{ $resources['Name'].':'.$resources['Percentage'].'%' }}</small>,
+                                                                @endforeach
+                                                                
                                                             </td>
                                                             <td>
                                                                 <small
