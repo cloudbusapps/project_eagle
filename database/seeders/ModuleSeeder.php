@@ -18,7 +18,8 @@ class ModuleSeeder extends Seeder
      */
     public function run()
     {
-        $truncate = Module::truncate();
+        Module::truncate();
+        DB::table('module_table_related')->truncate();
 
         $UserId = Str::uuid();
 
@@ -35,6 +36,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'dashboard',
                 'Status'        => 1,
                 'SortOrder'     => 1,
+                'TableName'     => null,
             ],
             [
                 'id'            => 2,
@@ -47,6 +49,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'onboardingProcedure',
                 'Status'        => 1,
                 'SortOrder'     => 2,
+                'TableName'     => null,
             ],
             [
                 'id'            => 3,
@@ -59,6 +62,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'directory',
                 'Status'        => 1,
                 'SortOrder'     => 3,
+                'TableName'     => 'users',
             ],
             [
                 'id'            => 4,
@@ -71,6 +75,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'leave',
                 'Status'        => 1,
                 'SortOrder'     => 4,
+                'TableName'     => null,
             ],
             [
                 'id'            => 5,
@@ -83,6 +88,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'evaluation',
                 'Status'        => 1,
                 'SortOrder'     => 5,
+                'TableName'     => null,
             ],
             [
                 'id'            => 6,
@@ -95,6 +101,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'training',
                 'Status'        => 1,
                 'SortOrder'     => 6,
+                'TableName'     => null,
             ],
             [
                 'id'            => 7,
@@ -107,6 +114,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'certification',
                 'Status'        => 1,
                 'SortOrder'     => 7,
+                'TableName'     => null,
             ],
             // ----- END EMPLOYEE PROFILE -----
 
@@ -123,6 +131,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'projectUtilization',
                 'Status'        => 1,
                 'SortOrder'     => 3,
+                'TableName'     => null,
             ],
             [
                 'id'            => 9,
@@ -135,6 +144,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'projects',
                 'Status'        => 1,
                 'SortOrder'     => 1,
+                'TableName'     => null,
             ],
             [
                 'id'            => 10,
@@ -147,6 +157,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'resources',
                 'Status'        => 1,
                 'SortOrder'     => 2,
+                'TableName'     => null,
             ],
             [
                 'id'            => 11,
@@ -159,6 +170,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'components',
                 'Status'        => 1,
                 'SortOrder'     => 3,
+                'TableName'     => null,
             ],
             [
                 'id'            => 12,
@@ -171,6 +183,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'budget',
                 'Status'        => 1,
                 'SortOrder'     => 4,
+                'TableName'     => null,
             ],
             [
                 'id'            => 13,
@@ -183,6 +196,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'overtimeRequest',
                 'Status'        => 1,
                 'SortOrder'     => 5,
+                'TableName'     => null,
             ],
             [
                 'id'            => 14,
@@ -195,6 +209,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'timekeeping',
                 'Status'        => 1,
                 'SortOrder'     => 6,
+                'TableName'     => null,
             ],
             [
                 'id'            => 15,
@@ -207,6 +222,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'projectDashboard',
                 'Status'        => 1,
                 'SortOrder'     => 1,
+                'TableName'     => null,
             ],
             [
                 'id'            => 18,
@@ -219,6 +235,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'customer',
                 'Status'        => 1,
                 'SortOrder'     => 2,
+                'TableName'     => null,
             ],
             // ----- END UTILIZATION -----
 
@@ -235,6 +252,7 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'reportDashboard',
                 'Status'        => 1,
                 'SortOrder'     => 1,
+                'TableName'     => null,
             ],
             [
                 'id'            => 17,
@@ -247,9 +265,19 @@ class ModuleSeeder extends Seeder
                 'Prefix'        => 'reports',
                 'Status'        => 1,
                 'SortOrder'     => 2,
+                'TableName'     => null,
             ],
             // ----- END REPORTS AND DASHBOARDS -----
             
+        ];
+
+        $relatedData = [
+            // DIRECTORY | ID = 3
+            [
+                'ModuleId'  => 3,
+                'Title'     => 'Leave Balance',
+                'TableName' => 'user_leave_balances',
+            ],
         ];
 
         Module::insert($data);
@@ -257,5 +285,7 @@ class ModuleSeeder extends Seeder
             setval(pg_get_serial_sequence('modules', 'id'), 
             max(id)) 
         FROM modules");
+
+        DB::table('module_table_related')->insert($relatedData);
     }
 }

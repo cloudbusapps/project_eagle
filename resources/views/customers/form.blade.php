@@ -73,6 +73,7 @@
         default: break;
     }
 
+    $DisableAttr = ''; // TEMP
     $RequiredLabel = $DisableAttr ? '' : "<code>*</code>";
     // ----- END PERMISSION -----
 

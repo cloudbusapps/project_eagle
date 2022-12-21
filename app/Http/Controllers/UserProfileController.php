@@ -43,10 +43,11 @@ class UserProfileController extends Controller
                 ->where('u.Id', $UserId)
                 ->first();
 
-            $leaveBalance = LeaveType::select('leave_types.*', 
-                DB::raw('(SELECT "Balance" FROM user_leave_balances WHERE "UserId" = \''. $UserId .'\' AND "LeaveTypeId" = "leave_types"."Id") AS "Balance"'))
-                ->where('Status', 1)
-                ->get();
+            // $leaveBalance = LeaveType::select('leave_types.*', 
+            //     DB::raw('(SELECT "Balance" FROM user_leave_balances WHERE "UserId" = \''. $UserId .'\' AND "LeaveTypeId" = "leave_types"."Id") AS "Balance"'))
+            //     ->where('Status', 1)
+            //     ->get();
+            $leaveBalance = [];
 
             $data = [
                 'title'          => 'Profile',

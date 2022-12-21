@@ -183,6 +183,7 @@ Route::prefix('leaveRequest')->group(function () {
 
 // ----- ADMIN -----
 use App\Http\Controllers\admin\ModuleController;
+use App\Http\Controllers\admin\DataManagementController;
 use App\Http\Controllers\admin\DepartmentController;
 use App\Http\Controllers\admin\DesignationController;
 use App\Http\Controllers\admin\ModuleApprovalController;
@@ -200,6 +201,24 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
         Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('module.edit');
         Route::put('/edit/{id}/update', [ModuleController::class, 'update'])->name('module.update');
         Route::get('/delete/{id}', [ModuleController::class, 'delete'])->name('module.delete');
+    });
+
+    // IMPORT
+    Route::prefix('dataManagement')->group(function () {
+        Route::get('/', [DataManagementController::class, 'index'])->name('dataManagement');
+        Route::get('/moduleTemplate', [DataManagementController::class, 'moduleTemplate'])->name('dataManagement.moduleTemplate');
+        Route::get('/exportModuleData', [DataManagementController::class, 'exportModuleData'])->name('dataManagement.exportModuleData');
+        Route::get('/importModuleData', [DataManagementController::class, 'importModuleData'])->name('dataManagement.importModuleData');
+        Route::post('/importModuleData/save', [DataManagementController::class, 'importModuleDataSave'])->name('dataManagement.importModuleData.save');
+        Route::post('/validateModuleHeader', [DataManagementController::class, 'validateModuleHeader'])->name('dataManagement.validateModuleHeader');
+
+
+
+        Route::get('/add', [DataManagementController::class, 'form'])->name('dataManagement.add');
+        Route::post('/save', [DataManagementController::class, 'save'])->name('dataManagement.save');
+        Route::get('/edit/{id}', [DataManagementController::class, 'edit'])->name('dataManagement.edit');
+        Route::put('/edit/{id}/update', [DataManagementController::class, 'update'])->name('dataManagement.update');
+        Route::get('/delete/{id}', [DataManagementController::class, 'delete'])->name('dataManagement.delete');
     });
 
     // SETUP

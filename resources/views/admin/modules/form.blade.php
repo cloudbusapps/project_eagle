@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-    $ParentId = $Title = $WithApproval = $RouteName = $Prefix = $todo = null;
+    $ParentId = $Title = $WithApproval = $RouteName = $Prefix = $TableName = $todo = null;
     $SortOrder = 1;
     $Icon      = "default.png"; 
     $Status    = "Active";
@@ -22,6 +22,7 @@
         $Status    = (!empty($data)) ? ($data['Status'] ?? '') : '';
         $RouteName = (!empty($data)) ? ($data['RouteName'] ?? '') : '';
         $Prefix    = (!empty($data)) ? ($data['Prefix'] ?? '') : '';
+        $TableName = (!empty($data)) ? ($data['TableName'] ?? '') : '';
     } else {
         $todo   = "insert";
         $method = "POST";
@@ -129,6 +130,13 @@
                                     </div>
                                 </div>
                                 <div class="row my-3">
+                                    <label for="TableName" class="col-sm-2">Table Name</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="TableName" name="TableName" placeholder="Table Name"
+                                            value="{{ old('TableName') ?? $TableName }}">
+                                    </div>
+                                </div>
+                                <div class="row my-3">
                                     <label for="Icon" class="col-sm-2">Icon</label>
                                     <div class="col-sm-10">
                                         <input type="file" class="form-control" id="Icon" name="Icon" placeholder="Icon">
@@ -143,6 +151,63 @@
                                             <option value="1" {{ $Status == 1 ? "selected" : "" }}>Active</option>
                                             <option value="0" {{ $Status == 0 ? "selected" : "" }}>Inactive</option>
                                         </select>
+                                    </div>
+                                </div>
+
+                                <div class="card mt-4">
+                                    <div class="card-header py-3">
+                                        <h5 class="mb-0">RELATED TABLE</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-bordered table-hover" id="tableRelatedTable">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 10%;"></th>
+                                                    <th style="width: 45%;">TITLE</th>
+                                                    <th style="width: 45%;">TABLE NAME</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                @if (isset($relatedData) && count($relatedData))
+                                                    @foreach ($relatedData as $dt)
+                                                        <tr>
+                                                            <td class="text-center">
+                                                                <button type="button" class="btn btn-outline-danger btnDeleteRow">
+                                                                    <i class="bi bi-trash"></i>
+                                                                </button>
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="Related[Title][]" class="form-control" value="{{ $dt->Title }}" required>
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="Related[TableName][]" class="form-control" value="{{ $dt->TableName }}" required>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                @else
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <button type="button" class="btn btn-outline-danger btnDeleteRow">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="Related[Title][]" class="form-control" required>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="Related[TableName][]" class="form-control" required>
+                                                        </td>
+                                                    </tr>
+                                                @endif
+
+
+                                            </tbody>
+                                        </table>
+
+                                        <button class="btn btn-outline-primary btnAddRow" type="button">
+                                            <i class="fas fa-plus"></i> Add Row
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -254,6 +319,38 @@
             }
         })
         // ----- END SELECT ICON -----
+
+
+        // ----- BUTTON ADD ROW -----
+        $(document).on('click', '.btnAddRow', function() {
+            let html = `
+            <tr>
+                <td class="text-center">
+                    <button type="button" class="btn btn-outline-danger btnDeleteRow">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+                <td>
+                    <input type="text" name="Related[Title][]" class="form-control" required>
+                </td>
+                <td>
+                    <input type="text" name="Related[TableName][]" class="form-control" required>
+                </td>
+            </tr>`;
+
+            $('#tableRelatedTable tbody').append(html);
+        })
+        // ----- END BUTTON ADD ROW -----
+
+
+        // ----- BUTTON DELETE ROW -----
+        $(document).on('click', '.btnDeleteRow', function() {
+            let $parent = $(this).closest('tr');
+            $parent.fadeOut(500, function() {
+                $parent.remove();
+            })
+        })
+        // ----- END BUTTON DELETE ROW -----
 
     })
 
