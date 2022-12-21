@@ -432,6 +432,32 @@ class CustomerController extends Controller
         $customerData->Status = 7;
     }
 
+    function updateConsultant($request, $Id, $customerData){
+        return 1;
+        $consultants = $request->ResourcesId;
+        if ($consultants && count($consultants)) {
+            $consultantsData = [];
+            foreach ($consultants as $i => $consultant) {
+                $consultantsData[] = [
+                    'Id'           => Str::uuid(),
+                    'CustomerId' => $Id,
+                    'UserId'        => $consultant,
+                    'CreatedById'  => Auth::id(),
+                    'UpdatedById'  => Auth::id(),
+                ];
+            }
+
+            $update = CustomerConsultant::insert($consultantsData);
+        }
+        if ($update) {
+            $request->session()->flash('success', 'Manhour updated');
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
+        } else {
+            $request->session()->flash('fail', 'Something went wrong, try again later');
+                return response()->json(['url' => url('customer/edit/' . $Id)]);
+        }
+    }
+
     function updateManhour(Request $request, $Id)
     {
         // $validator = $request->validate([
@@ -443,7 +469,7 @@ class CustomerController extends Controller
            $update = $inscope->save();
         }
         if ($update) {
-            $request->session()->flash('success', 'Users updated');
+            $request->session()->flash('success', 'Manhour updated');
             return response()->json(['url' => url('customer/edit/' . $Id)]);
         } else {
             $request->session()->flash('fail', 'Something went wrong, try again later');
@@ -483,22 +509,9 @@ class CustomerController extends Controller
         }
         // ASSESSMENT
         else if ($customerData->Status == 7) {
-            $consultants = $request->AssignedConsultant;
-            if ($consultants && count($consultants)) {
-                $consultantsData = [];
-                foreach ($consultants as $i => $consultant) {
-                    $consultantsData[] = [
-                        'Id'           => Str::uuid(),
-                        'CustomerId' => $Id,
-                        'UserId'        => $consultant,
-                        'CreatedById'  => Auth::id(),
-                        'UpdatedById'  => Auth::id(),
-                    ];
-                }
-
-                CustomerConsultant::insert($consultantsData);
-            }
-            // $customerData->Status = 8;
+            $this->updateConsultant($request, $Id, $customerData);
+            
+        // $customerData->Status = 8;
         }
 
 
