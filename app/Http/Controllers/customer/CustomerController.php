@@ -86,6 +86,7 @@ class CustomerController extends Controller
             'thirdParties'        => ThirdParty::orderBy('created_at', 'DESC')->get(),
             'MODULE_ID'           => $this->MODULE_ID,
             'assignedConsultants'  => $assignedConsultants,
+            'customerProjectPhases' => $this->getCustomerProjectPhase($Id)
         ];
 
 
@@ -432,9 +433,10 @@ class CustomerController extends Controller
         $customerData->Status = 7;
     }
 
-    function updateConsultant($request, $Id, $customerData){
-        return 1;
-        $consultants = $request->ResourcesId;
+    function updateConsultant(Request $request, $Id){
+        
+        $consultants = $request->selectedConsultants;
+        
         if ($consultants && count($consultants)) {
             $consultantsData = [];
             foreach ($consultants as $i => $consultant) {
@@ -446,11 +448,11 @@ class CustomerController extends Controller
                     'UpdatedById'  => Auth::id(),
                 ];
             }
-
+            CustomerConsultant::where('CustomerId', $Id)->delete();
             $update = CustomerConsultant::insert($consultantsData);
         }
         if ($update) {
-            $request->session()->flash('success', 'Manhour updated');
+            $request->session()->flash('success', 'Consulant updated');
             return response()->json(['url' => url('customer/edit/' . $Id)]);
         } else {
             $request->session()->flash('fail', 'Something went wrong, try again later');
@@ -509,9 +511,28 @@ class CustomerController extends Controller
         }
         // ASSESSMENT
         else if ($customerData->Status == 7) {
-            $this->updateConsultant($request, $Id, $customerData);
-            
-        // $customerData->Status = 8;
+        //  FOR CONSULTANT: CHECK IF ANY FIELD ID NULL
+        $hasNull = CustomerInscope::where('CustomerId',$Id)
+        ->whereNull('Manhour')
+        ->get();
+        if(count($hasNull)>0){
+            return redirect()
+            ->route('customers.edit', ['Id' => $Id])
+            ->with('fail', "<b>Fill out</b> all the manhours");
+        } else{
+            $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)->get();
+            // IF USER IS DEPT.HEAD GO TO PROPOSAL
+            if(Auth::id()==getDepartmentHeadId(config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION'))){
+                $customerData->Status = 7;
+            } else if($assignedConsultants->contains('UserId',Auth::id())){
+                // NOTIFY DEPT. HEAD
+
+            }
+        }
+        
+        }// ASSESSMENT
+        else if ($customerData->Status == 8) {
+
         }
 
 
@@ -625,6 +646,84 @@ class CustomerController extends Controller
                     ];
                 }
             }
+            $data[] = $temp;
+        }
+
+        return $data;
+    }
+
+    function getCustomerProjectPhase($Id = null)
+    {
+        $data = [];
+
+        $customerProjectPhase = DB::table('customer_project_phases AS ccp')
+            ->leftJoin('project_phases AS pp', function ($join) use ($Id) {
+                $join->on('ccp.ProjectPhaseId','pp.Id');
+                $join->on('ccp.CustomerId', DB::raw("'{$Id}'"));
+            })
+            ->where('pp.Status', 1)
+            ->get(['ccp.*','pp.Title AS ProjectPhaseTitle','pp.Status']);
+
+        foreach ($customerProjectPhase as $index => $cpp) {
+            $temp = [
+                'Id'                => $cpp->Id,
+                'Title'             => $cpp->Title,
+                'ProjectPhaseTitle' => $cpp->ProjectPhaseTitle,
+                'Status'            => $cpp->Status,
+                // 'Required'          => $cpp->Required,
+                'Percentage'        => $cpp->Percentage,
+                'Checked'           => $cpp->Checked,
+                'Details'           => [],
+                'Resources'         => []
+            ];
+
+            $customerProjectPhasesDetails = DB::table('customer_project_phases_details AS cppd')
+                ->leftJoin('project_phases_details AS ppd', function ($join) use ($Id) {
+                    $join->on('cppd.ProjectPhaseDetailId','ppd.Id');
+                    $join->on('cppd.CustomerId', DB::raw("'{$Id}'"));
+                })
+                ->where('ppd.Status', 1)
+                ->where('cppd.CustomerProjectPhaseId', $cpp->Id)
+                ->get(['cppd.*', 'ppd.Title AS ProjectPhaseDetailTitle','ppd.Status']);
+
+            foreach ($customerProjectPhasesDetails as $cppd) {
+
+                if ($cppd->CustomerProjectPhaseId == $cpp->Id) {
+                    $temp['Details'][] = [
+                        'Id'                      => $cppd->Id,
+                        'ProjectPhaseId'          => $cppd->ProjectPhaseId,
+                        'Title'                   => $cppd->Title,
+                        'ProjectPhaseDetailTitle' => $cppd->ProjectPhaseDetailTitle,
+                        'Status'                  => $cppd->Status,
+                        // 'Required'                => $cppd->Required,
+                        'Checked'                 => $cppd->Checked,
+                    ];
+                }
+            }
+
+            // $projectPhaseResources = DB::table('project_phases_resources AS ppr')
+            //     ->leftJoin('project_phases_details AS ppd', function ($join) use ($Id) {
+            //         $join->on('cppd.ProjectPhaseDetailId','ppd.Id');
+            //         $join->on('cppd.CustomerId', DB::raw("'{$Id}'"));
+            //     })
+            //     ->where('ppd.Status', 1)
+            //     ->where('cppd.CustomerProjectPhaseId', $cpp->Id)
+            //     ->get(['cppd.*', 'ppd.Title AS ProjectPhaseDetailTitle','ppd.Status']);
+
+            // foreach ($projectPhaseResources as $ppr) {
+
+            //     if ($cppd->CustomerProjectPhaseId == $cpp->Id) {
+            //         $temp['Resources'][] = [
+            //             'Id'                      => $ppr->Id,
+            //             'ProjectPhaseId'          => $ppr->ProjectPhaseId,
+            //             'Title'                   => $ppr->Title,
+            //             'ProjectPhaseDetailTitle' => $ppr->ProjectPhaseDetailTitle,
+            //             'Status'                  => $ppr->Status,
+            //             // 'Required'                => $cppd->Required,
+            //             'Checked'                 => $ppr->Checked,
+            //         ];
+            //     }
+            // }
             $data[] = $temp;
         }
 

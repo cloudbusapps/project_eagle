@@ -39,7 +39,7 @@
             if(Auth::id()==getDepartmentHeadId(config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION'))){
                 $button = '
                 <a href="#" class="btn btn-warning btnRevise">Revise</a>
-                <button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>';
+                <button type="submit" class="btn btn-primary btnUpdateForm">For Release</button>';
             } else{
                 $button = '
                 <a href="#" class="btn btn-warning btnUpdate">Update</a>
@@ -310,7 +310,7 @@
                 @if (Session::get('fail'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="bi bi-exclamation-octagon me-1"></i>
-                        <?= Session::get('danger') ?>
+                        <?= Session::get('fail') ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
@@ -984,7 +984,7 @@
                                                     <div class="col-12 mt-3">
                                                         <div class="alert alert-warning">
                                                             <b>For non-accredited third party, please complete the following
-                                                                requirements</b>
+                                                                requirements:</b>
                                                             <ul>
                                                                 <li>Apostilled Articles of Incorporation/ Certificate of
                                                                     Incorporation</li>
@@ -1238,6 +1238,53 @@
                                     <!-- ---------- END PROJECT PHASE ---------- -->
                                 @elseif ($Status == 7 || Request::get('progress') == 'assessment')
                                     <!-- ---------- ASSESSMENT ---------- -->
+                                    <div class="card mb-3">
+                                        <div class="card-header py-3">
+                                            <h5 class="card-title mb-0">Engagement Summary Efforts</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <table id="inScopeTable" cellpadding="0" cellspacing="0"
+                                            class="table table-bordered table-hover"
+                                            style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>No.</th>
+                                                    <th>Project Phase</th>
+                                                    <th></th>
+                                                    <th>%</th>
+                                                    <th>Effort(Hrs.)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (!empty($customerProjectPhases) && count($customerProjectPhases) > 0)
+                                                    @foreach ($customerProjectPhases as $index => $cpp)
+                                                        <tr>
+                                                            <td class="text-center">
+                                                                {{ $index+1 }}
+                                                            </td>
+                                                            <td>
+                                                                <small
+                                                                    style="white-space: break-spaces;">{{ $cpp['Title'] }}</small>
+                                                            </td>
+                                                            <td>
+                                                                <small
+                                                                    style="white-space: break-spaces;"></small>
+                                                            </td>
+                                                            <td>
+                                                                <small
+                                                                    style="white-space: break-spaces;">{{ $cpp['Percentage'] }}</small>
+                                                            </td>
+                                                            <td>
+                                                                <small
+                                                                    style="white-space: break-spaces;"></small>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                    </div>
 
                                     <div class="card mb-3">
                                         <div class="card-header py-3">
@@ -1533,7 +1580,6 @@
                             btnClass: 'btn-blue',
                             keys: ['enter'],
                             action: function() {
-
                                 let data = [];
                                 $("input[name='RowId[]']").each(function(index) {
                                     let obj = {
@@ -1574,9 +1620,9 @@
             // UPDATE FOR ASSESSMENT
             $(document).on('click', '.btnAssign', function(e) {
                 e.preventDefault();
-                const selectedConsultant = $('#ResourcesId').select2('data').length;
+                let selectedConsultants = $('#ResourcesId').val();
                 let message = "Are you sure you want to assign this user?";
-                if(selectedConsultant > 1){
+                if(selectedConsultants.length > 1){
                     message = "Are you sure you want to assign these users?";
                 }
                 let content = `
@@ -1600,11 +1646,11 @@
                                 let method = 'PUT';
                                 $.ajax({
                                     type: method,
-                                    url: '{{ $Id }}/update',
+                                    url: `{{ $Id }}/updateConsultant`,
+                                    data:{selectedConsultants},
                                     async: false,
                                     success: function(response) {
-                                        console.log(response)
-                                        // window.location = response.url;
+                                        window.location = response.url;
                                     }
                                 })
 
