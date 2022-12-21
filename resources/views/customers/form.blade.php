@@ -32,17 +32,19 @@
         $BusinessNotes = !empty($businessProcessData) ? $businessProcessData['Note'] ?? '' : '';
     
         $BusinessNotes = !empty($businessProcessData) ? $businessProcessData['Note'] ?? '' : '';
-    
+        
         $button = '<button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>';
         // <a href="forms/customers/delete/' .
         // $Id .
         // '" class="btn btn-danger btnDeleteForm">Delete</a>
-    
+        $buttonName = 'Submit';
         if ($Status == 7 || Request::get('progress') == 'assessment') {
+            
+            $buttonName = "Assign Consultant";
             $button = '
-                                                                                                    <a href="#" class="btn btn-warning btnUpdate">Update</a>
-                                                                                                    <button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>
-                                                                                                     ';
+                                                                                                        <a href="#" class="btn btn-warning btnUpdate">Update</a>
+                                                                                                        <button type="submit" class="btn btn-primary btnUpdateForm">'.$buttonName.'</button>
+                                                                                                         ';
         }
     
         $todo = 'update';
@@ -385,28 +387,31 @@
                             <div class="profile-overview">
 
                                 @if ($Status != 0 && Request::get('progress') != 'information')
-                                <div class="row mb-4">
-                                    <div class="col-md-4 col-sm-12">
-                                        <div class="form-group">
-                                            <label for="">Customer Name</label>
-                                            <input type="text" class="form-control" value="{{ $data['CustomerName'] }}" disabled>
+                                    <div class="row mb-4">
+                                        <div class="col-md-4 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="">Customer Name</label>
+                                                <input type="text" class="form-control"
+                                                    value="{{ $data['CustomerName'] }}" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="">Industry</label>
+                                                <input type="text" class="form-control" value="{{ $data['Industry'] }}"
+                                                    disabled>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-12">
+                                            <div class="form-group">
+                                                <label for="">Contact Person</label>
+                                                <input type="text" class="form-control"
+                                                    value="{{ $data['ContactPerson'] }}" disabled>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-4 col-sm-12">
-                                        <div class="form-group">
-                                            <label for="">Industry</label>
-                                            <input type="text" class="form-control" value="{{ $data['Industry'] }}" disabled>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 col-sm-12">
-                                        <div class="form-group">
-                                            <label for="">Contact Person</label>
-                                            <input type="text" class="form-control" value="{{ $data['ContactPerson'] }}" disabled>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-body">
+                                    <div class="card">
+                                        <div class="card-body">
                                 @endif
 
 
@@ -423,9 +428,9 @@
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Industry <code>*</code></label>
                                         <div class="col-sm-10">
-                                            <input {{ $editable }} value="{{ old('Industry') ?? $Industry }}" required
-                                                type="text" class="form-control" name="Industry" id="Industry"
-                                                placeholder="Industry">
+                                            <input {{ $editable }} value="{{ old('Industry') ?? $Industry }}"
+                                                required type="text" class="form-control" name="Industry"
+                                                id="Industry" placeholder="Industry">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -452,9 +457,15 @@
                                         <div class="col-sm-10">
                                             <select required select2 name="Product" id="Product" class="form-select">
                                                 <option value="" selected disabled>Select Product</option>
-                                                <option value="1" {{ isset($data['Product']) && $data['Product'] == 1 ? 'selected' : '' }}>Sales</option>
-                                                <option value="2" {{ isset($data['Product']) && $data['Product'] == 2 ? 'selected' : '' }}>Service</option>
-                                                <option value="3" {{ isset($data['Product']) && $data['Product'] == 3 ? 'selected' : '' }}>Marketing</option>
+                                                <option value="1"
+                                                    {{ isset($data['Product']) && $data['Product'] == 1 ? 'selected' : '' }}>
+                                                    Sales</option>
+                                                <option value="2"
+                                                    {{ isset($data['Product']) && $data['Product'] == 2 ? 'selected' : '' }}>
+                                                    Service</option>
+                                                <option value="3"
+                                                    {{ isset($data['Product']) && $data['Product'] == 3 ? 'selected' : '' }}>
+                                                    Marketing</option>
 
                                             </select>
                                         </div>
@@ -464,8 +475,12 @@
                                         <div class="col-sm-10">
                                             <select required select2 name="Type" id="Type" class="form-select">
                                                 <option value="" selected disabled>Select Type</option>
-                                                <option value="1" {{ isset($data['Type']) && $data['Type'] == 1 ? 'selected' : '' }}>Deployment</option>
-                                                <option value="2" {{ isset($data['Type']) && $data['Type'] == 2 ? 'selected' : '' }}>Enhancement</option>
+                                                <option value="1"
+                                                    {{ isset($data['Type']) && $data['Type'] == 1 ? 'selected' : '' }}>
+                                                    Deployment</option>
+                                                <option value="2"
+                                                    {{ isset($data['Type']) && $data['Type'] == 2 ? 'selected' : '' }}>
+                                                    Enhancement</option>
 
                                             </select>
                                         </div>
@@ -474,25 +489,25 @@
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Notes <code>*</code></label>
                                         <div class="col-sm-10">
-                                            <textarea {{ $editable }} style="resize: none;" rows="3" required type="text" class="form-control" name="Notes"
-                                                id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
+                                            <textarea {{ $editable }} style="resize: none;" rows="3" required type="text" class="form-control"
+                                                name="Notes" id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
                                         </div>
                                     </div>
-                               
 
-                                        <!-- ---------- END INFORMATION ---------- -->
-                                    @elseif ($Status == 1 || Request::get('progress') == 'complexity')
-                                        <!-- ---------- COMPLEXITY ---------- -->
-                                        <div class="row mb-3">
+
+                                    <!-- ---------- END INFORMATION ---------- -->
+                                @elseif ($Status == 1 || Request::get('progress') == 'complexity')
+                                    <!-- ---------- COMPLEXITY ---------- -->
+                                    <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Is Complex?</label>
-        
+
                                         <div class="col-sm-10">
                                             <input type="checkbox" class="custom-control-input" id="IsComplex"
                                                 name="IsComplex"
                                                 {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'checked' : '' }}>
                                         </div>
-                                        </div>
-                                        <?php $complexDisableField = $data['Status'] > 2 ? 'disabled' : ''; ?>
+                                    </div>
+                                    <?php $complexDisableField = $data['Status'] > 2 ? 'disabled' : ''; ?>
 
                                     <div class="row mb-2">
                                         <div class="col-12">
@@ -505,7 +520,9 @@
 
                                     <div class="row mb-3">
                                         <div class="col-12">
-                                            <table style="display: {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'block' : 'none' }}" id="mainTable" class="table table-bordered table-hover">
+                                            <table
+                                                style="display: {{ isset($data['IsComplex']) && $data['IsComplex'] == 1 ? 'block' : 'none' }}"
+                                                id="mainTable" class="table table-bordered table-hover">
                                                 <thead>
                                                     <tr>
                                                         <th colspan="2" scope="col">COMPLEXITY</th>
@@ -514,24 +531,34 @@
                                                 <tbody>
 
                                                     @foreach ($complexities as $index => $complexity)
-                                                        <input type="hidden" name="complexity[{{ $complexity['Id'] }}][Id]" value="{{ $complexity['Id'] }}">
-                                                        <input type="hidden" name="complexity[{{ $complexity['Id'] }}][Title]" value="{{ $complexity['Title'] }}">
+                                                        <input type="hidden"
+                                                            name="complexity[{{ $complexity['Id'] }}][Id]"
+                                                            value="{{ $complexity['Id'] }}">
+                                                        <input type="hidden"
+                                                            name="complexity[{{ $complexity['Id'] }}][Title]"
+                                                            value="{{ $complexity['Title'] }}">
 
                                                         <tr>
                                                             <td>{{ $complexity['Title'] }}
 
                                                                 @if (count($complexity['Details']) > 0)
-                                                                    <table class="table table-bordered table-hover mt-2 mb-0">
+                                                                    <table
+                                                                        class="table table-bordered table-hover mt-2 mb-0">
                                                                         @foreach ($complexity['Details'] as $SubDetail)
-                                                                        <input type="hidden" name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Id]" value="{{ $SubDetail['Id'] }}">
-                                                                        <input type="hidden" name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Title]" value="{{ $SubDetail['Title'] }}">
+                                                                            <input type="hidden"
+                                                                                name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Id]"
+                                                                                value="{{ $SubDetail['Id'] }}">
+                                                                            <input type="hidden"
+                                                                                name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Title]"
+                                                                                value="{{ $SubDetail['Title'] }}">
 
                                                                             <tr>
                                                                                 <td>
                                                                                     <li>{{ $SubDetail['Title'] }}</li>
                                                                                 </td>
                                                                                 <td class="text-center">
-                                                                                    <div class="custom-control custom-checkbox">
+                                                                                    <div
+                                                                                        class="custom-control custom-checkbox">
                                                                                         <input type="checkbox"
                                                                                             class="custom-control-input subComplexity"
                                                                                             id="subCheck"
@@ -548,7 +575,8 @@
                                                             </td>
                                                             <td class="text-center">
                                                                 <div class="custom-control custom-checkbox">
-                                                                    <input type="checkbox" class="custom-control-input mainComplexity"
+                                                                    <input type="checkbox"
+                                                                        class="custom-control-input mainComplexity"
                                                                         value={{ $complexity['Id'] }} id="mainCheck"
                                                                         name="complexity[{{ $complexity['Id'] }}][Selected]"
                                                                         {{ $complexity['Checked'] == 1 ? 'checked' : '' }}
@@ -561,56 +589,57 @@
                                             </table>
                                         </div>
                                     </div>
-                                <!-- ---------- END COMPLEXITY ---------- -->
+                                    <!-- ---------- END COMPLEXITY ---------- -->
                                 @elseif ($Status == 2 || Request::get('progress') == 'dsw')
-                                            <!-- ---------- DSW ---------- -->
-                                            @if ($data['DSWStatus'] > 0)
-                                                <div class="row mb-3">
-                                                    <label for="inputText" class="col-sm-2 label">Current Progress for
-                                                        DSW
-                                                        <code>*</code></label>
-                                                    <div class="col-sm-10">
-                                                        <div class="row">
-                                                            <div class="col-sm-2 dwsCon">
-                                                                <div class="divSquare activeStatus">
-                                                                    <strong>DSW Started</strong>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-sm-2 dwsCon">
-                                                                <div class="divSquare">
-                                                                    <strong>Ongoing DSW</strong>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-sm-2 dwsCon">
-                                                                <div class="divSquare">
-                                                                    <strong>Completed DSW</strong>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-sm-2 dwsCon">
-                                                                <div class="divSquare">
-                                                                    <strong>For Consolidation of Requirements</strong>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-sm-2 dwsCon">
-                                                                <div class="divSquare">
-                                                                    <strong>Completeted Requirements
-                                                                        Consolidation</strong>
-                                                                </div>
-                                                            </div>
-                                                            {{-- <div class="col-sm-2 dwsCon">
+                                    <!-- ---------- DSW ---------- -->
+                                    @if ($data['DSWStatus'] > 0)
+                                        <div class="row mb-3">
+                                            <label for="inputText" class="col-sm-2 label">Current Progress for
+                                                DSW
+                                                <code>*</code></label>
+                                            <div class="col-sm-10">
+                                                <div class="row">
+                                                    <div class="col-sm-2 dwsCon">
+                                                        <div class="divSquare activeStatus">
+                                                            <strong>DSW Started</strong>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-2 dwsCon">
+                                                        <div class="divSquare">
+                                                            <strong>Ongoing DSW</strong>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-2 dwsCon">
+                                                        <div class="divSquare">
+                                                            <strong>Completed DSW</strong>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-2 dwsCon">
+                                                        <div class="divSquare">
+                                                            <strong>For Consolidation of Requirements</strong>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-2 dwsCon">
+                                                        <div class="divSquare">
+                                                            <strong>Completeted Requirements
+                                                                Consolidation</strong>
+                                                        </div>
+                                                    </div>
+                                                    {{-- <div class="col-sm-2 dwsCon">
                                                     <div class="divSquare"></div>
                                                     <strong>Completed Sol Doc</strong>
                                                 </div> --}}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
                                     @else
-                                    <h6 class="text-danger text-center">Deployment Strategy Workshop is not available for customer requirements</h6>
+                                        <h6 class="text-danger text-center">Deployment Strategy Workshop is not available
+                                            for customer requirements</h6>
                                     @endif
 
-                                <!-- ---------- END DSW ---------- -->
+                                    <!-- ---------- END DSW ---------- -->
                                 @elseif ($Status == 3 || Request::get('progress') == 'businessProcess')
-                                <!-- ---------- BUSINESS PROCESS ---------- -->
+                                    <!-- ---------- BUSINESS PROCESS ---------- -->
 
                                     <div class="row mb-3">
                                         <label for="File" class="col-sm-2 label">Attachment
@@ -642,15 +671,15 @@
                                                     <span style="font-size:14px" class="text-muted">
                                                         {{ date('F d, Y', strtotime($file->created_at)) }}</span>
 
-                                                        </div>
+                                                </div>
 
-                                                    </div>
-                                                @endforeach
+                                            </div>
+                                        @endforeach
                                     </div>
 
-                                            <!-- ---------- END BUSINESS PROCESS ---------- -->
+                                    <!-- ---------- END BUSINESS PROCESS ---------- -->
                                 @elseif ($Status == 4 || Request::get('progress') == 'requirementSolution')
-                                            <!-- ---------- REQUIREMENT AND SOLUTIONS ---------- -->
+                                    <!-- ---------- REQUIREMENT AND SOLUTIONS ---------- -->
 
                                     <div class="card mb-3">
                                         <div class="card-header py-3">
@@ -659,7 +688,8 @@
                                         <div class="card-body">
                                             <div id="tableContainer" class="mb-3">
                                                 <table id="inScopeTable" cellpadding="0" cellspacing="0"
-                                                    class="table table-bordered" style="min-width: 1200px; width: 100%; max-width: 1500px;">
+                                                    class="table table-bordered"
+                                                    style="min-width: 1200px; width: 100%; max-width: 1500px;">
                                                     <thead>
                                                         <tr>
                                                             <th style="width: 10px;"></th>
@@ -675,10 +705,12 @@
                                                             @foreach ($reqSol as $index => $inscope)
                                                                 <tr>
                                                                     <td class="text-center">
-                                                                        <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
+                                                                        <button type="button"
+                                                                            class="btn btn-outline-danger btnDeleteRow"><i
+                                                                                class="bi bi-trash"></i></button>
                                                                     </td>
                                                                     <td>
-                                                                        <input value={{ $inscope->Title }} name="Title[]" class="form-control">
+                                                                        <textarea name="Title[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Title }}</textarea>
                                                                     </td>
                                                                     <td>
                                                                         <textarea name="Description[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Description }}</textarea>
@@ -697,7 +729,9 @@
                                                         @else
                                                             <tr>
                                                                 <td class="text-center">
-                                                                    <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
+                                                                    <button type="button"
+                                                                        class="btn btn-outline-danger btnDeleteRow"><i
+                                                                            class="bi bi-trash"></i></button>
                                                                 </td>
                                                                 <td>
                                                                     <textarea name="Title[]" class="form-control" rows="3" style="resize: none;"></textarea>
@@ -736,7 +770,8 @@
                                         <div class="card-body">
                                             <div id="tableContainer" class="mb-3">
                                                 <table id="outScopeTable" cellpadding="0" cellspacing="0"
-                                                    class="table table-bordered" style="min-width: 100%; width: 100%; max-width: 1000px;">
+                                                    class="table table-bordered"
+                                                    style="min-width: 100%; width: 100%; max-width: 1000px;">
                                                     <thead>
                                                         <tr>
                                                             <th style="width: 10px;"></th>
@@ -749,7 +784,9 @@
                                                             @foreach ($limitations as $index => $limitation)
                                                                 <tr>
                                                                     <td class="text-center">
-                                                                        <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
+                                                                        <button type="button"
+                                                                            class="btn btn-outline-danger btnDeleteRow"><i
+                                                                                class="bi bi-trash"></i></button>
                                                                     </td>
                                                                     <td>
                                                                         <textarea class="form-control" rows="3" style="resize: none;" name="OutOfScope[]">{{ $limitation->OutScope }}</textarea>
@@ -762,7 +799,9 @@
                                                         @else
                                                             <tr>
                                                                 <td class="text-center">
-                                                                    <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
+                                                                    <button type="button"
+                                                                        class="btn btn-outline-danger btnDeleteRow"><i
+                                                                            class="bi bi-trash"></i></button>
                                                                 </td>
                                                                 <td>
                                                                     <textarea class="form-control" rows="3" style="resize: none;" name="OutOfScope[]"></textarea>
@@ -773,8 +812,8 @@
                                                             </tr>
                                                         @endif
 
-                                                        </tbody>
-                                                    </table>
+                                                    </tbody>
+                                                </table>
 
                                             </div>
                                             <button class="btn btn-outline-primary btnAddRowLimitation" type="button">
@@ -782,10 +821,10 @@
                                             </button>
                                         </div>
                                     </div>
-                                
-                                <!-- ---------- END REQUIREMENT AND SOLUTIONS ---------- -->
+
+                                    <!-- ---------- END REQUIREMENT AND SOLUTIONS ---------- -->
                                 @elseif ($Status == 5 || Request::get('progress') == 'capability')
-                                <!-- ---------- CAPABILITY ---------- -->
+                                    <!-- ---------- CAPABILITY ---------- -->
 
                                     <?php $capabilityDisableField = $data['IsCapable'] == 1 || $data['ThirdPartyStatus'] > 0 ? 'disabled' : ''; ?>
 
@@ -804,7 +843,7 @@
                                                 <div class="card-header py-3">
                                                     <label>
                                                         Is Capable?
-                                                        <input type="checkbox" name="IsCapable" 
+                                                        <input type="checkbox" name="IsCapable"
                                                             {{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'checked' : '' }}
                                                             {{ $capabilityDisableField }}>
                                                     </label>
@@ -812,33 +851,41 @@
                                                 <div class="card-body" id="isCapableDisplay"
                                                     style="{{ isset($data['IsCapable']) && $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
                                                     <div class="row mb-3">
-                                                        <label for="" class="col-sm-2 label">Third Party <code>*</code></label>
+                                                        <label for="" class="col-sm-2 label">Third Party
+                                                            <code>*</code></label>
                                                         <div class="col-sm-10">
-                                                            <select name="ThirdPartyId" id="ThirdPartyId" class="form-select" select2 required
+                                                            <select name="ThirdPartyId" id="ThirdPartyId"
+                                                                class="form-select" select2 required
                                                                 {{ $capabilityDisableField }}>
-                                                                <option value="" selected disabled>Select Third Party</option>
+                                                                <option value="" selected disabled>Select Third Party
+                                                                </option>
 
                                                                 @foreach ($thirdParties as $dt)
-                                                                <option value="{{ $dt['Id'] }}"
-                                                                {{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == $dt['Id'] ? 'selected' : '' }}>
-                                                                    {{ $dt['Name'] }}
-                                                                </option>
+                                                                    <option value="{{ $dt['Id'] }}"
+                                                                        {{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == $dt['Id'] ? 'selected' : '' }}>
+                                                                        {{ $dt['Name'] }}
+                                                                    </option>
                                                                 @endforeach
 
                                                             </select>
 
-                                                            <div class="row" id="otherThirdPartyDisplay" style="{{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == config('constant.ID.THIRD_PARTIES.OTHERS') ? '' : 'display: none;' }}">
+                                                            <div class="row" id="otherThirdPartyDisplay"
+                                                                style="{{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == config('constant.ID.THIRD_PARTIES.OTHERS') ? '' : 'display: none;' }}">
                                                                 <div class="col-12 mt-3">
                                                                     <div class="alert alert-warning">
-                                                                        <b>For non-accredited third party, please complete the following requirements</b>
+                                                                        <b>For non-accredited third party, please complete
+                                                                            the following requirements</b>
                                                                         <ul>
-                                                                            <li>Apostilled Articles of Incorporation/ Certificate of Incorporation</li>
+                                                                            <li>Apostilled Articles of Incorporation/
+                                                                                Certificate of Incorporation</li>
                                                                             <li>Apostilled Tax Residency Certificate</li>
                                                                         </ul>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12">
-                                                                    <input type="text" class="form-control" name="ThirdPartyName" placeholder="Enter Third Party"
+                                                                    <input type="text" class="form-control"
+                                                                        name="ThirdPartyName"
+                                                                        placeholder="Enter Third Party"
                                                                         value="{{ isset($data['ThirdPartyName']) ? $data['ThirdPartyName'] : '' }}"
                                                                         {{ $capabilityDisableField }}>
                                                                 </div>
@@ -847,35 +894,45 @@
                                                     </div>
                                                     <div class="row mb-3">
                                                         <label for="" class="col-sm-2 label">Attachment
-                                                            <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-html="true" title="Link attachment (e.g. Soldoc)"></i>
+                                                            <i class="bi bi-info-circle" data-bs-toggle="tooltip"
+                                                                data-bs-html="true"
+                                                                title="Link attachment (e.g. Soldoc)"></i>
                                                         </label>
                                                         <div class="col-sm-10">
-                                                            <input type="url" class="form-control" name="ThirdPartyAttachment"
+                                                            <input type="url" class="form-control"
+                                                                name="ThirdPartyAttachment"
                                                                 value="{{ isset($data['ThirdPartyAttachment']) ? $data['ThirdPartyAttachment'] : '' }}">
                                                         </div>
                                                     </div>
 
                                                     @if ($capabilityDisableField)
-                                                    <div class="row mb-3">
-                                                        <label for="" class="col-sm-2 label">Status <code>*</code></label>
-                                                        <div class="col-sm-10">
-                                                            <select name="ThirdPartyStatus" id="ThirdPartyStatus" required select2
-                                                                {{ $data['ThirdPartyStatus'] == 3 && $data['Status'] >= 2 ? 'disabled' : '' }}>
-                                                                <option value="" selected disabled>Select Status</option>
-                                                                <option value="1" {{ $data['ThirdPartyStatus'] == 1 ? 'selected' : '' }}>For Accreditation</option>
-                                                                <option value="2" {{ $data['ThirdPartyStatus'] == 2 ? 'selected' : '' }}>Accredited</option>
-                                                            </select>
+                                                        <div class="row mb-3">
+                                                            <label for="" class="col-sm-2 label">Status
+                                                                <code>*</code></label>
+                                                            <div class="col-sm-10">
+                                                                <select name="ThirdPartyStatus" id="ThirdPartyStatus"
+                                                                    required select2
+                                                                    {{ $data['ThirdPartyStatus'] == 3 && $data['Status'] >= 2 ? 'disabled' : '' }}>
+                                                                    <option value="" selected disabled>Select Status
+                                                                    </option>
+                                                                    <option value="1"
+                                                                        {{ $data['ThirdPartyStatus'] == 1 ? 'selected' : '' }}>
+                                                                        For Accreditation</option>
+                                                                    <option value="2"
+                                                                        {{ $data['ThirdPartyStatus'] == 2 ? 'selected' : '' }}>
+                                                                        Accredited</option>
+                                                                </select>
+                                                            </div>
                                                         </div>
-                                                    </div>
                                                     @endif
 
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                <!-- ---------- END CAPABILITY ---------- -->
+                                    <!-- ---------- END CAPABILITY ---------- -->
                                 @elseif ($Status == 6 || Request::get('progress') == 'projectPhase')
-                                <!-- ---------- PROJECT PHASE ---------- -->
+                                    <!-- ---------- PROJECT PHASE ---------- -->
 
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Inclusions <code>*</code></label>
@@ -926,32 +983,34 @@
                                             </table>
                                         </div>
                                     </div>
-                                
-                                <!-- ---------- END PROJECT PHASE ---------- -->
+
+                                    <!-- ---------- END PROJECT PHASE ---------- -->
                                 @elseif ($Status == 7 || Request::get('progress') == 'assessment')
-                                <!-- ---------- ASSESSMENT ---------- -->
+                                    <!-- ---------- ASSESSMENT ---------- -->
 
                                     <div class="card mb-3">
                                         <div class="card-body">
                                             <h5 class="card-title">In-Scope</h5>
                                             <div id="tableContainer" class="mb-3">
                                                 <table id="inScopeTable" cellpadding="0" cellspacing="0"
-                                                    class="table table-bordered">
+                                                    class="table table-bordered"
+                                                    style="min-width: 1200px; width: 100%; max-width: 1500px;">
                                                     <thead>
-                                                        <th scope="col">Requirement List</th>
-                                                        <th scope="col">Description</th>
-                                                        <th scope="col">Salesforce Modules</th>
-                                                        <th scope="col">Solutions Overview</th>
-                                                        <th scope="col">Manhours</th>
-                                                        <th scope="col">Assumptions</th>
+                                                        <th style="width: 20%;">Requirement List</th>
+                                                        <th style="width: 20%;">Description</th>
+                                                        <th style="width: 20%;">Salesforce Modules</th>
+                                                        <th style="width: 20%;">Solutions Overview</th>
+                                                        <th style="width: 20%;">Manhours</th>
+                                                        <th style="width: 20%;">Assumptions</th>
                                                     </thead>
                                                     <tbody>
                                                         @if (!empty($reqSol) && count($reqSol) > 0)
                                                             @foreach ($reqSol as $index => $inscope)
+                                                            <input name="RowId[]" type="hidden" value="{{ $inscope->Id }}">
                                                                 <tr>
                                                                     <td>
                                                                         <textarea disabled name="Title[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Title }}</textarea>
-                                                                      </td>
+                                                                    </td>
                                                                     <td>
                                                                         <textarea disabled name="Description[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Description }}</textarea>
                                                                     </td>
@@ -962,8 +1021,7 @@
                                                                         <textarea disabled name="Solution[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Solution }}</textarea>
                                                                     </td>
                                                                     <td>
-                                                                        <input type="number" name="Manhour[]"
-                                                                            value="{{ $inscope->Manhour }}" class="form-control" rows="3" style="resize: none;">
+                                                                        <textarea name="Manhour[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Manhour }}</textarea>
                                                                     </td>
                                                                     <td>
                                                                         <textarea disabled name="Assumption[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Assumption }}</textarea>
@@ -995,10 +1053,10 @@
                                                             @foreach ($limitations as $index => $limitation)
                                                                 <tr>
                                                                     <td>
-                                                                        <textarea disabled name="OutOfScope[]">{{ $limitation->OutScope }}</textarea>
+                                                                        <textarea disabled name="OutOfScope[]" class="form-control" rows="3" style="resize: none;">{{ $limitation->OutScope }}</textarea>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea disabled name="Comment[]">{{ $limitation->Comment }}</textarea>
+                                                                        <textarea disabled name="Comment[]" class="form-control" rows="3" style="resize: none;">{{ $limitation->Comment }}</textarea>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
@@ -1012,36 +1070,33 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <h5 class="card-title">Consultants</h5>
-
                                             <div class="row mb-3">
                                                 <label class="col-sm-2">Assigned Consultant(s)</label>
                                                 <div class="col-sm-10">
-                                                    <select name="LeaveTypeId" id="LeaveTypeId" class="form-select"
-                                                        select2 required multiple>
-                                                        <option value="" selected disabled>Select Consultant(s)
-                                                        </option>
-
-                                                        @foreach ($users as $user)
-                                                            <option value="">
-                                                                {{ $user->FirstName . ' ' . $user->LastName }}
-                                                            </option>
+                                                    <select name="AssignedConsultant[]" id="AssignedConsultant"
+                                                        class="form-select ACSelect" required multiple>
+                                                        @foreach ($users as $index => $user)
+                                                        @foreach ($assignedConsultants as $assignedConsultant)
+                                                        <option value="{{ $user->Id }}">
+                                                            {{ $user->FirstName . ' ' . $user->LastName}}
+                                                          </option>
                                                         @endforeach
-
+                                                        @endforeach
                                                     </select>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                
-                                <!-- ---------- END ASSESSMENT ---------- -->
+
+                                    <!-- ---------- END ASSESSMENT ---------- -->
                                 @elseif ($Status == 8 || Request::get('progress') == 'proposal')
-                                <!-- ---------- PROPOSAL ---------- -->
+                                    <!-- ---------- PROPOSAL ---------- -->
 
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Notes <code>*</code></label>
                                         <div class="col-sm-10">
-                                            <textarea {{ $editable }} style="resize: none;" rows="3" required type="text" class="form-control" name="Notes"
-                                                id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
+                                            <textarea {{ $editable }} style="resize: none;" rows="3" required type="text" class="form-control"
+                                                name="Notes" id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
                                         </div>
                                     </div>
 
@@ -1052,8 +1107,8 @@
                                             <input class="form-control" type="file" id="formFileMultiple" multiple />
                                         </div>
                                     </div>
-                                
-                                <!-- ---------- END PROPOSAL ---------- -->
+
+                                    <!-- ---------- END PROPOSAL ---------- -->
                                 @elseif ($Status == 9 || Request::get('progress') == 'success')
                                 @else
                                 @endif
@@ -1067,21 +1122,21 @@
 
                 </div>
 
-                            @if ($Status == $currentViewStatus)
-                                <div class="button-footer text-end">
-                                    <a href="{{ $cancelRoute }}" class="btn btn-secondary">Cancel</a>
-                                    <?= $button ?>
-                                </div>
-                            @endif
-
-
-
-                        </form>
-
+                @if ($Status == $currentViewStatus)
+                    <div class="button-footer text-end">
+                        <a href="{{ $cancelRoute }}" class="btn btn-secondary">Cancel</a>
+                        <?= $button ?>
                     </div>
+                @endif
 
-                </div>
+
+
+                </form>
+
             </div>
+
+        </div>
+        </div>
         </div>
 
     </main>
@@ -1115,7 +1170,7 @@
                     <td class="text-center">
                         <button type="button" class="btn btn-outline-danger btnDeleteRow"><i class="bi bi-trash"></i></button>
                     </td>
-                    <td><input required name="Title[]" class="form-control"></td>
+                    <td> <textarea name="Title[]" class="form-control" rows="3" style="resize: none;"></textarea></td>
                     <td>
                         <textarea required name="Description[]" class="form-control" rows="3" style="resize: none;"></textarea>
                     </td>
@@ -1134,6 +1189,7 @@
                 initSelect2();
             })
             // ----- END BUTTON ADD ROW -----
+
             // ----- BUTTON ADD LIMITATIONS ROW -----
             $(document).on('click', '.btnAddRowLimitation', function() {
                 let html = `
@@ -1171,11 +1227,12 @@
 
             $(document).on('click', '.btnUpdate', function(e) {
                 e.preventDefault();
+                let result = false;
                 let data = [];
                 $("input[name='RowId[]']").each(function(index) {
-                    data.push($("input[name='Manhour[]']").eq(index).val());
+                    let obj = {rowId:$("input[name='RowId[]']").eq(index).val(), manhourValue:$("textarea[name='Manhour[]']").eq(index).val()}
+                    data.push(obj);
                 });
-                return console.log(data)
                 var method = 'PUT';
                 $.ajax({
                     type: method,
@@ -1183,19 +1240,12 @@
                     data: {
                         data
                     },
-                    dataType: 'json',
                     async: false,
-                    success: function(e) {
-                        console.log(e)
+                    success: function(response) {
+                        // window.location = response.url;
                     }
                 })
-            });
-
-
-
-            // PLACEHOLDER FOR SELECT2
-            $(".form-select").select2({
-                placeholder: "Select one or more consultant"
+                return result;
             });
 
             // PROGRESS BAR
@@ -1208,25 +1258,32 @@
                 $(".divSquare").eq(i).addClass("activeStatus");
             }
 
+            // SELECT2 PLACEHOLDER ASSIGNED CONSULTANT
+            $(".ACSelect").select2({
+                placeholder: "Select atleast one(1) consultant"});
 
-            // ----- SUBMIT FORM -----
-            $(document).on('submit', '#customerForm', function(e) {
 
-                let isValidated = $(this).attr('validated') == "true";
-                let todo = $(this).attr('todo');
 
-                // FOR COMPLEXITY PART
-                if (status == 1) {
-                    if ($('input.mainComplexity:checked').length === 0 && $(`[name="IsComplex"]`).prop('checked')) {
-                        showToast('danger', 'Check atleast one(1) in the checklist');
-                        isValidated = true;
+
+                // ----- SUBMIT FORM -----
+                $(document).on('submit', '#customerForm', function(e) {
+
+                    let isValidated = $(this).attr('validated') == "true";
+                    let todo = $(this).attr('todo');
+
+                    // FOR COMPLEXITY PART
+                    if (status == 1) {
+                        if ($('input.mainComplexity:checked').length === 0 && $(`[name="IsComplex"]`).prop(
+                                'checked')) {
+                            showToast('danger', 'Check atleast one(1) in the checklist');
+                            isValidated = true;
+                        }
                     }
-                }
 
-                if (!isValidated) {
+                    if (!isValidated) {
 
-                    e.preventDefault();
-                    let content = todo == 'insert' ? `
+                        e.preventDefault();
+                        let content = todo == 'insert' ? `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
                     <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
                     <b class="mt-4">Are you sure you want to add new customer?</b>
@@ -1236,34 +1293,34 @@
                     <b class="mt-4">Are you sure you want to update this customer?</b>
                 </div>`;
 
-                    let confirmation = $.confirm({
-                        title: false,
-                        content,
-                        buttons: {
+                        let confirmation = $.confirm({
+                            title: false,
+                            content,
+                            buttons: {
 
-                            no: {
-                                btnClass: 'btn-default',
-                            },
-                            yes: {
-                                btnClass: 'btn-blue',
-                                keys: ['enter'],
-                                action: function() {
-                                    $('#customerForm').attr('validated', 'true')
-                                        .submit();
+                                no: {
+                                    btnClass: 'btn-default',
+                                },
+                                yes: {
+                                    btnClass: 'btn-blue',
+                                    keys: ['enter'],
+                                    action: function() {
+                                        $('#customerForm').attr('validated', 'true')
+                                            .submit();
 
-                                    confirmation.buttons.yes.setText(
-                                        `<span class="spinner-border spinner-border-sm"></span> Please wait...`
-                                    );
-                                    confirmation.buttons.yes.disable();
-                                    confirmation.buttons.no.hide();
+                                        confirmation.buttons.yes.setText(
+                                            `<span class="spinner-border spinner-border-sm"></span> Please wait...`
+                                        );
+                                        confirmation.buttons.yes.disable();
+                                        confirmation.buttons.no.hide();
 
-                                    return false;
-                                }
-                            },
-                        }
-                    });
-                }
-            })
+                                        return false;
+                                    }
+                                },
+                            }
+                        });
+                    }
+                })
             // ----- END SUBMIT FORM -----
 
 
@@ -1354,7 +1411,8 @@
             $(document).on('change', `[type=checkbox].subComplexity`, function() {
                 let $table = $(this).closest('table');
                 let hasCheck = $table.find(`[type=checkbox].subComplexity:checked`).length;
-                $table.closest('tr').find(`input[type=checkbox].mainComplexity`).prop('checked', hasCheck).trigger('change');
+                $table.closest('tr').find(`input[type=checkbox].mainComplexity`).prop('checked', hasCheck)
+                    .trigger('change');
             })
             // ----- END CHANGE SUB COMPLEXITY -----
 

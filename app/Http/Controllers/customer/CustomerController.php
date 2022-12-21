@@ -5,6 +5,7 @@ namespace App\Http\Controllers\customer;
 use App\Http\Controllers\Controller;
 use App\Models\customer\CustomerBusinessProcess;
 use App\Models\customer\CustomerBusinessProcessFiles;
+use App\Models\customer\CustomerConsultant;
 use App\Models\customer\CustomerInscope;
 use App\Models\customer\CustomerLimitation;
 use App\Models\customer\CustomerComplexity;
@@ -53,6 +54,7 @@ class CustomerController extends Controller
         $businessProcessData = $businessProcess ? $businessProcess : '';
         $files = $businessProcessData !== '' ? CustomerBusinessProcessFiles::where('CustomerId', $Id)->orderBy('created_at', 'DESC')->get() : [];
 
+        $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)->get();
 
 
         $inscopes = CustomerInscope::where('CustomerId', $Id)->get();
@@ -74,6 +76,7 @@ class CustomerController extends Controller
             'reqSol'              => $inscopes,
             'limitations'         => $limitations,
             'thirdParties'        => ThirdParty::orderBy('created_at', 'DESC')->get(),
+            'assignedConsultants'  => $assignedConsultants
         ];
 
 
@@ -250,13 +253,18 @@ class CustomerController extends Controller
         // $validator = $request->validate([
         //     'Title' => ['required'],
         // ]);
-        foreach ($request->manhourValue as $manhour) {
-            $score = Score::find($row['id']);
-            $score->jan_ap = $row['jan_ap'];
-            $score->jan_hm = $row['jan_hm'];
-            $score->save();
+        foreach ($request->data as $assessment) {
+            $inscope = CustomerInscope::find($assessment['rowId']);
+            $inscope->Manhour = $assessment['manhourValue'];
+           $update = $inscope->save();
         }
-        return $request->manhourValue;
+        if ($update) {
+            $request->session()->flash('success', 'Users updated');
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
+        } else {
+            $request->session()->flash('fail', 'Something went wrong, try again later');
+                return response()->json(['url' => url('customer/edit/' . $Id)]);
+        }
     }
 
     function update(Request $request, $Id)
@@ -378,7 +386,22 @@ class CustomerController extends Controller
         }
         // ASSESSMENT
         else if ($customerData->Status == 7) {
-            $customerData->Status = 8;
+            $consultants = $request->AssignedConsultant;
+            if ($consultants && count($consultants)) {
+                $consultantsData = [];
+                foreach ($consultants as $i => $consultant) {
+                    $consultantsData[] = [
+                        'Id'           => Str::uuid(),
+                        'CustomerId' => $Id,
+                        'UserId'        => $consultant,
+                        'CreatedById'  => Auth::id(),
+                        'UpdatedById'  => Auth::id(),
+                    ];
+                }
+
+                CustomerConsultant::insert($consultantsData);
+            }
+            // $customerData->Status = 8;
         }
 
 
