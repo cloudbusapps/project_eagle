@@ -473,10 +473,10 @@
                                             </tr>
                                             <tr>
                                                 <th>Leave Type</th>
+                                                <th>Credit</th>
                                                 <th>Accrued</th>
-                                                <th>Balance</th>
                                                 <th>Used</th>
-                                                <th>Remaining</th>
+                                                <th>Balance</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -485,10 +485,10 @@
                                                 @foreach ($dt['data'] as $dt2)
                                                     <tr>
                                                         <td>{{ $dt2['Name'] }}</td>
+                                                        <td class="text-center">{{ $dt2['Credit'] ?? 0 }}</td>
                                                         <td class="text-center">{{ $dt2['Accrued'] ?? 0 }}</td>
-                                                        <td class="text-center">{{ $dt2['Balance'] ?? 0 }}</td>
                                                         <td class="text-center">{{ $dt2['Used'] ?? 0 }}</td>
-                                                        <td class="text-center">{{ $dt2['Remaining'] ?? 0 }}</td>
+                                                        <td class="text-center">{{ $dt2['Balance'] ?? 0 }}</td>
                                                     </tr>
                                                 @endforeach
                                             @endif

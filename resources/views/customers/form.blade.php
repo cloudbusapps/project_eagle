@@ -1111,9 +1111,8 @@
                                                         style="min-width: 100%; width: 100%; max-width: 1000px;">
                                                         <thead>
                                                             <tr>
-                                                                <th style="width: 15%;">Third Party</th>
-                                                                <th scope="col" style="width: 42.5%;">Out of Scope</th>
-                                                                <th scope="col" style="width: 42.5%;">Comments</th>
+                                                                <th scope="col" style="width: 50%;">Out of Scope</th>
+                                                                <th scope="col" style="width: 50%;">Comments</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -1124,11 +1123,6 @@
                                                                         value="{{ $limitation['Id'] }}">
 
                                                                     <tr>
-                                                                        <td class="text-center">
-                                                                            <input type="checkbox" class="checkThirdPart" name="Limitation[{{ $limitation['Id'] }}][Checked]"
-                                                                                {{ $limitation->ThirdParty == 1 ? 'checked' : '' }}
-                                                                                {{ $capabilityDisableField }}>
-                                                                        </td>
                                                                         <td>
                                                                             <small
                                                                                 style="white-space: break-spaces;">{{ $limitation->OutScope }}</small>
@@ -1393,9 +1387,8 @@
                                                     style="min-width: 100%; width: 100%; max-width: 1000px;">
                                                     <thead>
                                                         <tr>
-                                                            <th style="width: 15%;">Third Party</th>
-                                                            <th scope="col" style="width: 42.5%;">Out of Scope</th>
-                                                            <th scope="col" style="width: 42.5%;">Comments</th>
+                                                            <th scope="col" style="width: 50%;">Out of Scope</th>
+                                                            <th scope="col" style="width: 50%;">Comments</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -1406,12 +1399,6 @@
                                                                     value="{{ $limitation['Id'] }}">
 
                                                                 <tr>
-                                                                    <td class="text-center">
-                                                                        <input type="checkbox"
-                                                                            name="Limitation[{{ $limitation['Id'] }}][Checked]"
-                                                                            {{ $limitation->ThirdParty == 1 ? 'checked' : '' }}
-                                                                            disabled>
-                                                                    </td>
                                                                     <td>
                                                                         <small
                                                                             style="white-space: break-spaces;">{{ $limitation->OutScope }}</small>

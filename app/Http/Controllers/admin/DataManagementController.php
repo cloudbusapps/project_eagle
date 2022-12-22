@@ -240,11 +240,20 @@ class DataManagementController extends Controller
             '. method_field('POST') .'
             <input type="hidden" name="TableName" value="'. $TableName .'">
             <div class="row">
-                <div class="col-12">
-                    <div class="form-group">
-                        <input type="file" class="form-control" name="File" accept=".csv" required>
-                    </div>    
-                </div>    
+                <div class="form-group mb-3 text-center">
+                    <label>
+                        <input type="radio" name="Event" value="insert" checked> INSERT
+                    </label>
+                    <label>
+                        <input type="radio" name="Event" value="update"> UPDATE
+                    </label>
+                    <label>
+                        <input type="radio" name="Event" value="upsert"> UPDATE/INSERT
+                    </label>
+                </div>
+                <div class="form-group">
+                    <input type="file" class="form-control" name="File" accept=".csv" required>
+                </div>   
             </div>    
             <div class="modal-footer pb-0">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -286,8 +295,10 @@ class DataManagementController extends Controller
 
     public function importModuleDataSave(Request $request) {
         $TableName = $request->TableName;
+        $Event     = $request->Event;
 
         $errors = [];
+        $noPrimaryKeyCount = 0;
 
         $columns = [];
         $query = DB::select("
@@ -310,27 +321,50 @@ class DataManagementController extends Controller
                 $temp = [];
                 foreach ($csvColumn as $key2 => $col) {
                     if ($col == 'Id' && !$dt[$key2]) {
-                        $temp[$col] = Str::uuid();
+                        if ($Event != 'update') {
+                            $temp[$col] = Str::uuid();
+                        } else {
+                            $temp = [];
+                            $noPrimaryKeyCount++;
+                        }
                     } else {
                         $temp[$col] = $dt[$key2];
                     }
                 }
-                $finalData[] = $temp;
+
+                if (!empty($temp)) $finalData[] = $temp;
             }
 
             try {
-                $insert = DB::table($TableName)->upsert($finalData, 'Id');
+                if ($Event == 'upsert') {
+                    $save = DB::table($TableName)->upsert($finalData, 'Id');
+                } else if ($Event == 'update') {
+                    if ($noPrimaryKeyCount == 0) {
+                        foreach ($finalData as $dt) {
+                            DB::table($TableName)->where('Id', $dt['Id'])->update($dt);
+                        }
+                    }
+                } else {
+                    $save = DB::table($TableName)->insert($finalData);
+                }
 
+                if ($noPrimaryKeyCount) {
+                    $errors[] = "There's a total of <b>{$noPrimaryKeyCount}</b> rows that has no <b>Id</b> (Primary key).";
+                    
+                    return redirect()
+                        ->back()
+                        ->withErrors($errors);
+                }
+                    
                 return redirect()
                     ->back()
                     ->with('success', 'File successfully imported');
             } catch (\Exception $e) {
-                dd($e->getMessage());
-                exit;
+                $errors[] = "There's an error importing your file";
 
                 return redirect()
                     ->back()
-                    ->withErrors(["There's an error importing your file"]);
+                    ->withErrors($errors);
             }
         }
 

@@ -13,7 +13,7 @@
   </div>
 
   <footer class="page-footer px-xl-4 px-sm-2 px-0 pt-3 d-flex justify-content-center align-items-center">
-      <p class="text-muted">© 2022 <a href="#" target="_blank" title="ePLDT">ePLDT</a>, All Rights Reserved.</p>
+      <p class="text-muted">© 2022 <a href="#" title="ePLDT">ePLDT</a>, All Rights Reserved.</p>
   </footer>
   </div>
 
