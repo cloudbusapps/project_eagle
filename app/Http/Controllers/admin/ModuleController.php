@@ -40,7 +40,7 @@ class ModuleController extends Controller
         $destinationPath = 'uploads/icons';
         $Icon  = $request->file('Icon');
         $Title = $request->Title;
-        $WithApproval = $request->WithApproval == 'on' ? true : false;
+        $WithApproval = isset($request->WithApproval) ? true : false;
         
         $IconStore = $request->IconStore;
         $filename = $IconStore ?? "default.png";
@@ -63,6 +63,22 @@ class ModuleController extends Controller
         $Module->Prefix    = $request->Prefix;
 
         if ($Module->save()) {
+
+            $id = $Module->id;
+            $relatedData = [];
+            $RelatedTitle     = $request->Related['Title'] ?? [];
+            $RelatedTableName = $request->Related['TableName'] ?? [];
+            if ($RelatedTitle && count($RelatedTitle)) {
+                foreach ($RelatedTitle as $index => $dt) {
+                    $relatedData[] = [
+                        'ModuleId'  => $id,
+                        'Title'     => $dt,
+                        'TableName' => $RelatedTableName[$index] ?? null,
+                    ];
+                }
+                DB::table('module_table_related')->insert($relatedData);
+            }
+
             return redirect()
                 ->route('module')
                 ->with('success', "<b>{$Title}</b> successfully saved!");
@@ -71,10 +87,12 @@ class ModuleController extends Controller
 
     public function edit($id) {
         $data = [
-            'title' => "Edit Module",
-            'modules' => Module::where('ParentId', null)->get(),
-            'data' => Module::find($id)
+            'title'       => "Edit Module",
+            'modules'     => Module::where('ParentId', null)->get(),
+            'data'        => Module::find($id),
+            'relatedData' => DB::table('module_table_related')->where('ModuleId', $id)->get(),
         ];
+        
         return view('admin.modules.form', $data);
     }
 
@@ -89,7 +107,7 @@ class ModuleController extends Controller
         $destinationPath = 'uploads/icons';
         $Icon  = $request->file('Icon');
         $Title = $request->Title;
-        $WithApproval = $request->WithApproval == 'on' ? true : false;
+        $WithApproval = isset($request->WithApproval) ? true : false;
 
         $IconStore = $request->IconStore;
         $filename = $IconStore ?? "default.png";
@@ -112,6 +130,23 @@ class ModuleController extends Controller
         $Module->Prefix    = $request->Prefix;
 
         if ($Module->save()) {
+
+            DB::table('module_table_related')->where('ModuleId', $id)->delete();
+
+            $relatedData = [];
+            $RelatedTitle     = $request->Related['Title'] ?? [];
+            $RelatedTableName = $request->Related['TableName'] ?? [];
+            if ($RelatedTitle && count($RelatedTitle)) {
+                foreach ($RelatedTitle as $index => $dt) {
+                    $relatedData[] = [
+                        'ModuleId'  => $id,
+                        'Title'     => $dt,
+                        'TableName' => $RelatedTableName[$index] ?? null,
+                    ];
+                }
+                DB::table('module_table_related')->insert($relatedData);
+            }
+
             return redirect()
                 ->route('module')
                 ->with('success', "<b>{$Title}</b> successfully updated!");

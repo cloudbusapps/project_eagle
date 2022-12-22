@@ -48,9 +48,9 @@
            
         }
     
-        $todo = 'update';
-        $method = 'PUT';
-        $action = route('customers.update', ['Id' => $Id, 'Status' => $Status]);
+        $todo        = 'update';
+        $method      = 'PUT';
+        $action      = route('customers.update', ['Id' => $Id, 'Status' => $Status]);
         $cancelRoute = route('customers', ['Id' => $Id]);
     } else {
         return redirect()->back();
@@ -80,8 +80,9 @@
         default:
             break;
     }
-    
-    $RequiredLabel = $DisableAttr ? '' : '<code>*</code>';
+
+    $DisableAttr = ''; // TEMP
+    $RequiredLabel = $DisableAttr ? '' : "<code>*</code>";
     // ----- END PERMISSION -----
     ?>
 

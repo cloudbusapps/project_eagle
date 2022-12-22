@@ -175,6 +175,12 @@
 
                                         <h5 class="card-title">Personal Info</h5>
                                         <div class="row mb-1">
+                                            <div class="col-lg-4 col-sm-5 label ">Employee ID:</div>
+                                            <div class="col-lg-8 col-sm-7">
+                                                {{ $userData->Id ?? '-' }}
+                                            </div>
+                                        </div>
+                                        <div class="row mb-1">
                                             <div class="col-lg-4 col-sm-5 label ">Employee #:</div>
                                             <div class="col-lg-8 col-sm-7">
                                                 {{ $userData->EmployeeNumber ?? '-' }}
