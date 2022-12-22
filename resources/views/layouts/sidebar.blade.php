@@ -116,6 +116,10 @@
             </li>
           </ul>
         </li>
+        <a class="m-link {{ $subModule == 'dataManagement' ? 'active' : '' }}" href="{{ route('dataManagement') }}">
+          <img src="{{ asset('uploads/icons/default.png') }}" alt="Modules" width="20" height="20">
+          <span class="ms-2">Data Management</span>
+        </a>
         {{-- 
         <!-- FOR DEVELOPER ONLY -->  
         <li>

@@ -113,38 +113,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card mt-3">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0 card-title py-0">Leave Balance</h5>
-                            @if (Auth::user()->IsAdmin)
-                            <a href="#" class="text-secondary btnEditLeaveBalance" id="{{ $requestId }}">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            @endif
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-striped table-hover" id="tableLeaveBalance">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Leave Type</th>
-                                        <th>Remaining</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                    @foreach ($leaveBalance as $index => $dt)
-                                    <tr>
-                                        <td class="text-center">{{ $index + 1 }}</td>
-                                        <td>{{ $dt['Name'] }}</td>
-                                        <td class="text-center">{{ $dt['Balance'] ?? 0 }}</td>
-                                    </tr>
-                                    @endforeach
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="col-xl-8">
@@ -482,6 +450,54 @@
                                 </div>
                             @endif
                             
+                        </div>
+                    </div>
+
+                    <div class="card mt-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 card-title py-0">Leave Balance</h5>
+                            @if (Auth::user()->IsAdmin)
+                            <a href="#" class="text-secondary btnEditLeaveBalance" id="{{ $requestId }}">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            @endif
+                        </div>
+                        <div class="card-body">
+
+                            @if (isset($leaveBalance) && count($leaveBalance))
+                                @foreach ($leaveBalance as $i => $dt)
+                                    <table class="table table-striped table-hover my-2" id="tableLeaveBalance">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center bg-secondary" colspan="5">{{ $dt['year'] }}</th>
+                                            </tr>
+                                            <tr>
+                                                <th>Leave Type</th>
+                                                <th>Accrued</th>
+                                                <th>Balance</th>
+                                                <th>Used</th>
+                                                <th>Remaining</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            @if (isset($dt['data']) && count($dt['data']))
+                                                @foreach ($dt['data'] as $dt2)
+                                                    <tr>
+                                                        <td>{{ $dt2['Name'] }}</td>
+                                                        <td class="text-center">{{ $dt2['Accrued'] ?? 0 }}</td>
+                                                        <td class="text-center">{{ $dt2['Balance'] ?? 0 }}</td>
+                                                        <td class="text-center">{{ $dt2['Used'] ?? 0 }}</td>
+                                                        <td class="text-center">{{ $dt2['Remaining'] ?? 0 }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif
+
+                                        </tbody>
+                                    </table>
+                                @endforeach
+                            @endif
+
                         </div>
                     </div>
                 </div>

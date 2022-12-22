@@ -24,6 +24,40 @@ use Spatie\Activitylog\Models\Activity;
 
 class UserProfileController extends Controller
 {
+    public function getUserLeaveBalance($UserId = null) {
+        $yearLeaveBalance = [date('Y')];
+        $leaveBalance = UserLeaveBalance::select('Year')->where('UserId', $UserId)->groupBy('Year')->orderBy('Year', 'DESC')->get();
+        if ($leaveBalance && count($leaveBalance)) {
+            $yearLeaveBalance = [];
+            foreach ($leaveBalance as $dt) {
+                if (!in_array($dt['Year'], $yearLeaveBalance)) $yearLeaveBalance[] = $dt['Year'];
+            }
+        }
+
+        $leaveBalanceData = [];
+        foreach ($yearLeaveBalance as $i => $year) {
+            $leaveBalanceData[$i]['year'] = $year;
+            $leaveBalanceData[$i]['data'] = LeaveType::leftJoin('user_leave_balances AS ulb', function ($join) use ($UserId, $year) {
+                    $join->on('leave_types.Id', 'ulb.LeaveTypeId');
+                    $join->on('ulb.UserId', DB::raw("'{$UserId}'"));
+                    $join->on('ulb.Year', DB::raw("'{$year}'"));
+                })
+                ->where('leave_types.Status', 1)
+                ->get([
+                    'ulb.Id',
+                    'leave_types.Name', 
+                    'leave_types.Id AS LeaveTypeId', 
+                    'ulb.UserId',
+                    'ulb.Accrued',
+                    'ulb.Balance',
+                    'ulb.Used',
+                    'ulb.Remaining',
+                ]);
+        }
+
+        return $leaveBalanceData;
+    }
+
     public function index(Request $request) {
         $UserId = $request->Id ? $request->Id : Auth::id();
         try {
@@ -43,11 +77,7 @@ class UserProfileController extends Controller
                 ->where('u.Id', $UserId)
                 ->first();
 
-            // $leaveBalance = LeaveType::select('leave_types.*', 
-            //     DB::raw('(SELECT "Balance" FROM user_leave_balances WHERE "UserId" = \''. $UserId .'\' AND "LeaveTypeId" = "leave_types"."Id") AS "Balance"'))
-            //     ->where('Status', 1)
-            //     ->get();
-            $leaveBalance = [];
+            
 
             $data = [
                 'title'          => 'Profile',
@@ -58,13 +88,13 @@ class UserProfileController extends Controller
                 'experiences'    => UserExperience::where('UserId', $UserId)->get(),
                 'educations'     => UserEducation::where('UserId', $UserId)->get(),
                 'projects'       => $projects,
-                'leaveBalance'   => $leaveBalance,
+                'leaveBalance'   => $this->getUserLeaveBalance($UserId),
                 'requestId'      => $UserId,
             ];
     
             return view('users.profile', $data);
-        } catch (\Illuminate\Database\QueryException $e) {
-            dd($e);
+        } catch (\Exception $e) {
+            dd($e->getMessage());
             abort('500');
         }
     }
@@ -103,7 +133,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formPersonalInformation', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             abort(500);
         }
     }
@@ -158,7 +188,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formCertification', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -203,7 +233,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formCertification', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -267,7 +297,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formAward', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -310,7 +340,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formAward', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -372,7 +402,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formExperience', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -419,7 +449,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formExperience', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -485,7 +515,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formEducation', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -531,7 +561,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formEducation', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -759,73 +789,110 @@ class UserProfileController extends Controller
 
     // ----- LEAVE BALANCE -----
     public function editLeaveBalance($Id) {
-        $UserLeaveBalance = LeaveType::select('leave_types.*', 
-            DB::raw('(SELECT "Balance" FROM user_leave_balances WHERE "UserId" = \''.$Id.'\' AND "LeaveTypeId" = "leave_types"."Id") AS "Balance"'))
-            ->where('Status', 1)
-            ->get();
+        $UserLeaveBalance = $this->getUserLeaveBalance($Id);
 
         $leaveHTML = '';
-        foreach ($UserLeaveBalance as $index => $dt) {
-            $count = $index + 1;
-            $balance = $dt['Balance'] ?? 0;
+        $index = 0;
 
-            $leaveHTML .= "
-            <tr>
-                <td>{$count}</td>
-                <td>{$dt['Name']}</td>
-                <td>
-                    <input type='hidden' name='LeaveTypeId[]' value='{$dt['Id']}'>
-                    <input type='number' step='0.01' name='Balance[]' value='{$balance}' class='form-control text-center'>
-                </td>
-            </tr>";
+        foreach ($UserLeaveBalance as $dt) {
+            $Year = $dt['year'];
+
+            $tbodyHTML = '';
+            if (isset($dt['data']) && count($dt['data'])) {
+                foreach ($dt['data'] as $dt2) {
+                    $UserLeaveBalanceId = $dt2['Id'] ?? Str::uuid();
+                    $LeaveTypeId = $dt2['LeaveTypeId'] ?? '';
+                    $Name        = $dt2['Name'] ?? '';
+                    $Accrued     = $dt2['Accrued'] ?? 0;
+                    $Balance     = $dt2['Balance'] ?? 0;
+                    $Used        = $dt2['Used'] ?? 0;
+                    $Remaining   = $dt2['Remaining'] ?? 0;
+
+
+                    $tbodyHTML .= '
+                    <input type="hidden" name="LeaveBalance['.$index.'][Id]" value="'. $UserLeaveBalanceId .'">
+                    <input type="hidden" name="LeaveBalance['.$index.'][Year]" value="'. $Year .'">
+                    <input type="hidden" name="LeaveBalance['.$index.'][LeaveTypeId]" value="'. $LeaveTypeId .'">
+                    <tr>
+                        <td>'. $Name .'</td>
+                        <td class="text-center">
+                            <input type="number" step="0.01" name="LeaveBalance['.$index.'][Accrued]" value="'. $Accrued .'" class="form-control text-center">
+                        </td>
+                        <td class="text-center">
+                            <input type="number" step="0.01" name="LeaveBalance['.$index.'][Balance]" value="'. $Balance .'" class="form-control text-center">
+                        </td>
+                        <td class="text-center">
+                            <input type="number" step="0.01" name="LeaveBalance['.$index.'][Used]" value="'. $Used .'" class="form-control text-center">
+                        </td>
+                    </tr>';
+
+                    $index++;
+                }
+            }
+            
+            $leaveHTML .= '
+            <table class="table table-striped table-hover my-2">
+                <thead>
+                    <tr>
+                        <th class="text-center bg-secondary" colspan="5">'. $Year .'</th>
+                    </tr>
+                    <tr>
+                        <th>Leave Type</th>
+                        <th>Accrued</th>
+                        <th>Balance</th>
+                        <th>Used</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    '.$tbodyHTML.'
+                </tbody>
+            </table>';
         }
 
         $html = '
         <form method="POST" action="'. route('user.updateLeaveBalance', ['Id' => $Id]) .'">
             '. csrf_field() .'
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Leave Type</th>
-                        <th>Balance</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    '.$leaveHTML.'
-                </tbody>
-            </table>
+            '. $leaveHTML .'
             <div class="modal-footer mt-3 pb-0">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" class="btn btn-warning">Update</button>
             </div>
         </form>';
+
         return $html;
     }
 
 
     public function updateLeaveBalance(Request $request, $Id) {
-        
-        $delete = UserLeaveBalance::where('UserId', $Id)->delete();
+        $LeaveBalance = $request->LeaveBalance ?? [];
 
-        $LeaveTypeId = $request->LeaveTypeId;
-        $Balance     = $request->Balance;
-        
-        if ($LeaveTypeId && count($LeaveTypeId)) {
+        if (isset($LeaveBalance) && count($LeaveBalance)) {
             $data = [];
-            foreach ($LeaveTypeId as $index => $ltId) {
+            foreach ($LeaveBalance as $key => $dt) {
+                $UserLeaveBalanceId = $dt['Id'] ?? Str::uuid();
+                $Year        = $dt['Year'] ?? '';
+                $LeaveTypeId = $dt['LeaveTypeId'] ?? '';
+                $Accrued     = $dt['Accrued'] ?? 0;
+                $Balance     = $dt['Balance'] ?? 0;
+                $Used        = $dt['Used'] ?? 0;
+                $Remaining   = ($Accrued + $Balance) - $Used;
+
                 $data[] = [
-                    'Id'            => Str::uuid(),
-                    'UserId'        => $Id,
-                    'LeaveTypeId'   => $ltId,
-                    'Balance'       => $Balance[$index],
-                    'Accumulated'   => 0,
+                    'Id'          => $UserLeaveBalanceId,
+                    'Year'        => $Year,
+                    'LeaveTypeId' => $LeaveTypeId,
+                    'UserId'      => $Id,
+                    'Accrued'     => $Accrued,
+                    'Balance'     => $Balance,
+                    'Used'        => $Used,
+                    'Remaining'   => $Remaining,
                     'CreatedById' => Auth::id(),
                     'UpdatedById' => Auth::id(),
                 ];
             }
+
             if ($data && count($data)) {
-                $save = DB::table('user_leave_balances')->insert($data);
+                $save = UserLeaveBalance::upsert($data, 'Id');
                 if ($save) {
                     return redirect()
                         ->back()
