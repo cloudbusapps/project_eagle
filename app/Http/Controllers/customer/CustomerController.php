@@ -434,7 +434,9 @@ class CustomerController extends Controller
 
     function updateConsultant(Request $request, $Id)
     {
-
+        $validator = $request->validate([
+            'selectedConsultants' => ['required'],
+        ]);
         $consultants = $request->selectedConsultants;
 
         if ($consultants && count($consultants)) {
