@@ -5,6 +5,7 @@ namespace App\Http\Controllers\customer;
 use App\Http\Controllers\Controller;
 use App\Models\customer\CustomerBusinessProcess;
 use App\Models\customer\CustomerBusinessProcessFiles;
+use App\Models\customer\CustomerConsultant;
 use App\Models\customer\CustomerInscope;
 use App\Models\customer\CustomerLimitation;
 use App\Models\customer\CustomerComplexity;
@@ -61,6 +62,7 @@ class CustomerController extends Controller
         $businessProcessData = $businessProcess ? $businessProcess : '';
         $files = $businessProcessData !== '' ? CustomerBusinessProcessFiles::where('CustomerId', $Id)->orderBy('created_at', 'DESC')->get() : [];
 
+        $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)->get();
 
 
         $inscopes = CustomerInscope::where('CustomerId', $Id)->get();
@@ -83,6 +85,8 @@ class CustomerController extends Controller
             'limitations'         => $limitations,
             'thirdParties'        => ThirdParty::orderBy('created_at', 'DESC')->get(),
             'MODULE_ID'           => $this->MODULE_ID,
+            'assignedConsultants'  => $assignedConsultants,
+            'customerProjectPhases' => $this->getCustomerProjectPhase($Id)
         ];
 
 
@@ -422,11 +426,38 @@ class CustomerController extends Controller
                     }
                     CustomerProjectPhasesDetails::insert($subData);
                 }
-
             }
         }
 
         $customerData->Status = 7;
+    }
+
+    function updateConsultant(Request $request, $Id)
+    {
+
+        $consultants = $request->selectedConsultants;
+
+        if ($consultants && count($consultants)) {
+            $consultantsData = [];
+            foreach ($consultants as $i => $consultant) {
+                $consultantsData[] = [
+                    'Id'           => Str::uuid(),
+                    'CustomerId' => $Id,
+                    'UserId'        => $consultant,
+                    'CreatedById'  => Auth::id(),
+                    'UpdatedById'  => Auth::id(),
+                ];
+            }
+            CustomerConsultant::where('CustomerId', $Id)->delete();
+            $update = CustomerConsultant::insert($consultantsData);
+        }
+        if ($update) {
+            $request->session()->flash('success', 'Consulant updated');
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
+        } else {
+            $request->session()->flash('fail', 'Something went wrong, try again later');
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
+        }
     }
 
     function updateManhour(Request $request, $Id)
@@ -434,13 +465,18 @@ class CustomerController extends Controller
         // $validator = $request->validate([
         //     'Title' => ['required'],
         // ]);
-        foreach ($request->manhourValue as $manhour) {
-            $score = Score::find($row['id']);
-            $score->jan_ap = $row['jan_ap'];
-            $score->jan_hm = $row['jan_hm'];
-            $score->save();
+        foreach ($request->data as $assessment) {
+            $inscope = CustomerInscope::find($assessment['rowId']);
+            $inscope->Manhour = $assessment['manhourValue'];
+            $update = $inscope->save();
         }
-        return $request->manhourValue;
+        if ($update) {
+            $request->session()->flash('success', 'Manhour updated');
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
+        } else {
+            $request->session()->flash('fail', 'Something went wrong, try again later');
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
+        }
     }
 
     function update(Request $request, $Id)
@@ -475,7 +511,26 @@ class CustomerController extends Controller
         }
         // ASSESSMENT
         else if ($customerData->Status == 7) {
-            $customerData->Status = 8;
+            //  FOR CONSULTANT: CHECK IF ANY FIELD ID NULL
+            $hasNull = CustomerInscope::where('CustomerId', $Id)
+                ->whereNull('Manhour')
+                ->get();
+            if (count($hasNull) > 0) {
+                return redirect()
+                    ->route('customers.edit', ['Id' => $Id])
+                    ->with('fail', "<b>Fill out</b> all the manhours");
+            } else {
+                $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)->get();
+                // IF USER IS DEPT.HEAD GO TO PROPOSAL
+                if (Auth::id() == getDepartmentHeadId(config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION'))) {
+                    $customerData->Status = 7;
+                } else if ($assignedConsultants->contains('UserId', Auth::id())) {
+                    // NOTIFY DEPT. HEAD
+
+                }
+            }
+        } // ASSESSMENT
+        else if ($customerData->Status == 8) {
         }
 
 
@@ -595,4 +650,93 @@ class CustomerController extends Controller
         return $data;
     }
 
+    function getCustomerProjectPhase($Id = null)
+    {
+        $data = [];
+
+        $customerProjectPhase = DB::table('customer_project_phases AS ccp')
+            ->leftJoin('project_phases AS pp', function ($join) use ($Id) {
+                $join->on('ccp.ProjectPhaseId', 'pp.Id');
+                $join->on('ccp.ProjectPhaseId', 'pp.Id');
+            })
+            ->where('pp.Status', 1)
+            ->get(['ccp.*', 'pp.Title AS ProjectPhaseTitle', 'pp.Status']);
+
+        foreach ($customerProjectPhase as $index => $cpp) {
+            $temp = [
+                'Id'                => $cpp->Id,
+                'Title'             => $cpp->Title,
+                'ProjectPhaseTitle' => $cpp->ProjectPhaseTitle,
+                'Status'            => $cpp->Status,
+                // 'Required'          => $cpp->Required,
+                'Percentage'        => $cpp->Percentage,
+                'Checked'           => $cpp->Checked,
+                'Details'           => [],
+                'Resources'         => []
+            ];
+
+            $customerProjectPhasesDetails = DB::table('customer_project_phases_details AS cppd')
+                ->leftJoin('project_phases_details AS ppd', function ($join) use ($Id) {
+                    $join->on('cppd.ProjectPhaseDetailId', 'ppd.Id');
+                    $join->on('cppd.CustomerId', DB::raw("'{$Id}'"));
+                })
+                ->where('ppd.Status', 1)
+                ->where('cppd.CustomerProjectPhaseId', $cpp->Id)
+                ->get(['cppd.*', 'ppd.Title AS ProjectPhaseDetailTitle', 'ppd.Status']);
+
+            foreach ($customerProjectPhasesDetails as $cppd) {
+
+                if ($cppd->CustomerProjectPhaseId == $cpp->Id) {
+                    $temp['Details'][] = [
+                        'Id'                      => $cppd->Id,
+                        'ProjectPhaseId'          => $cppd->ProjectPhaseId,
+                        'Title'                   => $cppd->Title,
+                        'ProjectPhaseDetailTitle' => $cppd->ProjectPhaseDetailTitle,
+                        'Status'                  => $cppd->Status,
+                        // 'Required'                => $cppd->Required,
+                        'Checked'                 => $cppd->Checked,
+                    ];
+                }
+            }
+
+            $projectPhaseResources = DB::table('project_phases_resources AS ppr')
+                ->leftJoin('customer_project_phases AS cpp', function ($join) use ($Id) {
+                    $join->on('ppr.ProjectPhaseId', 'cpp.ProjectPhaseId');
+                })
+                ->leftJoin('project_phases AS pp', function ($join) use ($Id) {
+                    $join->on('cpp.ProjectPhaseId', 'pp.Id');
+                })
+                ->leftJoin('designations AS d', function ($join) use ($Id) {
+                    $join->on('ppr.DesignationId', 'd.Id');
+                })
+                ->where('pp.Status', 1)
+                ->where('d.Status', 1)
+                ->get(['ppr.*', 'd.Name']);
+
+            foreach ($projectPhaseResources as $ppr) {
+
+               $initial = $this->getInitials($ppr->Name);
+                if ($ppr->ProjectPhaseId == $cpp->ProjectPhaseId) {
+                    $temp['Resources'][] = [
+                        'Id'                      => $ppr->Id,
+                        'ppId'                      => $cpp->ProjectPhaseId,
+                        'Name'          => $initial,
+                        'Percentage'                   => $ppr->Percentage
+                    ];
+                }
+            }
+
+            $data[] = $temp;
+        }
+
+        return $data;
+    }
+
+    function getInitials($name){
+        $string = $name;
+        $expr = '/(?<=\s|^)\w/iu';
+        preg_match_all($expr, $string, $matches);
+        $result = implode('', $matches[0]);
+        return strtoupper($result);
+    }
 }
