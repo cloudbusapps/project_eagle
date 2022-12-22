@@ -27,7 +27,7 @@ class ProjectPhaseSeeder extends Seeder
         // PROJECT PHASES
         $ppId1  = Str::uuid(); // PRE-DEPLOYMENT ACTIVITIES
         $ppId2  = Str::uuid(); // PROJECT COORDINATION
-        $ppId3  = Str::uuid(); // BUILD
+        $ppId3  = config('constant.ID.PROJECT_PHASES.BUILD'); // BUILD PROJECT_PHASES
         $ppId4  = Str::uuid(); // QUALITY ASSURANCE
         $ppId5  = Str::uuid(); // TESTING
         $ppId6  = Str::uuid(); // CHANGE MANAGEMENT

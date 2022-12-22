@@ -66,6 +66,7 @@ class CustomerController extends Controller
 
 
         $inscopes = CustomerInscope::where('CustomerId', $Id)->get();
+        $totalManhour = CustomerInscope::where('CustomerId', $Id)->sum('Manhour');
         $limitations = CustomerLimitation::where('CustomerId', $Id)->get();
 
         $title = $this->getTitle($customerData->Status, $progress);
@@ -82,6 +83,7 @@ class CustomerController extends Controller
             'businessProcessData' => $businessProcessData,
             'files'               => $files,
             'reqSol'              => $inscopes,
+            'totalManhour'        => $totalManhour,
             'limitations'         => $limitations,
             'thirdParties'        => ThirdParty::orderBy('created_at', 'DESC')->get(),
             'MODULE_ID'           => $this->MODULE_ID,
@@ -478,6 +480,33 @@ class CustomerController extends Controller
             return response()->json(['url' => url('customer/edit/' . $Id)]);
         }
     }
+    function updateAssessment($request, $Id, $customerData)
+    {
+        //  FOR CONSULTANT: CHECK IF ANY FIELD ID NULL
+        $hasNull = CustomerInscope::where('CustomerId', $Id)
+            ->whereNull('Manhour')
+            ->where('ThirdParty', '!=', 1)
+            ->get();
+        if (count($hasNull) > 0) {
+            return redirect()
+                ->route('customers.edit', ['Id' => $Id])
+                ->with('fail', "<b>Fill out</b> all the manhours");
+        } else {
+            $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)->get();
+            // IF USER IS DEPT.HEAD GO TO PROPOSAL
+            if (Auth::id() == getDepartmentHeadId(config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION'))) {
+                $customerData->Status = 8;
+            } else if ($assignedConsultants->contains('UserId', Auth::id())) {
+                // NOTIFY DEPT. HEAD
+
+            } else{
+                $customerData->Status = 8;
+                // return redirect()
+                // ->route('customers.edit', ['Id' => $Id])
+                // ->with('fail', "You don't have permission to submit");
+            }
+        }
+    }
 
     function update(Request $request, $Id)
     {
@@ -511,26 +540,13 @@ class CustomerController extends Controller
         }
         // ASSESSMENT
         else if ($customerData->Status == 7) {
-            //  FOR CONSULTANT: CHECK IF ANY FIELD ID NULL
-            $hasNull = CustomerInscope::where('CustomerId', $Id)
-                ->whereNull('Manhour')
-                ->get();
-            if (count($hasNull) > 0) {
-                return redirect()
-                    ->route('customers.edit', ['Id' => $Id])
-                    ->with('fail', "<b>Fill out</b> all the manhours");
-            } else {
-                $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)->get();
-                // IF USER IS DEPT.HEAD GO TO PROPOSAL
-                if (Auth::id() == getDepartmentHeadId(config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION'))) {
-                    $customerData->Status = 7;
-                } else if ($assignedConsultants->contains('UserId', Auth::id())) {
-                    // NOTIFY DEPT. HEAD
-
-                }
-            }
-        } // ASSESSMENT
+            $this->updateAssessment($request, $Id, $customerData);
+        }
+        // PROPOSAL
         else if ($customerData->Status == 8) {
+
+            
+
         }
 
 
@@ -668,6 +684,7 @@ class CustomerController extends Controller
                 'Id'                => $cpp->Id,
                 'Title'             => $cpp->Title,
                 'ProjectPhaseTitle' => $cpp->ProjectPhaseTitle,
+                'ProjectPhaseId'    => $cpp->ProjectPhaseId,
                 'Status'            => $cpp->Status,
                 // 'Required'          => $cpp->Required,
                 'Percentage'        => $cpp->Percentage,
@@ -718,7 +735,7 @@ class CustomerController extends Controller
 
             foreach ($projectPhaseResources as $ppr) {
 
-               $initial = $this->getInitials($ppr->Name);
+                $initial = $this->getInitials($ppr->Name);
                 if ($ppr->ProjectPhaseId == $cpp->ProjectPhaseId) {
                     $temp['Resources'][] = [
                         'Id'            => $ppr->Id,
@@ -735,7 +752,8 @@ class CustomerController extends Controller
         return $data;
     }
 
-    function getInitials($name){
+    function getInitials($name)
+    {
         $string = $name;
         $expr = '/(?<=\s|^)\w/iu';
         preg_match_all($expr, $string, $matches);

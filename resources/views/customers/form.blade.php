@@ -5,12 +5,12 @@
     $currentViewStatus = $currentViewStatus ?? 0;
     
     $PreviewStatus = $BusinessNotes = '';
-    $CustomerName = $DSWStatus = $Status = $ProjectName = $Address = $Industry = $Type = $ContactPerson = $Product = $Notes = $Link = $Complex = '';
-    $DisableAttr = '';
+    $CustomerName  = $DSWStatus = $Status = $ProjectName = $Address = $Industry = $Type = $ContactPerson = $Product = $Notes = $Link = $Complex = '';
+    $DisableAttr   = '';
     
     if ($type === 'insert') {
         $Status = 0;
-        $todo = 'insert';
+        $todo   = 'insert';
         $method = 'POST';
         $action = route('customers.save');
         $cancelRoute = route('customers');
@@ -19,18 +19,18 @@
         $button = '<button type="submit" class="btn btn-primary btnSubmitForm">Save</button>';
     } elseif ($type === 'edit') {
         // INITIALIZATION
-        $CustomerName = !empty($data) ? $data['CustomerName'] ?? '' : '';
-        $Address = !empty($data) ? $data['Address'] ?? '' : '';
-        $ProjectName = !empty($data) ? $data['ProjectName'] ?? '' : '';
-        $Industry = !empty($data) ? $data['Industry'] ?? '' : '';
-        $Link = !empty($data) ? $data['Link'] ?? '' : '';
-        $Type = !empty($data) ? $data['Type'] ?? '' : '';
+        $CustomerName  = !empty($data) ? $data['CustomerName'] ?? '' : '';
+        $Address       = !empty($data) ? $data['Address'] ?? '' : '';
+        $ProjectName   = !empty($data) ? $data['ProjectName'] ?? '' : '';
+        $Industry      = !empty($data) ? $data['Industry'] ?? '' : '';
+        $Link          = !empty($data) ? $data['Link'] ?? '' : '';
+        $Type          = !empty($data) ? $data['Type'] ?? '' : '';
         $ContactPerson = !empty($data) ? $data['ContactPerson'] ?? '' : '';
-        $Product = !empty($data) ? $data['Product'] ?? '' : '';
-        $Notes = !empty($data) ? $data['Notes'] ?? '' : '';
-        $Complex = !empty($data) ? $data['Complex'] ?? '' : '';
-        $Status = !empty($data) ? $data['Status'] ?? '' : '';
-        $DSWStatus = !empty($data) ? $data['DSWStatus'] ?? '' : '';
+        $Product       = !empty($data) ? $data['Product'] ?? '' : '';
+        $Notes         = !empty($data) ? $data['Notes'] ?? '' : '';
+        $Complex       = !empty($data) ? $data['Complex'] ?? '' : '';
+        $Status        = !empty($data) ? $data['Status'] ?? '' : '';
+        $DSWStatus     = !empty($data) ? $data['DSWStatus'] ?? '' : '';
         $BusinessNotes = !empty($businessProcessData) ? $businessProcessData['Note'] ?? '' : '';
     
         $button = '<button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>';
@@ -57,9 +57,9 @@
     }
     
     // ----- PERMISSION -----
-    $DepTechConId = config('constant.ID.DEPARTMENTS.TECHNOLOGY_CONSULTING');
-    $DepBusinessAppsId = config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION');
-    $UserDepartmentId = Auth::user()->DepartmentId;
+    $DepTechConId       = config('constant.ID.DEPARTMENTS.TECHNOLOGY_CONSULTING');
+    $DepBusinessAppsId  = config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION');
+    $UserDepartmentId   = Auth::user()->DepartmentId;
     $BusinessAppsHeadId = getDepartmentHeadId($DepBusinessAppsId);
     
     switch ($title) {
@@ -1252,6 +1252,16 @@
                                             <tbody>
                                                 @if (!empty($customerProjectPhases) && count($customerProjectPhases) > 0)
                                                     @foreach ($customerProjectPhases as $index => $cpp)
+                                                    <?php
+                                                    $manhours = '';
+                                                    $percentInDecimal = $cpp['Percentage'] / 100;
+                                                    if(config('constant.ID.PROJECT_PHASES.BUILD')==$cpp['ProjectPhaseId']){
+                                                        $manhours = $totalManhour;
+                                                    } else{
+                                                        $manhours = $totalManhour * $percentInDecimal;
+                                                    }
+                                                    
+                                                    ?>
                                                         <tr>
                                                             <td class="text-center">
                                                                 {{ $index+1 }}
@@ -1273,7 +1283,7 @@
                                                             </td>
                                                             <td>
                                                                 <small
-                                                                    style="white-space: break-spaces;"></small>
+                                                                    style="white-space: break-spaces;"><?= $manhours ?></small>
                                                             </td>
                                                         </tr>
                                                     @endforeach

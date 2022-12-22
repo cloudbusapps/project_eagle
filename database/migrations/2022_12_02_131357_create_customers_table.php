@@ -63,6 +63,15 @@ return new class extends Migration
              * 7 - Assessment
              * 8 - Proposal
              */
+            $table->integer('ProposalStatus')->nullable();
+
+            /**
+             * ----- STATUS -----
+             * 0 - Ongoing Creation of Proposal
+             * 1 - Submitted Proposal
+             * 2 - Signed Proposal
+             * 3 - Rejected Proposal
+             */
             $table->integer('Status')->nullable(true);
 
             $table->uuid('HeadId')->nullable();
