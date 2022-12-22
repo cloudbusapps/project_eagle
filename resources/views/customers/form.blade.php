@@ -897,14 +897,14 @@
                                             <select name="IsCapable" id="IsCapable" select2 required
                                                 {{ $capabilityDisableField }}>
                                                 <option value="" selected disabled>Select Capability</option>
-                                                <option value="1" {{ $data['IsCapable'] == 1 ? 'selected' : '' }}>Full Capability</option>
-                                                <option value="2" {{ $data['IsCapable'] == 2 ? 'selected' : '' }}>Hybrid Capability</option>
-                                                <option value="0" {{ $data['IsCapable'] == 0 ? 'selected' : '' }}>No Capability</option>
+                                                <option value="1" {{ $data['IsCapable'] == null || $data['IsCapable'] == 1 ? 'selected' : '' }}>Full Capability</option>
+                                                <option value="2" {{ $data['IsCapable'] && $data['IsCapable'] == 2 ? 'selected' : '' }}>Hybrid Capability</option>
+                                                <option value="0" {{ $data['IsCapable'] && $data['IsCapable'] == 0 ? 'selected' : '' }}>No Capability</option>
                                             </select>
                                         </div>
                                     </div>
 
-                                    <div id="isCapableDisplay" style="{{ !isset($data['IsCapable']) || $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
+                                    <div id="isCapableDisplay" style="{{ $data['IsCapable'] == null || $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
                                         <div class="row mb-3">
                                             <label for="" class="col-sm-2 label">Third Party <?= $RequiredLabel ?></label>
                                             <div class="col-sm-10">
@@ -924,7 +924,7 @@
                                                 <div class="row" id="otherThirdPartyDisplay" style="{{ isset($data['ThirdPartyId']) && $data['ThirdPartyId'] == config('constant.ID.THIRD_PARTIES.OTHERS') ? '' : 'display: none;' }}">
                                                     <div class="col-12 mt-3">
                                                         <div class="alert alert-warning">
-                                                            <b>For non-accredited third party, please complete the following requirements</b>
+                                                            <b>For non-accredited third party, please complete the following requirements:</b>
                                                             <ul>
                                                                 <li>Apostilled Articles of Incorporation/ Certificate of Incorporation</li>
                                                                 <li>Apostilled Tax Residency Certificate</li>
@@ -998,7 +998,7 @@
 
                                                                     <tr>
                                                                         <td class="text-center">
-                                                                            <input type="checkbox" name="InScope[{{ $inscope['Id'] }}][Checked]"
+                                                                            <input type="checkbox" class="checkThirdPart" name="InScope[{{ $inscope['Id'] }}][Checked]"
                                                                                 {{ $inscope->ThirdParty == 1 ? 'checked' : '' }}
                                                                                 {{ $capabilityDisableField }}>
                                                                         </td>
@@ -1049,7 +1049,7 @@
 
                                                                     <tr>
                                                                         <td class="text-center">
-                                                                            <input type="checkbox" name="Limitation[{{ $limitation['Id'] }}][Checked]"
+                                                                            <input type="checkbox" class="checkThirdPart" name="Limitation[{{ $limitation['Id'] }}][Checked]"
                                                                                 {{ $limitation->ThirdParty == 1 ? 'checked' : '' }}
                                                                                 {{ $capabilityDisableField }}>
                                                                         </td>
@@ -1644,6 +1644,12 @@
                 } else {
                     $(`[name="ThirdPartyId"]`).attr('required', true).trigger('change');
                     $('#isCapableDisplay').show();
+
+                    if (IsCapable == 0) {
+                        $('.checkThirdPart').prop('checked', true).trigger('change');
+                    } else {
+                        $('.checkThirdPart').prop('checked', false).trigger('change');
+                    }
                 }
             })
             // ----- END CHANGE WITH CAPABILITY -----
