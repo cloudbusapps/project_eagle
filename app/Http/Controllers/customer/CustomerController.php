@@ -7,6 +7,7 @@ use App\Models\customer\CustomerBusinessProcess;
 use App\Models\customer\CustomerBusinessProcessFiles;
 use App\Models\customer\CustomerConsultant;
 use App\Models\customer\CustomerInscope;
+use App\Models\customer\CustomerProposalFiles;
 use App\Models\customer\CustomerLimitation;
 use App\Models\customer\CustomerComplexity;
 use App\Models\customer\CustomerComplexityDetails;
@@ -499,13 +500,49 @@ class CustomerController extends Controller
             } else if ($assignedConsultants->contains('UserId', Auth::id())) {
                 // NOTIFY DEPT. HEAD
 
-            } else{
+            } else {
                 $customerData->Status = 8;
                 // return redirect()
                 // ->route('customers.edit', ['Id' => $Id])
                 // ->with('fail', "You don't have permission to submit");
             }
         }
+    }
+    function updateProposal($request, $Id, $customerData)
+    {
+        $validator = $request->validate([
+            'ProposalStatus' => ['required'],
+        ]);
+        // $now = Carbon::now('utc')->toDateTimeString();
+        // $file = $request->file('FileProposal');
+        // $destinationPath = 'uploads/Proposal';
+        // if ($file) {
+        //     $validator = $request->validate([
+        //         'DateSubmitted' => ['required'],
+        //     ]);
+        //     $proposalFile = [];
+        //     foreach ($files as $index => $file) {
+        //         $filenameArr = explode('.', $file->getClientOriginalName());
+        //         $extension   = array_splice($filenameArr, count($filenameArr) - 1, 1);
+        //         $filename    = 'P-[' . $index . ']' . time() . '.' . $extension[0];
+
+        //         $file->move($destinationPath, $filename);
+
+        //         $proposalFile[] = [
+        //             'Id'             => Str::uuid(),
+        //             'CustomerId'     => $Id,
+        //             'File'           => $filename,
+        //             'CreatedById'    => Auth::id(),
+        //             'UpdatedById'    => Auth::id(),
+        //             'created_at'     => $now,
+        //         ];
+        //     }
+
+        //     CustomerProposalFiles::where('CustomerId', $Id)->delete();
+        //     CustomerProposalFiles::insert($proposalFile);
+        // }
+
+        $customerData->ProposalStatus = $request->ProposalStatus;
     }
 
     function update(Request $request, $Id)
@@ -544,9 +581,7 @@ class CustomerController extends Controller
         }
         // PROPOSAL
         else if ($customerData->Status == 8) {
-
-            
-
+            $this->updateProposal($request, $Id, $customerData);
         }
 
 

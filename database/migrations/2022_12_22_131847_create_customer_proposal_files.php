@@ -14,7 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('customer_proposal_files', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('Id')->primary();
+            $table->uuid('CustomerId');
+            $table->string('File');
+            $table->string('Date');
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
         });
     }

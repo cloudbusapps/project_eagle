@@ -51,6 +51,16 @@ return new class extends Migration
              */
             $table->integer('DSWStatus')->nullable();
 
+            
+            /**
+             * ----- STATUS -----
+             * 1 - Ongoing Creation of Proposal
+             * 2 - Submitted Proposal
+             * 3 - Signed Proposal
+             * 4 - Rejected Proposal
+             */
+            $table->integer('ProposalStatus')->nullable();
+
             /**
              * ----- STATUS -----
              * 0 - Information
@@ -62,15 +72,6 @@ return new class extends Migration
              * 6 - Project Phases
              * 7 - Assessment
              * 8 - Proposal
-             */
-            $table->integer('ProposalStatus')->nullable();
-
-            /**
-             * ----- STATUS -----
-             * 0 - Ongoing Creation of Proposal
-             * 1 - Submitted Proposal
-             * 2 - Signed Proposal
-             * 3 - Rejected Proposal
              */
             $table->integer('Status')->nullable(true);
 
