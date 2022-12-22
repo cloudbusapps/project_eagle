@@ -1251,14 +1251,17 @@
                                             </thead>
                                             <tbody>
                                                 @if (!empty($customerProjectPhases) && count($customerProjectPhases) > 0)
+                                                <?php $totalEngagementHours = 0.00; ?>
                                                     @foreach ($customerProjectPhases as $index => $cpp)
                                                     <?php
                                                     $manhours = '';
                                                     $percentInDecimal = $cpp['Percentage'] / 100;
                                                     if(config('constant.ID.PROJECT_PHASES.BUILD')==$cpp['ProjectPhaseId']){
                                                         $manhours = $totalManhour;
+                                                        $totalEngagementHours += $manhours;
                                                     } else{
                                                         $manhours = $totalManhour * $percentInDecimal;
+                                                        $totalEngagementHours += $manhours;
                                                     }
                                                     
                                                     ?>
@@ -1287,9 +1290,37 @@
                                                             </td>
                                                         </tr>
                                                     @endforeach
+                                                    <tr>
+                                                        <td colspan="4"><strong>Total Engagement Efforts</strong></td>
+                                                        <td><strong><?=$totalEngagementHours?></strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="4"><strong>Total Weeks</strong></td>
+                                                        <td><strong><?=round($totalEngagementHours/168,1)?></strong></td>
+                                                    </tr>
+                                                    
                                                 @endif
                                             </tbody>
                                         </table>
+                                        <table id="inScopeTable" cellpadding="0" cellspacing="0"
+                                        class="table table-bordered table-hover"
+                                        style="width:100%">
+                                        <thead>
+                                            <tr class="text-center">
+                                                <td><strong>P & L</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <th>No.</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                          
+                                                        </td>
+                                                    </tr>
+                                        </tbody>
+                                    </table>
                                         </div>
                                     </div>
 
@@ -1454,7 +1485,7 @@
                                     <div id="AttachmentDisplay" class="row mb-3" style="{{ $data['ProposalStatus'] == null || $data['ProposalStatus'] == 0 ? 'display: none;' : '' }}" >
                                         <label for="inputText" class="col-sm-2 label">Attachment</label>
                                         <div class="col-sm-10">
-                                            <input class="form-control mb-3" type="file" id="FileProposal" name="FileProposal" multiple />
+                                            <input class="form-control mb-3" type="file" id="FileProposal" name="FileProposal[]" multiple />
                                             <input style="display:none;" class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
                                         </div>
                                     </div>
@@ -1839,7 +1870,7 @@
             // ----- END PROPOSAL SELECT STATUS -----
 
             // ----- PROPOSAL SELECT STATUS -----
-            $(document).on('change', `[name="FileProposal"]`, function() {
+            $(document).on('change', `[name="FileProposal[]"]`, function() {
                 let hasFile = $(this).length;
                 console.log(hasFile)
                 if (hasFile > 0) {

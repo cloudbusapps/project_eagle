@@ -486,7 +486,6 @@ class CustomerController extends Controller
         //  FOR CONSULTANT: CHECK IF ANY FIELD ID NULL
         $hasNull = CustomerInscope::where('CustomerId', $Id)
             ->whereNull('Manhour')
-            ->where('ThirdParty', '!=', 1)
             ->get();
         if (count($hasNull) > 0) {
             return redirect()
@@ -513,34 +512,34 @@ class CustomerController extends Controller
         $validator = $request->validate([
             'ProposalStatus' => ['required'],
         ]);
-        // $now = Carbon::now('utc')->toDateTimeString();
-        // $file = $request->file('FileProposal');
-        // $destinationPath = 'uploads/Proposal';
-        // if ($file) {
-        //     $validator = $request->validate([
-        //         'DateSubmitted' => ['required'],
-        //     ]);
-        //     $proposalFile = [];
-        //     foreach ($files as $index => $file) {
-        //         $filenameArr = explode('.', $file->getClientOriginalName());
-        //         $extension   = array_splice($filenameArr, count($filenameArr) - 1, 1);
-        //         $filename    = 'P-[' . $index . ']' . time() . '.' . $extension[0];
+        $now = Carbon::now('utc')->toDateTimeString();
+        $files = $request->file('FileProposal');
+        $destinationPath = 'uploads/Proposal';
+        if ($files&&count($files)) {
+            $validator = $request->validate([
+                'DateSubmitted' => ['required'],
+            ]);
+            $proposalFile = [];
+            foreach ($files as $index => $file) {
+                $filenameArr = explode('.', $file->getClientOriginalName());
+                $extension   = array_splice($filenameArr, count($filenameArr) - 1, 1);
+                $filename    = 'P-[' . $index . ']' . time() . '.' . $extension[0];
 
-        //         $file->move($destinationPath, $filename);
+                $file->move($destinationPath, $filename);
 
-        //         $proposalFile[] = [
-        //             'Id'             => Str::uuid(),
-        //             'CustomerId'     => $Id,
-        //             'File'           => $filename,
-        //             'CreatedById'    => Auth::id(),
-        //             'UpdatedById'    => Auth::id(),
-        //             'created_at'     => $now,
-        //         ];
-        //     }
+                $proposalFile[] = [
+                    'Id'             => Str::uuid(),
+                    'CustomerId'     => $Id,
+                    'File'           => $filename,
+                    'CreatedById'    => Auth::id(),
+                    'UpdatedById'    => Auth::id(),
+                    'created_at'     => $now,
+                ];
+            }
 
-        //     CustomerProposalFiles::where('CustomerId', $Id)->delete();
-        //     CustomerProposalFiles::insert($proposalFile);
-        // }
+            CustomerProposalFiles::where('CustomerId', $Id)->delete();
+            CustomerProposalFiles::insert($proposalFile);
+        }
 
         $customerData->ProposalStatus = $request->ProposalStatus;
     }
