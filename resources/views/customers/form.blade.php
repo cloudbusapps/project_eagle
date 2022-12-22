@@ -1,21 +1,21 @@
 @extends('layouts.app')
 
 @section('content')
-<?php
+    <?php
     $currentViewStatus = $currentViewStatus ?? 0;
     
     $PreviewStatus = $BusinessNotes = '';
-    $CustomerName = $DSWStatus = $Status = $ProjectName = $Address = $Industry = $Type = $ContactPerson = $Product = $Notes = $Link = $Complex = '';
-    $DisableAttr = '';
-
+    $CustomerName  = $DSWStatus = $Status = $ProjectName = $Address = $Industry = $Type = $ContactPerson = $Product = $Notes = $Link = $Complex = '';
+    $DisableAttr   = '';
+    
     if ($type === 'insert') {
-        $Status      = 0;
-        $todo        = 'insert';
-        $method      = 'POST';
-        $action      = route('customers.save');
+        $Status = 0;
+        $todo   = 'insert';
+        $method = 'POST';
+        $action = route('customers.save');
         $cancelRoute = route('customers');
-        $Id          = '';
-
+        $Id = '';
+    
         $button = '<button type="submit" class="btn btn-primary btnSubmitForm">Save</button>';
     } elseif ($type === 'edit') {
         // INITIALIZATION
@@ -55,36 +55,36 @@
     } else {
         return redirect()->back();
     }
-
+    
     // ----- PERMISSION -----
     $DepTechConId       = config('constant.ID.DEPARTMENTS.TECHNOLOGY_CONSULTING');
     $DepBusinessAppsId  = config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION');
     $UserDepartmentId   = Auth::user()->DepartmentId;
     $BusinessAppsHeadId = getDepartmentHeadId($DepBusinessAppsId);
-
+    
     switch ($title) {
-        case "Information": // TECHCON
-        case "Complexity":
-        case "Deployment Strategy Workshop":
-        case "Business Process":
-        case "Requirements and Solutions":
-        case "Project Phase":
-        case "Proposal":
+        case 'Information': // TECHCON
+        case 'Complexity':
+        case 'Deployment Strategy Workshop':
+        case 'Business Process':
+        case 'Requirements and Solutions':
+        case 'Project Phase':
+        case 'Proposal':
             $DisableAttr = $UserDepartmentId != $DepTechConId ? 'disabled' : '';
             break;
-        case "Capability": // TECHCON & BUSINESS APPS
-        case "Assessment":
-        case "Success":
+        case 'Capability': // TECHCON & BUSINESS APPS
+        case 'Assessment':
+        case 'Success':
             $DisableAttr = !in_array($UserDepartmentId, [$DepTechConId, $DepBusinessAppsId]) ? 'disabled' : '';
             break;
-        default: break;
+        default:
+            break;
     }
 
     $DisableAttr = ''; // TEMP
     $RequiredLabel = $DisableAttr ? '' : "<code>*</code>";
     // ----- END PERMISSION -----
-
-?>
+    ?>
 
     <style>
         :root {
@@ -517,8 +517,12 @@
                                             <select required select2 name="Type" id="Type" class="form-select"
                                                 {{ $informationDisableField }}>
                                                 <option value="" selected disabled>Select Type</option>
-                                                <option value="1" {{ isset($data['Type']) && $data['Type'] == 1 ? 'selected' : '' }}>Deployment</option>
-                                                <option value="2" {{ isset($data['Type']) && $data['Type'] == 2 ? 'selected' : '' }}>Enhancement</option>
+                                                <option value="1"
+                                                    {{ isset($data['Type']) && $data['Type'] == 1 ? 'selected' : '' }}>
+                                                    Deployment</option>
+                                                <option value="2"
+                                                    {{ isset($data['Type']) && $data['Type'] == 2 ? 'selected' : '' }}>
+                                                    Enhancement</option>
 
                                             </select>
                                         </div>
@@ -527,14 +531,16 @@
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Notes <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
-                                            <textarea {{ $informationDisableField }} style="resize: none;" rows="3" required type="text" class="form-control" name="Notes"
+                                            <textarea style="resize: none;" rows="3" required type="text" class="form-control" name="Notes"
                                                 id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
                                         </div>
                                     </div>
 
-                                <!-- ---------- END INFORMATION ---------- -->
+
+                                    <!-- ---------- END INFORMATION ---------- -->
                                 @elseif ($Status == 1 || Request::get('progress') == 'complexity')
-                                <!-- ---------- COMPLEXITY ---------- -->
+                                    <!-- ---------- COMPLEXITY ---------- -->
+
 
                                     <?php $complexityDisableField = $DisableAttr || $data['Status'] > 2 ? 'disabled' : ''; ?>
 
@@ -1246,6 +1252,16 @@
                                             <tbody>
                                                 @if (!empty($customerProjectPhases) && count($customerProjectPhases) > 0)
                                                     @foreach ($customerProjectPhases as $index => $cpp)
+                                                    <?php
+                                                    $manhours = '';
+                                                    $percentInDecimal = $cpp['Percentage'] / 100;
+                                                    if(config('constant.ID.PROJECT_PHASES.BUILD')==$cpp['ProjectPhaseId']){
+                                                        $manhours = $totalManhour;
+                                                    } else{
+                                                        $manhours = $totalManhour * $percentInDecimal;
+                                                    }
+                                                    
+                                                    ?>
                                                         <tr>
                                                             <td class="text-center">
                                                                 {{ $index+1 }}
@@ -1267,7 +1283,7 @@
                                                             </td>
                                                             <td>
                                                                 <small
-                                                                    style="white-space: break-spaces;"></small>
+                                                                    style="white-space: break-spaces;"><?= $manhours ?></small>
                                                             </td>
                                                         </tr>
                                                     @endforeach
@@ -1416,20 +1432,37 @@
                                     <!-- ---------- END ASSESSMENT ---------- -->
                                 @elseif ($Status == 8 || Request::get('progress') == 'proposal')
                                     <!-- ---------- PROPOSAL ---------- -->
-
                                     <div class="row mb-3">
+                                        <label for="" class="col-sm-2 label">Status
+                                            <?= $RequiredLabel ?></label>
+                                        <div class="col-sm-10">
+                                            <select name="ProposalStatus" id="ProposalStatus" select2 required>
+                                                <option value="" selected disabled>Select Status of Proposal</option>
+                                                <option value="1" {{ $data['ProposalStatus'] == 1 ? 'selected' : '' }}>Ongoing creation of proposal</option>
+                                                <option value="2" {{ $data['ProposalStatus'] == 2 ? 'selected' : '' }}>Submitted proposal </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    {{-- <div class="row mb-3">
                                         <label for="inputText" class="col-sm-2 label">Notes <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
                                             <textarea {{ $DisableAttr }} style="resize: none;" rows="3" required type="text" class="form-control"
                                                 name="Notes" id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
-                                    <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Attachment
+                                    <div id="AttachmentDisplay" class="row mb-3" style="{{ $data['ProposalStatus'] == null || $data['ProposalStatus'] == 0 ? 'display: none;' : '' }}" >
+                                        <label for="inputText" class="col-sm-2 label">Attachment</label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control mb-3" type="file" id="FileProposal" name="FileProposal" multiple />
+                                            <input style="display:none;" class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
+                                        </div>
+                                    </div>
+                                    <div id="DateSignedDisplay" class="row mb-3" style="display: none;" >
+                                        <label for="inputText" class="col-sm-2 label">Date Submitted
                                             <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
-                                            <input class="form-control" type="file" id="formFileMultiple" multiple />
+                                            <input class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
                                         </div>
                                     </div>
 
@@ -1758,7 +1791,6 @@
             })
             // ----- END CHANGE WITH CAPABILITY -----
 
-
             // ----- CHANGE THIRD PARTY -----
             $(document).on('change', `[name="ThirdPartyId"]`, function() {
                 let thirdPartyName = $('option:selected', this).text()?.trim();
@@ -1795,6 +1827,38 @@
                     .trigger('change');
             })
             // ----- END CHANGE SUB COMPLEXITY -----
+
+            // ----- PROPOSAL SELECT STATUS -----
+            $(document).on('change', `[name="ProposalStatus"]`, function() {
+                let ProposalStatus = $(this).val();
+                if (ProposalStatus == 1) {
+                    $('#AttachmentDisplay').show()
+                } else {
+                }
+            })
+            // ----- END PROPOSAL SELECT STATUS -----
+
+            // ----- PROPOSAL SELECT STATUS -----
+            $(document).on('change', `[name="FileProposal"]`, function() {
+                let hasFile = $(this).length;
+                console.log(hasFile)
+                if (hasFile > 0) {
+                    $('#DateSignedDisplay').show()
+                    // $(`[name="ThirdPartyId"]`).attr('required', false).val('');
+                    // $(`[name="ThirdPartyName"]`).attr('required', false).val('');
+                } else {
+                    $('#DateSignedDisplay').show()
+                    // $(`[name="ThirdPartyId"]`).attr('required', true).trigger('change');
+                    // $('#isCapableDisplay').show();
+
+                    // if (ProposalStatus == 0) {
+                    //     $('.checkThirdPart').prop('checked', true).trigger('change');
+                    // } else {
+                    //     $('.checkThirdPart').prop('checked', false).trigger('change');
+                    // }
+                }
+            })
+            // ----- END PROPOSAL SELECT STATUS -----
 
 
             // ----- DELETE TABLE ROW -----
