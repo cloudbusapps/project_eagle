@@ -660,6 +660,7 @@ class CustomerController extends Controller
                 $join->on('ccp.ProjectPhaseId', 'pp.Id');
             })
             ->where('pp.Status', 1)
+            ->where('ccp.CustomerId', $Id)
             ->get(['ccp.*', 'pp.Title AS ProjectPhaseTitle', 'pp.Status']);
 
         foreach ($customerProjectPhase as $index => $cpp) {
@@ -682,6 +683,7 @@ class CustomerController extends Controller
                 })
                 ->where('ppd.Status', 1)
                 ->where('cppd.CustomerProjectPhaseId', $cpp->Id)
+                ->where('cppd.CustomerId', $Id)
                 ->get(['cppd.*', 'ppd.Title AS ProjectPhaseDetailTitle', 'ppd.Status']);
 
             foreach ($customerProjectPhasesDetails as $cppd) {
@@ -711,6 +713,7 @@ class CustomerController extends Controller
                 })
                 ->where('pp.Status', 1)
                 ->where('d.Status', 1)
+                ->where('cpp.CustomerId', $Id)
                 ->get(['ppr.*', 'd.Name']);
 
             foreach ($projectPhaseResources as $ppr) {
@@ -718,10 +721,10 @@ class CustomerController extends Controller
                $initial = $this->getInitials($ppr->Name);
                 if ($ppr->ProjectPhaseId == $cpp->ProjectPhaseId) {
                     $temp['Resources'][] = [
-                        'Id'                      => $ppr->Id,
-                        'ppId'                      => $cpp->ProjectPhaseId,
+                        'Id'            => $ppr->Id,
+                        'ppId'          => $cpp->ProjectPhaseId,
                         'Name'          => $initial,
-                        'Percentage'                   => $ppr->Percentage
+                        'Percentage'    => $ppr->Percentage
                     ];
                 }
             }
