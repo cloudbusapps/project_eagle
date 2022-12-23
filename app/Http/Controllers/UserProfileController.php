@@ -48,10 +48,10 @@ class UserProfileController extends Controller
                     'leave_types.Name', 
                     'leave_types.Id AS LeaveTypeId', 
                     'ulb.UserId',
+                    'ulb.Credit',
                     'ulb.Accrued',
-                    'ulb.Balance',
                     'ulb.Used',
-                    'ulb.Remaining',
+                    'ulb.Balance',
                 ]);
         }
 
@@ -804,9 +804,9 @@ class UserProfileController extends Controller
                     $LeaveTypeId = $dt2['LeaveTypeId'] ?? '';
                     $Name        = $dt2['Name'] ?? '';
                     $Accrued     = $dt2['Accrued'] ?? 0;
-                    $Balance     = $dt2['Balance'] ?? 0;
+                    $Credit      = $dt2['Credit'] ?? 0;
                     $Used        = $dt2['Used'] ?? 0;
-                    $Remaining   = $dt2['Remaining'] ?? 0;
+                    $Balance     = $dt2['Balance'] ?? 0;
 
 
                     $tbodyHTML .= '
@@ -816,10 +816,10 @@ class UserProfileController extends Controller
                     <tr>
                         <td>'. $Name .'</td>
                         <td class="text-center">
-                            <input type="number" step="0.01" name="LeaveBalance['.$index.'][Accrued]" value="'. $Accrued .'" class="form-control text-center">
+                            <input type="number" step="0.01" name="LeaveBalance['.$index.'][Credit]" value="'. $Credit .'" class="form-control text-center">
                         </td>
                         <td class="text-center">
-                            <input type="number" step="0.01" name="LeaveBalance['.$index.'][Balance]" value="'. $Balance .'" class="form-control text-center">
+                            <input type="number" step="0.01" name="LeaveBalance['.$index.'][Accrued]" value="'. $Accrued .'" class="form-control text-center">
                         </td>
                         <td class="text-center">
                             <input type="number" step="0.01" name="LeaveBalance['.$index.'][Used]" value="'. $Used .'" class="form-control text-center">
@@ -838,8 +838,8 @@ class UserProfileController extends Controller
                     </tr>
                     <tr>
                         <th>Leave Type</th>
+                        <th>Credit</th>
                         <th>Accrued</th>
-                        <th>Balance</th>
                         <th>Used</th>
                     </tr>
                 </thead>
@@ -872,10 +872,10 @@ class UserProfileController extends Controller
                 $UserLeaveBalanceId = $dt['Id'] ?? Str::uuid();
                 $Year        = $dt['Year'] ?? '';
                 $LeaveTypeId = $dt['LeaveTypeId'] ?? '';
+                $Credit      = $dt['Credit'] ?? 0;
                 $Accrued     = $dt['Accrued'] ?? 0;
-                $Balance     = $dt['Balance'] ?? 0;
                 $Used        = $dt['Used'] ?? 0;
-                $Remaining   = ($Accrued + $Balance) - $Used;
+                $Balance     = ($Accrued + $Credit) - $Used;
 
                 $data[] = [
                     'Id'          => $UserLeaveBalanceId,
@@ -883,9 +883,9 @@ class UserProfileController extends Controller
                     'LeaveTypeId' => $LeaveTypeId,
                     'UserId'      => $Id,
                     'Accrued'     => $Accrued,
-                    'Balance'     => $Balance,
+                    'Credit'      => $Credit,
                     'Used'        => $Used,
-                    'Remaining'   => $Remaining,
+                    'Balance'     => $Balance,
                     'CreatedById' => Auth::id(),
                     'UpdatedById' => Auth::id(),
                 ];
