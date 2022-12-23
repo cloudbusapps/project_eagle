@@ -1233,8 +1233,8 @@
                                 @elseif ($Status == 7 || Request::get('progress') == 'assessment')
                                     <!-- ---------- ASSESSMENT ---------- -->
                                     <div class="card mb-3 accordion ">
-                                        <div class="accordion-item ">
-                                            <a href="#" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" >
+                                        <div id="tableContainer" class="accordion-item ">
+                                            <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" >
                                             <div class="card-header py-3">
                                                 <h5 class="card-title mb-0">ENGAGEMENT SUMMARY EFFORTS</h5>
                                             </div>
@@ -1242,7 +1242,7 @@
                                             <div id="collapseOne" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                                 <table id="inScopeTable" cellpadding="0" cellspacing="0"
                                                 class="table table-bordered table-hover"
-                                                style="width:100%">
+                                                style="width: 100%; max-width: 1500px;">
                                                 <thead>
                                                     <tr>
                                                         <th>No.</th>
@@ -1250,6 +1250,10 @@
                                                         <th></th>
                                                         <th>%</th>
                                                         <th>Effort(Hrs.)</th>
+                                                        @foreach ($customerProjectPhases[2]['Resources'] as $s)
+                                                            {{ $s['Percentage'] }}
+                                                        @endforeach
+                                                        
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1268,7 +1272,7 @@
                                                                 <td>
                                                                     @foreach ($cpp['Resources'] as $resources)
                                                                     <small
-                                                                    style="white-space: break-spaces;">{{ $resources['Name'].':'.$resources['Percentage'].'%'.'--'.$resources['resourceManhour']}}</small>,
+                                                                    style="white-space: break-spaces;">{{ $resources['Name'].':'.$resources['Percentage'].'%'}}</small>,
                                                                     @endforeach
                                                                     
                                                                 </td>
@@ -1280,6 +1284,8 @@
                                                                     <small
                                                                         style="white-space: break-spaces;">{{ $cpp['EffortHours'] }}</small>
                                                                 </td>
+                                                               
+                                                                
                                                             </tr>
                                                         @endforeach
                                                         <tr>
@@ -1293,7 +1299,27 @@
                                                         
                                                     @endif
                                                 </tbody>
-                                            </table>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card mb-3">
+                                        <div class="card-header py-3">
+                                            <h5 class="card-title mb-0">OIC</h5>
+                                            <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-html="true"
+                                                title="Assign OIC"></i>
+                                        </div>
+                                        <div class="card-body">
+                                            <select select2 name="OICId" id="OICId" class="form-select" required>
+                                                <option value="0" selected disabled>Select OIC</option>
+                                                @foreach ($users as $user)
+                                                    <option {{ $data->OICId == $user->Id?'selected':'' }}  value="{{ $user->Id }}">
+                                                        {{ $user->FirstName . ' ' . $user->LastName }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <div class="text-end mt-3">
+                                                <a href="#" class="btn btn-info btnOIC text-white">Assign OIC</a>
                                             </div>
                                         </div>
                                         
@@ -1320,6 +1346,7 @@
                                                 <a href="#" class="btn btn-info btnAssign text-white">Assign Users</a>
                                             </div>
                                         </div>
+                                        
                                     </div>
 
                                     <div class="card mb-3">
@@ -1386,7 +1413,13 @@
                                                 </table>
                                             </div>
                                             <div class="text-end mt-3">
+                                                
+                                            @if ($Status == $currentViewStatus)
+                                             <div class="button-footer text-end">
                                                 <?=$manhourButton?>
+                                                <?= $button ?>
+                                            </div>
+                                            @endif
                                             </div>
                                         </div>
                                     </div>
@@ -1483,10 +1516,15 @@
                 </div>
 
                 @if ($Status == $currentViewStatus)
+                    @if($Status == 7 || Request::get('progress') == 'assessment')
+                        <div class="button-footer text-end">
+                        </div>
+                    @else
                     <div class="button-footer text-end">
                         <a href="{{ $cancelRoute }}" class="btn btn-secondary">Cancel</a>
                         <?= $button ?>
                     </div>
+                    @endif
                 @endif
 
 
@@ -1693,6 +1731,54 @@
                 });
             });
             // END UPDATE FOR ASSESSMENT
+
+            // ASSIGN OF OIC
+            $(document).on('click', '.btnOIC', function(e) {
+                e.preventDefault();
+                let selectedOIC = $('#OICId').val();
+                let message = "Are you sure you want to assign this user to OIC?";
+                let content = `
+                <div class="d-flex justify-content-center align-items-center flex-column text-center">
+                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                    <b class="mt-4">${message}</b>
+                </div>`;
+
+                let confirmation = $.confirm({
+                    title: false,
+                    content,
+                    buttons: {
+
+                        no: {
+                            btnClass: 'btn-default',
+                        },
+                        yes: {
+                            btnClass: 'btn-blue',
+                            keys: ['enter'],
+                            action: function() {
+                                let method = 'PUT';
+                                $.ajax({
+                                    type: method,
+                                    url: `{{ $Id }}/updateOIC`,
+                                    data:{selectedOIC},
+                                    async: false,
+                                    success: function(response) {
+                                        window.location = response.url;
+                                    }
+                                })
+
+                                confirmation.buttons.yes.setText(
+                                    `<span class="spinner-border spinner-border-sm"></span> Please wait...`
+                                );
+                                confirmation.buttons.yes.disable();
+                                confirmation.buttons.no.hide();
+
+                                return false;
+                            }
+                        },
+                    }
+                });
+            });
+            // END ASSIGN OF OIC
 
             // PROGRESS BAR
             const status = "{{ $Status }}";

@@ -502,6 +502,23 @@ class CustomerController extends Controller
             return response()->json(['url' => url('customer/edit/' . $Id)]);
         }
     }
+    function updateOIC(Request $request, $Id)
+    {
+        // $validator = $request->validate([
+        //     'selectedOIC' => ['required'],
+        // ]);
+        $OICId = $request->selectedOIC;
+        $update = Customer::where('Id', $Id)
+                ->update(['OICId' => $OICId]);
+                return $update;
+        if ($update) {
+            $request->session()->flash('success', 'Consulant updated');
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
+        } else {
+            $request->session()->flash('fail', 'Something went wrong, try again later');
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
+        }
+    }
 
     function updateManhour(Request $request, $Id)
     {
@@ -833,6 +850,7 @@ class CustomerController extends Controller
                     $temp['Resources'][] = [
                         'Id'              => $ppr->Id,
                         'ppId'            => $cpp->ProjectPhaseId,
+                        'DId'            => $ppr->DesignationId,
                         'Name'            => $designationInitials,
                         'Percentage'      => $ppr->Percentage,
                         'resourceManhour' => $temp['EffortHours'] * $percentToDecimal
