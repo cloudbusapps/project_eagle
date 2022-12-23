@@ -18,6 +18,7 @@ return new class extends Migration
             $table->uuid('CustomerId');
             $table->string('File');
             $table->string('Date');
+            $table->integer('Status');
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
