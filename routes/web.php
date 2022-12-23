@@ -169,6 +169,7 @@ Route::prefix('customer')->group(function () {
     Route::put('/edit/{Id}/update', [CustomerController::class, 'update'])->name('customers.update');
     Route::put('/edit/{Id}/updateConsultant', [CustomerController::class, 'updateConsultant'])->name('customers.updateConsultant');
     Route::put('/edit/{Id}/updateManhour', [CustomerController::class, 'updateManhour'])->name('customers.updateManhour');
+    Route::put('/edit/{Id}/updateOIC', [CustomerController::class, 'updateOIC'])->name('customers.updateOIC');
     Route::get('/delete/{Id}', [CustomerController::class, 'delete'])->name('customers.delete');
 });
 // END CUSTOMER
