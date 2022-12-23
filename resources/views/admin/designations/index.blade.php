@@ -65,7 +65,7 @@
                                 <td>{{ $index + 1 }}</td>
                                 <td>
                                     <a href="{{ route('designation.edit', ['Id' => $dt->Id]) }}">
-                                        {{ $dt->Name }}
+                                        {{ $dt->Name. " ($dt->Initial)" }}
                                     </a>
                                 </td>
                                 <td>{{ $dt->DepartmentName ?? '' }}</td>

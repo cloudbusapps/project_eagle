@@ -67,46 +67,88 @@ class StartUpSeeder extends Seeder
         // ----- DESIGNATION -----
         DB::table('designations')->insert([
             [
-                'Id'           => $DesignationId,
-                'DepartmentId' => $DepartmentId,
-                'Name'         => 'Administrator',
-                'Status'       => 1
+                'Id'               => $DesignationId,
+                'DepartmentId'     => $DepartmentId,
+                'Name'             => 'Administrator',
+                'Initial'          => 'ADM',
+                'BeginnerRate'     => 10,
+                'IntermediateRate' => 20,
+                'SeniorRate'       => 30,
+                'ExpertRate'       => 60,
+                'DefaultRate'      => 30,
+                'Status'           => 1
             ],
             [
-                'Id'           => $TCDesignationId,
-                'DepartmentId' => $CloudDepartmentId,
-                'Name'         => 'Technical Consultant',
-                'Status'       => 1
+                'Id'               => $TCDesignationId,
+                'DepartmentId'     => $CloudDepartmentId,
+                'Name'             => 'Technical Consultant',
+                'Initial'          => 'TC',
+                'BeginnerRate'     => 10,
+                'IntermediateRate' => 20,
+                'SeniorRate'       => 30,
+                'ExpertRate'       => 60,
+                'DefaultRate'      => 30,
+                'Status'           => 1
             ],
             [
-                'Id'           => $GMDesignationId,
-                'DepartmentId' => $CloudDepartmentId,
-                'Name'         => 'General Manager - Cloud Applications',
-                'Status'       => 1
+                'Id'               => $GMDesignationId,
+                'DepartmentId'     => $CloudDepartmentId,
+                'Name'             => 'General Manager - Cloud Applications',
+                'Initial'          => 'BA-Head',
+                'BeginnerRate'     => 10,
+                'IntermediateRate' => 20,
+                'SeniorRate'       => 30,
+                'ExpertRate'       => 60,
+                'DefaultRate'      => 30,
+                'Status'           => 1
             ],
             [
-                'Id'           => $FCDesignationId,
-                'DepartmentId' => $CloudDepartmentId,
-                'Name'         => 'Functional Consultant',
-                'Status'       => 1
+                'Id'               => $FCDesignationId,
+                'DepartmentId'     => $CloudDepartmentId,
+                'Name'             => 'Functional Consultant',
+                'Initial'          => 'FC',
+                'BeginnerRate'     => 10,
+                'IntermediateRate' => 20,
+                'SeniorRate'       => 30,
+                'ExpertRate'       => 60,
+                'DefaultRate'      => 30,
+                'Status'           => 1
             ],
             [
-                'Id'           => $BADesignationId,
-                'DepartmentId' => $CloudDepartmentId,
-                'Name'         => 'Business Analyst',
-                'Status'       => 1
+                'Id'               => $BADesignationId,
+                'DepartmentId'     => $CloudDepartmentId,
+                'Name'             => 'Business Analyst',
+                'Initial'          => 'BA',
+                'BeginnerRate'     => 10,
+                'IntermediateRate' => 20,
+                'SeniorRate'       => 30,
+                'ExpertRate'       => 60,
+                'DefaultRate'      => 30,
+                'Status'           => 1
             ],
             [
-                'Id'           => $PMDesignationId,
-                'DepartmentId' => $TCDepartmentId,
-                'Name'         => 'Project Manager',
-                'Status'       => 1
+                'Id'               => $PMDesignationId,
+                'DepartmentId'     => $TCDepartmentId,
+                'Name'             => 'Project Manager',
+                'Initial'          => 'PM',
+                'BeginnerRate'     => 10,
+                'IntermediateRate' => 20,
+                'SeniorRate'       => 30,
+                'ExpertRate'       => 60,
+                'DefaultRate'      => 30,
+                'Status'           => 1
             ],
             [
-                'Id'           => $CMDesignationId,
-                'DepartmentId' => $TCDepartmentId,
-                'Name'         => 'Customer Manager',
-                'Status'       => 1
+                'Id'               => $CMDesignationId,
+                'DepartmentId'     => $TCDepartmentId,
+                'Name'             => 'Customer Manager',
+                'Initial'          => 'CM',
+                'BeginnerRate'     => 10,
+                'IntermediateRate' => 20,
+                'SeniorRate'       => 30,
+                'ExpertRate'       => 60,
+                'DefaultRate'      => 30,
+                'Status'           => 1
             ],
         ]);
         // ----- END DESIGNATION -----

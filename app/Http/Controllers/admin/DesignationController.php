@@ -40,6 +40,7 @@ class DesignationController extends Controller
 
         $validator = $request->validate([
             'DepartmentId' => ['required'],
+            'Initial' => ['required'],
             'Name' => [
                 'required', 'string', 'max:255',
                 Rule::unique('designations')->where(function($query) use($Name, $DepartmentId) {
@@ -49,9 +50,15 @@ class DesignationController extends Controller
         ]);
         
         $Designation = new Designation;
-        $Designation->DepartmentId = $DepartmentId;
-        $Designation->Name         = $Name;
-        $Designation->Status       = $Status;
+        $Designation->DepartmentId     = $DepartmentId;
+        $Designation->Name             = $Name;
+        $Designation->Status           = $Status;
+        $Designation->Initial          = $request->Initial;
+        $Designation->BeginnerRate     = $request->BeginnerRate;
+        $Designation->IntermediateRate = $request->IntermediateRate;
+        $Designation->SeniorRate       = $request->SeniorRate;
+        $Designation->ExpertRate       = $request->ExpertRate;
+        $Designation->DefaultRate      = $request->DefaultRate;
 
         if ($Designation->save()) {
             return redirect()
@@ -76,6 +83,7 @@ class DesignationController extends Controller
 
         $validator = $request->validate([
             'DepartmentId' => ['required'],
+            'Initial' => ['required'],
             'Name' => [
                 'required', 'string', 'max:255',
                 Rule::unique('designations')->where(function($query) use($Name, $DepartmentId, $Id) {
@@ -85,9 +93,15 @@ class DesignationController extends Controller
         ]);
         
         $Designation = Designation::find($Id);
-        $Designation->DepartmentId = $DepartmentId;
-        $Designation->Name         = $Name;
-        $Designation->Status       = $Status;
+        $Designation->DepartmentId     = $DepartmentId;
+        $Designation->Name             = $Name;
+        $Designation->Status           = $Status;
+        $Designation->Initial          = $request->Initial;
+        $Designation->BeginnerRate     = $request->BeginnerRate;
+        $Designation->IntermediateRate = $request->IntermediateRate;
+        $Designation->SeniorRate       = $request->SeniorRate;
+        $Designation->ExpertRate       = $request->ExpertRate;
+        $Designation->DefaultRate      = $request->DefaultRate;
 
         if ($Status == 0 && $this->isActive($Id)) {
             return redirect()
