@@ -967,7 +967,7 @@
                                                 <?= $RequiredLabel ?></label>
                                             <div class="col-sm-10">
                                                 <select name="ThirdPartyId" id="ThirdPartyId" class="form-select" select2
-                                                    required {{ $capabilityDisableField }}>
+                                                    {{ $capabilityDisableField }}>
                                                     <option value="" selected disabled>Select Third Party</option>
 
                                                     @foreach ($thirdParties as $dt)
@@ -1039,7 +1039,7 @@
 
                                                                     <tr>
                                                                         <td class="text-center">
-                                                                            <input type="checkbox" class="checkThirdPart" name="InScope[{{ $inscope['Id'] }}][Checked]"
+                                                                            <input type="checkbox" class="checkThirdParty" name="InScope[{{ $inscope['Id'] }}][Checked]"
                                                                                 {{ $inscope->ThirdParty == 1 ? 'checked' : '' }}
                                                                                 {{ $capabilityDisableField }}>
                                                                         </td>
@@ -1802,9 +1802,9 @@
                     $('#isCapableDisplay').show();
 
                     if (IsCapable == 0) {
-                        $('.checkThirdPart').prop('checked', true).trigger('change');
+                        $('.checkThirdParty').prop('checked', true).trigger('change');
                     } else {
-                        $('.checkThirdPart').prop('checked', false).trigger('change');
+                        $('.checkThirdParty').prop('checked', false).trigger('change');
                     }
                 }
             })
@@ -1871,9 +1871,9 @@
                     // $('#isCapableDisplay').show();
 
                     // if (ProposalStatus == 0) {
-                    //     $('.checkThirdPart').prop('checked', true).trigger('change');
+                    //     $('.checkThirdParty').prop('checked', true).trigger('change');
                     // } else {
-                    //     $('.checkThirdPart').prop('checked', false).trigger('change');
+                    //     $('.checkThirdParty').prop('checked', false).trigger('change');
                     // }
                 }
             })
