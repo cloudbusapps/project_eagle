@@ -34,16 +34,19 @@
         $BusinessNotes = !empty($businessProcessData) ? $businessProcessData['Note'] ?? '' : '';
     
         $button = '<button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>';
+        $manhourButton = '<a href="#" class="btn btn-warning btnUpdate">Update</a>';
     
         if ($Status == 7 || Request::get('progress') == 'assessment') {
             if(Auth::id()==getDepartmentHeadId(config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION'))){
                 $button = '
-                <a href="#" class="btn btn-warning btnRevise">Revise</a>
                 <button type="submit" class="btn btn-primary btnUpdateForm">For Release</button>';
+                $manhourButton = '
+                <a href="#" class="btn btn-warning btnRevise">Revise</a>';
             } else{
                 $button = '
-                <a href="#" class="btn btn-warning btnUpdate">Update</a>
                 <button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>';
+                $manhourButton = '
+                <a href="#" class="btn btn-warning btnUpdate">Update Manhours</a>';
             }
            
         }
@@ -87,11 +90,13 @@
     ?>
 
     <style>
+        
         :root {
             --backgroundColor: lightgrey;
             --borderSize: 40px;
             --active-color: {{ $DSWStatus == 5 ? 'green' : '#eed202' }};
         }
+        
 
         .divSquare {
             position: relative;
@@ -1226,96 +1231,71 @@
                                     <!-- ---------- END PROJECT PHASE ---------- -->
                                 @elseif ($Status == 7 || Request::get('progress') == 'assessment')
                                     <!-- ---------- ASSESSMENT ---------- -->
-                                    <div class="card mb-3">
-                                        <div class="card-header py-3">
-                                            <h5 class="card-title mb-0">Engagement Summary Efforts</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <table id="inScopeTable" cellpadding="0" cellspacing="0"
-                                            class="table table-bordered table-hover"
-                                            style="width:100%">
-                                            <thead>
-                                                <tr>
-                                                    <th>No.</th>
-                                                    <th>Project Phase</th>
-                                                    <th></th>
-                                                    <th>%</th>
-                                                    <th>Effort(Hrs.)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @if (!empty($customerProjectPhases) && count($customerProjectPhases) > 0)
-                                                <?php $totalEngagementHours = 0.00; ?>
-                                                    @foreach ($customerProjectPhases as $index => $cpp)
-                                                    <?php
-                                                    $manhours = '';
-                                                    $percentInDecimal = $cpp['Percentage'] / 100;
-                                                    if(config('constant.ID.PROJECT_PHASES.BUILD')==$cpp['ProjectPhaseId']){
-                                                        $manhours = $totalManhour;
-                                                        $totalEngagementHours += $manhours;
-                                                    } else{
-                                                        $manhours = $totalManhour * $percentInDecimal;
-                                                        $totalEngagementHours += $manhours;
-                                                    }
-                                                    
-                                                    ?>
+                                    <div class="card mb-3 accordion ">
+                                        <div class="accordion-item ">
+                                            <a href="#" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" >
+                                            <div class="card-header py-3">
+                                                <h5 class="card-title mb-0">ENGAGEMENT SUMMARY EFFORTS</h5>
+                                            </div>
+                                        </a>
+                                            <div id="collapseOne" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                                <table id="inScopeTable" cellpadding="0" cellspacing="0"
+                                                class="table table-bordered table-hover"
+                                                style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No.</th>
+                                                        <th>Project Phase</th>
+                                                        <th></th>
+                                                        <th>%</th>
+                                                        <th>Effort(Hrs.)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if (!empty($customerProjectPhases) && count($customerProjectPhases) > 0)
+                                                    <?php $totalEngagementHours = 0.00; ?>
+                                                        @foreach ($customerProjectPhases as $index => $cpp)
+                                                        <?php $totalEngagementHours += $cpp['EffortHours'] ?>
+                                                            <tr>
+                                                                <td class="text-center">
+                                                                    {{ $index+1 }}
+                                                                </td>
+                                                                <td>
+                                                                    <small
+                                                                        style="white-space: break-spaces;">{{ $cpp['Title'] }}</small>
+                                                                </td>
+                                                                <td>
+                                                                    @foreach ($cpp['Resources'] as $resources)
+                                                                    <small
+                                                                    style="white-space: break-spaces;">{{ $resources['Name'].':'.$resources['Percentage'].'%'.'--'.$resources['resourceManhour']}}</small>,
+                                                                    @endforeach
+                                                                    
+                                                                </td>
+                                                                <td>
+                                                                    <small
+                                                                        style="white-space: break-spaces;">{{ $cpp['Percentage'] }}</small>
+                                                                </td>
+                                                                <td>
+                                                                    <small
+                                                                        style="white-space: break-spaces;">{{ $cpp['EffortHours'] }}</small>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
                                                         <tr>
-                                                            <td class="text-center">
-                                                                {{ $index+1 }}
-                                                            </td>
-                                                            <td>
-                                                                <small
-                                                                    style="white-space: break-spaces;">{{ $cpp['Title'] }}</small>
-                                                            </td>
-                                                            <td>
-                                                                @foreach ($cpp['Resources'] as $resources)
-                                                                <small
-                                                                style="white-space: break-spaces;">{{ $resources['Name'].':'.$resources['Percentage'].'%' }}</small>,
-                                                                @endforeach
-                                                                
-                                                            </td>
-                                                            <td>
-                                                                <small
-                                                                    style="white-space: break-spaces;">{{ $cpp['Percentage'] }}</small>
-                                                            </td>
-                                                            <td>
-                                                                <small
-                                                                    style="white-space: break-spaces;"><?= $manhours ?></small>
-                                                            </td>
+                                                            <td colspan="4"><strong>Total Engagement Efforts</strong></td>
+                                                            <td><strong><?=$totalEngagementHours?></strong></td>
                                                         </tr>
-                                                    @endforeach
-                                                    <tr>
-                                                        <td colspan="4"><strong>Total Engagement Efforts</strong></td>
-                                                        <td><strong><?=$totalEngagementHours?></strong></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="4"><strong>Total Weeks</strong></td>
-                                                        <td><strong><?=round($totalEngagementHours/168,1)?></strong></td>
-                                                    </tr>
-                                                    
-                                                @endif
-                                            </tbody>
-                                        </table>
-                                        <table id="inScopeTable" cellpadding="0" cellspacing="0"
-                                        class="table table-bordered table-hover"
-                                        style="width:100%">
-                                        <thead>
-                                            <tr class="text-center">
-                                                <td><strong>P & L</strong></td>
-                                            </tr>
-                                            <tr>
-                                                <th>No.</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                    <tr>
-                                                        <td class="text-center">
-                                                          
-                                                        </td>
-                                                    </tr>
-                                        </tbody>
-                                    </table>
+                                                        <tr>
+                                                            <td colspan="4"><strong>Total Weeks</strong></td>
+                                                            <td><strong><?=round($totalEngagementHours/168,1)?></strong></td>
+                                                        </tr>
+                                                        
+                                                    @endif
+                                                </tbody>
+                                            </table>
+                                            </div>
                                         </div>
+                                        
                                     </div>
 
                                     <div class="card mb-3">
@@ -1403,6 +1383,9 @@
                                                         @endif
                                                     </tbody>
                                                 </table>
+                                            </div>
+                                            <div class="text-end mt-3">
+                                                <?=$manhourButton?>
                                             </div>
                                         </div>
                                     </div>

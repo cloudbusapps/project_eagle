@@ -703,7 +703,7 @@ class CustomerController extends Controller
     function getCustomerProjectPhase($Id = null)
     {
         $data = [];
-
+        $totalManhour = CustomerInscope::where('CustomerId', $Id)->sum('Manhour');
         $customerProjectPhase = DB::table('customer_project_phases AS ccp')
             ->leftJoin('project_phases AS pp', function ($join) use ($Id) {
                 $join->on('ccp.ProjectPhaseId', 'pp.Id');
@@ -714,18 +714,37 @@ class CustomerController extends Controller
             ->get(['ccp.*', 'pp.Title AS ProjectPhaseTitle', 'pp.Status']);
 
         foreach ($customerProjectPhase as $index => $cpp) {
-            $temp = [
-                'Id'                => $cpp->Id,
-                'Title'             => $cpp->Title,
-                'ProjectPhaseTitle' => $cpp->ProjectPhaseTitle,
-                'ProjectPhaseId'    => $cpp->ProjectPhaseId,
-                'Status'            => $cpp->Status,
-                // 'Required'          => $cpp->Required,
-                'Percentage'        => $cpp->Percentage,
-                'Checked'           => $cpp->Checked,
-                'Details'           => [],
-                'Resources'         => []
-            ];
+            $percentInDecimal = $cpp->Percentage / 100;
+            if(config('constant.ID.PROJECT_PHASES.BUILD')==$cpp->ProjectPhaseId){
+                $temp = [
+                    'Id'                => $cpp->Id,
+                    'Title'             => $cpp->Title,
+                    'ProjectPhaseTitle' => $cpp->ProjectPhaseTitle,
+                    'ProjectPhaseId'    => $cpp->ProjectPhaseId,
+                    'Status'            => $cpp->Status,
+                    'EffortHours'       => $totalManhour,
+                    // 'Required'          => $cpp->Required,
+                    'Percentage'        => $cpp->Percentage,
+                    'Checked'           => $cpp->Checked,
+                    'Details'           => [],
+                    'Resources'         => []
+                ];
+            } else{
+                $temp = [
+                    'Id'                => $cpp->Id,
+                    'Title'             => $cpp->Title,
+                    'ProjectPhaseTitle' => $cpp->ProjectPhaseTitle,
+                    'ProjectPhaseId'    => $cpp->ProjectPhaseId,
+                    'Status'            => $cpp->Status,
+                    'EffortHours'       => $totalManhour * $percentInDecimal,
+                    // 'Required'          => $cpp->Required,
+                    'Percentage'        => $cpp->Percentage,
+                    'Checked'           => $cpp->Checked,
+                    'Details'           => [],
+                    'Resources'         => []
+                ];
+            }
+            
 
             $customerProjectPhasesDetails = DB::table('customer_project_phases_details AS cppd')
                 ->leftJoin('project_phases_details AS ppd', function ($join) use ($Id) {
@@ -768,14 +787,15 @@ class CustomerController extends Controller
                 ->get(['ppr.*', 'd.Name']);
 
             foreach ($projectPhaseResources as $ppr) {
-
-                $initial = $this->getInitials($ppr->Name);
+                $percentToDecimal = $ppr->Percentage / 100;
+                $designationInitials = $this->getInitials($ppr->Name);
                 if ($ppr->ProjectPhaseId == $cpp->ProjectPhaseId) {
                     $temp['Resources'][] = [
-                        'Id'            => $ppr->Id,
-                        'ppId'          => $cpp->ProjectPhaseId,
-                        'Name'          => $initial,
-                        'Percentage'    => $ppr->Percentage
+                        'Id'              => $ppr->Id,
+                        'ppId'            => $cpp->ProjectPhaseId,
+                        'Name'            => $designationInitials,
+                        'Percentage'      => $ppr->Percentage,
+                        'resourceManhour' => $temp['EffortHours'] * $percentToDecimal
                     ];
                 }
             }
