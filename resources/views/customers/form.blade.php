@@ -953,20 +953,20 @@
                                     ?>
 
                                     <div class="row mb-3">
-                                        <label for="" class="col-sm-2 label">Capability
+                                        <label for="" class="col-sm-2 label">Capability 
                                             <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
                                             <select name="IsCapable" id="IsCapable" select2 required
                                                 {{ $capabilityDisableField }}>
                                                 <option value="" selected disabled>Select Capability</option>
                                                 <option value="1" {{ $data['IsCapable'] == null || $data['IsCapable'] == 1 ? 'selected' : '' }}>Full Capability</option>
-                                                <option value="2" {{ $data['IsCapable'] && $data['IsCapable'] == 2 ? 'selected' : '' }}>Hybrid Capability</option>
-                                                <option value="0" {{ $data['IsCapable'] && $data['IsCapable'] == 0 ? 'selected' : '' }}>No Capability</option>
+                                                <option value="2" {{ $data['IsCapable'] == 2 ? 'selected' : '' }}>Hybrid Capability</option>
+                                                <option value="0" {{ $data['IsCapable'] == 0 ? 'selected' : '' }}>No Capability</option>
                                             </select>
                                         </div>
                                     </div>
 
-                                    <div id="isCapableDisplay" style="{{ $data['IsCapable'] == null || $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
+                                    <div id="isCapableDisplay" style="{{ $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
                                         <div class="row mb-3">
                                             <label for="" class="col-sm-2 label">Third Party
                                                 <?= $RequiredLabel ?></label>

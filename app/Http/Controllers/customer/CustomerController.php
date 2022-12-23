@@ -225,8 +225,10 @@ class CustomerController extends Controller
 
                 $Title       = "Customer";
                 $Description = "
-                <div><b>Customer - {$CustomerName}:</b></div>
-                <div><b>{$ThirdPartyCount}</b> out of {$InScopeCount} requirements are assigned to Third Party - <b>{$ThirdPartyName}</b></div>";
+                <div>
+                    <div><b>Customer - {$CustomerName}</b></div>
+                    <div><b>{$ThirdPartyCount}</b> out of {$InScopeCount} requirements are assigned to Third Party - <b>{$ThirdPartyName}</b></div>
+                </div>";
                 $Link        = "/customer/edit/{$Id}?progress=capability";
                 $Icon        = '/assets/img/icons/default.png';
 
