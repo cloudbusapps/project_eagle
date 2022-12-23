@@ -35,7 +35,7 @@
     
         $button = '<button type="submit" class="btn btn-primary btnUpdateForm">Submit</button>';
     
-        if ($Status == 7 || Request::get('progress') == 'assessment') {
+        if ($Status == 7 && Request::get('progress') == 'assessment') {
             if(Auth::id()==getDepartmentHeadId(config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION'))){
                 $button = '
                 <a href="#" class="btn btn-warning btnRevise">Revise</a>
@@ -942,7 +942,10 @@
                                 @elseif ($Status == 5 || Request::get('progress') == 'capability')
                                     <!-- ---------- CAPABILITY ---------- -->
 
-                                    <?php $capabilityDisableField = $DisableAttr || $data['IsCapable'] == 1 || $data['ThirdPartyStatus'] > 0 ? 'disabled' : ''; ?>
+                                    <?php 
+                                        $capabilityDisableField = $DisableAttr || $data['IsCapable'] == 1 || $data['ThirdPartyStatus'] > 0 ? 'disabled' : ''; 
+                                        $RequiredLabel = $capabilityDisableField ? '' : "<code>*</code>";
+                                    ?>
 
                                     <div class="row mb-3">
                                         <label for="" class="col-sm-2 label">Capability
@@ -997,36 +1000,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row mb-3">
-                                            <label for="" class="col-sm-2 label">Attachment
-                                                <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-html="true"
-                                                    title="Link attachment (e.g. Soldoc)"></i>
-                                            </label>
-                                            <div class="col-sm-10">
-                                                <input type="url" class="form-control" name="ThirdPartyAttachment"
-                                                    value="{{ isset($data['ThirdPartyAttachment']) ? $data['ThirdPartyAttachment'] : '' }}"
-                                                    {{ $DisableAttr }}>
-                                            </div>
-                                        </div>
-
-                                        @if ($capabilityDisableField)
-                                            <div class="row mb-3">
-                                                <label for="" class="col-sm-2 label">Status
-                                                    <?= $RequiredLabel ?></label>
-                                                <div class="col-sm-10">
-                                                    <select name="ThirdPartyStatus" id="ThirdPartyStatus" required select2
-                                                        {{ $DisableAttr || ($data['ThirdPartyStatus'] == 3 && $data['Status'] >= 2) ? 'disabled' : '' }}>
-                                                        <option value="" selected disabled>Select Status</option>
-                                                        <option value="1"
-                                                            {{ $data['ThirdPartyStatus'] == 1 ? 'selected' : '' }}>For
-                                                            Accreditation</option>
-                                                        <option value="2"
-                                                            {{ $data['ThirdPartyStatus'] == 2 ? 'selected' : '' }}>
-                                                            Accredited</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        @endif
 
                                         <div class="row mb-2">
                                             <div class="col-12">
@@ -1139,6 +1112,34 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div class="row my-3">
+                                            <label for="" class="col-sm-2 label">Link Attachment</label>
+                                            <div class="col-sm-10">
+                                                <input type="url" class="form-control" name="ThirdPartyAttachment"
+                                                    value="{{ isset($data['ThirdPartyAttachment']) ? $data['ThirdPartyAttachment'] : '' }}"
+                                                    {{ $DisableAttr }}>
+                                            </div>
+                                        </div>
+
+                                        @if ($capabilityDisableField)
+                                            <div class="row mb-3">
+                                                <label for="" class="col-sm-2 label">Status
+                                                    <?= $RequiredLabel ?></label>
+                                                <div class="col-sm-10">
+                                                    <select name="ThirdPartyStatus" id="ThirdPartyStatus" required select2
+                                                        {{ $DisableAttr || ($data['ThirdPartyStatus'] == 3 && $data['Status'] >= 2) ? 'disabled' : '' }}>
+                                                        <option value="" selected disabled>Select Status</option>
+                                                        <option value="1"
+                                                            {{ $data['ThirdPartyStatus'] == 1 ? 'selected' : '' }}>For
+                                                            Accreditation</option>
+                                                        <option value="2"
+                                                            {{ $data['ThirdPartyStatus'] == 2 ? 'selected' : '' }}>
+                                                            Accredited</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
 
                                     <!-- ---------- END CAPABILITY ---------- -->

@@ -189,9 +189,9 @@
                                                     onclick="viewNotification('{{ $notification->id }}', '{{ $data->Link ?? '#' }}')">
                                                     <img src="{{ $data->Icon ?? '/assets/img/icons/default.png' }}" height="30" width="30">
                                                     <div class="flex-fill ms-3">
-                                                        <p class="mb-0">
+                                                        <div class="mb-0">
                                                           <?= $data->Description ?>
-                                                        </p>
+                                                        </div>
                                                         <small>{{ activityTime($notification->created_at) }}</small>
                                                     </div>
                                                 </div>

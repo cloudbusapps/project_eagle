@@ -21,6 +21,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\SystemNotification;
+use App\Mail\CustomerMail;
 
 class CustomerController extends Controller
 {
@@ -145,6 +149,8 @@ class CustomerController extends Controller
         $customer->Type           = $request->Type;
         $customer->Notes          = $request->Notes;
         $customer->Status         = 1;
+        $customer->HeadId         = getDepartmentHeadId(config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION'));
+        $customer->CreatedById    = Auth::id();
 
         if ($customer->save()) {
             return redirect()
@@ -160,19 +166,6 @@ class CustomerController extends Controller
     function updateCapability($request, $Id, $customerData)
     {
         $ThirdPartyStatus = $request->ThirdPartyStatus;
-
-        // $InScope = $request->InScope ?? [];
-        // if (!empty($InScope) && count($InScope)) {
-        //     foreach ($InScope as $key => $dt) {
-        //         $Checked = isset($InScope[$key]['Checked']) ? 1 : 0;
-        //         // CustomerInscope::where('Id', $dt['Id'])
-        //         //     ->first()
-        //         //     ->update(['ThirdParty' => $Checked]);
-        //         echo '<pre>';
-        //         print_r(['Id' => $dt['Id'], 'Checked' => $Checked]);
-        //     }
-        // }
-        // exit;
 
         if ($ThirdPartyStatus > 0) {
             if ($ThirdPartyStatus == 2) { // COMPLETED THIRD PARTY REQUIREMENTS
@@ -205,21 +198,48 @@ class CustomerController extends Controller
                 $customerData->ThirdPartyAttachment = $request->ThirdPartyAttachment;
                 $customerData->ThirdPartyStatus     = 1; // FOR ACCREDITATION
 
-                $InScope = $request->InScope ?? [];
+                $InScope         = $request->InScope ?? [];
+                $ThirdPartyCount = 0;
+                $InScopeCount    = count($InScope);
+                $ThirdPartyData  = [];
+
                 if (!empty($InScope) && count($InScope)) {
                     foreach ($InScope as $key => $dt) {
                         $Checked = isset($InScope[$key]['Checked']) ? 1 : 0;
-                        CustomerInscope::where('Id', $dt['Id'])->update(['ThirdParty' => $Checked]);
+                        $CustomerInscope = CustomerInscope::where('Id', $dt['Id']);
+                        
+                        if ($Checked) {
+                            $ThirdPartyCount++;
+                            $ThirdPartyData[] = $CustomerInscope->first();
+                        } 
+
+                        $CustomerInscope->update(['ThirdParty' => $Checked]);
                     }
                 }
 
-                $Limitation = $request->Limitation ?? [];
-                if (!empty($Limitation) && count($Limitation)) {
-                    foreach ($Limitation as $key => $dt) {
-                        $Checked = isset($Limitation[$key]['Checked']) ? 1 : 0;
-                        CustomerLimitation::where('Id', $dt['Id'])->update(['ThirdParty' => $Checked]);
-                    }
-                }
+                // NOTIFY TECHCON FOR THIRD PARTY ASSESSMENT
+                $CreatedById    = $customerData->CreatedById;
+                $CustomerName   = $customerData->CustomerName;
+                $ThirdPartyName = $customerData->ThirdPartyName;
+                $User = User::find($CreatedById);
+
+                $Title       = "Customer";
+                $Description = "
+                <div><b>Customer - {$CustomerName}:</b></div>
+                <div><b>{$ThirdPartyCount}</b> out of {$InScopeCount} requirements are assigned to Third Party - <b>{$ThirdPartyName}</b></div>";
+                $Link        = "/customer/edit/{$Id}?progress=capability";
+                $Icon        = '/assets/img/icons/default.png';
+
+                $NotificationData = [
+                    'Id'          => $Id,
+                    'Title'       => $Title,
+                    'Description' => $Description,
+                    'Link'        => $Link,
+                    'Icon'        => $Icon,
+                    'ThirdParty'  => $ThirdPartyData
+                ];
+                Mail::to($User->email)->send(new CustomerMail($customerData, $User, $NotificationData, 'Capability'));
+                Notification::sendNow($User, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
             }
 
             $customerData->IsCapable = $IsCapable;
@@ -430,6 +450,26 @@ class CustomerController extends Controller
                     CustomerProjectPhasesDetails::insert($subData);
                 }
             }
+
+            // NOTIFY BA HEAD FOR ASSESSMENT
+            $HeadId         = $customerData->HeadId ?? getDepartmentHeadId(config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION'));
+            $CustomerName   = $customerData->CustomerName;
+            $User = User::find($HeadId);
+
+            $Title       = "Customer";
+            $Description = "<b>Customer - {$CustomerName}</b> is now ready for assessment and manhours";
+            $Link        = url("/customer/edit/{$Id}?progress=assessment");
+            $Icon        = '/assets/img/icons/default.png';
+
+            $NotificationData = [
+                'Id'          => $Id,
+                'Title'       => $Title,
+                'Description' => $Description,
+                'Link'        => $Link,
+                'Icon'        => $Icon,
+            ];
+            Mail::to($User->email)->send(new CustomerMail($customerData, $User, $NotificationData, 'Project Phase'));
+            Notification::sendNow($User, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
         }
 
         $customerData->Status = 7;
