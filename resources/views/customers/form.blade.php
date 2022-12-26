@@ -959,14 +959,14 @@
                                             <select name="IsCapable" id="IsCapable" select2 required
                                                 {{ $capabilityDisableField }}>
                                                 <option value="" selected disabled>Select Capability</option>
-                                                <option value="1" {{ $data['IsCapable'] == null || $data['IsCapable'] == 1 ? 'selected' : '' }}>Full Capability</option>
-                                                <option value="2" {{ $data['IsCapable'] == 2 ? 'selected' : '' }}>Hybrid Capability</option>
                                                 <option value="0" {{ $data['IsCapable'] == 0 ? 'selected' : '' }}>No Capability</option>
+                                                <option value="2" {{ $data['IsCapable'] == 2 ? 'selected' : '' }}>Hybrid Capability</option>
+                                                <option value="1" {{ $data['IsCapable'] == null || $data['IsCapable'] == 1 ? 'selected' : '' }}>Full Capability</option>
                                             </select>
                                         </div>
                                     </div>
 
-                                    <div id="isCapableDisplay" style="{{ $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
+                                    <div id="isCapableDisplay" style="{{ $data['IsCapable'] == null || $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
                                         <div class="row mb-3">
                                             <label for="" class="col-sm-2 label">Third Party
                                                 <?= $RequiredLabel ?></label>
@@ -1235,10 +1235,10 @@
                                     <div class="card mb-3 accordion ">
                                         <div id="tableContainer" class="accordion-item ">
                                             <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" >
-                                            <div class="card-header py-3">
-                                                <h5 class="card-title mb-0">ENGAGEMENT SUMMARY EFFORTS</h5>
-                                            </div>
-                                        </a>
+                                                <div class="card-header py-3">
+                                                    <h5 class="card-title mb-0">ENGAGEMENT SUMMARY EFFORTS</h5>
+                                                </div>
+                                            </a>
                                             <div id="collapseOne" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                                 <table id="inScopeTable" cellpadding="0" cellspacing="0"
                                                 class="table table-bordered table-hover"
@@ -1249,7 +1249,7 @@
                                                         <th>Project Phase</th>
                                                         <th></th>
                                                         <th>%</th>
-                                                        <th>Effort(Hrs.)</th>
+                                                        <th>Effort (Hours)</th>
                                                         @foreach ($customerProjectPhases[2]['Resources'] as $s)
                                                             {{ $s['Percentage'] }}
                                                         @endforeach
@@ -1370,8 +1370,16 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                        <?php $isForSubmit = true; ?>
+
                                                         @if (!empty($reqSol) && count($reqSol) > 0)
                                                             @foreach ($reqSol as $index => $inscope)
+                                                                <?php
+                                                                    if (!$inscope->Manhour || $inscope->Manhour == 0) {
+                                                                        $isForSubmit = false; 
+                                                                    }
+                                                                 ?>
+
                                                                 <input name="RowId[]" type="hidden"
                                                                     value="{{ $inscope->Id }}">
                                                                 <tr>
@@ -1398,8 +1406,8 @@
                                                                             style="white-space: break-spaces;">{{ $inscope->Solution }}</small>
                                                                     </td>
                                                                     <td>
-                                                                        <input type="number" name="Manhour[]"
-                                                                            class="form-control"
+                                                                        <input type="number" step="0.01" name="Manhour[]"
+                                                                            class="form-control text-center"
                                                                             value="{{ $inscope->Manhour }}">
                                                                     </td>
                                                                     <td>
@@ -1416,8 +1424,8 @@
                                                 
                                             @if ($Status == $currentViewStatus)
                                              <div class="button-footer text-end">
-                                                <?=$manhourButton?>
-                                                <?= $button ?>
+                                                <?= $manhourButton ?>
+                                                <?= $isForSubmit ? $button : '' ?>
                                             </div>
                                             @endif
                                             </div>

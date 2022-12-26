@@ -22,10 +22,13 @@ class StartUpSeeder extends Seeder
      */
     public function run()
     {
+        // USERS
+        $AdminId  = config('constant.ID.USERS.ADMIN');
+        $BAHeadId = config('constant.ID.USERS.BA_HEAD');
+
         // ADMIN
         $DepartmentId  = Str::uuid();
         $DesignationId = Str::uuid();
-        $UserId        = Str::uuid();
 
         // DEPARTMENT
         $CloudDepartmentId = config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION');
@@ -46,19 +49,28 @@ class StartUpSeeder extends Seeder
         // ----- DEPARTMENT -----
         DB::table('departments')->insert([
             [
-                'Id'     => $DepartmentId,
-                'Name'   => 'Information Technology',
-                'Status' => 1
+                'Id'          => $DepartmentId,
+                'Name'        => 'Information Technology',
+                'UserId'      => null,
+                'Status'      => 1,
+                'CreatedById' => $AdminId,
+                'UpdatedById' => $AdminId,
             ],
             [
-                'Id'     => $CloudDepartmentId,
-                'Name'   => 'Cloud Business Applications',
-                'Status' => 1
+                'Id'          => $CloudDepartmentId,
+                'Name'        => 'Cloud Business Applications',
+                'UserId'      => $BAHeadId,
+                'Status'      => 1,
+                'CreatedById' => $AdminId,
+                'UpdatedById' => $AdminId,
             ],
             [
-                'Id'     => $TCDepartmentId,
-                'Name'   => 'Technology Consulting',
-                'Status' => 1
+                'Id'          => $TCDepartmentId,
+                'Name'        => 'Technology Consulting',
+                'UserId'      => null,
+                'Status'      => 1,
+                'CreatedById' => $AdminId,
+                'UpdatedById' => $AdminId,
             ]
         ]);
         // ----- END DEPARTMENT -----
@@ -157,7 +169,7 @@ class StartUpSeeder extends Seeder
         // ----- USERS -----
         DB::table('users')->insert([
             [
-                'Id'                => $UserId,
+                'Id'                => $AdminId,
                 'EmployeeNumber'    => 'EPLDT-000001',
                 'FirstName'         => 'Project',
                 'LastName'          => 'Eagle',
@@ -174,24 +186,7 @@ class StartUpSeeder extends Seeder
                 'Status'            => 1,
             ],
             [
-                'Id'                => Str::uuid(),
-                'EmployeeNumber'    => 'EPLDT-000004',
-                'FirstName'         => 'Arjay',
-                'LastName'          => 'Diangzon',
-                'Gender'            => 'Male',
-                'Address'           => 'Makati City, Philippines',
-                'ContactNumber'     => fake()->phoneNumber(),
-                'DepartmentId'      => $CloudDepartmentId,
-                'DesignationId'     => $TCDesignationId,
-                'About'             => fake()->paragraph(3),
-                'email'             => 'arjaydiangzon@epldt.com',
-                'email_verified_at' => now(),
-                'password'          => Hash::make('arjaydiangzon'),
-                'IsAdmin'           => false,
-                'Status'            => 1,
-            ],
-            [
-                'Id'                => Str::uuid(),
+                'Id'                => $BAHeadId,
                 'EmployeeNumber'    => 'EPLDT-000002',
                 'FirstName'         => 'Monica',
                 'LastName'          => 'Borje',
@@ -221,6 +216,23 @@ class StartUpSeeder extends Seeder
                 'email'             => 'alvinagato@epldt.com',
                 'email_verified_at' => now(),
                 'password'          => Hash::make('alvinagato'),
+                'IsAdmin'           => false,
+                'Status'            => 1,
+            ],
+            [
+                'Id'                => Str::uuid(),
+                'EmployeeNumber'    => 'EPLDT-000004',
+                'FirstName'         => 'Arjay',
+                'LastName'          => 'Diangzon',
+                'Gender'            => 'Male',
+                'Address'           => 'Makati City, Philippines',
+                'ContactNumber'     => fake()->phoneNumber(),
+                'DepartmentId'      => $CloudDepartmentId,
+                'DesignationId'     => $TCDesignationId,
+                'About'             => fake()->paragraph(3),
+                'email'             => 'arjaydiangzon@epldt.com',
+                'email_verified_at' => now(),
+                'password'          => Hash::make('arjaydiangzon'),
                 'IsAdmin'           => false,
                 'Status'            => 1,
             ],
@@ -256,29 +268,29 @@ class StartUpSeeder extends Seeder
                 'Id'          => $VacationLeaveId,
                 'Name'        => 'Vacation Leave',
                 'Status'      => 1,
-                'CreatedById' => $UserId,
-                'UpdatedById' => $UserId,
+                'CreatedById' => $AdminId,
+                'UpdatedById' => $AdminId,
             ],
             [
                 'Id'          => $SickLeaveId,
                 'Name'        => 'Sick Leave',
                 'Status'      => 1,
-                'CreatedById' => $UserId,
-                'UpdatedById' => $UserId,
+                'CreatedById' => $AdminId,
+                'UpdatedById' => $AdminId,
             ],
             [
                 'Id'          => Str::uuid(),
                 'Name'        => 'Offset Leave',
                 'Status'      => 1,
-                'CreatedById' => $UserId,
-                'UpdatedById' => $UserId,
+                'CreatedById' => $AdminId,
+                'UpdatedById' => $AdminId,
             ],
             [
                 'Id'          => Str::uuid(),
                 'Name'        => 'Emergency Leave',
                 'Status'      => 1,
-                'CreatedById' => $UserId,
-                'UpdatedById' => $UserId,
+                'CreatedById' => $AdminId,
+                'UpdatedById' => $AdminId,
             ],
         ]);
         // ----- END LEAVE TYPE -----
@@ -298,8 +310,8 @@ class StartUpSeeder extends Seeder
             [
                 'Id'          => config('constant.ID.THIRD_PARTIES.OTHERS'),
                 'Name'        => 'Others',
-                'CreatedById' => $UserId,
-                'UpdatedById' => $UserId,
+                'CreatedById' => $AdminId,
+                'UpdatedById' => $AdminId,
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ]

@@ -4,6 +4,10 @@
 
     return [
         'ID' => [
+            'USERS' => [
+                'ADMIN'   => 'bf147f71-9c39-4776-b407-2d094d14a391',
+                'BA_HEAD' => 'bf147f71-9c39-4776-b407-2d094d14a392',
+            ],
             'DEPARTMENTS' => [
                 'CLOUD_BUSINESS_APPLICATION' => 'a8a6d19e-f824-48cc-9e5d-2800563f6a31',
                 'TECHNOLOGY_CONSULTING'      => 'a8a6d19e-f824-48cc-9e5d-2800563f6a32',
