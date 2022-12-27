@@ -92,8 +92,9 @@ class CustomerController extends Controller
             'limitations'         => $limitations,
             'thirdParties'        => ThirdParty::orderBy('created_at', 'DESC')->get(),
             'MODULE_ID'           => $this->MODULE_ID,
-            'assignedConsultants'  => $assignedConsultants,
+            'assignedConsultants' => $assignedConsultants,
             'customerProjectPhases' => $this->getCustomerProjectPhase($Id),
+            'customerProposal'    => CustomerProposalFiles::where('CustomerId',$Id)->get(),
             'projectPhaseResources' => $this->getProjectPhaseResources($Id),
         ];
 
@@ -592,11 +593,12 @@ class CustomerController extends Controller
     }
     function updateProposal($request, $Id, $customerData)
     {
+        
         $validator = $request->validate([
             'ProposalStatus' => ['required'],
         ]);
-        $now = Carbon::now('utc')->toDateTimeString();
         $files = $request->file('FileProposal');
+        $fileSigned = $request->file('FileSigned');
         $destinationPath = 'uploads/Proposal';
         if ($files&&count($files)) {
             $validator = $request->validate([
@@ -614,13 +616,46 @@ class CustomerController extends Controller
                     'Id'             => Str::uuid(),
                     'CustomerId'     => $Id,
                     'File'           => $filename,
+                    'Date'           => $request->DateSubmitted,
+                    'Status'         => 0,
                     'CreatedById'    => Auth::id(),
                     'UpdatedById'    => Auth::id(),
-                    'created_at'     => $now,
+                    'created_at'     => now(),
                 ];
             }
 
-            CustomerProposalFiles::where('CustomerId', $Id)->delete();
+            CustomerProposalFiles::where('CustomerId', $Id)
+            ->where('Status',0)
+            ->delete();
+            CustomerProposalFiles::insert($proposalFile);
+        }
+        if($fileSigned&&count($fileSigned)){
+            $validator = $request->validate([
+                'SignedDateSubmitted' => ['required'],
+            ]);
+            $proposalFile = [];
+            foreach ($fileSigned as $index => $file) {
+                $filenameArr = explode('.', $file->getClientOriginalName());
+                $extension   = array_splice($filenameArr, count($filenameArr) - 1, 1);
+                $filename    = 'P-[' . $index . ']' . time() . '.' . $extension[0];
+
+                $file->move($destinationPath, $filename);
+
+                $proposalFile[] = [
+                    'Id'             => Str::uuid(),
+                    'CustomerId'     => $Id,
+                    'File'           => $filename,
+                    'Date'           => $request->SignedDateSubmitted,
+                    'Status'         => 1,
+                    'CreatedById'    => Auth::id(),
+                    'UpdatedById'    => Auth::id(),
+                    'created_at'     => now(),
+                ];
+            }
+
+            CustomerProposalFiles::where('CustomerId', $Id)
+            ->where('Status',1)
+            ->delete();
             CustomerProposalFiles::insert($proposalFile);
         }
 
@@ -883,7 +918,7 @@ class CustomerController extends Controller
                         'Name'            => $ppr->Name,
                         'Initial'         =>$ppr->Initial,
                         'Percentage'      => $ppr->Percentage,
-                        'resourceManhour' => $temp['EffortHours'] * $percentToDecimal
+                        'ResourceManhour' => $temp['EffortHours'] * $percentToDecimal
                     ];
                 }
             }
