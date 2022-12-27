@@ -666,7 +666,7 @@
                                         </div>
                                     @else
                                         <h6 class="text-danger text-center">Deployment Strategy Workshop is not available
-                                            for customer requirements</h6>
+                                            for the customer requirements</h6>
                                     @endif
 
                                     <!-- ---------- END DSW ---------- -->
@@ -721,12 +721,13 @@
 
                                     <?php $requirementSolutionDisableField = $DisableAttr ? 'disabled' : ''; ?>
 
-                                    <div class="card mb-3">
-                                        <div class="card-header py-3">
-                                            <h5 class="card-title mb-0">IN-SCOPE</h5>
+                                    <div class="card mb-3 accordion">
+                                        <div class="card-header p-0">
+                                            <a href="#" class="accordion-button bg-white" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" >
+                                                <h5 class="card-title mb-0">IN-SCOPE</h5>
+                                            </a>
                                         </div>
-                                        <div class="card-body">
-
+                                        <div id="collapseOne" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                             @if ($requirementSolutionDisableField)
                                                 <div id="tableContainer" class="mb-3">
                                                     <table id="inScopeTable" cellpadding="0" cellspacing="0"
@@ -847,15 +848,16 @@
                                                 </button>
                                             @endif
                                         </div>
-
                                     </div>
 
-                                    <div class="card mt-3">
-                                        <div class="card-header py-3">
-                                            <h5 class="card-title mb-0">LIMITATIONS</h5>
+                                    <div class="card mt-3 accordion">
+                                        <div class="card-header p-0">
+                                            <a href="#" class="accordion-button bg-white" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" >
+                                                <h5 class="card-title mb-0">IN-SCOPE</h5>
+                                            </a>
                                         </div>
-                                        <div class="card-body">
-
+                                        <div id="collapseTwo" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                            
                                             @if ($requirementSolutionDisableField)
                                                 <div id="tableContainer" class="mb-3">
                                                     <table id="outScopeTable" cellpadding="0" cellspacing="0"
@@ -939,7 +941,7 @@
                                                     <i class="fas fa-plus"></i> Add Row
                                                 </button>
                                             @endif
-
+                                            
                                         </div>
                                     </div>
 
@@ -1016,11 +1018,13 @@
                                             </div>
                                         </div>
 
-                                        <div class="card mb-3">
-                                            <div class="card-header py-3">
-                                                <h5 class="card-title mb-0">IN-SCOPE</h5>
+                                        <div class="card mb-3 accordion">
+                                            <div class="card-header p-0">
+                                                <a href="#" class="accordion-button bg-white" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" >
+                                                    <h5 class="card-title mb-0">IN-SCOPE</h5>
+                                                </a>
                                             </div>
-                                            <div class="card-body">
+                                            <div id="collapseOne" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                                 <div id="tableContainer" class="mb-3">
                                                     <table id="inScopeTable" cellpadding="0" cellspacing="0"
                                                         class="table table-bordered table-hover"
@@ -1075,14 +1079,15 @@
                                                     </table>
                                                 </div>
                                             </div>
-
                                         </div>
 
-                                        <div class="card mb-3">
-                                            <div class="card-header py-3">
-                                                <h5 class="card-title mb-0">LIMITATIONS</h5>
+                                        <div class="card mb-3 accordion">
+                                            <div class="card-header p-0">
+                                                <a href="#" class="accordion-button bg-white" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" >
+                                                    <h5 class="card-title mb-0">LIMITATIONS</h5>
+                                                </a>
                                             </div>
-                                            <div class="card-body">
+                                            <div id="collapseTwo" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                                 <div id="tableContainer" class="mb-3">
                                                     <table id="outScopeTable" cellpadding="0" cellspacing="0"
                                                         class="table table-bordered table-hover"
@@ -1300,7 +1305,7 @@
                                                                             @if (isset($projectPhaseResources) && count($projectPhaseResources))
                                                                                 @foreach ($projectPhaseResources as $dt)
                                                                                     <?php 
-                                                                                        $manhour = $cpp['Resources']["{$dt->Initial}"]['resourceManhour'] ?? 0;
+                                                                                        $manhour = $cpp['Resources']["{$dt->Initial}"]['ResourceManhour'] ?? 0;
                                                                                         ${"$dt->Initial"} += $manhour;
                                                                                     ?>
                                                                                     <td class="text-center"><?= $manhour == 0 ? '' : $manhour ?></td>
@@ -1461,8 +1466,15 @@
 
                                                 @if ($Status == $currentViewStatus)
                                                 <div class="button-footer text-end">
-                                                    <?= $manhourButton ?>
-                                                    <?= $isForSubmit ? $button : '' ?>
+                                                    @if (Auth::id() == $data->HeadId)
+                                                        <a href="#" class="btn btn-warning btnUpdate">Update Manhours</a>
+                                                        @if ($isForSubmit)
+                                                            <a href="#" class="btn btn-secondary btnRevise">Revise</a>
+                                                            <button type="submit" class="btn btn-primary btnUpdateForm">For Release</button>
+                                                        @endif
+                                                    @else
+                                                    <a href="#" class="btn btn-warning btnUpdate">Update Manhours</a>
+                                                    @endif
                                                 </div>
                                                 @endif
                                                 

@@ -83,8 +83,8 @@ function initDateRangePicker() {
             format: 'MMMM DD, YYYY'
         }
     }, function(start, end, label) {
-        console.log(start.format('YYYY-MM-DD'));
-        console.log(end.format('YYYY-MM-DD'));
+        // console.log(start.format('YYYY-MM-DD'));
+        // console.log(end.format('YYYY-MM-DD'));
     });
 }
 // ----- END INITIALIZE DATERANGEPICKER -----
