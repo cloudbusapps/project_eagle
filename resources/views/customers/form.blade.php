@@ -1250,7 +1250,6 @@
                                                         <th></th>
                                                         <th>%</th>
                                                         <th>Effort (Hours)</th>
-                                                        
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1269,7 +1268,7 @@
                                                                 <td>
                                                                     @foreach ($cpp['Resources'] as $resources)
                                                                     <small
-                                                                    style="white-space: break-spaces;">{{ $resources['Name'].':'.$resources['Percentage'].'%'}}</small>,
+                                                                    style="white-space: break-spaces;">{{ $resources['Initial'].':'.$resources['Percentage'].'%'}}</small>,
                                                                     @endforeach
                                                                     
                                                                 </td>
@@ -1281,6 +1280,14 @@
                                                                     <small
                                                                         style="white-space: break-spaces;">{{ $cpp['EffortHours'] }}</small>
                                                                 </td>
+                                                                @foreach ($cpp['Resources'] as $resources)
+                                                                <td>
+                                                                    <small
+                                                                    style="white-space: break-spaces;">{{$resources['resourceManhour'] }}</small>
+                                                                </td>
+                                                                @endforeach
+                                                                    
+                                                               
                                                                
                                                                 
                                                             </tr>
