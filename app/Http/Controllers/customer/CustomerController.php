@@ -595,7 +595,7 @@ class CustomerController extends Controller
     {
         
         $validator = $request->validate([
-            'ProposalStatus' => ['required'],
+            'ProposalProgress' => ['required'],
         ]);
         $files = $request->file('FileProposal');
         $fileSigned = $request->file('FileSigned');
@@ -659,7 +659,7 @@ class CustomerController extends Controller
             CustomerProposalFiles::insert($proposalFile);
         }
 
-        $customerData->ProposalStatus = $request->ProposalStatus;
+        $customerData->ProposalProgress = $request->ProposalProgress;
     }
 
     function update(Request $request, $Id)
