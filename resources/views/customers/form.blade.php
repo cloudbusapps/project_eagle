@@ -1283,7 +1283,7 @@
                                                                 @foreach ($cpp['Resources'] as $resources)
                                                                 <td>
                                                                     <small
-                                                                    style="white-space: break-spaces;">{{$resources['resourceManhour'] }}</small>
+                                                                    style="white-space: break-spaces;">{{$resources['ResourceManhour'] }}</small>
                                                                 </td>
                                                                 @endforeach
                                                                     
@@ -1505,14 +1505,47 @@
                                         <label for="inputText" class="col-sm-2 label">Attachment</label>
                                         <div class="col-sm-10">
                                             <input class="form-control mb-3" type="file" id="FileProposal" name="FileProposal[]" multiple />
-                                            <input style="display:none;" class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
-                                        </div>
+                                          </div>
                                     </div>
                                     <div id="DateSignedDisplay" class="row mb-3" style="display: none;" >
                                         <label for="inputText" class="col-sm-2 label">Date Submitted
                                             <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
                                             <input class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
+                                        </div>
+                                    </div>
+                                    {{-- <div class="row mb-3">
+                                        <label for="files" class="col-sm-2 label">Files</label>
+                                        @foreach ($files as $file)
+                                            <div class="col-md-3 parent" filename="{{ $file['File'] }}">
+                                                <div class="p-2 border border-1 rounded">
+                                                    <div class="d-flex justify-content-between">
+                                                        <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
+                                                            class="text-black fw-bold"
+                                                            target="_blank">{{ $file['File'] }}</a>
+                                                        <button type="button"
+                                                            class="btn-close btnRemoveFilename"></button>
+                                                    </div>
+                                                    <span style="font-size:14px" class="text-muted">
+                                                        {{ date('F d, Y', strtotime($file->created_at)) }}</span>
+
+                                                </div>
+
+                                            </div>
+                                        @endforeach
+                                    </div> --}}
+
+                                    <div id="AttachmentDisplay" class="row mb-3" style="{{ $data['ProposalStatus'] == null || $data['ProposalStatus'] == 0 ? 'display: none;' : '' }}" >
+                                        <label for="inputText" class="col-sm-2 label">Attachment(Signed)</label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control mb-3" type="file" id="FileSigned" name="FileSigned[]" multiple />
+                                        </div>
+                                    </div>
+                                    <div id="DateSignedDisplay" class="row mb-3" style="display: none;" >
+                                        <label for="inputText" class="col-sm-2 label">Date Submitted
+                                            <?= $RequiredLabel ?></label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control" type="date" id="SignedDateSubmitted" name="SignedDateSubmitted" />
                                         </div>
                                     </div>
 
@@ -1945,7 +1978,7 @@
             // ----- PROPOSAL SELECT STATUS -----
             $(document).on('change', `[name="ProposalStatus"]`, function() {
                 let ProposalStatus = $(this).val();
-                if (ProposalStatus == 1) {
+                if (ProposalStatus == 2) {
                     $('#AttachmentDisplay').show()
                 } else {
                 }

@@ -17,7 +17,12 @@ return new class extends Migration
             $table->uuid('Id')->primary();
             $table->uuid('CustomerId');
             $table->string('File');
-            $table->string('Date');
+            $table->date('Date');
+            
+            /*
+            0 = Unsigned
+            1 = Signed
+            */
             $table->integer('Status');
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();

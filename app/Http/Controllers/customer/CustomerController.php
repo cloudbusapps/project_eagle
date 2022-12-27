@@ -92,8 +92,9 @@ class CustomerController extends Controller
             'limitations'         => $limitations,
             'thirdParties'        => ThirdParty::orderBy('created_at', 'DESC')->get(),
             'MODULE_ID'           => $this->MODULE_ID,
-            'assignedConsultants'  => $assignedConsultants,
-            'customerProjectPhases' => $this->getCustomerProjectPhase($Id)
+            'assignedConsultants' => $assignedConsultants,
+            'customerProjectPhases' => $this->getCustomerProjectPhase($Id),
+            'customerProposal'    => CustomerProposalFiles::where('CustomerId',$Id)->get()
         ];
 
 
@@ -589,10 +590,10 @@ class CustomerController extends Controller
     }
     function updateProposal($request, $Id, $customerData)
     {
+        
         $validator = $request->validate([
             'ProposalStatus' => ['required'],
         ]);
-        $now = Carbon::now('utc')->toDateTimeString();
         $files = $request->file('FileProposal');
         $destinationPath = 'uploads/Proposal';
         if ($files&&count($files)) {
@@ -611,9 +612,11 @@ class CustomerController extends Controller
                     'Id'             => Str::uuid(),
                     'CustomerId'     => $Id,
                     'File'           => $filename,
+                    'Date'           => $request->DateSubmitted,
+                    'Status'         => 0,
                     'CreatedById'    => Auth::id(),
                     'UpdatedById'    => Auth::id(),
-                    'created_at'     => $now,
+                    'created_at'     => now(),
                 ];
             }
 
@@ -880,7 +883,7 @@ class CustomerController extends Controller
                         'Name'            => $ppr->Name,
                         'Initial'         =>$ppr->Initial,
                         'Percentage'      => $ppr->Percentage,
-                        'resourceManhour' => $temp['EffortHours'] * $percentToDecimal
+                        'ResourceManhour' => $temp['EffortHours'] * $percentToDecimal
                     ];
                 }
             }
