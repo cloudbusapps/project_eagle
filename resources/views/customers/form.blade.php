@@ -1531,35 +1531,75 @@
                                         <label for="" class="col-sm-2 label">Status
                                             <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
-                                            <select name="ProposalStatus" id="ProposalStatus" select2 required>
+                                            <select name="ProposalProgress" id="ProposalProgress" select2 required>
                                                 <option value="" selected disabled>Select Status of Proposal</option>
-                                                <option value="1" {{ $data['ProposalStatus'] == 1 ? 'selected' : '' }}>Ongoing creation of proposal</option>
-                                                <option value="2" {{ $data['ProposalStatus'] == 2 ? 'selected' : '' }}>Submitted proposal </option>
+                                                <option value="1" {{ $data['ProposalProgress'] == 1 ? 'selected' : '' }}>Ongoing creation of proposal</option>
+                                                <option value="2" {{ $data['ProposalProgress'] == 2 ? 'selected' : '' }}>Submitted proposal </option>
                                             </select>
                                         </div>
                                     </div>
-                                    {{-- <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Notes <?= $RequiredLabel ?></label>
-                                        <div class="col-sm-10">
-                                            <textarea {{ $DisableAttr }} style="resize: none;" rows="3" required type="text" class="form-control"
-                                                name="Notes" id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
-                                        </div>
-                                    </div> --}}
 
-                                    <div id="AttachmentDisplay" class="row mb-3" style="{{ $data['ProposalStatus'] == null || $data['ProposalStatus'] == 0 ? 'display: none;' : '' }}" >
+                                    <div id="AttachmentDisplay" class="row mb-3" style="{{ $data['ProposalProgress'] == null || $data['ProposalProgress'] == 0 ? 'display: none;' : '' }}" >
                                         <label for="inputText" class="col-sm-2 label">Attachment</label>
                                         <div class="col-sm-10">
                                             <input class="form-control mb-3" type="file" id="FileProposal" name="FileProposal[]" multiple />
-                                            <input style="display:none;" class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
-                                        </div>
+                                          </div>
                                     </div>
-                                    <div id="DateSignedDisplay" class="row mb-3" style="display: none;" >
+                                    <div id="DateSubmittedDisplay" class="row mb-3" style="display: none;" >
                                         <label for="inputText" class="col-sm-2 label">Date Submitted
                                             <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
                                             <input class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
                                         </div>
                                     </div>
+                                    {{-- <div class="row mb-3">
+                                        <label for="files" class="col-sm-2 label">Files</label>
+                                        @foreach ($files as $file)
+                                            <div class="col-md-3 parent" filename="{{ $file['File'] }}">
+                                                <div class="p-2 border border-1 rounded">
+                                                    <div class="d-flex justify-content-between">
+                                                        <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
+                                                            class="text-black fw-bold"
+                                                            target="_blank">{{ $file['File'] }}</a>
+                                                        <button type="button"
+                                                            class="btn-close btnRemoveFilename"></button>
+                                                    </div>
+                                                    <span style="font-size:14px" class="text-muted">
+                                                        {{ date('F d, Y', strtotime($file->created_at)) }}</span>
+
+                                                </div>
+
+                                            </div>
+                                        @endforeach
+                                    </div> --}}
+                                    @if ($data['ProposalProgress']==2)
+                                    <div class="row mb-3">
+                                        <label for="" class="col-sm-2 label">Status
+                                            <?= $RequiredLabel ?></label>
+                                        <div class="col-sm-10">
+                                            <select name="ProposalStatus" id="ProposalStatus" select2 required>
+                                                <option value="" selected disabled>Select Status of Proposal</option>
+                                                <option value="3" {{ $data['ProposalStatus'] == 3 ? 'selected' : '' }}>Signed proposal</option>
+                                                <option value="4" {{ $data['ProposalStatus'] == 4 ? 'selected' : '' }}>Rejected proposal </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div id="AttachmentSignedDisplay" class="row mb-3" style="{{ $data['ProposalStatus'] == null || $data['ProposalStatus'] == 0 ? 'display: none;' : '' }}" >
+                                        <label for="inputText" class="col-sm-2 label">Attachment(Signed)</label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control mb-3" type="file" id="FileSigned" name="FileSigned[]" multiple />
+                                        </div>
+                                    </div>
+                                    <div id="DateSignedDisplay" class="row mb-3" style="display: none;" >
+                                        <label for="inputText" class="col-sm-2 label">Date Signed
+                                            <?= $RequiredLabel ?></label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control" type="date" id="SignedDateSubmitted" name="SignedDateSubmitted" />
+                                        </div>
+                                    </div>
+                                    @endif
+                                 
+                                  
 
                                     <!-- ---------- END PROPOSAL ---------- -->
                                 @elseif ($Status == 9 || Request::get('progress') == 'success')
@@ -1988,17 +2028,48 @@
             // ----- END CHANGE SUB COMPLEXITY -----
 
             // ----- PROPOSAL SELECT STATUS -----
-            $(document).on('change', `[name="ProposalStatus"]`, function() {
-                let ProposalStatus = $(this).val();
-                if (ProposalStatus == 1) {
+            $(document).on('change', `[name="ProposalProgress"]`, function() {
+                let ProposalProgress = $(this).val();
+                if (ProposalProgress == 2) {
                     $('#AttachmentDisplay').show()
                 } else {
+                }
+            })
+            $(document).on('change', `[name="ProposalStatus"]`, function() {
+                let ProposalStatus = $(this).val();
+                if (ProposalStatus == 3) {
+                    $('#AttachmentSignedDisplay').show()
+                } else {
+                    $('#AttachmentSignedDisplay').hide()
+
                 }
             })
             // ----- END PROPOSAL SELECT STATUS -----
 
             // ----- PROPOSAL SELECT STATUS -----
             $(document).on('change', `[name="FileProposal[]"]`, function() {
+                let hasFile = $(this).length;
+                console.log(hasFile)
+                if (hasFile > 0) {
+                    $('#DateSubmittedDisplay').show()
+                    // $(`[name="ThirdPartyId"]`).attr('required', false).val('');
+                    // $(`[name="ThirdPartyName"]`).attr('required', false).val('');
+                } else {
+                    $('#DateSubmittedDisplay').show()
+                    // $(`[name="ThirdPartyId"]`).attr('required', true).trigger('change');
+                    // $('#isCapableDisplay').show();
+
+                    // if (ProposalStatus == 0) {
+                    //     $('.checkThirdParty').prop('checked', true).trigger('change');
+                    // } else {
+                    //     $('.checkThirdParty').prop('checked', false).trigger('change');
+                    // }
+                }
+            })
+            // ----- END PROPOSAL SELECT STATUS -----
+
+            // ----- PROPOSAL SELECT STATUS -----
+            $(document).on('change', `[name="FileSigned[]"]`, function() {
                 let hasFile = $(this).length;
                 console.log(hasFile)
                 if (hasFile > 0) {

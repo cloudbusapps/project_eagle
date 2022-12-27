@@ -56,6 +56,10 @@ return new class extends Migration
              * ----- STATUS -----
              * 1 - Ongoing Creation of Proposal
              * 2 - Submitted Proposal
+             */
+            $table->integer('ProposalProgress')->nullable();
+            /**
+             * ----- STATUS -----
              * 3 - Signed Proposal
              * 4 - Rejected Proposal
              */
