@@ -948,7 +948,7 @@
                                     <!-- ---------- CAPABILITY ---------- -->
 
                                     <?php 
-                                        $capabilityDisableField = $DisableAttr || $data['IsCapable'] == 1 || $data['ThirdPartyStatus'] > 0 ? 'disabled' : ''; 
+                                        $capabilityDisableField = $DisableAttr || $data['ThirdPartyStatus'] >= 0 ? 'disabled' : ''; 
                                         $RequiredLabel = $capabilityDisableField ? '' : "<code>*</code>";
                                     ?>
 
@@ -1135,6 +1135,9 @@
                                                     <select name="ThirdPartyStatus" id="ThirdPartyStatus" required select2
                                                         {{ $DisableAttr || ($data['ThirdPartyStatus'] == 3 && $data['Status'] >= 2) ? 'disabled' : '' }}>
                                                         <option value="" selected disabled>Select Status</option>
+                                                        <option value="0"
+                                                            {{ $data['ThirdPartyStatus'] == 0 ? 'selected' : '' }}>
+                                                            Pending</option>
                                                         <option value="1"
                                                             {{ $data['ThirdPartyStatus'] == 1 ? 'selected' : '' }}>For
                                                             Accreditation</option>
@@ -1232,131 +1235,134 @@
                                     <!-- ---------- END PROJECT PHASE ---------- -->
                                 @elseif ($Status == 7 || Request::get('progress') == 'assessment')
                                     <!-- ---------- ASSESSMENT ---------- -->
-                                    <div class="card mb-3 accordion ">
-                                        <div id="tableContainer" class="accordion-item ">
-                                            <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" >
-                                                <div class="card-header py-3">
-                                                    <h5 class="card-title mb-0">ENGAGEMENT EFFORT SUMMARY</h5>
+                                    {{-- @if (in_array(Auth::id(), [$data->HeadId, $data->OICId])) <!-- BA HEAD AND OIC PERMISSION --> --}}
+                                    @if (true)
+                                        <div class="card mb-3 accordion">
+                                            <div id="tableContainer" class="accordion-item ">
+                                                <div class="card-header p-0">
+                                                    <a href="#" class="accordion-button bg-white" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" >
+                                                        <h5 class="card-title mb-0">ENGAGEMENT EFFORT SUMMARY</h5>
+                                                    </a>
                                                 </div>
-                                            </a>
-                                            <div id="collapseOne" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                                <div class="table-responsive">
-                                                    <table id="inScopeTable" cellpadding="0" cellspacing="0"
-                                                        class="table table-bordered table-hover"
-                                                        style="min-width: 1000px; width: 100%; max-width: 1500px;">
-                                                        <thead>
-                                                            <tr>
-                                                                <th style="width: 5px;">No.</th>
-                                                                <th style="width: 150px;">Project Phase</th>
-                                                                <th style="width: 150px;"></th>
-                                                                <th class="text-center" style="width: 10px;">%</th>
-                                                                <th style="width: 30px;">Effort (Hours)</th>
-                                                                <th style="width: 2px;" class="bg-secondary"></th>
-    
-                                                                @if (isset($projectPhaseResources) && count($projectPhaseResources))
-                                                                    @foreach ($projectPhaseResources as $dt)
-                                                                    <?php ${"$dt->Initial"} = 0; ?>
-                                                                        <th style="width: 10px;" class="text-center">{{ $dt->Initial }}</th>
-                                                                    @endforeach
-                                                                @endif
-    
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @if (!empty($customerProjectPhases) && count($customerProjectPhases) > 0)
-                                                            <?php $totalEngagementHours = 0.00; ?>
-                                                                @foreach ($customerProjectPhases as $index => $cpp)
-                                                                <?php $totalEngagementHours += $cpp['EffortHours'] ?>
-                                                                    <tr>
-                                                                        <td class="text-center">
-                                                                            {{ $index+1 }}
-                                                                        </td>
-                                                                        <td>
-                                                                            <small
-                                                                                style="white-space: break-spaces;">{{ $cpp['Title'] }}</small>
-                                                                        </td>
-                                                                        <td>
-                                                                            @foreach ($cpp['Resources'] as $resources)
-                                                                            <small
-                                                                            style="white-space: break-spaces;">{{ $resources['Initial'].':'.$resources['Percentage'].'%'}}</small>,
-                                                                            @endforeach
+                                                <div id="collapseOne" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                                    <div class="table-responsive">
+                                                        <table id="inScopeTable" cellpadding="0" cellspacing="0"
+                                                            class="table table-bordered table-hover"
+                                                            style="min-width: 1000px; width: 100%; max-width: 1500px;">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th style="width: 5px;">No.</th>
+                                                                    <th style="width: 150px;">Project Phase</th>
+                                                                    <th style="width: 150px;"></th>
+                                                                    <th class="text-center" style="width: 10px;">%</th>
+                                                                    <th style="width: 30px;">Effort (Hours)</th>
+                                                                    <th style="width: 2px;" class="bg-secondary"></th>
+        
+                                                                    @if (isset($projectPhaseResources) && count($projectPhaseResources))
+                                                                        @foreach ($projectPhaseResources as $dt)
+                                                                        <?php ${"$dt->Initial"} = 0; ?>
+                                                                            <th style="width: 10px;" class="text-center">{{ $dt->Initial }}</th>
+                                                                        @endforeach
+                                                                    @endif
+        
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @if (!empty($customerProjectPhases) && count($customerProjectPhases) > 0)
+                                                                <?php $totalEngagementHours = 0.00; ?>
+                                                                    @foreach ($customerProjectPhases as $index => $cpp)
+                                                                    <?php $totalEngagementHours += $cpp['EffortHours'] ?>
+                                                                        <tr>
+                                                                            <td class="text-center">
+                                                                                {{ $index+1 }}
+                                                                            </td>
+                                                                            <td>
+                                                                                <small
+                                                                                    style="white-space: break-spaces;">{{ $cpp['Title'] }}</small>
+                                                                            </td>
+                                                                            <td>
+                                                                                @foreach ($cpp['Resources'] as $resources)
+                                                                                <small
+                                                                                style="white-space: break-spaces;">{{ $resources['Initial'].':'.$resources['Percentage'].'%'}}</small>,
+                                                                                @endforeach
+                                                                                
+                                                                            </td>
+                                                                            <td class="text-center">
+                                                                                <small
+                                                                                    style="white-space: break-spaces;">{{ $cpp['Percentage'] }}</small>
+                                                                            </td>
+                                                                            <td class="text-center">
+                                                                                <small
+                                                                                    style="white-space: break-spaces;">{{ $cpp['EffortHours'] }}</small>
+                                                                            </td>
+                                                                            <td class="bg-secondary"></td>
+
+                                                                            @if (isset($projectPhaseResources) && count($projectPhaseResources))
+                                                                                @foreach ($projectPhaseResources as $dt)
+                                                                                    <?php 
+                                                                                        $manhour = $cpp['Resources']["{$dt->Initial}"]['resourceManhour'] ?? 0;
+                                                                                        ${"$dt->Initial"} += $manhour;
+                                                                                    ?>
+                                                                                    <td class="text-center"><?= $manhour == 0 ? '' : $manhour ?></td>
+                                                                                @endforeach
+                                                                            @endif
                                                                             
-                                                                        </td>
-                                                                        <td class="text-center">
-                                                                            <small
-                                                                                style="white-space: break-spaces;">{{ $cpp['Percentage'] }}</small>
-                                                                        </td>
-                                                                        <td class="text-center">
-                                                                            <small
-                                                                                style="white-space: break-spaces;">{{ $cpp['EffortHours'] }}</small>
-                                                                        </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                    <tr>
+                                                                        <td colspan="4"><strong>Total Engagement Efforts</strong></td>
+                                                                        <td class="text-center"><strong><?=$totalEngagementHours?></strong></td>
                                                                         <td class="bg-secondary"></td>
                                                                         @if (isset($projectPhaseResources) && count($projectPhaseResources))
                                                                             @foreach ($projectPhaseResources as $dt)
-                                                                                <?php 
-                                                                                    $manhour = $cpp['Resources']["{$dt->Initial}"]['resourceManhour'] ?? 0;
-                                                                                    ${"$dt->Initial"} += $manhour;
-                                                                                ?>
-                                                                                <td class="text-center"><?= $manhour == 0 ? '' : $manhour ?></td>
+                                                                                <td class="text-center">{{ ${"$dt->Initial"} }}</td>
                                                                             @endforeach
                                                                         @endif
-                                                                            
-                                                                    
-                                                                    
-                                                                        
                                                                     </tr>
-                                                                @endforeach
-                                                                <tr>
-                                                                    <td colspan="4"><strong>Total Engagement Efforts</strong></td>
-                                                                    <td class="text-center"><strong><?=$totalEngagementHours?></strong></td>
-                                                                    <td class="bg-secondary"></td>
-                                                                    @if (isset($projectPhaseResources) && count($projectPhaseResources))
-                                                                        @foreach ($projectPhaseResources as $dt)
-                                                                            <td class="text-center">{{ ${"$dt->Initial"} }}</td>
-                                                                        @endforeach
-                                                                    @endif
-                                                                </tr>
-                                                                <tr><td colspan="{{ count($projectPhaseResources) + 6 }}"></td></tr>
-                                                                <tr>
-                                                                    <td colspan="5"><strong>Total Weeks</strong></td>
-                                                                    <td colspan="{{ count($projectPhaseResources) + 1 }}"><strong><?=round($totalEngagementHours/40,1)?></strong></td>
-                                                                </tr>
-                                                            @endif
-                                                        </tbody>
-                                                    </table>
+                                                                    <tr><td colspan="{{ count($projectPhaseResources) + 6 }}"></td></tr>
+                                                                    <tr>
+                                                                        <td colspan="5"><strong>Total Weeks</strong></td>
+                                                                        <td colspan="{{ count($projectPhaseResources) + 1 }}"><strong><?=round($totalEngagementHours/40,1)?></strong></td>
+                                                                    </tr>
+                                                                @endif
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="card mb-3">
-                                        <div class="card-header py-3">
-                                            <h5 class="card-title mb-0">OIC</h5>
-                                            <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-html="true"
-                                                title="Assign OIC"></i>
-                                        </div>
-                                        <div class="card-body">
-                                            <select select2 name="OICId" id="OICId" class="form-select" required>
-                                                <option value="0" selected disabled>Select OIC</option>
-                                                @foreach ($users as $user)
-                                                    <option {{ $data->OICId == $user->Id?'selected':'' }}  value="{{ $user->Id }}">
-                                                        {{ $user->FirstName . ' ' . $user->LastName }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <div class="text-end mt-3">
-                                                <a href="#" class="btn btn-info btnOIC text-white">Assign OIC</a>
+                                    @endif
+
+                                    @if (Auth::id() == $data->HeadId)
+                                        <div class="card mb-3 accordion">
+                                            <div class="card-header p-0">
+                                                <a href="#" class="accordion-button bg-white" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" >
+                                                    <h5 class="card-title mb-0">OIC</h5>
+                                                </a>
+                                            </div>
+                                            <div id="collapseTwo" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                                <select select2 name="OICId" id="OICId" class="form-select" required>
+                                                    <option value="0" selected disabled>Select OIC</option>
+                                                    @foreach ($users as $user)
+                                                        <option {{ $data->OICId == $user->Id?'selected':'' }}  value="{{ $user->Id }}">
+                                                            {{ $user->FirstName . ' ' . $user->LastName }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <div class="text-end mt-3">
+                                                    <a href="#" class="btn btn-info btnOIC text-white">Assign OIC</a>
+                                                </div>
                                             </div>
                                         </div>
-                                        
-                                    </div>
+                                    @endif
 
-                                    <div class="card mb-3">
-                                        <div class="card-header py-3">
-                                            <h5 class="card-title mb-0">RESOURCES</h5>
-                                            <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-html="true"
-                                                title="Assign consultant(s)"></i>
+                                    <div class="card mb-3 accordion">
+                                        <div class="card-header p-0">
+                                            <a href="#" class="accordion-button bg-white" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree" >
+                                                <h5 class="card-title mb-0">RESOURCES</h5>
+                                            </a>
                                         </div>
-                                        <div class="card-body">
+                                        <div id="collapseThree" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                             <select name="ResourcesId[]" id="ResourcesId" class="form-select ACSelect"
                                                 required multiple >
 
@@ -1368,20 +1374,23 @@
 
                                             </select>
 
-                                            @if (in_array(Auth::id(), [$data->HeadId, $data->OICId]))
+                                            {{-- @if (in_array(Auth::id(), [$data->HeadId, $data->OICId])) <!-- BA HEAD AND OIC PERMISSION --> --}}
+                                            @if (true)
                                                 <div class="text-end mt-3">
                                                     <a href="#" class="btn btn-info btnAssign text-white">Assign Users</a>
                                                 </div>
                                             @endif
+
                                         </div>
-                                        
                                     </div>
 
-                                    <div class="card mb-3">
-                                        <div class="card-header py-3">
-                                            <h5 class="card-title mb-0">IN-SCOPE</h5>
+                                    <div class="card mb-3 accordion">
+                                        <div class="card-header p-0">
+                                            <a href="#" class="accordion-button bg-white" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour" >
+                                                <h5 class="card-title mb-0">IN-SCOPE</h5>
+                                            </a>
                                         </div>
-                                        <div class="card-body">
+                                        <div id="collapseFour" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                             <div id="tableContainer" class="mb-3">
                                                 <table id="inScopeTable" cellpadding="0" cellspacing="0"
                                                     class="table table-bordered table-hover"
@@ -1449,22 +1458,25 @@
                                                 </table>
                                             </div>
                                             <div class="text-end mt-3">
+
+                                                @if ($Status == $currentViewStatus)
+                                                <div class="button-footer text-end">
+                                                    <?= $manhourButton ?>
+                                                    <?= $isForSubmit ? $button : '' ?>
+                                                </div>
+                                                @endif
                                                 
-                                            @if ($Status == $currentViewStatus)
-                                             <div class="button-footer text-end">
-                                                <?= $manhourButton ?>
-                                                <?= $isForSubmit ? $button : '' ?>
-                                            </div>
-                                            @endif
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="card mb-3">
-                                        <div class="card-header py-3">
-                                            <h5 class="card-title mb-0">LIMITATIONS</h5>
+                                    <div class="card mb-3 accordion">
+                                        <div class="card-header p-0">
+                                            <a href="#" class="accordion-button bg-white" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="true" aria-controls="collapseFive" >
+                                                <h5 class="card-title mb-0">LIMITATIONS</h5>
+                                            </a>
                                         </div>
-                                        <div class="card-body">
+                                        <div id="collapseFive" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                             <div id="tableContainer" class="mb-3">
                                                 <table id="outScopeTable" cellpadding="0" cellspacing="0"
                                                     class="table table-bordered table-hover"

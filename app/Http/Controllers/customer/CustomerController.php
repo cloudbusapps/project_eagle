@@ -197,7 +197,7 @@ class CustomerController extends Controller
                 $customerData->ThirdPartyId         = $request->ThirdPartyId;
                 $customerData->ThirdPartyName       = $request->ThirdPartyName;
                 $customerData->ThirdPartyAttachment = $request->ThirdPartyAttachment;
-                $customerData->ThirdPartyStatus     = 1; // FOR ACCREDITATION
+                $customerData->ThirdPartyStatus     = 0; // PENDING
 
                 $InScope         = $request->InScope ?? [];
                 $ThirdPartyCount = 0;
