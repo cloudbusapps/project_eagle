@@ -1250,9 +1250,6 @@
                                                         <th></th>
                                                         <th>%</th>
                                                         <th>Effort (Hours)</th>
-                                                        @foreach ($customerProjectPhases[2]['Resources'] as $s)
-                                                            {{ $s['Percentage'] }}
-                                                        @endforeach
                                                         
                                                     </tr>
                                                 </thead>
@@ -1689,7 +1686,7 @@
             });
             // END UPDATE FOR ASSESSMENT
 
-            // UPDATE FOR ASSESSMENT
+            // UPDATE FOR CONSULTANT ASSIGNMENT
             $(document).on('click', '.btnAssign', function(e) {
                 e.preventDefault();
                 let selectedConsultants = $('#ResourcesId').val();

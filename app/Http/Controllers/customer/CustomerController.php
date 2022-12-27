@@ -512,9 +512,8 @@ class CustomerController extends Controller
         $OICId = $request->selectedOIC;
         $update = Customer::where('Id', $Id)
                 ->update(['OICId' => $OICId]);
-                return $update;
         if ($update) {
-            $request->session()->flash('success', 'Consulant updated');
+            $request->session()->flash('success', 'OIC updated');
             return response()->json(['url' => url('customer/edit/' . $Id)]);
         } else {
             $request->session()->flash('fail', 'Something went wrong, try again later');
