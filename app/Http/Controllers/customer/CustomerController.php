@@ -807,7 +807,8 @@ class CustomerController extends Controller
                     'Percentage'        => $cpp->Percentage,
                     'Checked'           => $cpp->Checked,
                     'Details'           => [],
-                    'Resources'         => []
+                    'Resources'         => [],
+                    'ResourceHeader'            => []
                 ];
             } else{
                 $temp = [
@@ -821,7 +822,8 @@ class CustomerController extends Controller
                     'Percentage'        => $cpp->Percentage,
                     'Checked'           => $cpp->Checked,
                     'Details'           => [],
-                    'Resources'         => []
+                    'Resources'         => [],
+                    'ResourceHeader'            => []
                 ];
             }
             
@@ -864,17 +866,19 @@ class CustomerController extends Controller
                 ->where('pp.Status', 1)
                 ->where('d.Status', 1)
                 ->where('cpp.CustomerId', $Id)
-                ->get(['ppr.*', 'd.Name']);
+                ->get(['ppr.*', 'd.Name','d.Initial']); 
 
             foreach ($projectPhaseResources as $ppr) {
+                
                 $percentToDecimal = $ppr->Percentage / 100;
-                $designationInitials = $this->getInitials($ppr->Name);
+
                 if ($ppr->ProjectPhaseId == $cpp->ProjectPhaseId) {
                     $temp['Resources'][] = [
                         'Id'              => $ppr->Id,
                         'ppId'            => $cpp->ProjectPhaseId,
-                        'DId'            => $ppr->DesignationId,
-                        'Name'            => $designationInitials,
+                        'DId'             => $ppr->DesignationId,
+                        'Name'            => $ppr->Name,
+                        'Initial'         =>$ppr->Initial,
                         'Percentage'      => $ppr->Percentage,
                         'resourceManhour' => $temp['EffortHours'] * $percentToDecimal
                     ];
