@@ -598,6 +598,7 @@ class CustomerController extends Controller
             'ProposalStatus' => ['required'],
         ]);
         $files = $request->file('FileProposal');
+        $fileSigned = $request->file('FileSigned');
         $destinationPath = 'uploads/Proposal';
         if ($files&&count($files)) {
             $validator = $request->validate([
@@ -623,7 +624,38 @@ class CustomerController extends Controller
                 ];
             }
 
-            CustomerProposalFiles::where('CustomerId', $Id)->delete();
+            CustomerProposalFiles::where('CustomerId', $Id)
+            ->where('Status',0)
+            ->delete();
+            CustomerProposalFiles::insert($proposalFile);
+        }
+        if($fileSigned&&count($fileSigned)){
+            $validator = $request->validate([
+                'SignedDateSubmitted' => ['required'],
+            ]);
+            $proposalFile = [];
+            foreach ($fileSigned as $index => $file) {
+                $filenameArr = explode('.', $file->getClientOriginalName());
+                $extension   = array_splice($filenameArr, count($filenameArr) - 1, 1);
+                $filename    = 'P-[' . $index . ']' . time() . '.' . $extension[0];
+
+                $file->move($destinationPath, $filename);
+
+                $proposalFile[] = [
+                    'Id'             => Str::uuid(),
+                    'CustomerId'     => $Id,
+                    'File'           => $filename,
+                    'Date'           => $request->SignedDateSubmitted,
+                    'Status'         => 1,
+                    'CreatedById'    => Auth::id(),
+                    'UpdatedById'    => Auth::id(),
+                    'created_at'     => now(),
+                ];
+            }
+
+            CustomerProposalFiles::where('CustomerId', $Id)
+            ->where('Status',1)
+            ->delete();
             CustomerProposalFiles::insert($proposalFile);
         }
 

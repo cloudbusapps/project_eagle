@@ -1240,7 +1240,7 @@
                                                 </div>
                                             </a>
                                             <div id="collapseOne" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                                <div class="table-responsive">
+                                                <div class="table-responsive mb-3">
                                                     <table id="inScopeTable" cellpadding="0" cellspacing="0"
                                                         class="table table-bordered table-hover"
                                                         style="min-width: 1000px; width: 100%; max-width: 1500px;">
@@ -1294,7 +1294,7 @@
                                                                         @if (isset($projectPhaseResources) && count($projectPhaseResources))
                                                                             @foreach ($projectPhaseResources as $dt)
                                                                                 <?php 
-                                                                                    $manhour = $cpp['Resources']["{$dt->Initial}"]['resourceManhour'] ?? 0;
+                                                                                    $manhour = $cpp['Resources']["{$dt->Initial}"]['ResourceManhour'] ?? 0;
                                                                                     ${"$dt->Initial"} += $manhour;
                                                                                 ?>
                                                                                 <td class="text-center"><?= $manhour == 0 ? '' : $manhour ?></td>
@@ -1325,6 +1325,66 @@
                                                         </tbody>
                                                     </table>
                                                 </div>
+                                                <table id="inScopeTable" cellpadding="0" cellspacing="0"
+                                                        class="table table-bordered table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width:5px"></th>
+                                                            @if (isset($projectPhaseResources) && count($projectPhaseResources))
+                                                            @foreach ($projectPhaseResources as $td)
+                                                            <?php ${"$td->Initial"} = 0; ?>
+                                                                <th style="width: 10px;" class="text-center">{{ $td->Initial }}</th>
+                                                            @endforeach
+                                                        </tr>
+                                                    @endif
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style="width:5px">Consultant</td>
+                                                            @if (!empty($customerProjectPhases) && count($customerProjectPhases) > 0)
+                                                                @foreach ($customerProjectPhases as $index => $cpp)
+                                                                    @if (isset($projectPhaseResources) && count($projectPhaseResources))
+                                                                    @foreach ($projectPhaseResources as $td)
+                                                                    <?php
+                                                                     $manhour = $cpp['Resources']["{$td->Initial}"]['ResourceManhour'] ?? 0;
+                                                                        ${"$td->Initial"} += $manhour;
+                                                                    ?>
+                                                                     
+                                                                    @endforeach
+                                                                    @endif
+                                                                @endforeach
+                                                                @endif
+                                                                @if (isset($projectPhaseResources) && count($projectPhaseResources))
+                                                                @foreach ($projectPhaseResources as $td)
+                                                                <td class="text-center">{{ ${"$td->Initial"} }}</td>
+                                                                
+                                                                @endforeach
+                                                                @endif
+                                                        
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="width:5px">Rate</td>
+                                                            @if (isset($projectPhaseResources) && count($projectPhaseResources))
+                                                            @foreach ($projectPhaseResources as $td)
+                                                            <td class="text-center"> <input type="number" step="0.01"
+                                                                class="form-control text-center"
+                                                                value="30"></td>
+                                                            
+                                                            @endforeach
+                                                            @endif
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="width:5px">Total</td>
+                                                            @if (isset($projectPhaseResources) && count($projectPhaseResources))
+                                                            @foreach ($projectPhaseResources as $td)
+                                                            <td class="text-center">
+                                                                {{ ${"$td->Initial"} * 30 }}
+                                                            </td>
+                                                            @endforeach
+                                                            @endif
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>
@@ -1514,13 +1574,6 @@
                                             </select>
                                         </div>
                                     </div>
-                                    {{-- <div class="row mb-3">
-                                        <label for="inputText" class="col-sm-2 label">Notes <?= $RequiredLabel ?></label>
-                                        <div class="col-sm-10">
-                                            <textarea {{ $DisableAttr }} style="resize: none;" rows="3" required type="text" class="form-control"
-                                                name="Notes" id="Notes" placeholder="Notes">{{ old('Notes') ?? $Notes }}</textarea>
-                                        </div>
-                                    </div> --}}
 
                                     <div id="AttachmentDisplay" class="row mb-3" style="{{ $data['ProposalStatus'] == null || $data['ProposalStatus'] == 0 ? 'display: none;' : '' }}" >
                                         <label for="inputText" class="col-sm-2 label">Attachment</label>
@@ -1528,7 +1581,7 @@
                                             <input class="form-control mb-3" type="file" id="FileProposal" name="FileProposal[]" multiple />
                                           </div>
                                     </div>
-                                    <div id="DateSignedDisplay" class="row mb-3" style="display: none;" >
+                                    <div id="DateSubmittedDisplay" class="row mb-3" style="display: none;" >
                                         <label for="inputText" class="col-sm-2 label">Date Submitted
                                             <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
@@ -1556,14 +1609,25 @@
                                         @endforeach
                                     </div> --}}
 
-                                    <div id="AttachmentDisplay" class="row mb-3" style="{{ $data['ProposalStatus'] == null || $data['ProposalStatus'] == 0 ? 'display: none;' : '' }}" >
+                                    <div class="row mb-3">
+                                        <label for="" class="col-sm-2 label">Status
+                                            <?= $RequiredLabel ?></label>
+                                        <div class="col-sm-10">
+                                            <select name="ProposalStatusEnd" id="ProposalStatusEnd" select2 required>
+                                                <option value="" selected disabled>Select Status of Proposal</option>
+                                                <option value="3" {{ $data['ProposalStatus'] == 3 ? 'selected' : '' }}>Signed proposal</option>
+                                                <option value="4" {{ $data['ProposalStatus'] == 4 ? 'selected' : '' }}>Rejected proposal </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div id="AttachmentSignedDisplay" class="row mb-3" style="{{ $data['ProposalStatus'] == null || $data['ProposalStatus'] == 0 ? 'display: none;' : '' }}" >
                                         <label for="inputText" class="col-sm-2 label">Attachment(Signed)</label>
                                         <div class="col-sm-10">
                                             <input class="form-control mb-3" type="file" id="FileSigned" name="FileSigned[]" multiple />
                                         </div>
                                     </div>
                                     <div id="DateSignedDisplay" class="row mb-3" style="display: none;" >
-                                        <label for="inputText" class="col-sm-2 label">Date Submitted
+                                        <label for="inputText" class="col-sm-2 label">Date Signed
                                             <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
                                             <input class="form-control" type="date" id="SignedDateSubmitted" name="SignedDateSubmitted" />
@@ -2008,6 +2072,28 @@
 
             // ----- PROPOSAL SELECT STATUS -----
             $(document).on('change', `[name="FileProposal[]"]`, function() {
+                let hasFile = $(this).length;
+                console.log(hasFile)
+                if (hasFile > 0) {
+                    $('#DateSubmittedDisplay').show()
+                    // $(`[name="ThirdPartyId"]`).attr('required', false).val('');
+                    // $(`[name="ThirdPartyName"]`).attr('required', false).val('');
+                } else {
+                    $('#DateSubmittedDisplay').show()
+                    // $(`[name="ThirdPartyId"]`).attr('required', true).trigger('change');
+                    // $('#isCapableDisplay').show();
+
+                    // if (ProposalStatus == 0) {
+                    //     $('.checkThirdParty').prop('checked', true).trigger('change');
+                    // } else {
+                    //     $('.checkThirdParty').prop('checked', false).trigger('change');
+                    // }
+                }
+            })
+            // ----- END PROPOSAL SELECT STATUS -----
+
+            // ----- PROPOSAL SELECT STATUS -----
+            $(document).on('change', `[name="FileSigned[]"]`, function() {
                 let hasFile = $(this).length;
                 console.log(hasFile)
                 if (hasFile > 0) {
