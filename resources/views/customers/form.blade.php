@@ -1337,7 +1337,7 @@
                                         </div>
                                         <div class="card-body">
                                             <select name="ResourcesId[]" id="ResourcesId" class="form-select ACSelect"
-                                                required multiple>
+                                                required multiple >
 
                                                 @foreach ($users as $user)
                                                     <option {{ $assignedConsultants->contains('UserId',$user->Id) ? 'selected':'' }} value="{{ $user->Id }}">
@@ -1346,9 +1346,12 @@
                                                 @endforeach
 
                                             </select>
-                                            <div class="text-end mt-3">
-                                                <a href="#" class="btn btn-info btnAssign text-white">Assign Users</a>
-                                            </div>
+
+                                            @if (in_array(Auth::id(), [$data->HeadId, $data->OICId]))
+                                                <div class="text-end mt-3">
+                                                    <a href="#" class="btn btn-info btnAssign text-white">Assign Users</a>
+                                                </div>
+                                            @endif
                                         </div>
                                         
                                     </div>
@@ -1697,50 +1700,56 @@
             $(document).on('click', '.btnAssign', function(e) {
                 e.preventDefault();
                 let selectedConsultants = $('#ResourcesId').val();
-                let message = "Are you sure you want to assign this user?";
-                if(selectedConsultants.length > 1){
-                    message = "Are you sure you want to assign these users?";
-                }
-                let content = `
-                <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
-                    <b class="mt-4">${message}</b>
-                </div>`;
-
-                let confirmation = $.confirm({
-                    title: false,
-                    content,
-                    buttons: {
-
-                        no: {
-                            btnClass: 'btn-default',
-                        },
-                        yes: {
-                            btnClass: 'btn-blue',
-                            keys: ['enter'],
-                            action: function() {
-                                let method = 'PUT';
-                                $.ajax({
-                                    type: method,
-                                    url: `{{ $Id }}/updateConsultant`,
-                                    data:{selectedConsultants},
-                                    async: false,
-                                    success: function(response) {
-                                        window.location = response.url;
-                                    }
-                                })
-
-                                confirmation.buttons.yes.setText(
-                                    `<span class="spinner-border spinner-border-sm"></span> Please wait...`
-                                );
-                                confirmation.buttons.yes.disable();
-                                confirmation.buttons.no.hide();
-
-                                return false;
-                            }
-                        },
+                if (selectedConsultants && selectedConsultants.length) {
+                    let message = "Are you sure you want to assign this user?";
+                    if(selectedConsultants.length > 1){
+                        message = "Are you sure you want to assign these users?";
                     }
-                });
+                    let content = `
+                    <div class="d-flex justify-content-center align-items-center flex-column text-center">
+                        <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                        <b class="mt-4">${message}</b>
+                    </div>`;
+    
+                    let confirmation = $.confirm({
+                        title: false,
+                        content,
+                        buttons: {
+    
+                            no: {
+                                btnClass: 'btn-default',
+                            },
+                            yes: {
+                                btnClass: 'btn-blue',
+                                keys: ['enter'],
+                                action: function() {
+                                    let method = 'PUT';
+                                    confirmation.buttons.yes.setText(
+                                        `<span class="spinner-border spinner-border-sm"></span> Please wait...`
+                                    );
+                                    confirmation.buttons.yes.disable();
+                                    confirmation.buttons.no.hide();
+
+                                    setTimeout(() => {
+                                        $.ajax({
+                                            type: method,
+                                            url: `{{ $Id }}/updateConsultant`,
+                                            data:{selectedConsultants},
+                                            async: false,
+                                            success: function(response) {
+                                                window.location = response.url;
+                                            }
+                                        })
+                                    }, 100);
+    
+                                    return false;
+                                }
+                            },
+                        }
+                    });
+                } else {
+                    $('#ResourcesId').focus();
+                }
             });
             // END UPDATE FOR ASSESSMENT
 
@@ -1748,47 +1757,52 @@
             $(document).on('click', '.btnOIC', function(e) {
                 e.preventDefault();
                 let selectedOIC = $('#OICId').val();
-                let message = "Are you sure you want to assign this user to OIC?";
-                let content = `
-                <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
-                    <b class="mt-4">${message}</b>
-                </div>`;
 
-                let confirmation = $.confirm({
-                    title: false,
-                    content,
-                    buttons: {
-
-                        no: {
-                            btnClass: 'btn-default',
-                        },
-                        yes: {
-                            btnClass: 'btn-blue',
-                            keys: ['enter'],
-                            action: function() {
-                                let method = 'PUT';
-                                $.ajax({
-                                    type: method,
-                                    url: `{{ $Id }}/updateOIC`,
-                                    data:{selectedOIC},
-                                    async: false,
-                                    success: function(response) {
-                                        window.location = response.url;
-                                    }
-                                })
-
-                                confirmation.buttons.yes.setText(
-                                    `<span class="spinner-border spinner-border-sm"></span> Please wait...`
-                                );
-                                confirmation.buttons.yes.disable();
-                                confirmation.buttons.no.hide();
-
-                                return false;
-                            }
-                        },
-                    }
-                });
+                if (selectedOIC) {
+                    let message = "Are you sure you want to assign this user to OIC?";
+                    let content = `
+                    <div class="d-flex justify-content-center align-items-center flex-column text-center">
+                        <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                        <b class="mt-4">${message}</b>
+                    </div>`;
+    
+                    let confirmation = $.confirm({
+                        title: false,
+                        content,
+                        buttons: {
+    
+                            no: {
+                                btnClass: 'btn-default',
+                            },
+                            yes: {
+                                btnClass: 'btn-blue',
+                                keys: ['enter'],
+                                action: function() {
+                                    let method = 'PUT';
+                                    $.ajax({
+                                        type: method,
+                                        url: `{{ $Id }}/updateOIC`,
+                                        data:{selectedOIC},
+                                        async: false,
+                                        success: function(response) {
+                                            window.location = response.url;
+                                        }
+                                    })
+    
+                                    confirmation.buttons.yes.setText(
+                                        `<span class="spinner-border spinner-border-sm"></span> Please wait...`
+                                    );
+                                    confirmation.buttons.yes.disable();
+                                    confirmation.buttons.no.hide();
+    
+                                    return false;
+                                }
+                            },
+                        }
+                    });
+                } else {
+                    $(`[name="OICId"]`).focus();
+                }
             });
             // END ASSIGN OF OIC
 
