@@ -798,19 +798,19 @@
                                                                                     class="bi bi-trash"></i></button>
                                                                         </td>
                                                                         <td>
-                                                                            <textarea name="Title[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Title }}</textarea>
+                                                                            <textarea name="Title[]" class="form-control" rows="3" style="resize: none;" required>{{ $inscope->Title }}</textarea>
                                                                         </td>
                                                                         <td>
-                                                                            <textarea name="Description[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Description }}</textarea>
+                                                                            <textarea name="Description[]" class="form-control" rows="3" style="resize: none;" required>{{ $inscope->Description }}</textarea>
                                                                         </td>
                                                                         <td>
-                                                                            <textarea name="Module[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Module }}</textarea>
+                                                                            <textarea name="Module[]" class="form-control" rows="3" style="resize: none;" required>{{ $inscope->Module }}</textarea>
                                                                         </td>
                                                                         <td>
-                                                                            <textarea name="Solution[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Solution }}</textarea>
+                                                                            <textarea name="Solution[]" class="form-control" rows="3" style="resize: none;" required>{{ $inscope->Solution }}</textarea>
                                                                         </td>
                                                                         <td>
-                                                                            <textarea name="Assumption[]" class="form-control" rows="3" style="resize: none;">{{ $inscope->Assumption }}</textarea>
+                                                                            <textarea name="Assumption[]" class="form-control" rows="3" style="resize: none;" required>{{ $inscope->Assumption }}</textarea>
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
@@ -822,19 +822,19 @@
                                                                                 class="bi bi-trash"></i></button>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea name="Title[]" class="form-control" rows="3" style="resize: none;"></textarea>
+                                                                        <textarea name="Title[]" class="form-control" rows="3" style="resize: none;" required></textarea>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea name="Description[]" class="form-control" rows="3" style="resize: none;"></textarea>
+                                                                        <textarea name="Description[]" class="form-control" rows="3" style="resize: none;" required></textarea>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea name="Module[]" class="form-control" rows="3" style="resize: none;"></textarea>
+                                                                        <textarea name="Module[]" class="form-control" rows="3" style="resize: none;" required></textarea>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea name="Solution[]" class="form-control" rows="3" style="resize: none;"></textarea>
+                                                                        <textarea name="Solution[]" class="form-control" rows="3" style="resize: none;" required></textarea>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea name="Assumption[]" class="form-control" rows="3" style="resize: none;"></textarea>
+                                                                        <textarea name="Assumption[]" class="form-control" rows="3" style="resize: none;" required></textarea>
                                                                     </td>
                                                                 </tr>
                                                             @endif
@@ -950,7 +950,7 @@
                                     <!-- ---------- CAPABILITY ---------- -->
 
                                     <?php 
-                                        $capabilityDisableField = $DisableAttr || $data['ThirdPartyStatus'] >= 0 ? 'disabled' : ''; 
+                                        $capabilityDisableField = $DisableAttr || (!is_null($data['ThirdPartyStatus']) && $data['ThirdPartyStatus'] >= 0) ? 'disabled' : ''; 
                                         $RequiredLabel = $capabilityDisableField ? '' : "<code>*</code>";
                                     ?>
 
@@ -963,12 +963,12 @@
                                                 <option value="" selected disabled>Select Capability</option>
                                                 <option value="0" {{ $data['IsCapable'] == 0 ? 'selected' : '' }}>No Capability</option>
                                                 <option value="2" {{ $data['IsCapable'] == 2 ? 'selected' : '' }}>Hybrid Capability</option>
-                                                <option value="1" {{ $data['IsCapable'] == null || $data['IsCapable'] == 1 ? 'selected' : '' }}>Full Capability</option>
+                                                <option value="1" {{ is_null($data['IsCapable']) || $data['IsCapable'] == 1 ? 'selected' : '' }}>Full Capability</option>
                                             </select>
                                         </div>
                                     </div>
 
-                                    <div id="isCapableDisplay" style="{{ $data['IsCapable'] == null || $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
+                                    <div id="isCapableDisplay" style="{{ is_null($data['IsCapable']) || $data['IsCapable'] == 1 ? 'display: none;' : '' }}">
                                         <div class="row mb-3">
                                             <label for="" class="col-sm-2 label">Third Party
                                                 <?= $RequiredLabel ?></label>
@@ -1253,26 +1253,26 @@
                                                     <div class="table-responsive">
                                                         <table id="inScopeTable" cellpadding="0" cellspacing="0"
                                                             class="table table-bordered table-hover"
-                                                            style="min-width: 1000px; width: 100%; max-width: 1500px;">
+                                                            style="min-width: 1000px; width: auto; max-width: 1500px;">
                                                             <thead>
                                                                 <tr>
                                                                     <th style="width: 5px;">No.</th>
                                                                     <th style="width: 150px;">Project Phase</th>
                                                                     <th style="width: 150px;"></th>
                                                                     <th class="text-center" style="width: 10px;">%</th>
-                                                                    <th style="width: 30px;">Effort (Hours)</th>
+                                                                    <th style="width: 100px;">Effort (Hours)</th>
                                                                     <th style="width: 2px;" class="bg-secondary"></th>
         
                                                                     @if (isset($projectPhaseResources) && count($projectPhaseResources))
                                                                         @foreach ($projectPhaseResources as $dt)
                                                                         <?php ${"$dt->Initial"} = 0; ?>
-                                                                            <th style="width: 10px;" class="text-center">{{ $dt->Initial }}</th>
+                                                                            <th style="width: 5px;" class="text-center">{{ $dt->Initial }}</th>
                                                                         @endforeach
                                                                     @endif
         
                                                                 </tr>
                                                             </thead>
-                                                            <tbody>
+                                                            <tbody style="font-size: 0.9em;">
                                                                 @if (!empty($customerProjectPhases) && count($customerProjectPhases) > 0)
                                                                 <?php $totalEngagementHours = 0.00; ?>
                                                                     @foreach ($customerProjectPhases as $index => $cpp)
@@ -1308,7 +1308,7 @@
                                                                                         $manhour = $cpp['Resources']["{$dt->Initial}"]['ResourceManhour'] ?? 0;
                                                                                         ${"$dt->Initial"} += $manhour;
                                                                                     ?>
-                                                                                    <td class="text-center"><?= $manhour == 0 ? '' : $manhour ?></td>
+                                                                                    <td class="text-center"><?= $manhour == 0 ? '' : round($manhour, 2) ?></td>
                                                                                 @endforeach
                                                                             @endif
                                                                             
@@ -1320,18 +1320,88 @@
                                                                         <td class="bg-secondary"></td>
                                                                         @if (isset($projectPhaseResources) && count($projectPhaseResources))
                                                                             @foreach ($projectPhaseResources as $dt)
-                                                                                <td class="text-center">{{ ${"$dt->Initial"} }}</td>
+                                                                                <td class="text-center"><b>{{ round(${"$dt->Initial"}, 2) }}</b></td>
                                                                             @endforeach
                                                                         @endif
                                                                     </tr>
-                                                                    <tr><td colspan="{{ count($projectPhaseResources) + 6 }}"></td></tr>
                                                                     <tr>
-                                                                        <td colspan="5"><strong>Total Weeks</strong></td>
-                                                                        <td colspan="{{ count($projectPhaseResources) + 1 }}"><strong><?=round($totalEngagementHours/40,1)?></strong></td>
+                                                                        <td colspan="4"><strong>Total Weeks</strong></td>
+                                                                        <td class="text-center"><strong><?= round($totalEngagementHours/40,1) ?></strong></td>
+                                                                        <td class="bg-secondary"></td>
+                                                                        <td colspan="{{ count($projectPhaseResources) }}"></td>
                                                                     </tr>
                                                                 @endif
                                                             </tbody>
                                                         </table>
+                                                    </div>
+
+                                                    <div class="my-3 pt-3">
+                                                        <table class="table table-bordered table-hover">
+                                                            <tr>
+                                                                <th style="background: #f8f6f2;">Resource</th>
+                                                                @if (isset($projectPhaseResources) && count($projectPhaseResources))
+                                                                    @foreach ($projectPhaseResources as $dt)
+                                                                        <th class="text-center" style="background: #f8f6f2;">{{ $dt->Initial }}</th>
+                                                                    @endforeach
+                                                                @endif
+                                                            </tr>
+                                                            <tr>
+                                                                <th style="background: #f8f6f2;">Level</th>
+                                                                @if (isset($projectPhaseResources) && count($projectPhaseResources))
+                                                                    @foreach ($projectPhaseResources as $dt)
+                                                                        <td class="text-center">
+                                                                            <div class="form-group mb-0">
+                                                                                <select name="Level" initial="{{ $dt->Initial }}" class="form-control" select2 required>
+                                                                                    <option value="Beginner" rate="{{ $dt->BeginnerRate }}"
+                                                                                        {{ $dt->BeginnerRate == $dt->DefaultRate ? 'selected' : '' }}>Beginner</option>
+                                                                                    <option value="Intermediate" rate="{{ $dt->IntermediateRate }}"
+                                                                                        {{ $dt->IntermediateRate == $dt->DefaultRate ? 'selected' : '' }}>Intermediate</option>
+                                                                                    <option value="Senior" rate="{{ $dt->SeniorRate }}"
+                                                                                        {{ $dt->SeniorRate == $dt->DefaultRate ? 'selected' : '' }}>Senior</option>
+                                                                                    <option value="Expert" rate="{{ $dt->ExpertRate }}"
+                                                                                        {{ $dt->ExpertRate == $dt->DefaultRate ? 'selected' : '' }}>Expert</option>
+                                                                                </select>
+                                                                            </div>
+                                                                        </td>
+                                                                    @endforeach
+                                                                @endif
+                                                            </tr>
+                                                            <tr>
+                                                                <th style="background: #f8f6f2;">Rate</th>
+                                                                @if (isset($projectPhaseResources) && count($projectPhaseResources))
+                                                                    @foreach ($projectPhaseResources as $dt)
+                                                                        <td class="text-center">
+                                                                            <div class="form-group mb-0">
+                                                                                <div class="input-group">
+                                                                                    <div class="input-group-prepend">
+                                                                                        <span class="input-group-text">$</span>
+                                                                                    </div>
+                                                                                    <input type="number" name="Rate" id="Rate{{ $dt->Initial }}" step="0.01" class="form-control text-end" required
+                                                                                        designationId="{{ $dt->Id }}"
+                                                                                        initial="{{ $dt->Initial }}"
+                                                                                        manhours="{{ ${"$dt->Initial"} }}"
+                                                                                        value="{{ $dt->DefaultRate }}">
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                    @endforeach
+                                                                @endif
+                                                            </tr>
+                                                            <tr>
+                                                                <th style="background: #f8f6f2;">Cost</th>
+                                                                @if (isset($projectPhaseResources) && count($projectPhaseResources))
+                                                                    @foreach ($projectPhaseResources as $dt)
+                                                                        <td class="text-end">
+                                                                            <div id="Cost{{ $dt->Initial }}">$ {{ ${"$dt->Initial"} * $dt->DefaultRate }}</div>
+                                                                        </td>
+                                                                    @endforeach
+                                                                @endif
+                                                            </tr>
+                                                        </table>
+
+                                                        <div class="text-end">
+                                                            <button class="btn btn-warning btnUpdateResource">Update Resource</button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1729,7 +1799,7 @@
                 let content = `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
                     <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
-                    <b class="mt-4">Are you sure you want to update manhour?</b>
+                    <b class="mt-4">Are you sure you want to update the manhours?</b>
                 </div>`;
 
                 let confirmation = $.confirm({
@@ -1744,34 +1814,35 @@
                             btnClass: 'btn-blue',
                             keys: ['enter'],
                             action: function() {
-                                let data = [];
-                                $("input[name='RowId[]']").each(function(index) {
-                                    let obj = {
-                                        rowId: $("input[name='RowId[]']").eq(index)
-                                            .val(),
-                                        manhourValue: $("input[name='Manhour[]']")
-                                            .eq(index).val()
-                                    }
-                                    data.push(obj);
-                                });
-                                var method = 'PUT';
-                                $.ajax({
-                                    type: method,
-                                    url: `{{ $Id }}/updateManhour`,
-                                    data: {
-                                        data
-                                    },
-                                    async: false,
-                                    success: function(response) {
-                                        window.location = response.url;
-                                    }
-                                })
-
                                 confirmation.buttons.yes.setText(
                                     `<span class="spinner-border spinner-border-sm"></span> Please wait...`
                                 );
                                 confirmation.buttons.yes.disable();
                                 confirmation.buttons.no.hide();
+                                setTimeout(() => {
+                                    let data = [];
+                                    $("input[name='RowId[]']").each(function(index) {
+                                        let obj = {
+                                            rowId: $("input[name='RowId[]']").eq(index)
+                                                .val(),
+                                            manhourValue: $("input[name='Manhour[]']")
+                                                .eq(index).val()
+                                        }
+                                        data.push(obj);
+                                    });
+                                    var method = 'PUT';
+                                    $.ajax({
+                                        type: method,
+                                        url: `{{ $Id }}/updateManhour`,
+                                        data: {
+                                            data
+                                        },
+                                        async: false,
+                                        success: function(response) {
+                                            window.location = response.url;
+                                        }
+                                    })
+                                }, 100);
 
                                 return false;
                             }
@@ -2104,6 +2175,100 @@
                 }
             })
             // ----- END DELETE TABLE ROW -----
+
+
+            // ----- SELECT LEVEL -----
+            $(document).on('change', `[name="Level"]`, function() {
+                let initial = $(this).attr('initial');
+                let rate = parseFloat($('option:selected', this).attr('rate') ?? 0);
+
+                $(`#Rate${initial}`).val(rate).trigger('keyup');
+            })
+            // ----- END SELECT LEVEL -----
+
+
+            // ----- CHANGE RATE -----
+            $(document).on('keyup', `[name="Rate"]`, function() {
+                let initial  = $(this).attr('initial');
+                let rate     = parseFloat($(this).val()?.replaceAll(',', ''));
+                let manhours = parseFloat($(this).attr('manhours') ?? 0);
+                let cost     = '$ '+(rate * manhours).toFixed(2);
+                
+                $(`#Cost${initial}`).text(cost);
+            })
+            // ----- END CHANGE RATE -----
+
+
+            // ----- UPDATE RESOURCE COST -----
+            $(document).on('click', '.btnUpdateResource', function(e) {
+                e.preventDefault();
+
+                let message = "Are you sure you want to update resource cost?";
+                let content = `
+                <div class="d-flex justify-content-center align-items-center flex-column text-center">
+                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                    <b class="mt-4">${message}</b>
+                </div>`;
+
+                let confirmation = $.confirm({
+                    title: false,
+                    content,
+                    buttons: {
+                        no: {
+                            btnClass: 'btn-default',
+                        },
+                        yes: {
+                            btnClass: 'btn-blue',
+                            keys: ['enter'],
+                            action: function() {
+
+                                confirmation.buttons.yes.setText(
+                                    `<span class="spinner-border spinner-border-sm"></span> Please wait...`
+                                );
+                                confirmation.buttons.yes.disable();
+                                confirmation.buttons.no.hide();
+
+                                let levelArr = [];
+                                $(`[name="Level"]`).each(function(index) {
+                                    levelArr[index] = $(this).val();
+                                })
+
+                                let resourceData = [];
+                                $(`[name="Rate"]`).each(function(index) {
+                                    let Rate = parseFloat($(this).val()?.replaceAll(',', '') ?? 0);
+                                    let Manhours = parseFloat($(this).attr('manhours')?.replaceAll(',', '') ?? 0);
+                                    let Cost = Rate * Manhours;
+                                    let DesignationId = $(this).attr('designationId');
+                                    let Initial = $(this).attr('initial');
+                                    resourceData[index] = { 
+                                        Level: levelArr[index],
+                                        Initial,
+                                        Rate,
+                                        Manhours,
+                                        Cost,
+                                        DesignationId,
+                                     };
+                                })
+                                
+                                setTimeout(() => {
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: `/customer/edit/{{ $Id }}/updateResourceCost`,
+                                        data:{ resourceData },
+                                        async: false,
+                                        success: function(response) {
+                                            window.location = response.url;
+                                        }
+                                    })
+                                }, 100);
+
+                                return false;
+                            }
+                        },
+                    }
+                });
+            })
+            // ----- END UPDATE RESOURCE COST -----
 
         })
     </script>

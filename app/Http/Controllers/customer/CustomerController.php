@@ -14,6 +14,7 @@ use App\Models\customer\CustomerComplexityDetails;
 use App\Models\customer\CustomerProjectPhases;
 use App\Models\customer\CustomerProjectPhasesDetails;
 use App\Models\admin\ThirdParty;
+use App\Models\admin\Designation;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Customer;
@@ -70,7 +71,7 @@ class CustomerController extends Controller
         $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)->get();
 
 
-        $inscopes = CustomerInscope::where('CustomerId', $Id)->get();
+        $inscopes = CustomerInscope::where('CustomerId', $Id)->orderBy('created_at', 'DESC')->get();
         $totalManhour = CustomerInscope::where('CustomerId', $Id)->sum('Manhour');
         $limitations = CustomerLimitation::where('CustomerId', $Id)->get();
 
@@ -527,7 +528,7 @@ class CustomerController extends Controller
             }
         }
 
-        $request->session()->flash('fail', 'Something went wrong, try again later');
+        $request->session()->flash('fail', 'Something went wrong, please try again later');
         return response()->json(['url' => url('customer/edit/' . $Id)]);
     }
     function updateOIC(Request $request, $Id)
@@ -542,7 +543,7 @@ class CustomerController extends Controller
             $request->session()->flash('success', 'OIC updated');
             return response()->json(['url' => url('customer/edit/' . $Id)]);
         } else {
-            $request->session()->flash('fail', 'Something went wrong, try again later');
+            $request->session()->flash('fail', 'Something went wrong, please try again later');
             return response()->json(['url' => url('customer/edit/' . $Id)]);
         }
     }
@@ -558,10 +559,10 @@ class CustomerController extends Controller
             $update = $inscope->save();
         }
         if ($update) {
-            $request->session()->flash('success', 'Manhour updated');
+            $request->session()->flash('success', 'Manhours updated successfully!');
             return response()->json(['url' => url('customer/edit/' . $Id)]);
         } else {
-            $request->session()->flash('fail', 'Something went wrong, try again later');
+            $request->session()->flash('fail', 'Something went wrong, please try again later');
             return response()->json(['url' => url('customer/edit/' . $Id)]);
         }
     }
@@ -667,6 +668,41 @@ class CustomerController extends Controller
     
             $customerData->ProposalProgress = $request->ProposalProgress;
         }
+    }
+
+    function updateResourceCost(Request $request, $Id) 
+    {
+        $data = [];
+        $resourceData = $request->resourceData;
+        if (isset($resourceData) && count($resourceData)) {
+            DB::table('customer_assessment_resources')->where('CustomerId', $Id)->delete();
+
+            foreach ($resourceData as $dt) {
+                $data[] = [
+                    'Id'            => Str::uuid(),
+                    'CustomerId'    => $Id,
+                    'DesignationId' => $dt['DesignationId'],
+                    'Initial'       => $dt['Initial'],
+                    'Level'         => $dt['Level'],
+                    'Rate'          => $dt['Rate'],
+                    'Cost'          => $dt['Cost'],
+                    'CreatedById'   => Auth::id(),
+                    'UpdatedById'   => Auth::id(),
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
+                ];
+            }
+
+            if ($data && count($data)) {
+                DB::table('customer_assessment_resources')->insert($data);
+
+                $request->session()->flash('success', 'Resouces updated successfully!');
+                return response()->json(['url' => url('customer/edit/' . $Id)]);
+            }
+        } 
+
+        $request->session()->flash('fail', 'Something went wrong, please try again later');
+        return response()->json(['url' => url('customer/edit/' . $Id)]);
     }
 
     function update(Request $request, $Id)
@@ -942,6 +978,7 @@ class CustomerController extends Controller
 
     function getProjectPhaseResources($Id)
     {
+        $data = [];
         $projectPhaseResources = DB::table('project_phases_resources AS ppr')
             ->leftJoin('customer_project_phases AS cpp', function ($join) use ($Id) {
                 $join->on('ppr.ProjectPhaseId', 'cpp.ProjectPhaseId');
@@ -955,10 +992,14 @@ class CustomerController extends Controller
             ->where('pp.Status', 1)
             ->where('d.Status', 1)
             ->where('cpp.CustomerId', $Id)
-            ->groupBy('d.Initial')
-            ->get(['d.Initial']); 
+            ->groupBy('d.Id')
+            ->get(['d.Id']); 
+        
+        foreach ($projectPhaseResources as $dt) {
+            $data[] = Designation::find($dt->Id);
+        }
 
-        return $projectPhaseResources;
+        return $data;
     }
 
     function getInitials($name)
