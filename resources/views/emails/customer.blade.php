@@ -36,7 +36,7 @@
                     </ul>
                 @endif
             </div>
-        @elseif ($path == "Project Phase")
+        @elseif ($path == "Project Phase" || $path == "Assessment")
             <div style="text-indent: 15px;">
                 Please do an assessment and indicate the manhours of the requirement for <a href="{{ $notification['Link'] }}" target="_blank">{{ $data->CustomerName }}</a>.
             </div>

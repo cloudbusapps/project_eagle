@@ -158,21 +158,21 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/delete/{Id}', [OvertimeRequestController::class, 'deleteOvertimeRequest'])->name('overtimeRequest.delete');
         });
     });
-});
 
-// CUSTOMER
-Route::prefix('customer')->group(function () {
-    Route::get('/', [CustomerController::class, 'index'])->name('customers');
-    Route::get('/add', [CustomerController::class, 'form'])->name('customers.add');
-    Route::post('/save', [CustomerController::class, 'save'])->name('customers.save');
-    Route::get('/edit/{Id}', [CustomerController::class, 'edit'])->name('customers.edit');
-    Route::put('/edit/{Id}/update', [CustomerController::class, 'update'])->name('customers.update');
-    Route::put('/edit/{Id}/updateConsultant', [CustomerController::class, 'updateConsultant'])->name('customers.updateConsultant');
-    Route::put('/edit/{Id}/updateManhour', [CustomerController::class, 'updateManhour'])->name('customers.updateManhour');
-    Route::put('/edit/{Id}/updateOIC', [CustomerController::class, 'updateOIC'])->name('customers.updateOIC');
-    Route::get('/delete/{Id}', [CustomerController::class, 'delete'])->name('customers.delete');
+    // CUSTOMER
+    Route::prefix('customer')->group(function () {
+        Route::get('/', [CustomerController::class, 'index'])->name('customers');
+        Route::get('/add', [CustomerController::class, 'form'])->name('customers.add');
+        Route::post('/save', [CustomerController::class, 'save'])->name('customers.save');
+        Route::get('/edit/{Id}', [CustomerController::class, 'edit'])->name('customers.edit');
+        Route::put('/edit/{Id}/update', [CustomerController::class, 'update'])->name('customers.update');
+        Route::put('/edit/{Id}/updateConsultant', [CustomerController::class, 'updateConsultant'])->name('customers.updateConsultant');
+        Route::put('/edit/{Id}/updateManhour', [CustomerController::class, 'updateManhour'])->name('customers.updateManhour');
+        Route::put('/edit/{Id}/updateOIC', [CustomerController::class, 'updateOIC'])->name('customers.updateOIC');
+        Route::get('/delete/{Id}', [CustomerController::class, 'delete'])->name('customers.delete');
+    });
+    // END CUSTOMER
 });
-// END CUSTOMER
 
 
 // ----- EXTERNAL ACTIONS -----

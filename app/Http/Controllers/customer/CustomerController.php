@@ -479,30 +479,52 @@ class CustomerController extends Controller
 
     function updateConsultant(Request $request, $Id)
     {
-
         $consultants = $request->selectedConsultants;
 
         if ($consultants && count($consultants)) {
             $consultantsData = [];
             foreach ($consultants as $i => $consultant) {
                 $consultantsData[] = [
-                    'Id'           => Str::uuid(),
-                    'CustomerId' => $Id,
-                    'UserId'        => $consultant,
-                    'CreatedById'  => Auth::id(),
-                    'UpdatedById'  => Auth::id(),
+                    'Id'          => Str::uuid(),
+                    'CustomerId'  => $Id,
+                    'UserId'      => $consultant,
+                    'CreatedById' => Auth::id(),
+                    'UpdatedById' => Auth::id(),
                 ];
             }
             CustomerConsultant::where('CustomerId', $Id)->delete();
             $update = CustomerConsultant::insert($consultantsData);
+
+            if ($update) {
+                $customerData = Customer::find($Id);
+                $CustomerName = $customerData->CustomerName;
+
+                foreach ($consultantsData as $dt) {
+                    $User = User::find($dt['UserId']);
+        
+                    $Title = "Customer";
+                    $Description = " <div>Please do an assessment and indicate the manhours of the requirement for {$CustomerName}</div>";
+                    $Link = "/customer/edit/{$Id}?progress=assessment";
+                    $Icon = '/assets/img/icons/default.png';
+        
+                    $NotificationData = [
+                        'Id'          => $Id,
+                        'Title'       => $Title,
+                        'Description' => $Description,
+                        'Link'        => $Link,
+                        'Icon'        => $Icon,
+                    ];
+                    Mail::to($User->email)->send(new CustomerMail($customerData, $User, $NotificationData, 'Assessment'));
+                    Notification::sendNow($User, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
+                }
+    
+                $request->session()->flash('success', 'Consulant updated');
+                return response()->json(['url' => url('customer/edit/' . $Id)]);
+            }
         }
-        if ($update) {
-            $request->session()->flash('success', 'Consulant updated');
-            return response()->json(['url' => url('customer/edit/' . $Id)]);
-        } else {
-            $request->session()->flash('fail', 'Something went wrong, try again later');
-            return response()->json(['url' => url('customer/edit/' . $Id)]);
-        }
+
+        $request->session()->flash('fail', 'Something went wrong, try again later');
+        return response()->json(['url' => url('customer/edit/' . $Id)]);
     }
     function updateOIC(Request $request, $Id)
     {
