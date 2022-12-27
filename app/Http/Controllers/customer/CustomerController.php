@@ -94,7 +94,8 @@ class CustomerController extends Controller
             'MODULE_ID'           => $this->MODULE_ID,
             'assignedConsultants' => $assignedConsultants,
             'customerProjectPhases' => $this->getCustomerProjectPhase($Id),
-            'customerProposal'    => CustomerProposalFiles::where('CustomerId',$Id)->get()
+            'customerProposal'    => CustomerProposalFiles::where('CustomerId',$Id)->get(),
+            'projectPhaseResources' => $this->getProjectPhaseResources($Id),
         ];
 
 
@@ -501,6 +502,8 @@ class CustomerController extends Controller
                 $CustomerName = $customerData->CustomerName;
 
                 foreach ($consultantsData as $dt) {
+
+                    // NOTIFY CONSULTANT
                     $User = User::find($dt['UserId']);
         
                     $Title = "Customer";
@@ -876,7 +879,7 @@ class CustomerController extends Controller
                 $percentToDecimal = $ppr->Percentage / 100;
 
                 if ($ppr->ProjectPhaseId == $cpp->ProjectPhaseId) {
-                    $temp['Resources'][] = [
+                    $temp['Resources'][$ppr->Initial] = [
                         'Id'              => $ppr->Id,
                         'ppId'            => $cpp->ProjectPhaseId,
                         'DId'             => $ppr->DesignationId,
@@ -891,7 +894,32 @@ class CustomerController extends Controller
             $data[] = $temp;
         }
 
+        // echo '<pre>';
+        // print_r($data);
+        // exit;
+
         return $data;
+    }
+
+    function getProjectPhaseResources($Id)
+    {
+        $projectPhaseResources = DB::table('project_phases_resources AS ppr')
+            ->leftJoin('customer_project_phases AS cpp', function ($join) use ($Id) {
+                $join->on('ppr.ProjectPhaseId', 'cpp.ProjectPhaseId');
+            })
+            ->leftJoin('project_phases AS pp', function ($join) use ($Id) {
+                $join->on('cpp.ProjectPhaseId', 'pp.Id');
+            })
+            ->leftJoin('designations AS d', function ($join) use ($Id) {
+                $join->on('ppr.DesignationId', 'd.Id');
+            })
+            ->where('pp.Status', 1)
+            ->where('d.Status', 1)
+            ->where('cpp.CustomerId', $Id)
+            ->groupBy('d.Initial')
+            ->get(['d.Initial']); 
+
+        return $projectPhaseResources;
     }
 
     function getInitials($name)

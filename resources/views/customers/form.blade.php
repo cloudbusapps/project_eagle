@@ -1236,74 +1236,95 @@
                                         <div id="tableContainer" class="accordion-item ">
                                             <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" >
                                                 <div class="card-header py-3">
-                                                    <h5 class="card-title mb-0">ENGAGEMENT SUMMARY EFFORTS</h5>
+                                                    <h5 class="card-title mb-0">ENGAGEMENT EFFORT SUMMARY</h5>
                                                 </div>
                                             </a>
                                             <div id="collapseOne" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                                <table id="inScopeTable" cellpadding="0" cellspacing="0"
-                                                class="table table-bordered table-hover"
-                                                style="width: 100%; max-width: 1500px;">
-                                                <thead>
-                                                    <tr>
-                                                        <th>No.</th>
-                                                        <th>Project Phase</th>
-                                                        <th></th>
-                                                        <th>%</th>
-                                                        <th>Effort (Hours)</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @if (!empty($customerProjectPhases) && count($customerProjectPhases) > 0)
-                                                    <?php $totalEngagementHours = 0.00; ?>
-                                                        @foreach ($customerProjectPhases as $index => $cpp)
-                                                        <?php $totalEngagementHours += $cpp['EffortHours'] ?>
+                                                <div class="table-responsive">
+                                                    <table id="inScopeTable" cellpadding="0" cellspacing="0"
+                                                        class="table table-bordered table-hover"
+                                                        style="min-width: 1000px; width: 100%; max-width: 1500px;">
+                                                        <thead>
                                                             <tr>
-                                                                <td class="text-center">
-                                                                    {{ $index+1 }}
-                                                                </td>
-                                                                <td>
-                                                                    <small
-                                                                        style="white-space: break-spaces;">{{ $cpp['Title'] }}</small>
-                                                                </td>
-                                                                <td>
-                                                                    @foreach ($cpp['Resources'] as $resources)
-                                                                    <small
-                                                                    style="white-space: break-spaces;">{{ $resources['Initial'].':'.$resources['Percentage'].'%'}}</small>,
+                                                                <th style="width: 5px;">No.</th>
+                                                                <th style="width: 150px;">Project Phase</th>
+                                                                <th style="width: 150px;"></th>
+                                                                <th class="text-center" style="width: 10px;">%</th>
+                                                                <th style="width: 30px;">Effort (Hours)</th>
+                                                                <th style="width: 2px;" class="bg-secondary"></th>
+    
+                                                                @if (isset($projectPhaseResources) && count($projectPhaseResources))
+                                                                    @foreach ($projectPhaseResources as $dt)
+                                                                    <?php ${"$dt->Initial"} = 0; ?>
+                                                                        <th style="width: 10px;" class="text-center">{{ $dt->Initial }}</th>
                                                                     @endforeach
-                                                                    
-                                                                </td>
-                                                                <td>
-                                                                    <small
-                                                                        style="white-space: break-spaces;">{{ $cpp['Percentage'] }}</small>
-                                                                </td>
-                                                                <td>
-                                                                    <small
-                                                                        style="white-space: break-spaces;">{{ $cpp['EffortHours'] }}</small>
-                                                                </td>
-                                                                @foreach ($cpp['Resources'] as $resources)
-                                                                <td>
-                                                                    <small
-                                                                    style="white-space: break-spaces;">{{$resources['ResourceManhour'] }}</small>
-                                                                </td>
-                                                                @endforeach
-                                                                    
-                                                               
-                                                               
-                                                                
+                                                                @endif
+    
                                                             </tr>
-                                                        @endforeach
-                                                        <tr>
-                                                            <td colspan="4"><strong>Total Engagement Efforts</strong></td>
-                                                            <td><strong><?=$totalEngagementHours?></strong></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan="4"><strong>Total Weeks</strong></td>
-                                                            <td><strong><?=round($totalEngagementHours/168,1)?></strong></td>
-                                                        </tr>
-                                                        
-                                                    @endif
-                                                </tbody>
-                                                </table>
+                                                        </thead>
+                                                        <tbody>
+                                                            @if (!empty($customerProjectPhases) && count($customerProjectPhases) > 0)
+                                                            <?php $totalEngagementHours = 0.00; ?>
+                                                                @foreach ($customerProjectPhases as $index => $cpp)
+                                                                <?php $totalEngagementHours += $cpp['EffortHours'] ?>
+                                                                    <tr>
+                                                                        <td class="text-center">
+                                                                            {{ $index+1 }}
+                                                                        </td>
+                                                                        <td>
+                                                                            <small
+                                                                                style="white-space: break-spaces;">{{ $cpp['Title'] }}</small>
+                                                                        </td>
+                                                                        <td>
+                                                                            @foreach ($cpp['Resources'] as $resources)
+                                                                            <small
+                                                                            style="white-space: break-spaces;">{{ $resources['Initial'].':'.$resources['Percentage'].'%'}}</small>,
+                                                                            @endforeach
+                                                                            
+                                                                        </td>
+                                                                        <td class="text-center">
+                                                                            <small
+                                                                                style="white-space: break-spaces;">{{ $cpp['Percentage'] }}</small>
+                                                                        </td>
+                                                                        <td class="text-center">
+                                                                            <small
+                                                                                style="white-space: break-spaces;">{{ $cpp['EffortHours'] }}</small>
+                                                                        </td>
+                                                                        <td class="bg-secondary"></td>
+                                                                        @if (isset($projectPhaseResources) && count($projectPhaseResources))
+                                                                            @foreach ($projectPhaseResources as $dt)
+                                                                                <?php 
+                                                                                    $manhour = $cpp['Resources']["{$dt->Initial}"]['resourceManhour'] ?? 0;
+                                                                                    ${"$dt->Initial"} += $manhour;
+                                                                                ?>
+                                                                                <td class="text-center"><?= $manhour == 0 ? '' : $manhour ?></td>
+                                                                            @endforeach
+                                                                        @endif
+                                                                            
+                                                                    
+                                                                    
+                                                                        
+                                                                    </tr>
+                                                                @endforeach
+                                                                <tr>
+                                                                    <td colspan="4"><strong>Total Engagement Efforts</strong></td>
+                                                                    <td class="text-center"><strong><?=$totalEngagementHours?></strong></td>
+                                                                    <td class="bg-secondary"></td>
+                                                                    @if (isset($projectPhaseResources) && count($projectPhaseResources))
+                                                                        @foreach ($projectPhaseResources as $dt)
+                                                                            <td class="text-center">{{ ${"$dt->Initial"} }}</td>
+                                                                        @endforeach
+                                                                    @endif
+                                                                </tr>
+                                                                <tr><td colspan="{{ count($projectPhaseResources) + 6 }}"></td></tr>
+                                                                <tr>
+                                                                    <td colspan="5"><strong>Total Weeks</strong></td>
+                                                                    <td colspan="{{ count($projectPhaseResources) + 1 }}"><strong><?=round($totalEngagementHours/40,1)?></strong></td>
+                                                                </tr>
+                                                            @endif
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
