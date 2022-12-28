@@ -61,46 +61,64 @@ class CustomerController extends Controller
     {
         $customerData = Customer::find($Id);
         $progress = $request->progress ?? '';
-
-        $businessProcess = CustomerBusinessProcess::select('customer_business_process.*')
-            ->where('customer_business_process.CustomerId', $Id)
-            ->leftJoin('customer_business_process_files AS cbpf', 'cbpf.CustomerId', '=', 'customer_business_process.Id')
-            ->first();
-        $businessProcessData = $businessProcess ? $businessProcess : '';
-        $files = $businessProcessData !== '' ? CustomerBusinessProcessFiles::where('CustomerId', $Id)->orderBy('created_at', 'DESC')->get() : [];
-
-        $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)->get();
-
-
-        $inscopes = CustomerInscope::where('CustomerId', $Id)->orderBy('created_at', 'DESC')->get();
-        $totalManhour = CustomerInscope::where('CustomerId', $Id)->sum('Manhour');
-        $limitations = CustomerLimitation::where('CustomerId', $Id)->get();
-
         $title = $this->getTitle($customerData->Status, $progress);
 
-        $data = [
+        // BASED ON STATUS
+        if ($title[1] == 1) { // COMPLEXITY
+            $data = [
+                'complexities' => $this->getComplexityData($Id),
+            ];
+        } else if ($title[1] == 3) { // BUSINESS PROCESS
+            $businessProcess = CustomerBusinessProcess::select('customer_business_process.*')
+                ->where('customer_business_process.CustomerId', $Id)
+                ->leftJoin('customer_business_process_files AS cbpf', 'cbpf.CustomerId', '=', 'customer_business_process.Id')
+                ->first();
+            $businessProcessData = $businessProcess ? $businessProcess : '';
+            $files = $businessProcessData !== '' ? CustomerBusinessProcessFiles::where('CustomerId', $Id)->orderBy('created_at', 'DESC')->get() : [];
+            
+            $data = [
+                'businessProcessData' => $businessProcessData,
+                'files'               => $files,
+            ];
+        } else if (in_array($title[1], [4, 5, 7])) { // REQUIREMENT AND SOLUTIONS, CAPABILITIES, ASSESSMENT
+            $inscopes = CustomerInscope::where('CustomerId', $Id)->orderBy('created_at', 'DESC')->get();
+            $limitations = CustomerLimitation::where('CustomerId', $Id)->get();
+            $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)->get();
+            $totalManhour = CustomerInscope::where('CustomerId', $Id)->sum('Manhour');
+            $customerResources = DB::table('customer_assessment_resources')
+                ->where('CustomerId', $Id)
+                ->get();
+            
+            $data = [
+                'reqSol'              => $inscopes,
+                'limitations'         => $limitations,
+                'thirdParties'        => ThirdParty::orderBy('created_at', 'DESC')->get(),
+                'users'               => User::all(),
+                'totalManhour'        => $totalManhour,
+                'assignedConsultants' => $assignedConsultants,
+                'projectPhaseResources' => $this->getProjectPhaseResources($Id),
+                'customerProjectPhases' => $this->getCustomerProjectPhase($Id),
+                'customerResources'    => $customerResources,
+            ];
+        } else if ($title[1] == 6) { // PROJECT PHASE
+            $data = [
+                'ProjectPhase'        => $this->getProjectPhase($Id),
+            ];
+        } else {
+            $data = [
+                'customerProposalFiles' => CustomerProposalFiles::where('CustomerId',$Id)->get(),
+                'customerProposal'      => CustomerProposal::where('CustomerId',$Id)->first(),
+            ];
+        }
+
+        $data = array_merge($data, [
             'title'               => $title[0],
             'currentViewStatus'   => $title[1],
             'type'                => 'edit',
             'data'                => $customerData,
             'Id'                  => $Id,
-            'complexities'        => $this->getComplexityData($Id),
-            'ProjectPhase'        => $this->getProjectPhase($Id),
-            'users'               => User::all(),
-            'businessProcessData' => $businessProcessData,
-            'files'               => $files,
-            'reqSol'              => $inscopes,
-            'totalManhour'        => $totalManhour,
-            'limitations'         => $limitations,
-            'thirdParties'        => ThirdParty::orderBy('created_at', 'DESC')->get(),
             'MODULE_ID'           => $this->MODULE_ID,
-            'assignedConsultants' => $assignedConsultants,
-            'customerProjectPhases' => $this->getCustomerProjectPhase($Id),
-            'customerProposalFiles'    => CustomerProposalFiles::where('CustomerId',$Id)->get(),
-            'customerProposal'    => CustomerProposal::where('CustomerId',$Id)->first(),
-            'projectPhaseResources' => $this->getProjectPhaseResources($Id),
-        ];
-
+        ]);
 
         return view('customers.form', $data);
     }
@@ -1041,8 +1059,18 @@ class CustomerController extends Controller
             ->get(['d.Id']); 
         
         foreach ($projectPhaseResources as $dt) {
-            $data[] = Designation::find($dt->Id);
+            $data[] = Designation::select('designations.*', 'car.Level', 'car.Rate', 'car.Cost')
+                ->leftJoin('customer_assessment_resources AS car', function ($join) use ($Id) {
+                    $join->on('car.DesignationId', 'designations.Id');
+                    $join->on('car.CustomerId', DB::raw("'$Id'"));
+                })
+                ->where('designations.Id', $dt->Id)
+                ->first();
         }
+
+        // echo '<pre>';
+        // print_r($data);
+        // exit;
 
         return $data;
     }
