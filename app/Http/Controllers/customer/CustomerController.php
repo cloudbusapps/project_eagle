@@ -125,8 +125,10 @@ class CustomerController extends Controller
             return ['Assessment', 7];
         } else if ($Status == 8 || $Progress == 'proposal') {
             return ['Proposal', 8];
-        } else {
+        } else if ($Status == 9 || $Progress == 'success'){
             return ['Success', 9];
+        } else {
+            return ['Lost', 10];
         }
     }
 
@@ -651,6 +653,14 @@ class CustomerController extends Controller
             $customerData->ProposalStatus = $request->ProposalStatus;
             $customerData->Status = 9;
         } else if($request->ProposalStatus == 4){
+            $validator = $request->validate([
+                'ProposalAction' => ['required'],
+            ]);
+            if($request->ProposalAction==11){
+                $customerData->Status = 7;
+            } else if($request->ProposalAction==10){
+                $customerData->Status = 10;
+            }
 
         } else{
             if ($files&&count($files)) {
