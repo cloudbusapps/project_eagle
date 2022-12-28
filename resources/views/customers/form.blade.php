@@ -413,16 +413,7 @@
                                         <strong>Proposal</strong>
                                     @endif
                                 </li>
-                                @if ($Status == 9)
-                                <li id="Success">
-                                    @if ($Status == 9)
-                                        <a href="?progress=success"
-                                            class="{{ $title == 'Success' ? 'active' : '' }}"><b>Success</b></a>
-                                    @else
-                                        <strong>Success</strong>
-                                    @endif
-                                </li>
-                                @else
+                                @if ($Status == 10)
                                 <li id="Lost">
                                     @if ($Status >= 10)
                                         <a href="?progress=lost"
@@ -431,8 +422,16 @@
                                         <strong>Lost</strong>
                                     @endif
                                 </li>
+                                @else
+                                <li id="Success">
+                                    @if ($Status == 9)
+                                        <a href="?progress=success"
+                                            class="{{ $title == 'Success' ? 'active' : '' }}"><b>Success</b></a>
+                                    @else
+                                        <strong>Success</strong>
+                                    @endif
+                                </li>
                                 @endif
-                                
                             </ul>
 
                             <div class="profile-overview">
@@ -1634,7 +1633,7 @@
                                         <label for="DateSubmitted" class="col-sm-2 label">Date Submitted
                                             <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
-                                            <input value="{{ $customerProposal->DateSubmitted }}" class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
+                                            <input value="{{ $customerProposal->DateSubmitted ?? '' }}" class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -1682,7 +1681,7 @@
                                                 <label for="inputText" class="col-sm-2 label">Date Signed
                                                     <?= $RequiredLabel ?></label>
                                                 <div class="col-sm-10">
-                                                    <input value={{ $customerProposal->SignedDateSubmitted }} class="form-control" type="date" id="SignedDateSubmitted" name="SignedDateSubmitted" />
+                                                    <input value="{{ $customerProposal->SignedDateSubmitted ?? ''}}" class="form-control" type="date" id="SignedDateSubmitted" name="SignedDateSubmitted" />
                                                 </div>
                                             </div>
                                             @if ($data['ProposalStatus']==3)
@@ -1709,7 +1708,7 @@
                                             @endif
                                         </div>
                                     
-                                        <div class="rejectedDisplay" style="display:{{ $data['ProposalStatus']==4 ? '':'none' }}">
+                                        <div class="rejectedDisplay" style="display:{{ $data['ProposalStatus']==4 ? '' : 'none' }}">
                                             <div class="row mb-3">
                                                 <label for="ProposalAction" class="col-sm-2 label">Action</label>
                                                 <div class="col-sm-10">
@@ -2181,7 +2180,6 @@
             // ----- PROPOSAL SELECT STATUS -----
             $(document).on('change', `[name="FileProposal[]"]`, function() {
                 let hasFile = $(this).length;
-                console.log(hasFile)
                 if (hasFile > 0) {
                     $('#DateSubmittedDisplay').show()
                     // $(`[name="ThirdPartyId"]`).attr('required', false).val('');
