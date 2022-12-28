@@ -1661,7 +1661,7 @@
                                                     <div class="p-2 border border-1 rounded">
                                                         <div class="d-flex justify-content-between">
                                                             <a href="{{ asset('uploads/Proposal/' . $file['File']) }}"
-                                                                class="text-black fw-bold"
+                                                                class="text-black fw-bold text-truncate"
                                                                 target="_blank">{{ $file['File'] }}</a>
                                                             <button type="button"
                                                                 class="btn-close btnRemoveFilename"></button>
@@ -1687,7 +1687,7 @@
                                             </div>
                                         </div>
                                     
-                                        <div class="signedDisplay">
+                                        <div class="signedDisplay" style="display:{{ $data['ProposalStatus']==3 ? '':'none' }}">
                                             <div id="AttachmentSignedDisplay" class="row mb-3" style="{{ $data['ProposalStatus'] == null || $data['ProposalStatus'] == 0 ? 'display: none;' : '' }}" >
                                                 <label for="inputText" class="col-sm-2 label">Attachment(Signed)</label>
                                                 <div class="col-sm-10">
@@ -1710,7 +1710,7 @@
                                                                 <div class="p-2 border border-1 rounded">
                                                                     <div class="d-flex justify-content-between">
                                                                         <a href="{{ asset('uploads/Proposal/' . $file['File']) }}"
-                                                                        class="text-black fw-bold"
+                                                                        class="text-black fw-bold text-truncate"
                                                                         target="_blank">{{ $file['File'] }}</a>
                                                                         <button type="button"
                                                                         class="btn-close btnRemoveFilename"></button>
@@ -1760,7 +1760,7 @@
                 </div>
 
                 @if ($Status == $currentViewStatus)
-                    @if($Status == 7 || Request::get('progress') == 'assessment')
+                    @if($Status == 7 || Request::get('progress') == 'assessment' || $Status == 9 || Request::get('progress') == 'success' | $Status == 10 || Request::get('progress') == 'lost' )
                         <div class="button-footer text-end">
                         </div>
                     @else
