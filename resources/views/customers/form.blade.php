@@ -413,22 +413,22 @@
                                         <strong>Proposal</strong>
                                     @endif
                                 </li>
-                                @if ($Status == 9)
-                                <li id="Success">
-                                    @if ($Status == 9)
-                                        <a href="?progress=success"
-                                            class="{{ $title == 'Success' ? 'active' : '' }}"><b>Success</b></a>
-                                    @else
-                                        <strong>Success</strong>
-                                    @endif
-                                </li>
-                                @else
+                                @if ($Status == 10)
                                 <li id="Lost">
                                     @if ($Status >= 10)
                                         <a href="?progress=lost"
                                             class="{{ $title == 'Lost' ? 'active' : '' }}"><b>Lost</b></a>
                                     @else
                                         <strong>Lost</strong>
+                                    @endif
+                                </li>
+                                @else
+                                <li id="Success">
+                                    @if ($Status == 9)
+                                        <a href="?progress=success"
+                                            class="{{ $title == 'Success' ? 'active' : '' }}"><b>Success</b></a>
+                                    @else
+                                        <strong>Success</strong>
                                     @endif
                                 </li>
                                 @endif
@@ -1650,7 +1650,7 @@
                                         <label for="DateSubmitted" class="col-sm-2 label">Date Submitted
                                             <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
-                                            <input value="{{ $customerProposal->DateSubmitted }}" class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
+                                            <input value="{{ $customerProposal->DateSubmitted ?? '' }}" class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -1689,7 +1689,7 @@
                                     
                                         <div class="signedDisplay" style="display:{{ $data['ProposalStatus']==3 ? '':'none' }}">
                                             <div id="AttachmentSignedDisplay" class="row mb-3" style="{{ $data['ProposalStatus'] == null || $data['ProposalStatus'] == 0 ? 'display: none;' : '' }}" >
-                                                <label for="inputText" class="col-sm-2 label">Attachment(Signed)</label>
+                                                <label for="inputText" class="col-sm-2 label">Attachment (Signed)</label>
                                                 <div class="col-sm-10">
                                                     <input class="form-control mb-3" type="file" id="FileSigned" name="FileSigned[]" multiple />
                                                 </div>
@@ -1698,7 +1698,7 @@
                                                 <label for="inputText" class="col-sm-2 label">Date Signed
                                                     <?= $RequiredLabel ?></label>
                                                 <div class="col-sm-10">
-                                                    <input value={{ $customerProposal->SignedDateSubmitted }} class="form-control" type="date" id="SignedDateSubmitted" name="SignedDateSubmitted" />
+                                                    <input value="{{ $customerProposal->SignedDateSubmitted }}" class="form-control" type="date" id="SignedDateSubmitted" name="SignedDateSubmitted" />
                                                 </div>
                                             </div>
                                             @if ($data['ProposalStatus']==3)

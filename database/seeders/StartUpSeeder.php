@@ -306,6 +306,7 @@ class StartUpSeeder extends Seeder
         // ----- END PROJECT PHASES -----
 
 
+        // ----- THIRD PARTIES -----
         DB::table('third_parties')->insert([
             [
                 'Id'          => config('constant.ID.THIRD_PARTIES.OTHERS'),
@@ -316,5 +317,25 @@ class StartUpSeeder extends Seeder
                 'updated_at'  => now(),
             ]
         ]);
+        // ----- END THIRD PARTIES -----
+
+
+        // ----- PERMISSION -----
+        DB::table('permissions')->insert([
+            [
+                'Id'            => Str::uuid(),
+                'DesignationId' => $GMDesignationId,
+                'ModuleId'      => 18, // CUSTOMER
+                'Read'          => 1,
+                'Create'        => 1,
+                'Edit'          => 1,
+                'Delete'        => 1,
+                'CreatedById'   => $AdminId,
+                'UpdatedById'   => $AdminId,
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ]
+        ]);
+        // ----- END PERMISSION -----
     }
 }
