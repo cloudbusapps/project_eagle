@@ -1349,17 +1349,33 @@
                                                                 <th style="background: #f8f6f2;">Level</th>
                                                                 @if (isset($projectPhaseResources) && count($projectPhaseResources))
                                                                     @foreach ($projectPhaseResources as $dt)
+                                                                    <?php
+                                                                        $Level = '';
+                                                                        switch ($dt->Level) {
+                                                                            case 'Beginner': $Level = 'Beginner'; break;
+                                                                            case 'Intermediate': $Level = 'Intermediate'; break;
+                                                                            case 'Senior': $Level = 'Senior'; break;
+                                                                            case 'Expert': $Level = 'Expert'; break;
+                                                                            default:
+                                                                                if ($dt->BeginnerRate == $dt->DefaultRate) $Level = 'Beginner';
+                                                                                else if ($dt->IntermediateRate == $dt->DefaultRate) $Level = 'Intermediate';
+                                                                                else if ($dt->SeniorRate == $dt->DefaultRate) $Level = 'Senior';
+                                                                                else $Level = 'Expert';
+                                                                                break;
+                                                                        }
+                                                                    ?>
+
                                                                         <td class="text-center">
                                                                             <div class="form-group mb-0">
                                                                                 <select name="Level" initial="{{ $dt->Initial }}" class="form-control" select2 required>
                                                                                     <option value="Beginner" rate="{{ $dt->BeginnerRate }}"
-                                                                                        {{ $dt->BeginnerRate == $dt->DefaultRate ? 'selected' : '' }}>Beginner</option>
+                                                                                        {{ $Level == 'Beginner' ? 'selected' : ''}}>Beginner</option>
                                                                                     <option value="Intermediate" rate="{{ $dt->IntermediateRate }}"
-                                                                                        {{ $dt->IntermediateRate == $dt->DefaultRate ? 'selected' : '' }}>Intermediate</option>
+                                                                                        {{ $Level == 'Intermediate' ? 'selected' : ''}}>Intermediate</option>
                                                                                     <option value="Senior" rate="{{ $dt->SeniorRate }}"
-                                                                                        {{ $dt->SeniorRate == $dt->DefaultRate ? 'selected' : '' }}>Senior</option>
+                                                                                        {{ $Level == 'Senior' ? 'selected' : ''}}>Senior</option>
                                                                                     <option value="Expert" rate="{{ $dt->ExpertRate }}"
-                                                                                        {{ $dt->ExpertRate == $dt->DefaultRate ? 'selected' : '' }}>Expert</option>
+                                                                                        {{ $Level == 'Expert' ? 'selected' : ''}}>Expert</option>
                                                                                 </select>
                                                                             </div>
                                                                         </td>
@@ -1380,7 +1396,7 @@
                                                                                         designationId="{{ $dt->Id }}"
                                                                                         initial="{{ $dt->Initial }}"
                                                                                         manhours="{{ ${"$dt->Initial"} }}"
-                                                                                        value="{{ $dt->DefaultRate }}">
+                                                                                        value="{{ $dt->Rate ?? $dt->DefaultRate }}">
                                                                                 </div>
                                                                             </div>
                                                                         </td>
@@ -1392,7 +1408,7 @@
                                                                 @if (isset($projectPhaseResources) && count($projectPhaseResources))
                                                                     @foreach ($projectPhaseResources as $dt)
                                                                         <td class="text-end">
-                                                                            <div id="Cost{{ $dt->Initial }}">$ {{ ${"$dt->Initial"} * $dt->DefaultRate }}</div>
+                                                                            <div id="Cost{{ $dt->Initial }}">$ {{ $dt->Cost ?? (${"$dt->Initial"} * $dt->DefaultRate) }}</div>
                                                                         </td>
                                                                     @endforeach
                                                                 @endif

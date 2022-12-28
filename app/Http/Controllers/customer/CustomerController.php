@@ -75,6 +75,10 @@ class CustomerController extends Controller
         $totalManhour = CustomerInscope::where('CustomerId', $Id)->sum('Manhour');
         $limitations = CustomerLimitation::where('CustomerId', $Id)->get();
 
+        $customerResources = DB::table('customer_assessment_resources')
+            ->where('CustomerId', $Id)
+            ->get();
+
         $title = $this->getTitle($customerData->Status, $progress);
 
         $data = [
@@ -97,6 +101,7 @@ class CustomerController extends Controller
             'customerProjectPhases' => $this->getCustomerProjectPhase($Id),
             'customerProposal'    => CustomerProposalFiles::where('CustomerId',$Id)->get(),
             'projectPhaseResources' => $this->getProjectPhaseResources($Id),
+            'customerResources' => $customerResources,
         ];
 
 
@@ -996,8 +1001,18 @@ class CustomerController extends Controller
             ->get(['d.Id']); 
         
         foreach ($projectPhaseResources as $dt) {
-            $data[] = Designation::find($dt->Id);
+            $data[] = Designation::select('designations.*', 'car.Level', 'car.Rate', 'car.Cost')
+                ->leftJoin('customer_assessment_resources AS car', function ($join) use ($Id) {
+                    $join->on('car.DesignationId', 'designations.Id');
+                    $join->on('car.CustomerId', DB::raw("'$Id'"));
+                })
+                ->where('designations.Id', $dt->Id)
+                ->first();
         }
+
+        // echo '<pre>';
+        // print_r($data);
+        // exit;
 
         return $data;
     }
