@@ -7,6 +7,7 @@ use App\Models\customer\CustomerBusinessProcess;
 use App\Models\customer\CustomerBusinessProcessFiles;
 use App\Models\customer\CustomerConsultant;
 use App\Models\customer\CustomerInscope;
+use App\Models\customer\CustomerProposal;
 use App\Models\customer\CustomerProposalFiles;
 use App\Models\customer\CustomerLimitation;
 use App\Models\customer\CustomerComplexity;
@@ -95,7 +96,8 @@ class CustomerController extends Controller
             'MODULE_ID'           => $this->MODULE_ID,
             'assignedConsultants' => $assignedConsultants,
             'customerProjectPhases' => $this->getCustomerProjectPhase($Id),
-            'customerProposal'    => CustomerProposalFiles::where('CustomerId',$Id)->get(),
+            'customerProposalFiles'    => CustomerProposalFiles::where('CustomerId',$Id)->get(),
+            'customerProposal'    => CustomerProposal::where('CustomerId',$Id)->first(),
             'projectPhaseResources' => $this->getProjectPhaseResources($Id),
         ];
 
@@ -607,6 +609,18 @@ class CustomerController extends Controller
                 $validator = $request->validate([
                     'SignedDateSubmitted' => ['required'],
                 ]);
+                $upsert = CustomerProposal::updateOrCreate(
+                    ['CustomerId' => $Id],
+                    [
+                        'SignedDateSubmitted' => $request->SignedDateSubmitted, 
+                        'discounted'          => 1,
+                        'Status'              => 1,
+                        'CreatedById'         => Auth::id(),
+                        'UpdatedById'         => Auth::id(),
+                        'created_at'          => now(),
+                    ]
+                );
+                if($upsert){
                 $proposalFile = [];
                 foreach ($fileSigned as $index => $file) {
                     $filenameArr = explode('.', $file->getClientOriginalName());
@@ -624,6 +638,7 @@ class CustomerController extends Controller
                         'CreatedById'    => Auth::id(),
                         'UpdatedById'    => Auth::id(),
                         'created_at'     => now(),
+                        'updated_at'     => now(),
                     ];
                 }
     
@@ -631,8 +646,10 @@ class CustomerController extends Controller
                 ->where('Status',1)
                 ->delete();
                 CustomerProposalFiles::insert($proposalFile);
+                }
             }
             $customerData->ProposalStatus = $request->ProposalStatus;
+            $customerData->Status = 9;
         } else if($request->ProposalStatus == 4){
 
         } else{
@@ -640,30 +657,44 @@ class CustomerController extends Controller
                 $validator = $request->validate([
                     'DateSubmitted' => ['required'],
                 ]);
-                $proposalFile = [];
-                foreach ($files as $index => $file) {
-                    $filenameArr = explode('.', $file->getClientOriginalName());
-                    $extension   = array_splice($filenameArr, count($filenameArr) - 1, 1);
-                    $filename    = 'P-[' . $index . ']' . time() . '.' . $extension[0];
-    
-                    $file->move($destinationPath, $filename);
-    
-                    $proposalFile[] = [
-                        'Id'             => Str::uuid(),
-                        'CustomerId'     => $Id,
-                        'File'           => $filename,
-                        'Date'           => $request->DateSubmitted,
-                        'Status'         => 0,
-                        'CreatedById'    => Auth::id(),
-                        'UpdatedById'    => Auth::id(),
-                        'created_at'     => now(),
-                    ];
+                $upsert = CustomerProposal::updateOrCreate(
+                    ['CustomerId' => $Id],
+                    [
+                        'DateSubmitted'       => $request->DateSubmitted, 
+                        'discounted'          => 1,
+                        'Status'              => 1,
+                        'CreatedById'         => Auth::id(),
+                        'UpdatedById'         => Auth::id(),
+                        'created_at'          => now(),
+                        'updated_at'          => now(),
+                    ]
+                );
+                if($upsert){
+                    $proposalFile = [];
+                    foreach ($files as $index => $file) {
+                        $filenameArr = explode('.', $file->getClientOriginalName());
+                        $extension   = array_splice($filenameArr, count($filenameArr) - 1, 1);
+                        $filename    = 'P-[' . $index . ']' . time() . '.' . $extension[0];
+        
+                        $file->move($destinationPath, $filename);
+        
+                        $proposalFile[] = [
+                            'Id'             => Str::uuid(),
+                            'CustomerId'     => $Id,
+                            'File'           => $filename,
+                            'Date'           => $request->DateSubmitted,
+                            'Status'         => 0,
+                            'CreatedById'    => Auth::id(),
+                            'UpdatedById'    => Auth::id(),
+                            'created_at'     => now(),
+                        ];
+                    }
+        
+                    CustomerProposalFiles::where('CustomerId', $Id)
+                    ->where('Status',0)
+                    ->delete();
+                    CustomerProposalFiles::insert($proposalFile);
                 }
-    
-                CustomerProposalFiles::where('CustomerId', $Id)
-                ->where('Status',0)
-                ->delete();
-                CustomerProposalFiles::insert($proposalFile);
             }
     
             $customerData->ProposalProgress = $request->ProposalProgress;
