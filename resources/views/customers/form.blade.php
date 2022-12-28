@@ -230,6 +230,10 @@
             font-family: FontAwesome;
             content: "\f00c";
         }
+        #progressbar #Lost:before {
+            font-family: FontAwesome;
+            content: "\f00d";
+        }
 
         /*ProgressBar before any progress*/
         #progressbar li:before {
@@ -261,7 +265,7 @@
         /*Color number of the step and the connector before it*/
         #progressbar li.active:before,
         #progressbar li.active:after {
-            background: {{ $Status == 9 ? 'green' : '#eed202' }};
+            background: {{ $Status == 9 ? 'green' : ($Status == 10 ?'red':'#eed202') }};
         }
 
         /* TABLE */
@@ -409,14 +413,26 @@
                                         <strong>Proposal</strong>
                                     @endif
                                 </li>
+                                @if ($Status == 9)
                                 <li id="Success">
-                                    @if ($Status >= 9)
+                                    @if ($Status == 9)
                                         <a href="?progress=success"
                                             class="{{ $title == 'Success' ? 'active' : '' }}"><b>Success</b></a>
                                     @else
                                         <strong>Success</strong>
                                     @endif
                                 </li>
+                                @else
+                                <li id="Lost">
+                                    @if ($Status >= 10)
+                                        <a href="?progress=lost"
+                                            class="{{ $title == 'Lost' ? 'active' : '' }}"><b>Lost</b></a>
+                                    @else
+                                        <strong>Lost</strong>
+                                    @endif
+                                </li>
+                                @endif
+                                
                             </ul>
 
                             <div class="profile-overview">
@@ -1614,7 +1630,7 @@
                                 @elseif ($Status == 8 || Request::get('progress') == 'proposal')
                                     <!-- ---------- PROPOSAL ---------- -->
                                     <div class="row mb-3">
-                                        <label for="" class="col-sm-2 label">Status
+                                        <label for="ProposalProgress" class="col-sm-2 label">Status
                                             <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
                                             <select name="ProposalProgress" id="ProposalProgress" select2 required>
@@ -1624,71 +1640,113 @@
                                             </select>
                                         </div>
                                     </div>
-
                                     <div id="AttachmentDisplay" class="row mb-3" style="{{ $data['ProposalProgress'] == null || $data['ProposalProgress'] == 0 ? 'display: none;' : '' }}" >
                                         <label for="inputText" class="col-sm-2 label">Attachment</label>
                                         <div class="col-sm-10">
                                             <input class="form-control mb-3" type="file" id="FileProposal" name="FileProposal[]" multiple />
                                           </div>
                                     </div>
-                                    <div id="DateSubmittedDisplay" class="row mb-3" style="display: none;" >
-                                        <label for="inputText" class="col-sm-2 label">Date Submitted
+                                    <div id="DateSubmittedDisplay" class="row mb-3" style="display:{{ !empty($customerProposal->DateSubmitted)? '':'none'; }}" >
+                                        <label for="DateSubmitted" class="col-sm-2 label">Date Submitted
                                             <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
-                                            <input class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
+                                            <input value="{{ $customerProposal->DateSubmitted }}" class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
                                         </div>
                                     </div>
-                                    {{-- <div class="row mb-3">
-                                        <label for="files" class="col-sm-2 label">Files</label>
-                                        @foreach ($files as $file)
-                                            <div class="col-md-3 parent" filename="{{ $file['File'] }}">
-                                                <div class="p-2 border border-1 rounded">
-                                                    <div class="d-flex justify-content-between">
-                                                        <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
-                                                            class="text-black fw-bold"
-                                                            target="_blank">{{ $file['File'] }}</a>
-                                                        <button type="button"
-                                                            class="btn-close btnRemoveFilename"></button>
-                                                    </div>
-                                                    <span style="font-size:14px" class="text-muted">
-                                                        {{ date('F d, Y', strtotime($file->created_at)) }}</span>
-
-                                                </div>
-
-                                            </div>
-                                        @endforeach
-                                    </div> --}}
-                                    @if ($data['ProposalProgress']==2)
                                     <div class="row mb-3">
-                                        <label for="" class="col-sm-2 label">Status
-                                            <?= $RequiredLabel ?></label>
-                                        <div class="col-sm-10">
-                                            <select name="ProposalStatus" id="ProposalStatus" select2 required>
-                                                <option value="" selected disabled>Select Status of Proposal</option>
-                                                <option value="3" {{ $data['ProposalStatus'] == 3 ? 'selected' : '' }}>Signed proposal</option>
-                                                <option value="4" {{ $data['ProposalStatus'] == 4 ? 'selected' : '' }}>Rejected proposal </option>
-                                            </select>
-                                        </div>
+                                        <label for="files" class="col-sm-2 label">Files</label>
+                                        @foreach ($customerProposalFiles as $file)
+                                            @if ($file->Status == 0)
+                                                <div class="col-md-3 parent" filename="{{ $file['File'] }}">
+                                                    <div class="p-2 border border-1 rounded">
+                                                        <div class="d-flex justify-content-between">
+                                                            <a href="{{ asset('uploads/Proposal/' . $file['File']) }}"
+                                                                class="text-black fw-bold"
+                                                                target="_blank">{{ $file['File'] }}</a>
+                                                            <button type="button"
+                                                                class="btn-close btnRemoveFilename"></button>
+                                                        </div>
+                                                        <span style="font-size:14px" class="text-muted">
+                                                            {{ date('F d, Y', strtotime($file->created_at)) }}</span>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endforeach
                                     </div>
-                                    <div id="AttachmentSignedDisplay" class="row mb-3" style="{{ $data['ProposalStatus'] == null || $data['ProposalStatus'] == 0 ? 'display: none;' : '' }}" >
-                                        <label for="inputText" class="col-sm-2 label">Attachment(Signed)</label>
-                                        <div class="col-sm-10">
-                                            <input class="form-control mb-3" type="file" id="FileSigned" name="FileSigned[]" multiple />
+
+                                    @if ($data['ProposalProgress']==2)
+                                        <div class="row mb-3">
+                                            <label for="ProposalStatus" class="col-sm-2 label">Status
+                                                <?= $RequiredLabel ?></label>
+                                            <div class="col-sm-10">
+                                                <select name="ProposalStatus" id="ProposalStatus" select2 required>
+                                                    <option value="" selected disabled>Select Status of Proposal</option>
+                                                    <option value="3" {{ $data['ProposalStatus'] == 3 ? 'selected' : '' }}>Signed proposal</option>
+                                                    <option value="4" {{ $data['ProposalStatus'] == 4 ? 'selected' : '' }}>Rejected proposal </option>
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div id="DateSignedDisplay" class="row mb-3" style="display: none;" >
-                                        <label for="inputText" class="col-sm-2 label">Date Signed
-                                            <?= $RequiredLabel ?></label>
-                                        <div class="col-sm-10">
-                                            <input class="form-control" type="date" id="SignedDateSubmitted" name="SignedDateSubmitted" />
+                                    
+                                        <div class="signedDisplay">
+                                            <div id="AttachmentSignedDisplay" class="row mb-3" style="{{ $data['ProposalStatus'] == null || $data['ProposalStatus'] == 0 ? 'display: none;' : '' }}" >
+                                                <label for="inputText" class="col-sm-2 label">Attachment(Signed)</label>
+                                                <div class="col-sm-10">
+                                                    <input class="form-control mb-3" type="file" id="FileSigned" name="FileSigned[]" multiple />
+                                                </div>
+                                            </div>
+                                            <div id="DateSignedDisplay" class="row mb-3" style="display:{{ !empty($customerProposal->SignedDateSubmitted)? '':'none'; }}" >
+                                                <label for="inputText" class="col-sm-2 label">Date Signed
+                                                    <?= $RequiredLabel ?></label>
+                                                <div class="col-sm-10">
+                                                    <input value={{ $customerProposal->SignedDateSubmitted }} class="form-control" type="date" id="SignedDateSubmitted" name="SignedDateSubmitted" />
+                                                </div>
+                                            </div>
+                                            @if ($data['ProposalStatus']==3)
+                                                <div class="row mb-3">
+                                                    <label for="files" class="col-sm-2 label">Files</label>
+                                                    @foreach ($customerProposalFiles as $file)
+                                                        @if ($file->Status == 1)
+                                                            <div class="col-md-3 parent" filename="{{ $file['File'] }}">
+                                                                <div class="p-2 border border-1 rounded">
+                                                                    <div class="d-flex justify-content-between">
+                                                                        <a href="{{ asset('uploads/Proposal/' . $file['File']) }}"
+                                                                        class="text-black fw-bold"
+                                                                        target="_blank">{{ $file['File'] }}</a>
+                                                                        <button type="button"
+                                                                        class="btn-close btnRemoveFilename"></button>
+                                                                    </div>
+                                                                    <span style="font-size:14px" class="text-muted">
+                                                                    {{ date('F d, Y', strtotime($file->created_at)) }}</span>
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                         </div>
-                                    </div>
+                                    
+                                        <div class="rejectedDisplay" style="display:{{ $data['ProposalStatus']==4 ? '':'none' }}">
+                                            <div class="row mb-3">
+                                                <label for="ProposalAction" class="col-sm-2 label">Action</label>
+                                                <div class="col-sm-10">
+                                                    <select name="ProposalAction" id="ProposalAction" select2 required>
+                                                        <option value="" selected disabled>Select Appropriate Action</option>
+                                                        <option value="11">Revise Proposal</option>
+                                                        <option value="10" {{ $Status == 10 ? 'selected' : '' }}>Close Opportunity</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
                                     @endif
                                  
                                   
 
                                     <!-- ---------- END PROPOSAL ---------- -->
                                 @elseif ($Status == 9 || Request::get('progress') == 'success')
+                                    <h6 class="text-danger text-center">Opportunity Won</h6>
+                                @elseif ($Status == 10 || Request::get('progress') == 'lost')
+                                    <h6 class="text-danger text-center">Opportunity Lost</h6>
                                 @else
                                 @endif
 
@@ -2126,9 +2184,12 @@
                 let ProposalStatus = $(this).val();
                 if (ProposalStatus == 3) {
                     $('#AttachmentSignedDisplay').show()
+                    $('.signedDisplay').show()
+                    $('.rejectedDisplay').hide()
                 } else {
                     $('#AttachmentSignedDisplay').hide()
-
+                    $('.signedDisplay').hide()
+                    $('.rejectedDisplay').show()
                 }
             })
             // ----- END PROPOSAL SELECT STATUS -----

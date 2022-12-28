@@ -10,18 +10,19 @@ use function PHPUnit\Framework\isNull;
 use Auth;
 
 
-class CustomerProposalFiles extends Model
+class CustomerProposal extends Model
 {
     use HasFactory;
-    protected $table = 'customer_proposal_files';
+    
+    protected $table = 'customer_proposals';
     protected $primaryKey = 'Id';
     protected $KeyType = 'string';
     public $incrementing = false;
 
     protected $fillable = [
         'CustomerId',
-        'File',
         'DateSubmitted',
+        'SignedDateSubmitted',
     ];
 
     protected static function boot()

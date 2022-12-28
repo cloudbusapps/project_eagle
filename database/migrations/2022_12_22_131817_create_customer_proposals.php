@@ -14,7 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('customer_proposals', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('Id')->primary();
+            $table->uuid('CustomerId');
+            $table->date('DateSubmitted')->nullable();
+            $table->date('SignedDateSubmitted')->nullable();
+            $table->integer('Status')->nullable();
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
         });
     }
