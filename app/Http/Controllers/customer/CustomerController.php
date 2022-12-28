@@ -627,7 +627,8 @@ class CustomerController extends Controller
                 foreach ($fileSigned as $index => $file) {
                     $filenameArr = explode('.', $file->getClientOriginalName());
                     $extension   = array_splice($filenameArr, count($filenameArr) - 1, 1);
-                    $filename    = 'P-[' . $index . ']' . time() . '.' . $extension[0];
+                    $nameWithoutExtension   = array_splice($filenameArr,0);
+                    $filename    =  $nameWithoutExtension[0].'_['.$index.']'. time() . '.' . $extension[0];
     
                     $file->move($destinationPath, $filename);
     
@@ -658,8 +659,10 @@ class CustomerController extends Controller
             ]);
             if($request->ProposalAction==11){
                 $customerData->Status = 7;
+                $customerData->ProposalStatus = null;
             } else if($request->ProposalAction==10){
                 $customerData->Status = 10;
+                $customerData->ProposalStatus = $request->ProposalStatus;
             }
 
         } else{
@@ -684,7 +687,8 @@ class CustomerController extends Controller
                     foreach ($files as $index => $file) {
                         $filenameArr = explode('.', $file->getClientOriginalName());
                         $extension   = array_splice($filenameArr, count($filenameArr) - 1, 1);
-                        $filename    = 'P-[' . $index . ']' . time() . '.' . $extension[0];
+                        $nameWithoutExtension   = array_splice($filenameArr,0);
+                        $filename    =  $nameWithoutExtension[0].'_['.$index.']'. time() . '.' . $extension[0];
         
                         $file->move($destinationPath, $filename);
         
