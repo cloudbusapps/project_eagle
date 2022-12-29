@@ -1698,7 +1698,7 @@
                                                 <label for="inputText" class="col-sm-2 label">Date Signed
                                                     <?= $RequiredLabel ?></label>
                                                 <div class="col-sm-10">
-                                                    <input value="{{ $customerProposal->SignedDateSubmitted }}" class="form-control" type="date" id="SignedDateSubmitted" name="SignedDateSubmitted" />
+                                                    <input value="{{ $customerProposal->SignedDateSubmitted ?? ''}}" class="form-control" type="date" id="SignedDateSubmitted" name="SignedDateSubmitted" />
                                                 </div>
                                             </div>
                                             @if ($data['ProposalStatus']==3)
@@ -1725,7 +1725,7 @@
                                             @endif
                                         </div>
                                     
-                                        <div class="rejectedDisplay" style="display:{{ $data['ProposalStatus']==4 ? '':'none' }}">
+                                        <div class="rejectedDisplay" style="display:{{ $data['ProposalStatus']==4 ? '' : 'none' }}">
                                             <div class="row mb-3">
                                                 <label for="ProposalAction" class="col-sm-2 label">Action</label>
                                                 <div class="col-sm-10">
@@ -2197,7 +2197,6 @@
             // ----- PROPOSAL SELECT STATUS -----
             $(document).on('change', `[name="FileProposal[]"]`, function() {
                 let hasFile = $(this).length;
-                console.log(hasFile)
                 if (hasFile > 0) {
                     $('#DateSubmittedDisplay').show()
                     // $(`[name="ThirdPartyId"]`).attr('required', false).val('');
