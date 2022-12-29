@@ -1150,7 +1150,7 @@
 
                                         @if ($capabilityDisableField)
                                             <div class="row mb-3">
-                                                <label for="" class="col-sm-2 label">Status
+                                                <label for="" class="col-sm-2 label">Accreditation Status
                                                     <?= $RequiredLabel ?></label>
                                                 <div class="col-sm-10">
                                                     <select name="ThirdPartyStatus" id="ThirdPartyStatus" required select2
@@ -1568,10 +1568,11 @@
 
                                                 @if ($Status == $currentViewStatus)
                                                 <div class="button-footer text-end">
-                                                    @if (Auth::id() == $data->HeadId)
+                                                    {{-- @if (Auth::id() == $data->HeadId) --}}
+                                                    @if (Auth::id() == $data->HeadId || Auth::id() == config('constant.ID.USERS.ADMIN'))
                                                         <a href="#" class="btn btn-warning btnUpdate">Update Manhours</a>
                                                         @if ($isForSubmit)
-                                                            <a href="#" class="btn btn-secondary btnRevise">Revise</a>
+                                                            {{-- <a href="#" class="btn btn-secondary btnRevise">Revise</a> --}}
                                                             <button type="submit" class="btn btn-primary btnUpdateForm">For Release</button>
                                                         @endif
                                                     @else
@@ -1630,7 +1631,7 @@
                                 @elseif ($Status == 8 || Request::get('progress') == 'proposal')
                                     <!-- ---------- PROPOSAL ---------- -->
                                     <div class="row mb-3">
-                                        <label for="ProposalProgress" class="col-sm-2 label">Status
+                                        <label for="ProposalProgress" class="col-sm-2 label">Proposal Status
                                             <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
                                             <select name="ProposalProgress" id="ProposalProgress" select2 required>
@@ -1653,26 +1654,29 @@
                                             <input value="{{ $customerProposal->DateSubmitted ?? '' }}" class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
                                         </div>
                                     </div>
-                                    <div class="row mb-3">
-                                        <label for="files" class="col-sm-2 label">Files</label>
-                                        @foreach ($customerProposalFiles as $file)
-                                            @if ($file->Status == 0)
-                                                <div class="col-md-3 parent" filename="{{ $file['File'] }}">
-                                                    <div class="p-2 border border-1 rounded">
-                                                        <div class="d-flex justify-content-between">
-                                                            <a href="{{ asset('uploads/Proposal/' . $file['File']) }}"
-                                                                class="text-black fw-bold text-truncate"
-                                                                target="_blank">{{ $file['File'] }}</a>
-                                                            <button type="button"
-                                                                class="btn-close btnRemoveFilename"></button>
+
+                                    @if (isset($customerProposalFiles) && count($customerProposalFiles))
+                                        <div class="row mb-3">
+                                            <label for="files" class="col-sm-2 label">Files</label>
+                                            @foreach ($customerProposalFiles as $file)
+                                                @if ($file->Status == 0)
+                                                    <div class="col-md-3 parent" filename="{{ $file['File'] }}">
+                                                        <div class="p-2 border border-1 rounded">
+                                                            <div class="d-flex justify-content-between">
+                                                                <a href="{{ asset('uploads/Proposal/' . $file['File']) }}"
+                                                                    class="text-black fw-bold text-truncate"
+                                                                    target="_blank">{{ $file['File'] }}</a>
+                                                                <button type="button"
+                                                                    class="btn-close btnRemoveFilename"></button>
+                                                            </div>
+                                                            <span style="font-size:14px" class="text-muted">
+                                                                {{ date('F d, Y', strtotime($file->created_at)) }}</span>
                                                         </div>
-                                                        <span style="font-size:14px" class="text-muted">
-                                                            {{ date('F d, Y', strtotime($file->created_at)) }}</span>
                                                     </div>
-                                                </div>
-                                            @endif
-                                        @endforeach
-                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    @endif
 
                                     @if ($data['ProposalProgress']==2)
                                         <div class="row mb-3">
@@ -1729,7 +1733,7 @@
                                             <div class="row mb-3">
                                                 <label for="ProposalAction" class="col-sm-2 label">Action</label>
                                                 <div class="col-sm-10">
-                                                    <select name="ProposalAction" id="ProposalAction" select2 required>
+                                                    <select name="ProposalAction" id="ProposalAction" select2>
                                                         <option value="" selected disabled>Select Appropriate Action</option>
                                                         <option value="11">Revise Proposal</option>
                                                         <option value="10" {{ $Status == 10 ? 'selected' : '' }}>Close Opportunity</option>
