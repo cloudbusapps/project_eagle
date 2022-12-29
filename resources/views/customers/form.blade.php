@@ -298,7 +298,6 @@
 
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0">
             <div class="container-fluid">
-
                 @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         @foreach ($errors->all() as $error)
@@ -1729,7 +1728,7 @@
                                             <div class="row mb-3">
                                                 <label for="ProposalAction" class="col-sm-2 label">Action</label>
                                                 <div class="col-sm-10">
-                                                    <select name="ProposalAction" id="ProposalAction" select2 required>
+                                                    <select name="ProposalAction" id="ProposalAction" select2>
                                                         <option value="" selected disabled>Select Appropriate Action</option>
                                                         <option value="11">Revise Proposal</option>
                                                         <option value="10" {{ $Status == 10 ? 'selected' : '' }}>Close Opportunity</option>
@@ -1854,20 +1853,18 @@
             })
             // ----- END BUTTON ADD LIMITATIONS ROW -----
 
-            // CHECKBOX IF COMPLEX OR NOT
-
+            // ----- CHECKBOX IF COMPLEX OR NOT -----
             $(document).on('click', 'input[name="IsComplex"]', function() {
                 $('input[name="IsComplex"]').not(this).prop('checked', false);
                 checkDisabled();
             });
-
-
             function checkDisabled() {
                 const table = $('#mainTable');
                 $('#IsComplex').prop('checked') ? table.show() : table.hide();
             }
+            // ----- END CHECKBOX IF COMPLEX OR NOT -----
 
-            // UPDATE FOR ASSESSMENT
+            // UPDATE FOR MANHOUR ASSESSMENT
             $(document).on('click', '.btnUpdate', function(e) {
                 e.preventDefault();
                 let content = `
@@ -1924,7 +1921,7 @@
                     }
                 });
             });
-            // END UPDATE FOR ASSESSMENT
+            // END UPDATE FOR MANHOUR ASSESSMENT
 
             // UPDATE FOR CONSULTANT ASSIGNMENT
             $(document).on('click', '.btnAssign', function(e) {
@@ -2172,7 +2169,7 @@
             })
             // ----- END CHANGE SUB COMPLEXITY -----
 
-            // ----- PROPOSAL SELECT STATUS -----
+            // ----- PROPOSAL PROGRESS SELECT STATUS -----
             $(document).on('change', `[name="ProposalProgress"]`, function() {
                 let ProposalProgress = $(this).val();
                 if (ProposalProgress == 2) {
@@ -2192,50 +2189,30 @@
                     $('.rejectedDisplay').show()
                 }
             })
-            // ----- END PROPOSAL SELECT STATUS -----
+            // ----- END PROPOSAL PROGRESS SELECT STATUS -----
 
-            // ----- PROPOSAL SELECT STATUS -----
+            // ----- DISPLAY DATE INPUT -----
             $(document).on('change', `[name="FileProposal[]"]`, function() {
                 let hasFile = $(this).length;
                 if (hasFile > 0) {
                     $('#DateSubmittedDisplay').show()
-                    // $(`[name="ThirdPartyId"]`).attr('required', false).val('');
-                    // $(`[name="ThirdPartyName"]`).attr('required', false).val('');
                 } else {
                     $('#DateSubmittedDisplay').show()
-                    // $(`[name="ThirdPartyId"]`).attr('required', true).trigger('change');
-                    // $('#isCapableDisplay').show();
-
-                    // if (ProposalStatus == 0) {
-                    //     $('.checkThirdParty').prop('checked', true).trigger('change');
-                    // } else {
-                    //     $('.checkThirdParty').prop('checked', false).trigger('change');
-                    // }
                 }
             })
-            // ----- END PROPOSAL SELECT STATUS -----
+            // ----- END DISPLAY DATE INPUT -----
 
-            // ----- PROPOSAL SELECT STATUS -----
+            // ----- DISPLAY DATE INPUT SIGNED -----
             $(document).on('change', `[name="FileSigned[]"]`, function() {
                 let hasFile = $(this).length;
                 console.log(hasFile)
                 if (hasFile > 0) {
                     $('#DateSignedDisplay').show()
-                    // $(`[name="ThirdPartyId"]`).attr('required', false).val('');
-                    // $(`[name="ThirdPartyName"]`).attr('required', false).val('');
                 } else {
                     $('#DateSignedDisplay').show()
-                    // $(`[name="ThirdPartyId"]`).attr('required', true).trigger('change');
-                    // $('#isCapableDisplay').show();
-
-                    // if (ProposalStatus == 0) {
-                    //     $('.checkThirdParty').prop('checked', true).trigger('change');
-                    // } else {
-                    //     $('.checkThirdParty').prop('checked', false).trigger('change');
-                    // }
                 }
             })
-            // ----- END PROPOSAL SELECT STATUS -----
+            // ----- END DISPLAY DATE INPUT SIGNED -----
 
 
             // ----- DELETE TABLE ROW -----
