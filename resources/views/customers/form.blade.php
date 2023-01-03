@@ -1769,7 +1769,7 @@
                                                 <div class="col-sm-10">
                                                     <select name="ProposalAction" id="ProposalAction" select2>
                                                         <option value="" selected disabled>Select Appropriate Action</option>
-                                                        <option value="11">Revise Proposal</option>
+                                                        <option value="11">For Revision</option>
                                                         <option value="10" {{ $Status == 10 ? 'selected' : '' }}>Close Opportunity</option>
                                                     </select>
                                                 </div>
