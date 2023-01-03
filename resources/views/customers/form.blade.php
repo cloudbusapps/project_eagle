@@ -141,10 +141,15 @@
         .dwsCon {
             margin-right: 20px;
             flex: 1;
+            border: 1px solid transparent
         }
+        /* .dwsCon:focus{
+        outline: none;
+        border-color: #000000;
+        } */
 
         .dwsCon strong {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
 
             color: white;
         }
@@ -651,11 +656,11 @@
                                                 <?= $RequiredLabel ?></label>
                                             <div class="col-sm-10">
                                                 <div class="row">
-                                                    <div class="col-sm-2 dwsCon">
+                                                    <a href="#" class="col-sm-2 dwsCon">
                                                         <div class="divSquare activeStatus">
                                                             <strong>DSW Started</strong>
                                                         </div>
-                                                    </div>
+                                                    </a>
                                                     <div class="col-sm-2 dwsCon">
                                                         <div class="divSquare">
                                                             <strong>Ongoing DSW</strong>
@@ -711,20 +716,23 @@
                                         <div class="row mb-3">
                                             <label for="files" class="col-sm-2 label">Files</label>
                                             @foreach ($files as $file)
-                                                <div class="col-md-3 parent" filename="{{ $file['File'] }}">
+                                                <div class="col-sm-5 parent" filename="{{ $file['File'] }}">
                                                     <div class="p-2 border border-1 rounded">
-                                                        <div class="d-flex justify-content-between">
-                                                            <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
-                                                                class="text-black fw-bold"
-                                                                target="_blank">{{ $file['File'] }}</a>
-                                                            <button type="button"
-                                                                class="btn-close btnRemoveFilename"></button>
+                                                        <div class="row">
+                                                            <img src="/uploads/icons/{{ $file->getIconAttribute() }}" class="col-sm-3">
+                                                            <div class="col-md-9">
+                                                                <div class="d-flex justify-content-between">
+                                                                    <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
+                                                                        class="text-black fw-bold text-truncate"
+                                                                        target="_blank">{{ $file['File'] }}</a>
+                                                                    <button type="button"
+                                                                        class="btn-close btnRemoveFilename"></button>
+                                                                </div>
+                                                                <span style="font-size:14px" class="text-muted">
+                                                                    {{ date('F d, Y', strtotime($file->created_at)) }}</span>
+                                                            </div>
                                                         </div>
-                                                        <span style="font-size:14px" class="text-muted">
-                                                            {{ date('F d, Y', strtotime($file->created_at)) }}</span>
-
                                                     </div>
-
                                                 </div>
                                             @endforeach
                                         </div>
@@ -1027,8 +1035,9 @@
                                             <div class="col-12">
                                                 <div class="alert alert-info">
                                                     <b><i class="bi bi-info-circle-fill"></i> NOTE: </b>
-                                                    <small>Select the checbox to assign the requirement to third
+                                                    <small>Select the checkbox to assign the requirement to third
                                                         party</small>
+                                                        
                                                 </div>
                                             </div>
                                         </div>
@@ -1629,6 +1638,19 @@
                                     <!-- ---------- END ASSESSMENT ---------- -->
                                 @elseif ($Status == 8 || Request::get('progress') == 'proposal')
                                     <!-- ---------- PROPOSAL ---------- -->
+                                    @if (isset($customerProposal->DateSubmitted))
+                                    <div class="align-self-end">
+                                        <div class="row mb-2">
+                                            <div class="px-2 align-self-start">
+                                                <div class="alert alert-info">
+                                                    <b><i class="bi bi-info-circle-fill"></i> Aging: </b>
+                                                    <small>{{ $customerProposal->getAging()}} day(s)</small>
+                                                        
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
                                     <div class="row mb-3">
                                         <label for="ProposalProgress" class="col-sm-2 label">Proposal Status
                                             <?= $RequiredLabel ?></label>
@@ -1659,17 +1681,22 @@
                                             <label for="files" class="col-sm-2 label">Files</label>
                                             @foreach ($customerProposalFiles as $file)
                                                 @if ($file->Status == 0)
-                                                    <div class="col-md-3 parent" filename="{{ $file['File'] }}">
+                                                    <div class="col-sm-5 parent" filename="{{ $file['File'] }}">
                                                         <div class="p-2 border border-1 rounded">
-                                                            <div class="d-flex justify-content-between">
-                                                                <a href="{{ asset('uploads/Proposal/' . $file['File']) }}"
-                                                                    class="text-black fw-bold text-truncate"
-                                                                    target="_blank">{{ $file['File'] }}</a>
-                                                                <button type="button"
-                                                                    class="btn-close btnRemoveFilename"></button>
+                                                            <div class="row">
+                                                                <img src="/uploads/icons/{{ $file->getIconAttribute() }}" class="col-sm-3">
+                                                                <div class="col-md-9">
+                                                                    <div class="d-flex justify-content-between">
+                                                                        <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
+                                                                            class="text-black fw-bold text-truncate"
+                                                                            target="_blank">{{ $file['File'] }}</a>
+                                                                        <button type="button"
+                                                                            class="btn-close btnRemoveFilename"></button>
+                                                                    </div>
+                                                                    <span style="font-size:14px" class="text-muted">
+                                                                        {{ date('F d, Y', strtotime($file->created_at)) }}</span>
+                                                                </div>
                                                             </div>
-                                                            <span style="font-size:14px" class="text-muted">
-                                                                {{ date('F d, Y', strtotime($file->created_at)) }}</span>
                                                         </div>
                                                     </div>
                                                 @endif
@@ -1705,26 +1732,33 @@
                                                 </div>
                                             </div>
                                             @if ($data['ProposalStatus']==3)
+                                                @if (count($customerProposalFiles))
                                                 <div class="row mb-3">
                                                     <label for="files" class="col-sm-2 label">Files</label>
                                                     @foreach ($customerProposalFiles as $file)
                                                         @if ($file->Status == 1)
-                                                            <div class="col-md-3 parent" filename="{{ $file['File'] }}">
+                                                            <div class="col-sm-5 parent" filename="{{ $file['File'] }}">
                                                                 <div class="p-2 border border-1 rounded">
-                                                                    <div class="d-flex justify-content-between">
-                                                                        <a href="{{ asset('uploads/Proposal/' . $file['File']) }}"
-                                                                        class="text-black fw-bold text-truncate"
-                                                                        target="_blank">{{ $file['File'] }}</a>
-                                                                        <button type="button"
-                                                                        class="btn-close btnRemoveFilename"></button>
+                                                                    <div class="row">
+                                                                        <img src="/uploads/icons/{{ $file->getIconAttribute() }}" class="col-sm-3">
+                                                                        <div class="col-md-9">
+                                                                            <div class="d-flex justify-content-between">
+                                                                                <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
+                                                                                    class="text-black fw-bold text-truncate"
+                                                                                    target="_blank">{{ $file['File'] }}</a>
+                                                                                <button type="button"
+                                                                                    class="btn-close btnRemoveFilename"></button>
+                                                                            </div>
+                                                                            <span style="font-size:14px" class="text-muted">
+                                                                                {{ date('F d, Y', strtotime($file->created_at)) }}</span>
+                                                                        </div>
                                                                     </div>
-                                                                    <span style="font-size:14px" class="text-muted">
-                                                                    {{ date('F d, Y', strtotime($file->created_at)) }}</span>
                                                                 </div>
                                                             </div>
                                                         @endif
                                                     @endforeach
                                                 </div>
+                                                @endif
                                             @endif
                                         </div>
                                     
@@ -1747,7 +1781,7 @@
 
                                     <!-- ---------- END PROPOSAL ---------- -->
                                 @elseif ($Status == 9 || Request::get('progress') == 'success')
-                                    <h6 class="text-danger text-center">Opportunity Won</h6>
+                                    <h6 class="text-success text-center">Opportunity Won</h6>
                                 @elseif ($Status == 10 || Request::get('progress') == 'lost')
                                     <h6 class="text-danger text-center">Opportunity Lost</h6>
                                 @else

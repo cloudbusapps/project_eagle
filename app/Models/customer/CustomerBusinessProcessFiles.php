@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Auth;
 use Spatie\Activitylog\LogOptions;
 use function PHPUnit\Framework\isNull;
+use Illuminate\Support\Arr;
 
 class CustomerBusinessProcessFiles extends Model
 {
@@ -23,6 +24,23 @@ class CustomerBusinessProcessFiles extends Model
         'created_at',
         'updated_at',
     ];
+
+    public function getIconAttribute() 
+    {
+        // return dd($this->File->extension());
+        $fileName =explode('.',$this->File);
+        $fileExtension = end($fileName);
+        $extensions = [
+            'jpg' => 'jpg.png',
+            'png' => 'png.png',
+            'pdf' => 'pdf.png',
+            'doc' => 'word.png',
+            'xlsx' => 'excel.png',
+            'docx' => 'word.png',
+        ];
+
+        return Arr::get($extensions,$fileExtension,'unknown.png');
+    }
 
     protected static function boot()
     {

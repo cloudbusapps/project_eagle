@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('DateSubmitted')->nullable();
             $table->date('SignedDateSubmitted')->nullable();
             $table->integer('Status')->nullable();
+            $table->integer('Aging')->nullable();
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
