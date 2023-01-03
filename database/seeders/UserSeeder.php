@@ -23,22 +23,20 @@ class UserSeeder extends Seeder
         $AdminId  = config('constant.ID.USERS.ADMIN');
         $BAHeadId = config('constant.ID.USERS.BA_HEAD');
 
-        // ADMIN
-        $DepartmentId  = Str::uuid();
-        $DesignationId = Str::uuid();
-
         // DEPARTMENT
+        $AdminDepartmentId = config('constant.ID.DEPARTMENTS.INFORMATION_TECHNOLOGY');
         $CloudDepartmentId = config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION');
         $TCDepartmentId    = config('constant.ID.DEPARTMENTS.TECHNOLOGY_CONSULTING');
 
         // DESIGNATION
-        $PMDesignationId   = config('constant.ID.DESIGNATIONS.PROJECT_MANAGER');
-        $GMDesignationId   = config('constant.ID.DESIGNATIONS.BA_HEAD');
-        $BADesignationId   = config('constant.ID.DESIGNATIONS.BUSINESS_ANALYST');
-        $TCDesignationId   = config('constant.ID.DESIGNATIONS.TECHNICAL_CONSULTANT');
-        $FCDesignationId   = config('constant.ID.DESIGNATIONS.FUNCTIONAL_CONSULTANT');
-        $CMDesignationId   = config('constant.ID.DESIGNATIONS.CUSTOMER_MANAGER');
-
+        $AdminDesignationId = config('constant.ID.DESIGNATIONS.ADMINISTRATOR');
+        $PMDesignationId    = config('constant.ID.DESIGNATIONS.PROJECT_MANAGER');
+        $GMDesignationId    = config('constant.ID.DESIGNATIONS.BA_HEAD');
+        $BADesignationId    = config('constant.ID.DESIGNATIONS.BUSINESS_ANALYST');
+        $TCDesignationId    = config('constant.ID.DESIGNATIONS.TECHNICAL_CONSULTANT');
+        $FCDesignationId    = config('constant.ID.DESIGNATIONS.FUNCTIONAL_CONSULTANT');
+        $CMDesignationId    = config('constant.ID.DESIGNATIONS.CUSTOMER_MANAGER');
+ 
         DB::table('users')->insert([
             [
                 'Id'                => $AdminId,
@@ -48,8 +46,8 @@ class UserSeeder extends Seeder
                 'Gender'            => 'Male',
                 'Address'           => 'Makati City, Philippines',
                 'ContactNumber'     => fake()->phoneNumber(),
-                'DepartmentId'      => $DepartmentId,
-                'DesignationId'     => $DesignationId,
+                'DepartmentId'      => $AdminDepartmentId,
+                'DesignationId'     => $AdminDesignationId,
                 'About'             => fake()->paragraph(3),
                 'email'             => 'projecteagle@epldt.com',
                 'email_verified_at' => now(),
