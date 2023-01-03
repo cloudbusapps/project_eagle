@@ -545,7 +545,7 @@ class CustomerController extends Controller
                     Notification::sendNow($User, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
                 }
     
-                $request->session()->flash('success', 'Consulant updated');
+                $request->session()->flash('success', '<b>Consulant</b> successfully updated!');
                 return response()->json(['url' => url('customer/edit/' . $Id)]);
             }
         }
@@ -562,7 +562,7 @@ class CustomerController extends Controller
         $update = Customer::where('Id', $Id)
                 ->update(['OICId' => $OICId]);
         if ($update) {
-            $request->session()->flash('success', 'OIC updated');
+            $request->session()->flash('success', '<b>OIC</b> successfully updated');
             return response()->json(['url' => url('customer/edit/' . $Id)]);
         } else {
             $request->session()->flash('fail', 'Something went wrong, please try again later');

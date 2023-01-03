@@ -1393,7 +1393,7 @@
                                                                             <div class="form-group mb-0">
                                                                                 <select name="Level" initial="{{ $dt->Initial }}" class="form-control" select2 required>
                                                                                     <option value="Beginner" rate="{{ $dt->BeginnerRate }}"
-                                                                                        {{ $Level == 'Beginner' ? 'selected' : ''}}>Beginner</option>
+                                                                                        {{ $Level == 'Beginner' ? 'selected' : ''}}>Entry Level</option>
                                                                                     <option value="Intermediate" rate="{{ $dt->IntermediateRate }}"
                                                                                         {{ $Level == 'Intermediate' ? 'selected' : ''}}>Intermediate</option>
                                                                                     <option value="Senior" rate="{{ $dt->SeniorRate }}"
@@ -1448,7 +1448,8 @@
                                         </div>
                                     @endif
 
-                                    @if (Auth::id() == $data->HeadId)
+                                    {{-- @if (Auth::id() == $data->HeadId)  <!-- BA HEAD --> --}}
+                                    @if (true)
                                         <div class="card mb-3 accordion">
                                             <div class="card-header p-0">
                                                 <a href="#" class="accordion-button bg-white" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" >
@@ -1768,7 +1769,7 @@
                                                 <div class="col-sm-10">
                                                     <select name="ProposalAction" id="ProposalAction" select2>
                                                         <option value="" selected disabled>Select Appropriate Action</option>
-                                                        <option value="11">Revise Proposal</option>
+                                                        <option value="11">For Revision</option>
                                                         <option value="10" {{ $Status == 10 ? 'selected' : '' }}>Close Opportunity</option>
                                                     </select>
                                                 </div>

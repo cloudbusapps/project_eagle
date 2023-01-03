@@ -101,28 +101,28 @@ class DataManagementController extends Controller
             case 'bigint':
             case 'integer':
             case 'smallint':
-                return fake()->randomDigit();
+                return "[NUMBER] " . fake()->randomDigit();
             case 'decimal':
             case 'numeric':
-                return fake()->randomFloat(2);
+                return "[DECIMAL] " . fake()->randomFloat(2);
             case 'uuid':
-                return Str::uuid();
+                return "[UUID] " . Str::uuid();
             case 'boolean':
-                return fake()->boolean();
+                return "[BOOLEAN] " . fake()->boolean();
             case 'date':
-                return fake()->date('Y-m-d');
+                return "[DATE] " . fake()->date('Y-m-d');
             case 'year':
-                return fake()->year();
+                return "[YEAR] " . fake()->year();
             case 'timestamp':
             case 'datetime':
-                return fake()->date('Y-m-d H:i:s');
+                return "[DATETIME] " . fake()->date('Y-m-d H:i:s');
             case 'json':
-                return '{"key": "value"}';
+                return "[JSON] " . '{"key": "value"}';
             case 'text':
-                return 'Sample Long text';
+                return "[LONGTEXT] " . 'Sample Long text';
             case 'string':
             default:
-                return 'Sample Text';
+                return "[TEXT] " . 'Sample Text';
         }
     }
 
