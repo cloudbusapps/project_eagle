@@ -9,10 +9,12 @@
                 'BA_HEAD' => 'bf147f71-9c39-4776-b407-2d094d14a392',
             ],
             'DEPARTMENTS' => [
+                'INFORMATION_TECHNOLOGY'     => 'a8a6d19e-f824-48cc-9e5d-2800563f6a30',
                 'CLOUD_BUSINESS_APPLICATION' => 'a8a6d19e-f824-48cc-9e5d-2800563f6a31',
                 'TECHNOLOGY_CONSULTING'      => 'a8a6d19e-f824-48cc-9e5d-2800563f6a32',
             ],
             'DESIGNATIONS' => [
+                'ADMINISTRATOR'         => 'a429fa2f-1f52-4bb7-8aea-29a41eddaeb0',
                 'PROJECT_MANAGER'       => 'a429fa2f-1f52-4bb7-8aea-29a41eddaeb1',
                 'BA_HEAD'               => 'a429fa2f-1f52-4bb7-8aea-29a41eddaeb2',
                 'BUSINESS_ANALYST'      => 'a429fa2f-1f52-4bb7-8aea-29a41eddaeb3',
