@@ -25,6 +25,7 @@ class ProjectPhaseSeeder extends Seeder
         ProjectPhaseDetails::truncate();
 
         // PROJECT PHASES
+        $ppId0  = Str::uuid(); // PRE-DEPLOYMENT ACTIVITIES
         $ppId1  = Str::uuid(); // PRE-DEPLOYMENT ACTIVITIES
         $ppId2  = Str::uuid(); // PROJECT COORDINATION
         $ppId3  = config('constant.ID.PROJECT_PHASES.BUILD'); // BUILD PROJECT_PHASES
@@ -46,7 +47,7 @@ class ProjectPhaseSeeder extends Seeder
 
         $data = [
             [
-                'Id'         => Str::uuid(),
+                'Id'         => $ppId0,
                 'Title'      => 'Pre-Deployment Activities',
                 'Percentage' => 10,
                 'Required'   => 1,
@@ -125,6 +126,12 @@ class ProjectPhaseSeeder extends Seeder
         ];
 
         $resourceData = [
+            [
+                'Id'             => Str::uuid(),
+                'ProjectPhaseId' => $ppId0,
+                'DesignationId'  => $PMDesignationId,
+                'Percentage'     => 100,
+            ],
             [
                 'Id'             => Str::uuid(),
                 'ProjectPhaseId' => $ppId1,

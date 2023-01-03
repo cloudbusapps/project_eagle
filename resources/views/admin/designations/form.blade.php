@@ -121,7 +121,7 @@
                                                     <input type="radio" id="radioBeginnerRate" name="DefaultRate" value="{{ $BeginnerRate }}" 
                                                         {{ $DefaultRate == 0 || $BeginnerRate == $DefaultRate ? 'checked' : '' }}>
                                                 </td>
-                                                <td>Beginner</td>
+                                                <td>Entry Level</td>
                                                 <td>
                                                     <input type="number" step="0.01" name="BeginnerRate" 
                                                         class="form-control text-end" 
