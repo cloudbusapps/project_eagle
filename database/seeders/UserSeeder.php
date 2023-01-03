@@ -20,8 +20,9 @@ class UserSeeder extends Seeder
     public function run()
     {
         // USERS
-        $AdminId  = config('constant.ID.USERS.ADMIN');
-        $BAHeadId = config('constant.ID.USERS.BA_HEAD');
+        $AdminId      = config('constant.ID.USERS.ADMIN');
+        $BAHeadId     = config('constant.ID.USERS.BA_HEAD');
+        $AlvinAgatoId = config('constant.ID.USERS.ALVIN_AGATO');
 
         // DEPARTMENT
         $AdminDepartmentId = config('constant.ID.DEPARTMENTS.INFORMATION_TECHNOLOGY');
@@ -73,7 +74,7 @@ class UserSeeder extends Seeder
                 'Status'            => 1,
             ],
             [
-                'Id'                => Str::uuid(),
+                'Id'                => $AlvinAgatoId,
                 'EmployeeNumber'    => 'EPLDT-000003',
                 'FirstName'         => 'Alvin',
                 'LastName'          => 'Agato',

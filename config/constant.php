@@ -5,8 +5,9 @@
     return [
         'ID' => [
             'USERS' => [
-                'ADMIN'   => 'bf147f71-9c39-4776-b407-2d094d14a391',
-                'BA_HEAD' => 'bf147f71-9c39-4776-b407-2d094d14a392',
+                'ADMIN'       => 'bf147f71-9c39-4776-b407-2d094d14a391',
+                'BA_HEAD'     => 'bf147f71-9c39-4776-b407-2d094d14a392',
+                'ALVIN_AGATO' => 'bf147f71-9c39-4776-b407-2d094d14a393',
             ],
             'DEPARTMENTS' => [
                 'INFORMATION_TECHNOLOGY'     => 'a8a6d19e-f824-48cc-9e5d-2800563f6a30',
