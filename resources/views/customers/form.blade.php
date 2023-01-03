@@ -1149,7 +1149,7 @@
 
                                         @if ($capabilityDisableField)
                                             <div class="row mb-3">
-                                                <label for="" class="col-sm-2 label">Status
+                                                <label for="" class="col-sm-2 label">Accreditation Status
                                                     <?= $RequiredLabel ?></label>
                                                 <div class="col-sm-10">
                                                     <select name="ThirdPartyStatus" id="ThirdPartyStatus" required select2
@@ -1567,10 +1567,11 @@
 
                                                 @if ($Status == $currentViewStatus)
                                                 <div class="button-footer text-end">
-                                                    @if (Auth::id() == $data->HeadId)
+                                                    {{-- @if (Auth::id() == $data->HeadId) --}}
+                                                    @if (Auth::id() == $data->HeadId || Auth::id() == config('constant.ID.USERS.ADMIN'))
                                                         <a href="#" class="btn btn-warning btnUpdate">Update Manhours</a>
                                                         @if ($isForSubmit)
-                                                            <a href="#" class="btn btn-secondary btnRevise">Revise</a>
+                                                            {{-- <a href="#" class="btn btn-secondary btnRevise">Revise</a> --}}
                                                             <button type="submit" class="btn btn-primary btnUpdateForm">For Release</button>
                                                         @endif
                                                     @else
@@ -1629,7 +1630,7 @@
                                 @elseif ($Status == 8 || Request::get('progress') == 'proposal')
                                     <!-- ---------- PROPOSAL ---------- -->
                                     <div class="row mb-3">
-                                        <label for="ProposalProgress" class="col-sm-2 label">Status
+                                        <label for="ProposalProgress" class="col-sm-2 label">Proposal Status
                                             <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
                                             <select name="ProposalProgress" id="ProposalProgress" select2 required>
@@ -1652,7 +1653,8 @@
                                             <input value="{{ $customerProposal->DateSubmitted ?? '' }}" class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
                                         </div>
                                     </div>
-                                    @if (count($customerProposalFiles))
+
+                                    @if (isset($customerProposalFiles) && count($customerProposalFiles))
                                         <div class="row mb-3">
                                             <label for="files" class="col-sm-2 label">Files</label>
                                             @foreach ($customerProposalFiles as $file)
@@ -1674,7 +1676,6 @@
                                             @endforeach
                                         </div>
                                     @endif
-                                    
 
                                     @if ($data['ProposalProgress']==2)
                                         <div class="row mb-3">
