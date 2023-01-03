@@ -1638,7 +1638,7 @@
                                     <!-- ---------- END ASSESSMENT ---------- -->
                                 @elseif ($Status == 8 || Request::get('progress') == 'proposal')
                                     <!-- ---------- PROPOSAL ---------- -->
-                                    @if (isset($customerProposal->DateSubmitted))
+                                    @if (isset($customerProposal->DateSubmitted) && $Status !==10)
                                     <div class="align-self-end">
                                         <div class="row mb-2">
                                             <div class="px-2 align-self-start">
