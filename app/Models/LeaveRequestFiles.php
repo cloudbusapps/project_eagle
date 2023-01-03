@@ -21,7 +21,8 @@ class LeaveRequestFiles extends Model
         'File',
     ];
 
-    protected static function boot() {
+    protected static function boot() 
+    {
         parent::boot();
 
         static::creating(function($model) {

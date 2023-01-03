@@ -463,41 +463,50 @@
                             @endif
                         </div>
                         <div class="card-body">
+                            <table class="table table-bordered table-hover my-2" id="tableLeaveBalance">
+                                <thead>
+                                    <tr>
+                                        <th>Leave Type</th>
+                                        <th>Year</th>
+                                        <th>Credit</th>
+                                        <th>Accrued</th>
+                                        <th>Used</th>
+                                        <th>Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
 
-                            @if (isset($leaveBalance) && count($leaveBalance))
-                                @foreach ($leaveBalance as $i => $dt)
-                                    <table class="table table-striped table-hover my-2" id="tableLeaveBalance">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-center bg-secondary" colspan="5">{{ $dt['year'] }}</th>
-                                            </tr>
-                                            <tr>
-                                                <th>Leave Type</th>
-                                                <th>Credit</th>
-                                                <th>Accrued</th>
-                                                <th>Used</th>
-                                                <th>Balance</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-
-                                            @if (isset($dt['data']) && count($dt['data']))
-                                                @foreach ($dt['data'] as $dt2)
+                                    @if (isset($leaveBalance) && count($leaveBalance))
+                                        @foreach ($leaveBalance as $i => $dt)
+                                            @if (isset($dt['Balance']) && count($dt['Balance']))
+                                                @foreach ($dt['Balance'] as $x => $bal)
                                                     <tr>
-                                                        <td>{{ $dt2['Name'] }}</td>
-                                                        <td class="text-center">{{ $dt2['Credit'] ?? 0 }}</td>
-                                                        <td class="text-center">{{ $dt2['Accrued'] ?? 0 }}</td>
-                                                        <td class="text-center">{{ $dt2['Used'] ?? 0 }}</td>
-                                                        <td class="text-center">{{ $dt2['Balance'] ?? 0 }}</td>
+                                                        @if ($x == 0)
+                                                            <td rowspan="{{ count($dt['Balance']) }}">{{ $dt['Name'] }}</td>
+                                                        @endif 
+        
+                                                        <td>{{ $bal->Year }}</td>
+                                                        <td class="text-center">{{ $bal->Credit }}</td>
+                                                        <td class="text-center">{{ $bal->Accrued }}</td>
+                                                        <td class="text-center">{{ $bal->Used }}</td>
+                                                        <td class="text-center">{{ $bal->Balance }}</td>
                                                     </tr>
                                                 @endforeach
+                                            @else
+                                                <tr>
+                                                    <td>{{ $dt['Name'] }}</td>
+                                                    <td>{{ date('Y') }}</td>
+                                                    <td class="text-center">0</td>
+                                                    <td class="text-center">0</td>
+                                                    <td class="text-center">0</td>
+                                                    <td class="text-center">0</td>
+                                                </tr>
                                             @endif
 
-                                        </tbody>
-                                    </table>
-                                @endforeach
-                            @endif
-
+                                        @endforeach
+                                    @endif
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\admin\ModuleApproval;
 use App\Models\admin\ModuleFormApprover;
 use App\Models\admin\LeaveType;
+use App\Models\UserLeaveBalance;
 use App\Mail\LeaveRequestMail;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\SystemNotification;
@@ -90,9 +91,7 @@ class LeaveRequestController extends Controller
         $data = [
             'title' => "New Leave",
             'data'  => User::find(Auth::id()),
-            'leaveTypes' => LeaveType::select('leave_types.*',
-                DB::raw('(SELECT "Balance" FROM user_leave_balances WHERE "UserId" = \''.Auth::id().'\' AND "LeaveTypeId" = "leave_types"."Id") AS "Balance"'))
-                ->where('Status', 1)->get(),
+            'leaveTypes' => LeaveType::where('Status', 1)->get(),
             'event' => 'add'
         ];
         return view('leaveRequest.form', $data);
@@ -203,6 +202,8 @@ class LeaveRequestController extends Controller
                         'File'           => $filename,
                         'CreatedById'    => Auth::id(),
                         'UpdatedById'    => Auth::id(),
+                        'created_at'    => now(),
+                        'updated_at'    => now(),
                     ];
                 }
 
@@ -338,6 +339,8 @@ class LeaveRequestController extends Controller
                         'File'           => $filename,
                         'CreatedById'    => Auth::id(),
                         'UpdatedById'    => Auth::id(),
+                        'created_at'     => now(),
+                        'updated_at'     => now(),
                     ];
                 }
 
@@ -353,6 +356,50 @@ class LeaveRequestController extends Controller
                 ->with('tab', 'My Forms')
                 ->with('success', "<b>{$DocumentNumber}</b> successfully updated!");
         } 
+    }
+
+    public function deductLeaveCredit($LeaveRequest)
+    {
+        $UserId        = $LeaveRequest->UserId;
+        $LeaveDuration = $LeaveRequest->LeaveDuration ?? 1;
+
+        $LeaveBalance = UserLeaveBalance::where('UserId', $UserId)
+            ->where('LeaveTypeId', $LeaveRequest->LeaveTypeId)
+            ->where('Balance', '>', 0)
+            ->orderBy('Year', 'ASC')
+            ->first();
+        
+        if ($LeaveBalance) {
+            $Credit  = $LeaveBalance->Credit ?? 0;
+            $Accrued = $LeaveBalance->Accrued ?? 0;
+            $Used    = $LeaveBalance->Used ?? 0;
+            $Balance = $LeaveBalance->Balance ?? 0;
+
+            $Remaining = $Credit - $LeaveDuration;
+
+            if ($Remaining < 0) {
+                $Credit = 0;
+                $Remaining = abs($Remaining);
+
+                $Accrued = $Accrued - $Remaining;
+                $Accrued = $Accrued > 0 ? $Accrued : 0;
+            } else {
+                $Credit = $Remaining;
+            }
+
+            $Used = $Used + $LeaveDuration;
+            $Balance = $Balance - $LeaveDuration;
+            $Balance = $Balance > 0 ? $Balance : 0;
+
+            $data = [
+                'Credit'  => $Credit,
+                'Accrued' => $Accrued,
+                'Used'    => $Used,
+                'Balance' => $Balance,
+            ];
+            UserLeaveBalance::where('Id', $LeaveBalance->Id)->update($data);
+        }
+
     }
     
     public function approve(Request $request, $Id, $UserId) {
@@ -375,6 +422,10 @@ class LeaveRequestController extends Controller
             $this->sendMail($Id, $nextLevelApprover, $newStatus);
             $LeaveRequest->Status = $newStatus;
             if ($LeaveRequest->save()) {
+                if ($newStatus == 2) { // APPROVED
+                    $this->deductLeaveCredit($LeaveRequest);
+                }
+
                 return redirect()
                     ->route('leaveRequest')
                     ->with('tab', 'My Forms')

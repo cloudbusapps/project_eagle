@@ -90,6 +90,21 @@ function initDateRangePicker() {
 // ----- END INITIALIZE DATERANGEPICKER -----
 
 
+// ----- GET FILE ICON -----
+function getFileIcon(filename = 'unknown.png') {
+    filename = filename.split('.');
+    switch (filename[filename.length - 1]) {
+        case 'jpg': return 'jpg.png';
+        case 'png': return 'png.png';
+        case 'pdf': return 'pdf.png';
+        case 'xlsx': case 'xls': return 'excel.png';
+        case 'docx': case 'doc': return 'word.png';
+        default: return 'unknown.png';
+    }
+}
+// ----- END GET FILE ICON -----
+
+
 
 $(document).ready(function() {
 

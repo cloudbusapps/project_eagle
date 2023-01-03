@@ -26,7 +26,7 @@
     {
         if ($event == 'view') {
             $noApprover = !$data['ApproverId'] && $data['Status'] == 1;
-            if (($noApprover || $pending || $data['Status'] == 3) && $data['UserId'] == Auth::id()) { // PENDING OR REJECTED
+            if (($noApprover || $pending) && $data['UserId'] == Auth::id()) { // PENDING OR REJECTED
                 $action = route('leaveRequest.revise', ['Id' => $data['Id']]) ;
                 $method = "GET";
                 $button = '<button type="submit" class="btn btn-warning btnReviseForm">Revise</button>';
@@ -215,12 +215,20 @@
                                         <div class="row mt-1" id="displayFile">
                                         @if (isset($files) && count($files))
                                         @foreach ($files as $file)
-                                            <div class="py-2 col-sm-6 col-md-4 parent" filename="{{ $file['File'] }}">
-                                                <div class="display-filename">
-                                                    <a href="{{ asset('uploads/leaveRequest/'.$file['File']) }}" 
-                                                        class="text-white"
-                                                        target="_blank">{{ $file['File'] }}</a>
-                                                    {{-- <button type="button" class="btn-close btnRemoveFilename"></button> --}}
+                                            <div class="col-sm-6 col-md-4 parent" filename="{{ $file['File'] }}">
+                                                <div class="p-2 border border-1 rounded">
+                                                    <div class="row">
+                                                        <img src="/uploads/icons/{{ getFileIcon($file['File']) }}" class="col-sm-3">
+                                                        <div class="col-md-9">
+                                                            <div class="d-flex justify-content-between">
+                                                                <a href="{{ asset('uploads/leaveRequest/' . $file['File']) }}"
+                                                                    class="text-black fw-bold text-truncate display-file"
+                                                                    target="_blank">{{ $file['File'] }}</a>
+                                                            </div>
+                                                            <span style="font-size:14px" class="text-muted">
+                                                                {{ date('F d, Y', strtotime($file->created_at)) }}</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -276,25 +284,38 @@
         $(document).on('change', '#File', function() {
             let files = this.files;
             if (files && files.length) {
-                let html = '';
-                for (let i=0; i<files.length; i++) {
-                    let { name, size } = files[i];
-                    size = size / 1024 / 1024; // MB
-                    let url = URL.createObjectURL(files[i])
-                    if (size > 5) {
-                        showToast('danger', `${name} - file size must be less than 5MB`)
-                    } else {
-                        html += `
-                        <div class="py-2 col-sm-6 col-md-4 parent" filename="${name}">
-                            <div class="display-filename">
-                                <a href="${url}" 
-                                    class="text-white"
-                                    target="_blank">${name}</a>
-                            </div>
-                        </div>`;
+                if (files.length > 5) {
+                    showToast('danger', `Only 5 maximum file upload.`)
+                } else {
+                    let html = '';
+                    for (let i=0; i<files.length; i++) {
+                        let { name, size } = files[i];
+                        size = size / 1024 / 1024; // MB
+                        let url = URL.createObjectURL(files[i])
+                        if (size > 5) {
+                            showToast('danger', `${name} - file size must be less than 5MB`)
+                        } else {
+                            html += `
+                            <div class="col-sm-6 col-md-4 parent" filename="${name}">
+                                <div class="p-2 border border-1 rounded">
+                                    <div class="row">
+                                        <img src="/uploads/icons/${getFileIcon(name)}" class="col-sm-3">
+                                        <div class="col-md-9">
+                                            <div class="d-flex justify-content-between display-file">
+                                                <a href="${url}"
+                                                    class="text-black fw-bold text-truncate"
+                                                    target="_blank">${name}</a>
+                                            </div>
+                                            <span style="font-size:14px" class="text-muted">
+                                                ${moment().format('MMMM DD, YYYY')}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                        }
                     }
+                    $('#displayFile').html(html);
                 }
-                $('#displayFile').html(html);
             }
 
             $(this).val();
@@ -324,7 +345,7 @@
 
                 let leaveTypeId   = $(`[name="LeaveTypeId"]`).val();
                 let files         = $(`#File`).val();
-                let saveFile      = $('.display-filename').length;
+                let saveFile      = $('.display-file').length;
                 let leaveDuration = $(`[name="LeaveDuration"]`).val();
 
                 if (todo != 'view' && leaveTypeId == SICK_LEAVE_ID && parseFloat(leaveDuration) >= 2 && !saveFile) {

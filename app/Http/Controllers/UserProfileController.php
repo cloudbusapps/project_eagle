@@ -25,34 +25,18 @@ use Spatie\Activitylog\Models\Activity;
 class UserProfileController extends Controller
 {
     public function getUserLeaveBalance($UserId = null) {
-        $yearLeaveBalance = [date('Y')];
-        $leaveBalance = UserLeaveBalance::select('Year')->where('UserId', $UserId)->groupBy('Year')->orderBy('Year', 'DESC')->get();
-        if ($leaveBalance && count($leaveBalance)) {
-            $yearLeaveBalance = [];
-            foreach ($leaveBalance as $dt) {
-                if (!in_array($dt['Year'], $yearLeaveBalance)) $yearLeaveBalance[] = $dt['Year'];
-            }
-        }
-
         $leaveBalanceData = [];
-        foreach ($yearLeaveBalance as $i => $year) {
-            $leaveBalanceData[$i]['year'] = $year;
-            $leaveBalanceData[$i]['data'] = LeaveType::leftJoin('user_leave_balances AS ulb', function ($join) use ($UserId, $year) {
-                    $join->on('leave_types.Id', 'ulb.LeaveTypeId');
-                    $join->on('ulb.UserId', DB::raw("'{$UserId}'"));
-                    $join->on('ulb.Year', DB::raw("'{$year}'"));
-                })
-                ->where('leave_types.Status', 1)
-                ->get([
-                    'ulb.Id',
-                    'leave_types.Name', 
-                    'leave_types.Id AS LeaveTypeId', 
-                    'ulb.UserId',
-                    'ulb.Credit',
-                    'ulb.Accrued',
-                    'ulb.Used',
-                    'ulb.Balance',
-                ]);
+
+        $leaveTypes = LeaveType::where('Status', 1)->get();
+        foreach ($leaveTypes as $dt) {
+            $leaveBalanceData[] = [
+                'Id'      => $dt->Id,
+                'Name'    => $dt->Name,
+                'Balance' => UserLeaveBalance::where('UserId', $UserId)
+                    ->where('LeaveTypeId', $dt->Id)
+                    ->orderBy('Year', 'DESC')
+                    ->get()
+            ];
         }
 
         return $leaveBalanceData;
@@ -791,30 +775,30 @@ class UserProfileController extends Controller
     public function editLeaveBalance($Id) {
         $UserLeaveBalance = $this->getUserLeaveBalance($Id);
 
-        $leaveHTML = '';
         $index = 0;
+        $tbodyHTML   = '';
 
         foreach ($UserLeaveBalance as $dt) {
-            $Year = $dt['year'];
+            $Name        = $dt['Name'];
+            $LeaveTypeId = $dt['Id'];
 
-            $tbodyHTML = '';
-            if (isset($dt['data']) && count($dt['data'])) {
-                foreach ($dt['data'] as $dt2) {
-                    $UserLeaveBalanceId = $dt2['Id'] ?? Str::uuid();
-                    $LeaveTypeId = $dt2['LeaveTypeId'] ?? '';
-                    $Name        = $dt2['Name'] ?? '';
-                    $Accrued     = $dt2['Accrued'] ?? 0;
-                    $Credit      = $dt2['Credit'] ?? 0;
-                    $Used        = $dt2['Used'] ?? 0;
-                    $Balance     = $dt2['Balance'] ?? 0;
+            if (isset($dt['Balance']) && count($dt['Balance'])) {
+                foreach ($dt['Balance'] as $i => $bal) {
+                    $UserLeaveBalanceId = $bal['Id'] ?? Str::uuid();
+                    $Year    = $bal['Year'];
+                    $Credit  = $bal['Credit'];
+                    $Accrued = $bal['Accrued'];
+                    $Used    = $bal['Used'];
 
+                    $LeaveTypeDisplay = $i == 0 ? '<td rowspan="'. count($dt['Balance']) .'">'. $Name .'</td>' : '';
 
                     $tbodyHTML .= '
                     <input type="hidden" name="LeaveBalance['.$index.'][Id]" value="'. $UserLeaveBalanceId .'">
                     <input type="hidden" name="LeaveBalance['.$index.'][Year]" value="'. $Year .'">
                     <input type="hidden" name="LeaveBalance['.$index.'][LeaveTypeId]" value="'. $LeaveTypeId .'">
                     <tr>
-                        <td>'. $Name .'</td>
+                        '. $LeaveTypeDisplay .'
+                        <td>'. $Year .'</td>
                         <td class="text-center">
                             <input type="number" step="0.01" name="LeaveBalance['.$index.'][Credit]" value="'. $Credit .'" class="form-control text-center">
                         </td>
@@ -828,16 +812,40 @@ class UserProfileController extends Controller
 
                     $index++;
                 }
+            } else {
+                $UserLeaveBalanceId = Str::uuid();
+                $Year = date('Y');
+
+                $tbodyHTML .= '
+                <input type="hidden" name="LeaveBalance['.$index.'][Id]" value="'. $UserLeaveBalanceId .'">
+                <input type="hidden" name="LeaveBalance['.$index.'][Year]" value="'. $Year .'">
+                <input type="hidden" name="LeaveBalance['.$index.'][LeaveTypeId]" value="'. $LeaveTypeId .'">
+                <tr>
+                    <td>'. $Name .'</td>
+                    <td>'. $Year .'</td>
+                    <td class="text-center">
+                        <input type="number" step="0.01" name="LeaveBalance['.$index.'][Credit]" value="0" class="form-control text-center">
+                    </td>
+                    <td class="text-center">
+                        <input type="number" step="0.01" name="LeaveBalance['.$index.'][Accrued]" value="0" class="form-control text-center">
+                    </td>
+                    <td class="text-center">
+                        <input type="number" step="0.01" name="LeaveBalance['.$index.'][Used]" value="0" class="form-control text-center">
+                    </td>
+                </tr>';
+
+                $index++;
             }
-            
-            $leaveHTML .= '
-            <table class="table table-striped table-hover my-2">
+        }
+
+        $html = '
+        <form method="POST" action="'. route('user.updateLeaveBalance', ['Id' => $Id]) .'">
+            '. csrf_field() .'
+            <table class="table table-bordered table-hover my-2">
                 <thead>
                     <tr>
-                        <th class="text-center bg-secondary" colspan="5">'. $Year .'</th>
-                    </tr>
-                    <tr>
                         <th>Leave Type</th>
+                        <th>Year</th>
                         <th>Credit</th>
                         <th>Accrued</th>
                         <th>Used</th>
@@ -846,13 +854,7 @@ class UserProfileController extends Controller
                 <tbody>
                     '.$tbodyHTML.'
                 </tbody>
-            </table>';
-        }
-
-        $html = '
-        <form method="POST" action="'. route('user.updateLeaveBalance', ['Id' => $Id]) .'">
-            '. csrf_field() .'
-            '. $leaveHTML .'
+            </table>
             <div class="modal-footer mt-3 pb-0">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" class="btn btn-warning">Update</button>

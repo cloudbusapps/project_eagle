@@ -233,3 +233,20 @@
         $data = Department::find($DepartmentId);
         return $data ? $data->UserId : null;
     }
+
+
+    function getFileIcon($filename = 'unknown.png') {
+        $fileName      = explode('.', $filename);
+        $fileExtension = end($fileName);
+        $extensions = [
+            'jpg'  => 'jpg.png',
+            'png'  => 'png.png',
+            'pdf'  => 'pdf.png',
+            'xlsx' => 'excel.png',
+            'xls'  => 'excel.png',
+            'docx' => 'word.png',
+            'doc'  => 'word.png',
+        ];
+
+        return Arr::get($extensions, $fileExtension, 'unknown.png');
+    } 
