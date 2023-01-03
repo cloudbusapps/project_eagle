@@ -8,12 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use function PHPUnit\Framework\isNull;
 use Auth;
+use DateTime;
 
 
 class CustomerProposal extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'customer_proposals';
     protected $primaryKey = 'Id';
     protected $KeyType = 'string';
@@ -24,6 +25,20 @@ class CustomerProposal extends Model
         'DateSubmitted',
         'SignedDateSubmitted',
     ];
+
+    public function getAging()
+    {
+        $now = time();
+        $dateSubmitted = strtotime($this->DateSubmitted);
+        $datediff = $now - $dateSubmitted;
+
+        if(isset($this->SignedDateSubmitted)){
+            $datediff = strtotime($this->SignedDateSubmitted) - $dateSubmitted;
+        }
+
+
+        return round($datediff / (60 * 60 * 24));
+    }
 
     protected static function boot()
     {

@@ -768,6 +768,27 @@ class CustomerController extends Controller
         return response()->json(['url' => url('customer/edit/' . $Id)]);
     }
 
+    //FOR MANUAL CHANGE OF DSW
+    function updateManualDSW(Request $request, $Id){
+        $validator = $request->validate([
+            'NameNotYet' => ['required'],
+        ]);
+        $customerData = Customer::find($Id);
+        $customerName = $customerData->CustomerName;
+        $customerData->DSWStatus = $request->NameNotYet;
+
+        if ($customerData->update()) {
+            return redirect()
+                ->route('customers.edit', ['Id' => $Id])
+                ->with('success', "<b>{$customerName}</b> successfully updated!");
+        } else {
+            return redirect()
+                ->route('customers')
+                ->with('fail', "Something went wrong, please try again");
+        }
+
+    }
+
     function update(Request $request, $Id)
     {
         $customerData = Customer::find($Id);

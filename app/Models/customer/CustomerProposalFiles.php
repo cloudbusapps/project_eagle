@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use function PHPUnit\Framework\isNull;
 use Auth;
+use Illuminate\Support\Arr;
 
 
 class CustomerProposalFiles extends Model
@@ -23,6 +24,23 @@ class CustomerProposalFiles extends Model
         'File',
         'DateSubmitted',
     ];
+
+    public function getIconAttribute() 
+    {
+        // return dd($this->File->extension());
+        $fileName =explode('.',$this->File);
+        $fileExtension = end($fileName);
+        $extensions = [
+            'jpg' => 'jpg.png',
+            'png' => 'png.png',
+            'pdf' => 'pdf.png',
+            'doc' => 'word.png',
+            'xlsx' => 'excel.png',
+            'docx' => 'word.png',
+        ];
+
+        return Arr::get($extensions,$fileExtension,'unknown.png');
+    }
 
     protected static function boot()
     {

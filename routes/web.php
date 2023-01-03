@@ -170,6 +170,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::put('/edit/{Id}/updateManhour', [CustomerController::class, 'updateManhour'])->name('customers.updateManhour');
         Route::put('/edit/{Id}/updateOIC', [CustomerController::class, 'updateOIC'])->name('customers.updateOIC');
         Route::post('/edit/{Id}/updateResourceCost', [CustomerController::class, 'updateResourceCost'])->name('customers.updateResourceCost');
+        Route::put('/edit/{Id}/updateManualDSW', [CustomerController::class, 'updateManualDSW'])->name('customers.updateManualDSW');
         Route::get('/delete/{Id}', [CustomerController::class, 'delete'])->name('customers.delete');
     });
     // END CUSTOMER
