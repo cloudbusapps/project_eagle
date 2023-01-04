@@ -14,6 +14,7 @@ use App\Models\customer\CustomerComplexity;
 use App\Models\customer\CustomerComplexityDetails;
 use App\Models\customer\CustomerProjectPhases;
 use App\Models\customer\CustomerProjectPhasesDetails;
+use App\Models\customer\CustomerRemarks;
 use App\Models\admin\ThirdParty;
 use App\Models\admin\Designation;
 use Illuminate\Http\Request;
@@ -99,6 +100,7 @@ class CustomerController extends Controller
                 'projectPhaseResources' => $this->getProjectPhaseResources($Id),
                 'customerProjectPhases' => $this->getCustomerProjectPhase($Id),
                 'customerResources'    => $customerResources,
+                'manhourRemarks'      => CustomerRemarks::where('CustomerId',$Id)->get(),
             ];
         } else if ($title[1] == 6) { // PROJECT PHASE
             $data = [
@@ -575,16 +577,26 @@ class CustomerController extends Controller
         // $validator = $request->validate([
         //     'Title' => ['required'],
         // ]);
-        foreach ($request->data as $assessment) {
-            $inscope = CustomerInscope::find($assessment['rowId']);
-            $inscope->Manhour = $assessment['manhourValue'];
-            $update = $inscope->save();
-        }
-        if ($update) {
-            $request->session()->flash('success', 'Manhours updated successfully!');
-            return response()->json(['url' => url('customer/edit/' . $Id)]);
-        } else {
-            $request->session()->flash('fail', 'Something went wrong, please try again later');
+
+        $data = Customer::find($Id);
+        $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)->get();
+
+        // CHECK IF USER IS VALID TO UPDATE MANHOUR
+        if(Auth::id() == $data->HeadId || Auth::id() == config('constant.ID.USERS.ADMIN')|| Auth::id()==$data->OICId||$assignedConsultants->contains('Id',Auth::id())){
+            foreach ($request->data as $assessment) {
+                $inscope = CustomerInscope::find($assessment['rowId']);
+                $inscope->Manhour = $assessment['manhourValue'];
+                $update = $inscope->save();
+            }
+            if ($update) {
+                $request->session()->flash('success', 'Manhours updated successfully!');
+                return response()->json(['url' => url('customer/edit/' . $Id)]);
+            } else {
+                $request->session()->flash('fail', 'Something went wrong, please try again later');
+                return response()->json(['url' => url('customer/edit/' . $Id)]);
+            }
+        } else{
+            $request->session()->flash('fail', "You don't have permission");
             return response()->json(['url' => url('customer/edit/' . $Id)]);
         }
     }
@@ -736,36 +748,43 @@ class CustomerController extends Controller
     function updateResourceCost(Request $request, $Id) 
     {
         $data = [];
+        $customerData = Customer::find($Id);
         $resourceData = $request->resourceData;
-        if (isset($resourceData) && count($resourceData)) {
-            DB::table('customer_assessment_resources')->where('CustomerId', $Id)->delete();
+        if(Auth::id() == $customerData->HeadId || Auth::id() == config('constant.ID.USERS.ADMIN')|| Auth::id()==$customerData->OICId){
 
-            foreach ($resourceData as $dt) {
-                $data[] = [
-                    'Id'            => Str::uuid(),
-                    'CustomerId'    => $Id,
-                    'DesignationId' => $dt['DesignationId'],
-                    'Initial'       => $dt['Initial'],
-                    'Level'         => $dt['Level'],
-                    'Rate'          => $dt['Rate'],
-                    'Cost'          => $dt['Cost'],
-                    'CreatedById'   => Auth::id(),
-                    'UpdatedById'   => Auth::id(),
-                    'created_at'    => now(),
-                    'updated_at'    => now(),
-                ];
-            }
-
-            if ($data && count($data)) {
-                DB::table('customer_assessment_resources')->insert($data);
-
-                $request->session()->flash('success', 'Resouces updated successfully!');
-                return response()->json(['url' => url('customer/edit/' . $Id)]);
-            }
-        } 
-
-        $request->session()->flash('fail', 'Something went wrong, please try again later');
-        return response()->json(['url' => url('customer/edit/' . $Id)]);
+            if (isset($resourceData) && count($resourceData)) {
+                DB::table('customer_assessment_resources')->where('CustomerId', $Id)->delete();
+    
+                foreach ($resourceData as $dt) {
+                    $data[] = [
+                        'Id'            => Str::uuid(),
+                        'CustomerId'    => $Id,
+                        'DesignationId' => $dt['DesignationId'],
+                        'Initial'       => $dt['Initial'],
+                        'Level'         => $dt['Level'],
+                        'Rate'          => $dt['Rate'],
+                        'Cost'          => $dt['Cost'],
+                        'CreatedById'   => Auth::id(),
+                        'UpdatedById'   => Auth::id(),
+                        'created_at'    => now(),
+                        'updated_at'    => now(),
+                    ];
+                }
+    
+                if ($data && count($data)) {
+                    DB::table('customer_assessment_resources')->insert($data);
+    
+                    $request->session()->flash('success', 'Resouces updated successfully!');
+                    return response()->json(['url' => url('customer/edit/' . $Id)]);
+                }
+            } 
+    
+            $request->session()->flash('fail', 'Something went wrong, please try again later');
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
+        } else{
+            $request->session()->flash('fail', "You don't have permission");
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
+        }
     }
 
     //FOR MANUAL CHANGE OF DSW
@@ -778,13 +797,37 @@ class CustomerController extends Controller
         $customerData->DSWStatus = $request->NameNotYet;
 
         if ($customerData->update()) {
-            return redirect()
-                ->route('customers.edit', ['Id' => $Id])
-                ->with('success', "<b>{$customerName}</b> successfully updated!");
+            $request->session()->flash('success', "<b>{$customerName}</b> successfully updated!");
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
         } else {
-            return redirect()
-                ->route('customers')
-                ->with('fail', "Something went wrong, please try again");
+            $request->session()->flash('fail', 'Something went wrong, please try again later');
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
+        }
+
+    }
+    function reviseManhour(Request $request, $Id){
+        $validator = $request->validate([
+            'reviseRemarks' => ['required'],
+        ]);
+        $customerData = Customer::find($Id);
+        $customerName = $customerData->CustomerName;
+
+        $data = [
+            'Id'             => Str::uuid(),
+            'CustomerId'     => $Id,
+            'Remark'         => $request->reviseRemarks,
+            'Status'         => 0,
+            'CreatedById'    => Auth::id(),
+            'UpdatedById'    => Auth::id(),
+            'created_at'     => now(),
+        ];
+
+        if (CustomerRemarks::insert($data)) {
+            $request->session()->flash('success', "<b>{$customerName}</b> successfully updated!");
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
+        } else {
+            $request->session()->flash('fail', 'Something went wrong, please try again later');
+            return response()->json(['url' => url('customer/edit/' . $Id)]);
         }
 
     }

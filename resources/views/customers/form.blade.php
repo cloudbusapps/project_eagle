@@ -1511,6 +1511,15 @@
                                                 <h5 class="card-title mb-0">IN-SCOPE</h5>
                                             </a>
                                         </div>
+                                        <div class="row mb-2">
+                                            <div class="px-2 align-self-start">
+                                                <div class="alert alert-info">
+                                                    @foreach ($manhourRemarks as $manhourRemark)
+                                                    <small>{{ $manhourRemark->Remark}}</small>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div id="collapseFour" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                             <div id="tableContainer" class="mb-3">
                                                 <table id="inScopeTable" cellpadding="0" cellspacing="0"
@@ -1583,10 +1592,11 @@
                                                 @if ($Status == $currentViewStatus)
                                                 <div class="button-footer text-end">
                                                     {{-- @if (Auth::id() == $data->HeadId) --}}
-                                                    @if (Auth::id() == $data->HeadId || Auth::id() == config('constant.ID.USERS.ADMIN'))
+                                                    @if (Auth::id() == $data->HeadId || Auth::id() == config('constant.ID.USERS.ADMIN')|| Auth::id()==$data->OICId||$assignedConsultants->contains('Id',Auth::id()))
                                                         <a href="#" class="btn btn-warning btnUpdate">Update Manhours</a>
+                                                        {{-- @if ($isForSubmit && (Auth::id() == $data->HeadId||Auth::id()==$data->OICId)) --}}
                                                         @if ($isForSubmit)
-                                                            {{-- <a href="#" class="btn btn-secondary btnRevise">Revise</a> --}}
+                                                            <a href="#" class="btn btn-secondary btnRevise">Revise</a>
                                                             <button type="submit" class="btn btn-primary btnUpdateForm">For Release</button>
                                                         @endif
                                                     @else
@@ -1966,6 +1976,63 @@
                 });
             });
             // END UPDATE FOR MANHOUR ASSESSMENT
+
+            // REVISE
+            $(document).on('click', '.btnRevise', function(e) {
+                let isValidated = $(this).attr('validated') == "true";
+                e.preventDefault();
+                let content = `
+                <div class="d-flex justify-content-center align-items-center flex-column text-center">
+                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                    <label>Remarks <code>*</code></label>    
+                    <textarea class="form-control" name="reviseRemarks" rows="3" style="resize: none;"></textarea>
+                    <b class="mt-4">Are you sure you want to revise the manhours?</b>
+                </div>`;
+
+                let confirmation = $.confirm({
+                    title: false,
+                    content,
+                    buttons: {
+
+                        no: {
+                            btnClass: 'btn-default',
+                        },
+                        yes: {
+                            btnClass: 'btn-blue',
+                            keys: ['enter'],
+                            action: function() {
+                                let reviseRemarks = $(`[name="reviseRemarks"]`).val()?.trim();
+                                if (reviseRemarks && reviseRemarks.length) {
+                                    confirmation.buttons.yes.setText(
+                                    `<span class="spinner-border spinner-border-sm"></span> Please wait...`
+                                    );
+                                    confirmation.buttons.yes.disable();
+                                    confirmation.buttons.no.hide();
+                                    setTimeout(() => {
+                                        var method = 'POST';
+                                        $.ajax({
+                                            type: method,
+                                            url: `{{ $Id }}/reviseManhour`,
+                                            data: {
+                                                reviseRemarks
+                                            },
+                                            async: false,
+                                            success: function(response) {
+                                                window.location = response.url;
+                                            }
+                                        })
+                                    }, 100);
+                                } else{
+                                    showToast('danger', `Remarks is required`)
+                                }
+                                
+                                return false;
+                            }
+                        },
+                    }
+                });
+            });
+            // END REVISE
 
             // UPDATE FOR CONSULTANT ASSIGNMENT
             $(document).on('click', '.btnAssign', function(e) {

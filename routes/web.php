@@ -172,6 +172,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::put('/edit/{Id}/updateOIC', [CustomerController::class, 'updateOIC'])->name('customers.updateOIC');
         Route::post('/edit/{Id}/updateResourceCost', [CustomerController::class, 'updateResourceCost'])->name('customers.updateResourceCost');
         Route::put('/edit/{Id}/updateManualDSW', [CustomerController::class, 'updateManualDSW'])->name('customers.updateManualDSW');
+        Route::post('/edit/{Id}/reviseManhour', [CustomerController::class, 'reviseManhour'])->name('customers.reviseManhour');
         Route::get('/delete/{Id}', [CustomerController::class, 'delete'])->name('customers.delete');
     });
     
