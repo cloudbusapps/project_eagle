@@ -1265,7 +1265,7 @@
                                 @elseif ($Status == 7 || Request::get('progress') == 'assessment')
                                     <!-- ---------- ASSESSMENT ---------- -->
                                     {{-- @if (in_array(Auth::id(), [$data->HeadId, $data->OICId])) <!-- BA HEAD AND OIC PERMISSION --> --}}
-                                    @if (true)
+                                    @if ($totalManhour!==0)
                                         <div class="card mb-3 accordion">
                                             <div id="tableContainer" class="accordion-item ">
                                                 <div class="card-header p-0">
@@ -1506,15 +1506,18 @@
                                                 <h5 class="card-title mb-0">IN-SCOPE</h5>
                                             </a>
                                         </div>
-                                        <div class="row mb-2">
-                                            <div class="px-2 align-self-start">
-                                                <div class="alert alert-info">
-                                                    @foreach ($manhourRemarks as $manhourRemark)
-                                                    <small>{{ $manhourRemark->Remark}}</small>
-                                                    @endforeach
+                                        @if (!empty($manhourRemarks) && count($manhourRemarks) >0)
+                                            <div class="row mb-2">
+                                                <div class="px-2 align-self-start">
+                                                    <div class="alert alert-info">
+                                                        @foreach ($manhourRemarks as $manhourRemark)
+                                                        <small>{{ $manhourRemark->Remark}}</small><br>
+                                                        @endforeach
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        @endif
+                                        
                                         <div id="collapseFour" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                             <div id="tableContainer" class="mb-3">
                                                 <table id="inScopeTable" cellpadding="0" cellspacing="0"
