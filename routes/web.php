@@ -25,6 +25,7 @@ use App\Http\Controllers\UserStoryController;
 use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\TimekeepingController;
 
 // AUTH
 Route::get('/', [LoginController::class, 'index'])->name('auth.login');
@@ -173,7 +174,18 @@ Route::group(['middleware' => 'auth'], function () {
         Route::put('/edit/{Id}/updateManualDSW', [CustomerController::class, 'updateManualDSW'])->name('customers.updateManualDSW');
         Route::get('/delete/{Id}', [CustomerController::class, 'delete'])->name('customers.delete');
     });
-    // END CUSTOMER
+    
+    // TIMEKEEPING
+    Route::prefix('projectUtilization')->group(function () {
+        Route::prefix('timekeeping')->group(function () {
+            Route::get('/', [TimekeepingController::class, 'index'])->name('timekeeping');
+            Route::get('/add', [TimekeepingController::class, 'form'])->name('timekeeping.add');
+            Route::post('/save', [TimekeepingController::class, 'save'])->name('timekeeping.save');
+            Route::get('/edit/{Id}', [TimekeepingController::class, 'edit'])->name('timekeeping.edit');
+            Route::put('/edit/{Id}/update', [TimekeepingController::class, 'update'])->name('timekeeping.update');
+            Route::get('/delete/{Id}', [TimekeepingController::class, 'delete'])->name('timekeeping.delete');
+        });
+    });
 });
 
 

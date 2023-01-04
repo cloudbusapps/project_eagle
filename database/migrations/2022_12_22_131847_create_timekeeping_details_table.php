@@ -13,16 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('projects', function (Blueprint $table) {
+        Schema::create('timekeeping_details', function (Blueprint $table) {
             $table->uuid('Id')->primary();
-            $table->string('Name');
-            $table->string('Description');
-            $table->date('KickoffDate');
-            $table->date('ClosedDate');
-            $table->json('UsersId')->nullable();
-
-            // will change it to ProjectManagerID if needed
-            $table->uuid('ProjectManagerId')->nullable();
+            $table->uuid('TimekeepingId');
+            $table->time('StartTime');
+            $table->time('EndTime');
+            $table->uuid('ProjectId');
+            $table->string('ProjectName')->nullable();
+            $table->text('Description');
+            $table->decimal('Hours', 10, 2)->default(0);
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
@@ -36,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('projects');
+        Schema::dropIfExists('timekeeping_details');
     }
 };

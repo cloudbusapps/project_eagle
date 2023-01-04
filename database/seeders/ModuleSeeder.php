@@ -205,11 +205,11 @@ class ModuleSeeder extends Seeder
                 'Title'         => 'Timekeeping',
                 'WithApproval'  => false,
                 'Icon'          => 'default.png',
-                'RouteName'     => null,
+                'RouteName'     => 'timekeeping',
                 'Prefix'        => 'timekeeping',
                 'Status'        => 1,
                 'SortOrder'     => 6,
-                'TableName'     => null,
+                'TableName'     => 'timekeeping',
             ],
             [
                 'id'            => 15,
@@ -277,6 +277,11 @@ class ModuleSeeder extends Seeder
                 'ModuleId'  => 3,
                 'Title'     => 'Leave Balance',
                 'TableName' => 'user_leave_balances',
+            ],
+            [
+                'ModuleId'  => 14, // TIMEKEEPING
+                'Title'     => 'Details',
+                'TableName' => 'timekeeping_details',
             ],
         ];
 

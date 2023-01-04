@@ -69,7 +69,9 @@ function viewNotification(id = '', link = '') {
 
 // ----- INITIALIZE SELECT2 -----
 function initSelect2() {
-    $(`[select2]`).select2();
+    $(`[select2]`).select2({
+        width: 'resolve'
+    });
 }
 // ----- END INITIALIZE SELECT2 -----
 

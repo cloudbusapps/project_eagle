@@ -66,8 +66,14 @@ class StartUpSeeder extends Seeder
         $this->call(PermissionSeeder::class);
         // ----- END PERMISSION -----
 
+        
         // ----- APPROVAL -----
         $this->call(ApprovalSeeder::class);
         // ----- END APPROVAL -----
+
+
+        // ----- PROJECT -----
+        $this->call(ProjectSeeder::class);
+        // ----- END PROJECT -----
     }
 }
