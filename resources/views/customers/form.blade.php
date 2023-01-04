@@ -297,6 +297,11 @@
                             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
                         </ol>
                     </div>
+                    <div class="col text-end">
+                        <a href="{{ route('customers') }}" class="btn btn-secondary">
+                            <i class="bi bi-skip-backward-fill"></i> Back
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
