@@ -143,10 +143,10 @@
             flex: 1;
             border: 1px solid transparent
         }
-        /* .dwsCon:focus{
+        .dwsCon:focus{
         outline: none;
         border-color: #000000;
-        } */
+        }
 
         .dwsCon strong {
             font-size: 0.7rem;
@@ -824,6 +824,7 @@
                                                                             <button type="button"
                                                                                 class="btn btn-outline-danger btnDeleteRow"><i
                                                                                     class="bi bi-trash"></i></button>
+                                                                                    {{-- <input type="hidden" name="inscopeId[]" value="{{ $inscope->Id }}"> --}}
                                                                         </td>
                                                                         <td>
                                                                             <textarea name="Title[]" class="form-control" rows="3" style="resize: none;" required>{{ $inscope->Title }}</textarea>
@@ -881,7 +882,7 @@
                                     <div class="card mt-3 accordion">
                                         <div class="card-header p-0">
                                             <a href="#" class="accordion-button bg-white" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" >
-                                                <h5 class="card-title mb-0">IN-SCOPE</h5>
+                                                <h5 class="card-title mb-0">LIMITATION</h5>
                                             </a>
                                         </div>
                                         <div id="collapseTwo" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
@@ -1464,9 +1465,9 @@
                                             <div id="collapseTwo" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                                 <select select2 name="OICId" id="OICId" class="form-select" required>
                                                     <option value="0" selected disabled>Select OIC</option>
-                                                    @foreach ($users as $user)
-                                                        <option {{ $data->OICId == $user->Id?'selected':'' }}  value="{{ $user->Id }}">
-                                                            {{ $user->FirstName . ' ' . $user->LastName }}
+                                                    @foreach ($OIC as $OIC)
+                                                        <option {{ $data->OICId == $OIC->Id?'selected':'' }}  value="{{ $OIC->Id }}">
+                                                            {{ $OIC->FirstName . ' ' . $OIC->LastName }}
                                                         </option>
                                                     @endforeach
                                                 </select>
@@ -1709,8 +1710,6 @@
                                                                         <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
                                                                             class="text-black fw-bold text-truncate"
                                                                             target="_blank">{{ $file['File'] }}</a>
-                                                                        <button type="button"
-                                                                            class="btn-close btnRemoveFilename"></button>
                                                                     </div>
                                                                     <span style="font-size:14px" class="text-muted">
                                                                         {{ date('F d, Y', strtotime($file->created_at)) }}</span>
@@ -1765,8 +1764,6 @@
                                                                                 <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
                                                                                     class="text-black fw-bold text-truncate"
                                                                                     target="_blank">{{ $file['File'] }}</a>
-                                                                                <button type="button"
-                                                                                    class="btn-close btnRemoveFilename"></button>
                                                                             </div>
                                                                             <span style="font-size:14px" class="text-muted">
                                                                                 {{ date('F d, Y', strtotime($file->created_at)) }}</span>
@@ -1821,7 +1818,7 @@
                         </div>
                     @else
                     <div class="button-footer text-end">
-                        <a href="{{ $cancelRoute }}" class="btn btn-secondary">Cancel</a>
+                        {{-- <a href="{{ $cancelRoute }}" class="btn btn-secondary">Cancel</a> --}}
                         <?= $button ?>
                     </div>
                     @endif
@@ -2076,7 +2073,7 @@
                                             type: method,
                                             url: `{{ $Id }}/updateConsultant`,
                                             data:{selectedConsultants},
-                                            async: false,
+                                            async: true,
                                             success: function(response) {
                                                 window.location = response.url;
                                             }

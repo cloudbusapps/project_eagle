@@ -51,6 +51,13 @@ return new class extends Migration
              */
             $table->integer('DSWStatus')->nullable();
 
+            /**
+             * ----- ASSESSMENT STATUS -----
+             * 0 - Consultant
+             * 1 - Head
+             */
+            $table->integer('AssessmentStatus')->nullable();
+
             
             /**
              * ----- STATUS -----
