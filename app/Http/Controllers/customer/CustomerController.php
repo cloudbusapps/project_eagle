@@ -84,7 +84,9 @@ class CustomerController extends Controller
         } else if (in_array($title[1], [4, 5, 7])) { // REQUIREMENT AND SOLUTIONS, CAPABILITIES, ASSESSMENT
             $inscopes = CustomerInscope::where('CustomerId', $Id)->orderBy('created_at', 'DESC')->get();
             $limitations = CustomerLimitation::where('CustomerId', $Id)->get();
-            $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)->get();
+            $assignedConsultants = CustomerConsultant::where('customer_assigned_consultants.CustomerId', $Id)
+            ->leftJoin('users AS U','U.Id', '=', 'customer_assigned_consultants.UserId' )
+            ->get();
             $totalManhour = CustomerInscope::where('CustomerId', $Id)->sum('Manhour');
             $customerResources = DB::table('customer_assessment_resources')
                 ->where('CustomerId', $Id)
@@ -509,7 +511,7 @@ class CustomerController extends Controller
                 'Link'        => $Link,
                 'Icon'        => $Icon,
             ];
-            Mail::to($User->email)->send(new CustomerMail($customerData, $User, $NotificationData, 'Project Phase'));
+            // Mail::to($User->email)->send(new CustomerMail($customerData, $User, $NotificationData, 'Project Phase'));
             Notification::sendNow($User, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
         }
 

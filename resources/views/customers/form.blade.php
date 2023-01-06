@@ -1538,6 +1538,7 @@
                                                             <th style="width: 220px">Solutions Overview</th>
                                                             <th style="width: 200px;">Manhours</th>
                                                             <th style="width: 220px">Assumptions</th>
+                                                            <th style="width: 220px">Assigned Consultant(s)</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -1584,6 +1585,18 @@
                                                                     <td>
                                                                         <small
                                                                             style="white-space: break-spaces;">{{ $inscope->Assumption }}</small>
+                                                                    </td>
+                                                                    <td>
+                                                                        <select name="RequirementConsultant[]" id="RequirementConsultant{{ $index}}" class="form-select"
+                                                                            required >
+
+                                                                            @foreach ($assignedConsultants as $assignedConsultant)
+                                                                                <option  value="{{ $assignedConsultant->Id }}">
+                                                                                    {{ $assignedConsultant->UserId . ' ' . $assignedConsultant->LastName }}
+                                                                                </option>
+                                                                            @endforeach
+
+                                                                        </select>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
