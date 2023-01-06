@@ -161,7 +161,7 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     // CUSTOMER
-    Route::prefix('customer')->group(function () {
+    Route::prefix('opportunity')->group(function () {
         Route::get('/', [CustomerController::class, 'index'])->name('customers');
         Route::get('/add', [CustomerController::class, 'form'])->name('customers.add');
         Route::post('/save', [CustomerController::class, 'save'])->name('customers.save');

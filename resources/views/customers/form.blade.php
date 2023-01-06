@@ -293,7 +293,7 @@
                     <div class="col">
                         <h4 class="mb-0">{{ $title }}</h4>
                         <ol class="breadcrumb bg-transparent mb-0">
-                            <li class="breadcrumb-item"><a href="{{ route('customers') }}">Customer</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('customers') }}">Opportunity</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
                         </ol>
                     </div>
@@ -1512,19 +1512,20 @@
                                                 <h5 class="card-title mb-0">IN-SCOPE</h5>
                                             </a>
                                         </div>
-                                        @if (!empty($manhourRemarks) && count($manhourRemarks) >0)
-                                            <div class="row mb-2">
-                                                <div class="px-2 align-self-start">
-                                                    <div class="alert alert-info">
-                                                        @foreach ($manhourRemarks as $manhourRemark)
-                                                        <small>{{ $manhourRemark->Remark}}</small><br>
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endif
                                         
                                         <div id="collapseFour" class="accordion-collapse collapse show card-body" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+
+                                            @if (!empty($manhourRemarks) && count($manhourRemarks) >0)
+                                                <div class="alert alert-warning">
+                                                    <b><i class="bi bi-info-circle-fill"></i> REVISE MANHOURS</b>
+                                                    <ul>
+                                                        @foreach ($manhourRemarks as $manhourRemark)
+                                                            <li>{{ date('M d, Y h:i A', strtotime($manhourRemark->created_at)). ' - ' .$manhourRemark->Remark}}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+
                                             <div id="tableContainer" class="mb-3">
                                                 <table id="inScopeTable" cellpadding="0" cellspacing="0"
                                                     class="table table-bordered table-hover"
@@ -1613,7 +1614,8 @@
                                                         <a href="#" class="btn btn-warning btnUpdate">Update Manhours</a>
                                                         {{-- @if ($isForSubmit && (Auth::id() == $data->HeadId||Auth::id()==$data->OICId)) --}}
                                                         @if ($isForSubmit)
-                                                            <a href="#" class="btn btn-secondary btnRevise">Revise</a>
+                                                            <a href="#" class="btn btn-secondary btnRevise">Revise Manhours</a>
+                                                            <span class="mx-2">|</span>
                                                             <button type="submit" class="btn btn-primary btnUpdateForm">For Release</button>
                                                         @endif
                                                     @else

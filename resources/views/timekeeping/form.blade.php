@@ -82,15 +82,16 @@
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table class="table table-striped table-hover nowrap" id="tableTimekeepingDetails">
+                                                <table class="table table-striped table-hover nowrap" id="tableTimekeepingDetails"
+                                                    style="min-width: 1000px; width: 100%; max-width: 1500px;">
                                                     <thead>
                                                         <tr>
-                                                            <th></th>
-                                                            <th>Start Time</th>
-                                                            <th>End Time</th>
-                                                            <th>Hours</th>
-                                                            <th>Project Name</th>
-                                                            <th>Description</th>
+                                                            <th style="width: 50px;"></th>
+                                                            <th style="width: 150px;">Start Time</th>
+                                                            <th style="width: 150px;">End Time</th>
+                                                            <th style="width: 100px;">Hours</th>
+                                                            <th style="width: 250px;">Project Name</th>
+                                                            <th style="width: 350px;">Description</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -283,7 +284,8 @@
                     <div class="form-group mb-0">
                         <select class="form-control" name="ProjectId[]"
                             select2
-                            required>
+                            required
+                            style="width: 100%;">
                             <option value="" selected disabled>Select Project Name</option>
                             ${projectOptions}
                             <option value="${others}">Others</option>

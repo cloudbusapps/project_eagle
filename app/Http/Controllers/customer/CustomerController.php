@@ -39,7 +39,7 @@ class CustomerController extends Controller
 
         $customerData = Customer::all();
         $data = [
-            'title'   => "Customer",
+            'title'   => "Opportunity",
             'data'    => $customerData
         ];
         return view('customers.index', $data);
@@ -256,13 +256,13 @@ class CustomerController extends Controller
                 $ThirdPartyName = $customerData->ThirdPartyName;
                 $User = User::find($CreatedById);
 
-                $Title       = "Customer";
+                $Title       = "Opportunity";
                 $Description = "
                 <div>
-                    <div><b>Customer - {$CustomerName}</b></div>
+                    <div><b>Opportunity - {$CustomerName}</b></div>
                     <div>{$ThirdPartyCount} out of {$InScopeCount} requirements are assigned to Third Party - {$ThirdPartyName}</div>
                 </div>";
-                $Link        = "/customer/edit/{$Id}?progress=capability";
+                $Link        = "/opportunity/edit/{$Id}?progress=capability";
                 $Icon        = '/assets/img/icons/default.png';
 
                 $NotificationData = [
@@ -273,7 +273,7 @@ class CustomerController extends Controller
                     'Icon'        => $Icon,
                     'ThirdParty'  => $ThirdPartyData
                 ];
-                Mail::to($User->email)->send(new CustomerMail($customerData, $User, $NotificationData, 'Capability'));
+                // Mail::to($User->email)->send(new CustomerMail($customerData, $User, $NotificationData, 'Capability'));
                 Notification::sendNow($User, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
             }
 
@@ -499,9 +499,9 @@ class CustomerController extends Controller
             $CustomerName   = $customerData->CustomerName;
             $User = User::find($HeadId);
 
-            $Title       = "Customer";
-            $Description = "<b>Customer - {$CustomerName}</b> is now ready for assessment and manhours";
-            $Link        = url("/customer/edit/{$Id}?progress=assessment");
+            $Title       = "Opportunity";
+            $Description = "<b>Opportunity - {$CustomerName}</b> is now ready for assessment and manhours";
+            $Link        = url("/opportunity/edit/{$Id}?progress=assessment");
             $Icon        = '/assets/img/icons/default.png';
 
             $NotificationData = [
@@ -545,9 +545,9 @@ class CustomerController extends Controller
                     // NOTIFY CONSULTANT
                     $User = User::find($dt['UserId']);
         
-                    $Title = "Customer";
+                    $Title = "Opportunity";
                     $Description = " <div>Please do an assessment and indicate the manhours of the requirement for {$CustomerName}</div>";
-                    $Link = "/customer/edit/{$Id}?progress=assessment";
+                    $Link = "/opportunity/edit/{$Id}?progress=assessment";
                     $Icon = '/assets/img/icons/default.png';
         
                     $NotificationData = [
@@ -557,17 +557,17 @@ class CustomerController extends Controller
                         'Link'        => $Link,
                         'Icon'        => $Icon,
                     ];
-                    Mail::to($User->email)->send(new CustomerMail($customerData, $User, $NotificationData, 'Assessment'));
+                    // Mail::to($User->email)->send(new CustomerMail($customerData, $User, $NotificationData, 'Assessment'));
                     Notification::sendNow($User, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
                 }
     
                 $request->session()->flash('success', '<b>Consulant</b> successfully updated!');
-                return response()->json(['url' => url('customer/edit/' . $Id)]);
+                return response()->json(['url' => url('opportunity/edit/' . $Id)]);
             }
         }
 
         $request->session()->flash('fail', 'Something went wrong, please try again later');
-        return response()->json(['url' => url('customer/edit/' . $Id)]);
+        return response()->json(['url' => url('opportunity/edit/' . $Id)]);
     }
     function updateOIC(Request $request, $Id)
     {
@@ -579,10 +579,10 @@ class CustomerController extends Controller
                 ->update(['OICId' => $OICId]);
         if ($update) {
             $request->session()->flash('success', '<b>OIC</b> successfully updated');
-            return response()->json(['url' => url('customer/edit/' . $Id)]);
+            return response()->json(['url' => url('opportunity/edit/' . $Id)]);
         } else {
             $request->session()->flash('fail', 'Something went wrong, please try again later');
-            return response()->json(['url' => url('customer/edit/' . $Id)]);
+            return response()->json(['url' => url('opportunity/edit/' . $Id)]);
         }
     }
 
@@ -604,14 +604,14 @@ class CustomerController extends Controller
             }
             if ($update) {
                 $request->session()->flash('success', 'Manhours updated successfully!');
-                return response()->json(['url' => url('customer/edit/' . $Id)]);
+                return response()->json(['url' => url('opportunity/edit/' . $Id)]);
             } else {
                 $request->session()->flash('fail', 'Something went wrong, please try again later');
-                return response()->json(['url' => url('customer/edit/' . $Id)]);
+                return response()->json(['url' => url('opportunity/edit/' . $Id)]);
             }
         } else{
             $request->session()->flash('fail', "You don't have permission");
-            return response()->json(['url' => url('customer/edit/' . $Id)]);
+            return response()->json(['url' => url('opportunity/edit/' . $Id)]);
         }
     }
     function updateAssessment($request, $Id, $customerData)
@@ -789,15 +789,15 @@ class CustomerController extends Controller
                     DB::table('customer_assessment_resources')->insert($data);
     
                     $request->session()->flash('success', 'Resouces updated successfully!');
-                    return response()->json(['url' => url('customer/edit/' . $Id)]);
+                    return response()->json(['url' => url('opportunity/edit/' . $Id)]);
                 }
             } 
     
             $request->session()->flash('fail', 'Something went wrong, please try again later');
-            return response()->json(['url' => url('customer/edit/' . $Id)]);
+            return response()->json(['url' => url('opportunity/edit/' . $Id)]);
         } else{
             $request->session()->flash('fail', "You don't have permission");
-            return response()->json(['url' => url('customer/edit/' . $Id)]);
+            return response()->json(['url' => url('opportunity/edit/' . $Id)]);
         }
     }
 
@@ -812,10 +812,10 @@ class CustomerController extends Controller
 
         if ($customerData->update()) {
             $request->session()->flash('success', "<b>{$customerName}</b> successfully updated!");
-            return response()->json(['url' => url('customer/edit/' . $Id)]);
+            return response()->json(['url' => url('opportunity/edit/' . $Id)]);
         } else {
             $request->session()->flash('fail', 'Something went wrong, please try again later');
-            return response()->json(['url' => url('customer/edit/' . $Id)]);
+            return response()->json(['url' => url('opportunity/edit/' . $Id)]);
         }
 
     }
@@ -838,10 +838,10 @@ class CustomerController extends Controller
 
         if (CustomerRemarks::insert($data)) {
             $request->session()->flash('success', "<b>{$customerName}</b> successfully updated!");
-            return response()->json(['url' => url('customer/edit/' . $Id)]);
+            return response()->json(['url' => url('opportunity/edit/' . $Id)]);
         } else {
             $request->session()->flash('fail', 'Something went wrong, please try again later');
-            return response()->json(['url' => url('customer/edit/' . $Id)]);
+            return response()->json(['url' => url('opportunity/edit/' . $Id)]);
         }
 
     }

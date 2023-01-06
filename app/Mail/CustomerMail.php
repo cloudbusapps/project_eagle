@@ -37,7 +37,7 @@ class CustomerMail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: env('APP_NAME') . ' - Customer',
+            subject: env('APP_NAME') . ' - Opportunity',
         );
     }
 
