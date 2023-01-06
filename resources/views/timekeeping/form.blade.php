@@ -70,6 +70,7 @@
                                         <input type="text" 
                                             class="form-control" 
                                             name="Date" 
+                                            autocomplete="off"
                                             cdaterangepicker
                                             required
                                             value="{{ date('F d, Y', strtotime(isset($data->Date) ? $data->Date : now())) }}">

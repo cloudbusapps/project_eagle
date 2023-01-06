@@ -22,17 +22,15 @@ use App\Notifications\SystemNotification;
 
 class LeaveRequestController extends Controller
 {
-    private $MODULE_ID = 4;
-
     public function index() {
-        isReadAllowed($this->MODULE_ID, true);
+        isReadAllowed(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), true);
 
         $myData = LeaveRequest::select('leave_requests.*', 'lt.Name', 'u.FirstName', 'u.LastName', 'u2.FirstName AS aFirstName', 'u2.LastName AS aLastName')
             ->leftJoin('leave_types AS lt', 'leave_requests.LeaveTypeId', 'lt.Id')
             ->leftJoin('users AS u', 'u.Id', 'leave_requests.UserId')
             ->leftJoin('module_form_approvers AS mfa', function($join) {
                 $join->on('mfa.TableId', 'leave_requests.Id')
-                    ->where('mfa.ModuleId', $this->MODULE_ID)
+                    ->where('mfa.ModuleId', config('constant.ID.MODULES.MODULE_ONE.LEAVE'))
                     ->where('mfa.Status', 1)
                     ->where('leave_requests.Status', '=', 1);
             })
@@ -45,7 +43,7 @@ class LeaveRequestController extends Controller
             ->leftJoin('users AS u', 'u.Id', 'leave_requests.UserId')
             ->leftJoin('module_form_approvers AS mfa', function($join) {
                 $join->on('mfa.TableId', 'leave_requests.Id')
-                    ->where('mfa.ModuleId', $this->MODULE_ID)
+                    ->where('mfa.ModuleId', config('constant.ID.MODULES.MODULE_ONE.LEAVE'))
                     ->where('mfa.Status', 1)
                     ->where('leave_requests.Status', '=', 1);
             })
@@ -79,14 +77,14 @@ class LeaveRequestController extends Controller
             'forApprovalData' => $forApprovalData,
             'calendarData'    => $calendarData,
             'leaveTypes'      => LeaveType::where('Status', 1)->get(),
-            'MODULE_ID'       => $this->MODULE_ID,
+            'MODULE_ID'       => config('constant.ID.MODULES.MODULE_ONE.LEAVE'),
         ];
 
         return view('leaveRequest.index', $data);
     }
 
     public function form() {
-        isCreateAllowed($this->MODULE_ID, true);
+        isCreateAllowed(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), true);
 
         $data = [
             'title' => "New Leave",
@@ -106,7 +104,7 @@ class LeaveRequestController extends Controller
         if ($data) {
             if ($Status == 1) {
                 if ($nextLevelApprover) {
-                    $nextApprover = ModuleFormApprover::where('ModuleId', $this->MODULE_ID)
+                    $nextApprover = ModuleFormApprover::where('ModuleId', config('constant.ID.MODULES.MODULE_ONE.LEAVE'))
                         ->where('TableId', $Id)
                         ->where('Level', $nextLevelApprover)
                         ->first();
@@ -117,7 +115,7 @@ class LeaveRequestController extends Controller
                 } else {
                     $approver = User::select('users.*')
                         ->leftJoin('module_form_approvers AS mfa', 'mfa.ApproverId', 'users.Id')
-                        ->where('ModuleId', $this->MODULE_ID)
+                        ->where('ModuleId', config('constant.ID.MODULES.MODULE_ONE.LEAVE'))
                         ->where('TableId', $Id)
                         ->where('mfa.Status', 1)
                         ->orderBy('mfa.Level', 'ASC')
@@ -211,7 +209,7 @@ class LeaveRequestController extends Controller
                 LeaveRequestFiles::insert($leaveRequestFileData);
             }
 
-            setFormApprovers($this->MODULE_ID, $Id); // SET APPROVERS
+            setFormApprovers(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id); // SET APPROVERS
             $this->sendMail($Id, 0, 1); // ID, APPROVER LEVEL: 0 | FIRST, STATUS: 1 - FOR APPROVAL
 
             return redirect()
@@ -222,21 +220,21 @@ class LeaveRequestController extends Controller
     }
 
     public function view($Id) {
-        isReadAllowed($this->MODULE_ID, true);
+        isReadAllowed(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), true);
         
         $leaveRequestData = LeaveRequest::select('leave_requests.*', 'lt.Name', 'u.FirstName', 'u.LastName', 'ApproverId', 'u2.FirstName AS aFirstName', 'u2.LastName AS aLastName')
             ->leftJoin('leave_types AS lt', 'leave_requests.LeaveTypeId', 'lt.Id')
             ->leftJoin('users AS u', 'u.Id', 'leave_requests.UserId')
             ->leftJoin('module_form_approvers AS mfa', function($join) {
                 $join->on('mfa.TableId', 'leave_requests.Id')
-                    ->where('mfa.ModuleId', $this->MODULE_ID)
+                    ->where('mfa.ModuleId', config('constant.ID.MODULES.MODULE_ONE.LEAVE'))
                     ->where('mfa.Status', 1)
                     ->where('leave_requests.Status', '=', 1);
             })
             ->leftJoin('users AS u2', 'u2.Id', 'mfa.ApproverId')
             ->where('leave_requests.Id', $Id)
             ->first();
-        $pending = isFormPending($this->MODULE_ID, $Id);
+        $pending = isFormPending(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id);
 
         $data = [
             'title'    => "View Leave",
@@ -244,21 +242,21 @@ class LeaveRequestController extends Controller
             'files'    => LeaveRequestFiles::where('LeaveRequestId', $Id)->get(),
             'approvers' => ModuleFormApprover::select('module_form_approvers.*', 'u.FirstName', 'u.LastName')
                 ->leftJoin('users AS u', 'u.Id', 'ApproverId')
-                ->where('ModuleId', $this->MODULE_ID)
+                ->where('ModuleId', config('constant.ID.MODULES.MODULE_ONE.LEAVE'))
                 ->where('TableId', $Id)
                 ->orderBy('Level', 'ASC')
                 ->get(),
             'pending'    => $pending,
             'event'      => 'view',
             'leaveTypes' => LeaveType::where('Status', 1)->get(),
-            'MODULE_ID'  => $this->MODULE_ID,
+            'MODULE_ID'  => config('constant.ID.MODULES.MODULE_ONE.LEAVE'),
         ];
 
         return view('leaveRequest.form', $data);
     }
 
     public function revise($Id) {
-        isEditAllowed($this->MODULE_ID, true);
+        isEditAllowed(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), true);
 
         // $data = LeaveRequest::select('leave_requests.*', 'lt.Name AS LeaveType', 'u.FirstName', 'u.LastName')
         //     ->leftJoin('leave_types AS lt', 'leave_requests.LeaveTypeId', 'lt.Id')
@@ -271,14 +269,14 @@ class LeaveRequestController extends Controller
             ->leftJoin('users AS u', 'u.Id', 'leave_requests.UserId')
             ->leftJoin('module_form_approvers AS mfa', function($join) {
                 $join->on('mfa.TableId', 'leave_requests.Id')
-                    ->where('mfa.ModuleId', $this->MODULE_ID)
+                    ->where('mfa.ModuleId', config('constant.ID.MODULES.MODULE_ONE.LEAVE'))
                     ->where('mfa.Status', 1)
                     ->where('leave_requests.Status', '=', 1);
             })
             ->leftJoin('users AS u2', 'u2.Id', 'mfa.ApproverId')
             ->where('leave_requests.Id', $Id)
             ->first();
-        $pending = (!$leaveRequestData->ApproverId && $leaveRequestData->Status == 1) || isFormPending($this->MODULE_ID, $Id);
+        $pending = (!$leaveRequestData->ApproverId && $leaveRequestData->Status == 1) || isFormPending(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id);
 
         if ($pending || $leaveRequestData->Status == 3) {
             $data = [
@@ -348,7 +346,7 @@ class LeaveRequestController extends Controller
                 LeaveRequestFiles::insert($leaveRequestFileData);
             }
 
-            setFormApprovers($this->MODULE_ID, $Id); // SET APPROVERS
+            setFormApprovers(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id); // SET APPROVERS
             $this->sendMail($Id, 0, 1); // ID, APPROVER: 0 - FIRST, STATUS: 1 - FOR APPROVAL
 
             return redirect()
@@ -404,7 +402,7 @@ class LeaveRequestController extends Controller
     
     public function approve(Request $request, $Id, $UserId) {
         $LeaveRequest = LeaveRequest::find($Id);
-        $ModuleFormApprover = ModuleFormApprover::where('ModuleId', $this->MODULE_ID)
+        $ModuleFormApprover = ModuleFormApprover::where('ModuleId', config('constant.ID.MODULES.MODULE_ONE.LEAVE'))
             ->where('TableId', $Id)
             ->where('ApproverId', $UserId)
             ->limit(1);
@@ -418,7 +416,7 @@ class LeaveRequestController extends Controller
         ];
 
         if ($ModuleFormApprover->update($data)) {
-            $newStatus = getFormStatus($this->MODULE_ID, $Id);
+            $newStatus = getFormStatus(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id);
             $this->sendMail($Id, $nextLevelApprover, $newStatus);
             $LeaveRequest->Status = $newStatus;
             if ($LeaveRequest->save()) {
@@ -441,7 +439,7 @@ class LeaveRequestController extends Controller
         ]);
 
         $LeaveRequest = LeaveRequest::find($Id);
-        $ModuleFormApprover = ModuleFormApprover::where('ModuleId', $this->MODULE_ID)
+        $ModuleFormApprover = ModuleFormApprover::where('ModuleId', config('constant.ID.MODULES.MODULE_ONE.LEAVE'))
             ->where('TableId', $Id)
             ->where('ApproverId', $UserId)
             ->limit(1);

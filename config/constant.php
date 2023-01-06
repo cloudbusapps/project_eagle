@@ -35,6 +35,32 @@
             ],
             'PROJECT_PHASES' => [
                 'BUILD' => 'ab68a8ac-5a0e-4fd7-96f9-066417133081',
-            ]
+            ],
+            'MODULES' => [
+                'MODULE_ONE' => [
+                    'DASHBOARD'             => 1,
+                    'ONBOARDING_PROCEDURES' => 2,
+                    'DIRECTORY'             => 3,
+                    'LEAVE'                 => 4,
+                    'EVALUATIONS'           => 5,
+                    'TRAININGS'             => 6,
+                    'CERTIFICATIONS'        => 7
+                ],
+                'MODULE_TWO' => [
+                    'DASHBOARD'           => 8,
+                    'OPPORTUNITY'         => 9,
+                    'PROJECT_UTILIZATION' => 10,
+                    'PROJECTS'            => 11,
+                    'RESOURCES'           => 12,
+                    'COMPONENTS'          => 13,
+                    'BUDGET'              => 14,
+                    'OVERTIME'            => 15,
+                    'TIMEKEEPING'         => 16,
+                ],
+                'MODULE_THREE' => [
+                    'DASHBOARD' => 17,
+                    'REPORTS'   => 18,
+                ]
+            ],
         ],
     ];

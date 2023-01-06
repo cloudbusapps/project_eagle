@@ -31,11 +31,9 @@ use App\Mail\CustomerMail;
 
 class CustomerController extends Controller
 {
-    private $MODULE_ID = 18;
-
     function index()
     {
-        isReadAllowed($this->MODULE_ID, true);
+        isReadAllowed(config('constant.ID.MODULES.MODULE_TWO.OPPORTUNITY'), true);
 
         $customerData = Customer::all();
         $data = [
@@ -47,7 +45,7 @@ class CustomerController extends Controller
 
     function form()
     {
-        isCreateAllowed($this->MODULE_ID, true);
+        isCreateAllowed(config('constant.ID.MODULES.MODULE_TWO.OPPORTUNITY'), true);
 
         $title = $this->getTitle();
         $data = [
@@ -123,7 +121,7 @@ class CustomerController extends Controller
             'type'                => 'edit',
             'data'                => $customerData,
             'Id'                  => $Id,
-            'MODULE_ID'           => $this->MODULE_ID,
+            'MODULE_ID'           => config('constant.ID.MODULES.MODULE_TWO.OPPORTUNITY'),
         ]);
 
         return view('customers.form', $data);
