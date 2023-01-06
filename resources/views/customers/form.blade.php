@@ -1589,11 +1589,11 @@
                                                                     </td>
                                                                     <td>
                                                                         <select name="RequirementConsultant[]" id="RequirementConsultant{{ $index}}" class="form-select"
-                                                                            required >
+                                                                            required>
 
                                                                             @foreach ($assignedConsultants as $assignedConsultant)
                                                                                 <option  value="{{ $assignedConsultant->Id }}">
-                                                                                    {{ $assignedConsultant->UserId . ' ' . $assignedConsultant->LastName }}
+                                                                                    {{ $assignedConsultant->FirstName . ' ' . $assignedConsultant->LastName }}
                                                                                 </option>
                                                                             @endforeach
 
@@ -1813,6 +1813,12 @@
                                     <!-- ---------- END PROPOSAL ---------- -->
                                 @elseif ($Status == 9 || Request::get('progress') == 'success')
                                     <h6 class="text-success text-center">Opportunity Won</h6>
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-primary btnUpdateForm">
+                                            Proceed to project proper
+                                        </button>
+                                    </div>
+
                                 @elseif ($Status == 10 || Request::get('progress') == 'lost')
                                     <h6 class="text-danger text-center">Opportunity Lost</h6>
                                 @else

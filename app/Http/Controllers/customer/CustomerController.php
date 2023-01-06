@@ -39,7 +39,7 @@ class CustomerController extends Controller
 
         $customerData = Customer::all();
         $data = [
-            'title'   => "Opportunity",
+            'title'   => "Customer",
             'data'    => $customerData
         ];
         return view('customers.index', $data);
@@ -86,7 +86,7 @@ class CustomerController extends Controller
             $limitations = CustomerLimitation::where('CustomerId', $Id)->get();
             $assignedConsultants = CustomerConsultant::where('customer_assigned_consultants.CustomerId', $Id)
             ->leftJoin('users AS U','U.Id', '=', 'customer_assigned_consultants.UserId' )
-            ->get();
+            ->get(['customer_assigned_consultants.*','U.FirstName','U.LastName']);
             $totalManhour = CustomerInscope::where('CustomerId', $Id)->sum('Manhour');
             $customerResources = DB::table('customer_assessment_resources')
                 ->where('CustomerId', $Id)
@@ -256,10 +256,10 @@ class CustomerController extends Controller
                 $ThirdPartyName = $customerData->ThirdPartyName;
                 $User = User::find($CreatedById);
 
-                $Title       = "Opportunity";
+                $Title       = "Customer";
                 $Description = "
                 <div>
-                    <div><b>Opportunity - {$CustomerName}</b></div>
+                    <div><b>Customer - {$CustomerName}</b></div>
                     <div>{$ThirdPartyCount} out of {$InScopeCount} requirements are assigned to Third Party - {$ThirdPartyName}</div>
                 </div>";
                 $Link        = "/opportunity/edit/{$Id}?progress=capability";
@@ -500,7 +500,7 @@ class CustomerController extends Controller
             $User = User::find($HeadId);
 
             $Title       = "Opportunity";
-            $Description = "<b>Opportunity - {$CustomerName}</b> is now ready for assessment and manhours";
+            $Description = "<b>Customer - {$CustomerName}</b> is now ready for assessment and manhours";
             $Link        = url("/opportunity/edit/{$Id}?progress=assessment");
             $Icon        = '/assets/img/icons/default.png';
 
@@ -545,7 +545,7 @@ class CustomerController extends Controller
                     // NOTIFY CONSULTANT
                     $User = User::find($dt['UserId']);
         
-                    $Title = "Opportunity";
+                    $Title = "Customer";
                     $Description = " <div>Please do an assessment and indicate the manhours of the requirement for {$CustomerName}</div>";
                     $Link = "/opportunity/edit/{$Id}?progress=assessment";
                     $Icon = '/assets/img/icons/default.png';
