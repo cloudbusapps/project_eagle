@@ -48,9 +48,10 @@ class Timekeeping extends Model
 
     public function tapActivity(Activity $activity, string $eventName)
     {
-        // if (!empty($activity->causer)) {
-        //     $FullName = $activity->causer->FirstName . ' ' . $activity->causer->LastName;
-        //     $activity->description = "{$FullName} {$eventName} timekeeping</b>";
-        // }
+        if (!empty($activity->causer)) {
+            $FullName = $activity->causer->FirstName . ' ' . $activity->causer->LastName;
+            $Date = date('F d, Y', strtotime($activity->subject->Date));
+            $activity->description = "{$FullName} {$eventName} {$Date} timekeeping</b>";
+        }
     }
 }
