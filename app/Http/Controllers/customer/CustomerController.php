@@ -89,12 +89,16 @@ class CustomerController extends Controller
             $customerResources = DB::table('customer_assessment_resources')
                 ->where('CustomerId', $Id)
                 ->get();
+            $users = User::where('DesignationId', config('constant.ID.DESIGNATIONS.TECHNICAL_CONSULTANT'))
+                ->orWhere('DesignationId',config('constant.ID.DESIGNATIONS.FUNCTIONAL_CONSULTANT'))
+                ->get();
             
             $data = [
                 'reqSol'              => $inscopes,
                 'limitations'         => $limitations,
                 'thirdParties'        => ThirdParty::orderBy('created_at', 'DESC')->get(),
-                'users'               => User::all(),
+                'users'               => $users,
+                'OIC'               => User::where('Id',config('constant.ID.USERS.ALVIN_AGATO'))->get(),
                 'totalManhour'        => $totalManhour,
                 'assignedConsultants' => $assignedConsultants,
                 'projectPhaseResources' => $this->getProjectPhaseResources($Id),
@@ -387,13 +391,21 @@ class CustomerController extends Controller
     function updateRequirementSolution($request, $Id, $customerData)
     {
         $validator = $request->validate([
-            'Title'       => ['required'],
-            'Description' => ['required'],
-            'Module'      => ['required'],
-            'Solution'    => ['required'],
-            'Assumption'  => ['required'],
-            'OutOfScope'  => ['required'],
-            'Comment'     => ['required'],
+            'Title.*'       => ['required'],
+            'Description.*' => ['required'],
+            'Module.*'      => ['required'],
+            'Solution.*'    => ['required'],
+            'Assumption.*'  => ['required'],
+            'OutOfScope.*'  => ['required'],
+            'Comment.*'     => ['required'],
+        ],[
+            'Title.*.required'       => 'Title is required',
+            'Description.*.required' => 'Description is required',
+            'Module.*.required'      => 'Module is required',
+            'Solution.*.required'    => 'Solution is required',
+            'Assumption.*.required'  => 'Assumption is required',
+            'OutOfScope.*.required'  => 'OutOfScope is required',
+            'Comment.*.required'     => 'Comment is required',
         ]);
 
         $Title       = $request->Title;
