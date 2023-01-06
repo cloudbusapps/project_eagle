@@ -17,6 +17,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\customer\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UtilizationDashboardController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\EmployeeDirectoryController;
 use App\Http\Controllers\ProjectController;
@@ -38,6 +39,9 @@ Route::post('/register', [RegisterController::class, 'save'])->name('auth.save')
 Route::group(['middleware' => 'auth'], function () {
     // DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // UTILIZATION DASHBOARD
+    Route::get('/utilizationDashboard', [UtilizationDashboardController::class, 'index'])->name('utilizationDashboard');
 
     // USER
     Route::prefix('user')->group(function () {
