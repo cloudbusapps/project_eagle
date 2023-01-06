@@ -82,7 +82,9 @@ class CustomerController extends Controller
         } else if (in_array($title[1], [4, 5, 7])) { // REQUIREMENT AND SOLUTIONS, CAPABILITIES, ASSESSMENT
             $inscopes = CustomerInscope::where('CustomerId', $Id)->orderBy('created_at', 'DESC')->get();
             $limitations = CustomerLimitation::where('CustomerId', $Id)->get();
-            $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)->get();
+            $assignedConsultants = CustomerConsultant::where('customer_assigned_consultants.CustomerId', $Id)
+            ->leftJoin('users AS U','U.Id', '=', 'customer_assigned_consultants.UserId' )
+            ->get(['customer_assigned_consultants.*','U.FirstName','U.LastName']);
             $totalManhour = CustomerInscope::where('CustomerId', $Id)->sum('Manhour');
             $customerResources = DB::table('customer_assessment_resources')
                 ->where('CustomerId', $Id)

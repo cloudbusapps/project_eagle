@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('customer_assigned_consultants', function (Blueprint $table) {
             $table->uuid('Id')->primary();
             $table->uuid('CustomerId');
-            $table->string('UserId');
+            $table->uuid('UserId');
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();
             $table->timestamps();

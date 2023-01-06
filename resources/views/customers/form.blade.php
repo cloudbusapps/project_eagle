@@ -1539,6 +1539,7 @@
                                                             <th style="width: 220px">Solutions Overview</th>
                                                             <th style="width: 200px;">Manhours</th>
                                                             <th style="width: 220px">Assumptions</th>
+                                                            <th style="width: 220px">Assigned Consultant(s)</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -1585,6 +1586,18 @@
                                                                     <td>
                                                                         <small
                                                                             style="white-space: break-spaces;">{{ $inscope->Assumption }}</small>
+                                                                    </td>
+                                                                    <td>
+                                                                        <select name="RequirementConsultant[]" id="RequirementConsultant{{ $index}}" class="form-select"
+                                                                            required>
+
+                                                                            @foreach ($assignedConsultants as $assignedConsultant)
+                                                                                <option  value="{{ $assignedConsultant->Id }}">
+                                                                                    {{ $assignedConsultant->FirstName . ' ' . $assignedConsultant->LastName }}
+                                                                                </option>
+                                                                            @endforeach
+
+                                                                        </select>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
@@ -1800,6 +1813,12 @@
                                     <!-- ---------- END PROPOSAL ---------- -->
                                 @elseif ($Status == 9 || Request::get('progress') == 'success')
                                     <h6 class="text-success text-center">Opportunity Won</h6>
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-primary btnUpdateForm">
+                                            Proceed to project proper
+                                        </button>
+                                    </div>
+
                                 @elseif ($Status == 10 || Request::get('progress') == 'lost')
                                     <h6 class="text-danger text-center">Opportunity Lost</h6>
                                 @else
