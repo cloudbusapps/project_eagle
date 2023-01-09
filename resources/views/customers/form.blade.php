@@ -720,26 +720,28 @@
                                     @if ($Status > 3)
                                         <div class="row mb-3">
                                             <label for="files" class="col-sm-2 label">Files</label>
-                                            @foreach ($files as $file)
-                                                <div class="col-sm-5 parent" filename="{{ $file['File'] }}">
-                                                    <div class="p-2 border border-1 rounded">
-                                                        <div class="row">
-                                                            <img src="/uploads/icons/{{ $file->getIconAttribute() }}" class="col-sm-3">
-                                                            <div class="col-md-9">
-                                                                <div class="d-flex justify-content-between">
-                                                                    <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
-                                                                        class="text-black fw-bold text-truncate"
-                                                                        target="_blank">{{ $file['File'] }}</a>
-                                                                    <button type="button"
-                                                                        class="btn-close btnRemoveFilename"></button>
+                                            <div class="col-sm-10 row">
+                                                @foreach ($files as $file)
+                                                    <div class="col-sm-6 col-md-4 parent" filename="{{ $file['File'] }}">
+                                                        <div class="p-2 border border-1 rounded">
+                                                            <div class="row">
+                                                                <img src="/uploads/icons/{{ $file->getIconAttribute() }}" class="col-sm-3">
+                                                                <div class="col-md-9">
+                                                                    <div class="d-flex justify-content-between">
+                                                                        <a href="{{ asset('uploads/businessProcess/' . $file['File']) }}"
+                                                                            class="text-black fw-bold text-truncate"
+                                                                            target="_blank">{{ $file['File'] }}</a>
+                                                                        {{-- <button type="button"
+                                                                            class="btn-close btnRemoveFilename"></button> --}}
+                                                                    </div>
+                                                                    <span style="font-size:14px" class="text-muted">
+                                                                        {{ date('F d, Y', strtotime($file->created_at)) }}</span>
                                                                 </div>
-                                                                <span style="font-size:14px" class="text-muted">
-                                                                    {{ date('F d, Y', strtotime($file->created_at)) }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            @endforeach
+                                                @endforeach
+                                            </div>
                                         </div>
                                     @endif
 
@@ -1539,7 +1541,7 @@
                                                             <th style="width: 220px">Solutions Overview</th>
                                                             <th style="width: 200px;">Manhours</th>
                                                             <th style="width: 220px">Assumptions</th>
-                                                            <th style="width: 220px">Assigned Consultant(s)</th>
+                                                            <th style="width: 220px">Assigned Consultant</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -1589,7 +1591,7 @@
                                                                     </td>
                                                                     <td>
                                                                         <select name="RequirementConsultant[]" id="RequirementConsultant{{ $index}}" class="form-select"
-                                                                            required>
+                                                                            required select2>
 
                                                                             @foreach ($assignedConsultants as $assignedConsultant)
                                                                                 <option  value="{{ $assignedConsultant->Id }}">
