@@ -16,9 +16,10 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->uuid('Id')->primary();
             $table->string('Name');
-            $table->string('Description');
-            $table->date('KickoffDate');
-            $table->date('ClosedDate');
+            $table->string('Description')->nullable();
+            $table->string('CustomerId')->nullable();
+            $table->date('KickoffDate')->nullable();
+            $table->date('ClosedDate')->nullable();
             $table->json('UsersId')->nullable();
 
             // will change it to ProjectManagerID if needed

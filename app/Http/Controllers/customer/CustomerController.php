@@ -17,6 +17,7 @@ use App\Models\customer\CustomerProjectPhasesDetails;
 use App\Models\customer\CustomerRemarks;
 use App\Models\admin\ThirdParty;
 use App\Models\admin\Designation;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Customer;
@@ -35,7 +36,7 @@ class CustomerController extends Controller
     {
         isReadAllowed(config('constant.ID.MODULES.MODULE_TWO.OPPORTUNITY'), true);
 
-        $customerData = Customer::all();
+        $customerData = Customer::whereNot('Status',11)->get();
         $data = [
             'title'   => "Opportunity",
             'data'    => $customerData
@@ -843,6 +844,36 @@ class CustomerController extends Controller
         }
 
     }
+    function convertToProject(Request $request, $Id){
+        $validator = $request->validate([
+            'ProjectName' => ['required'],
+            'Description' => ['required'],
+        ]);
+        $customerData = Customer::find($Id);
+        $customerName = $customerData->CustomerName;
+
+        $data = [
+            'Id'             => Str::uuid(),
+            'CustomerId'     => $Id,
+            'Name'           => $request->ProjectName,
+            'Description'    => $request->Description,
+            'CreatedById'    => Auth::id(),
+            'UpdatedById'    => Auth::id(),
+            'created_at'     => now(),
+        ];
+        // CHANGE STATUS TO CONVERTED
+        $customerData->Status = 11;
+
+        if ($customerData->update()) {
+            $request->session()->flash('success', "<b>{$customerName}</b> successfully converted into projects!");
+            return response()->json(['url' => url('projects/projectView')]);
+        } else {
+            $request->session()->flash('fail', 'Something went wrong, please try again later');
+            return response()->json(['url' => url('opportunity/edit/' . $Id)]);
+        }
+
+
+    }
 
     function update(Request $request, $Id)
     {
@@ -881,6 +912,9 @@ class CustomerController extends Controller
         // PROPOSAL
         else if ($customerData->Status == 8) {
             $this->updateProposal($request, $Id, $customerData);
+        }
+        else if ($customerData->Status == 9) {
+            $this->convertToProject($request, $Id, $customerData);
         }
 
 
