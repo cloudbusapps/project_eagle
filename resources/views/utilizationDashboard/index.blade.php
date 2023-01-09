@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
     <main id="main" class="main">
         <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
             <div class="container-fluid">
@@ -70,7 +69,7 @@
                     <div class="col-md-12 mt-3">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="mb-0 font-weight-bold">SUMMARY OF MANHOURS PER RESOURCE</h5>
+                                <h5 class="mb-0 font-weight-bold">SUMMARY OF MAN HOURS PER RESOURCE</h5>
                             </div>
                             <div class="card-body">
                                 <table class="table table-striped table-hover">
@@ -82,6 +81,9 @@
                                             <th>Intermediate</th>
                                             <th>Easy</th>
                                             <th>Total Projects</th>
+                                            <th>Budgeted Hours</th>
+                                            <th>Used Hours</th>
+                                            <th>Remaining Hours</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -92,6 +94,9 @@
                                             <td class="text-center">3</td>
                                             <td class="text-center">2</td>
                                             <td class="text-center">10</td>
+                                            <td class="text-center">10</td>
+                                            <td class="text-center">4</td>
+                                            <td class="text-center">6</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -101,7 +106,7 @@
                     <div class="col-md-12 mt-3">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="mb-0 font-weight-bold">MONTHLY SUMMARY PER RESOURCE</h5>
+                                <h5 class="mb-0 font-weight-bold">SUMMARY OF UTILIZATION FOR ADMIN TASK</h5>
                             </div>
                             <div class="card-body">
                                 <table class="table table-bordered table-striped table-hover">
@@ -109,8 +114,78 @@
                                         <tr>
                                             <th rowspan="2">#</th>
                                             <th rowspan="2">Resource</th>
-                                            <th colspan="2" class="text-center">January</th>
-                                            <th colspan="2" class="text-center">February</th>
+                                            <th colspan="2" class="text-center">January 2022</th>
+                                            <th colspan="2" class="text-center">February 2022</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">Used Hours</th>
+                                            <th class="text-center">Utilization</th>
+                                            <th class="text-center">Used Hours</th>
+                                            <th class="text-center">Utilization</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Arjay Diangzon</td>
+                                            <td class="text-center">160</td>
+                                            <td class="text-center">100%</td>
+                                            <td class="text-center">160</td>
+                                            <td class="text-center">100%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0 font-weight-bold">SUMMARY OF UTILIZATION FOR TRAILHEAD AND TRAINING</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">#</th>
+                                            <th rowspan="2">Resource</th>
+                                            <th colspan="2" class="text-center">January 2022</th>
+                                            <th colspan="2" class="text-center">February 2022</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">Used Hours</th>
+                                            <th class="text-center">Utilization</th>
+                                            <th class="text-center">Used Hours</th>
+                                            <th class="text-center">Utilization</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Arjay Diangzon</td>
+                                            <td class="text-center">160</td>
+                                            <td class="text-center">100%</td>
+                                            <td class="text-center">160</td>
+                                            <td class="text-center">100%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0 font-weight-bold">MONTHLY SUMMARY OF UTILIZATION</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">#</th>
+                                            <th rowspan="2">Resource</th>
+                                            <th colspan="2" class="text-center">January 2022</th>
+                                            <th colspan="2" class="text-center">February 2022</th>
                                         </tr>
                                         <tr>
                                             <th class="text-center">Used Hours</th>
@@ -137,5 +212,4 @@
             </div>
         </div>
     </main>
-
 @endsection
