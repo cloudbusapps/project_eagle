@@ -213,6 +213,7 @@ use App\Http\Controllers\admin\LeaveTypeController;
 use App\Http\Controllers\admin\PermissionController;
 use App\Http\Controllers\admin\ComplexityController;
 use App\Http\Controllers\admin\ProjectPhaseController;
+use App\Http\Controllers\admin\CompanySettingController;
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function () {
     // MODULE
@@ -308,6 +309,16 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
             Route::get('/edit/{Id}', [ProjectPhaseController::class, 'edit'])->name('projectPhase.edit');
             Route::put('/edit/{Id}/update', [ProjectPhaseController::class, 'update'])->name('projectPhase.update');
             Route::get('/delete/{Id}', [ProjectPhaseController::class, 'delete'])->name('projectPhase.delete');
+        });
+
+        // COMPANY SETTING
+        Route::prefix('companySetting')->group(function () {
+            Route::get('/', [CompanySettingController::class, 'index'])->name('companySetting');
+            Route::get('/add', [CompanySettingController::class, 'form'])->name('companySetting.add');
+            Route::post('/save', [CompanySettingController::class, 'save'])->name('companySetting.save');
+            Route::get('/edit/{Id}', [CompanySettingController::class, 'edit'])->name('companySetting.edit');
+            Route::put('/edit/{Id}/update', [CompanySettingController::class, 'update'])->name('companySetting.update');
+            Route::get('/delete/{Id}', [CompanySettingController::class, 'delete'])->name('companySetting.delete');
         });
     });
 });

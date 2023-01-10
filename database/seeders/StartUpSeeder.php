@@ -75,5 +75,9 @@ class StartUpSeeder extends Seeder
         // ----- PROJECT -----
         $this->call(ProjectSeeder::class);
         // ----- END PROJECT -----
+
+        // ----- COMPANY SETTING -----
+        $this->call(CompanySettingSeeder::class);
+        // ----- END COMPANY SETTING -----
     }
 }

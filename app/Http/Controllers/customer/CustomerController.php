@@ -18,6 +18,7 @@ use App\Models\customer\CustomerRemarks;
 use App\Models\admin\ThirdParty;
 use App\Models\admin\Designation;
 use App\Models\Project;
+use App\Models\Resource;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Customer;
@@ -760,6 +761,7 @@ class CustomerController extends Controller
 
     function updateResourceCost(Request $request, $Id) 
     {
+        
         $data = [];
         $customerData = Customer::find($Id);
         $resourceData = $request->resourceData;
@@ -852,19 +854,38 @@ class CustomerController extends Controller
         $customerData = Customer::find($Id);
         $customerName = $customerData->CustomerName;
 
-        $data = [
-            'Id'             => Str::uuid(),
-            'CustomerId'     => $Id,
-            'Name'           => $request->ProjectName,
-            'Description'    => $request->Description,
-            'CreatedById'    => Auth::id(),
-            'UpdatedById'    => Auth::id(),
-            'created_at'     => now(),
-        ];
+        $project = new Project();
+        $project->Id             = Str::uuid();
+        $project->CustomerId     = $Id;
+        $project->Name           = $request->ProjectName;
+        $project->Description    = $request->Description;
+        $project->CreatedById    = Auth::id();
+        $project->UpdatedById    = Auth::id();
+        $project->created_at     = now();
+
         // CHANGE STATUS TO CONVERTED
         $customerData->Status = 11;
 
-        if ($customerData->update()) {
+        // COPY CUSTOMER RESOURCE INTO PROJECT RESOURCE
+        $project->save();
+        $projectId = $project->Id;
+        $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)
+        ->get();
+        
+        $resourceData = [];
+
+        foreach ($assignedConsultants as $user) {
+            $resourceData[] = [
+                'Id'            => Str::uuid(),
+                'ProjectId'     => $projectId,
+                'UserId'        => $user->UserId,
+            ];
+        }
+
+
+        $saveUser = Resource::insert($resourceData);
+
+        if ($saveUser) {
             $request->session()->flash('success', "<b>{$customerName}</b> successfully converted into projects!");
             return response()->json(['url' => url('projects/projectView')]);
         } else {

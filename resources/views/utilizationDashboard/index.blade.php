@@ -208,6 +208,41 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-12 mt-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0 font-weight-bold">SUMMARY OF UTILIZATION PER PROJECT</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">#</th>
+                                            <th rowspan="2">Resource</th>
+                                            <th colspan="2" class="text-center">Project Eagle</th>
+                                            <th colspan="2" class="text-center">Carmen's Best</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">Assessed</th>
+                                            <th class="text-center">Used Hours</th>
+                                            <th class="text-center">Assessed</th>
+                                            <th class="text-center">Used Hours</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Arjay Diangzon</td>
+                                            <td class="text-center">160</td>
+                                            <td class="text-center">2.4</td>
+                                            <td class="text-center">160</td>
+                                            <td class="text-center">5</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

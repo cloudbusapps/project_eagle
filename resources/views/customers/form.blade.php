@@ -1590,7 +1590,7 @@
                                                                             style="white-space: break-spaces;">{{ $inscope->Assumption }}</small>
                                                                     </td>
                                                                     <td>
-                                                                        <select name="RequirementConsultant[]" id="RequirementConsultant{{ $index}}" class="form-select"
+                                                                        {{-- <select name="RequirementConsultant[]" id="RequirementConsultant{{ $index}}" class="form-select"
                                                                             required select2>
 
                                                                             @foreach ($assignedConsultants as $assignedConsultant)
@@ -1599,7 +1599,7 @@
                                                                                 </option>
                                                                             @endforeach
 
-                                                                        </select>
+                                                                        </select> --}}
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
@@ -2440,7 +2440,7 @@
                                 setTimeout(() => {
                                     $.ajax({
                                         type: 'POST',
-                                        url: `/customer/edit/{{ $Id }}/updateResourceCost`,
+                                        url: `/opportunity/edit/{{ $Id }}/updateResourceCost`,
                                         data:{ resourceData },
                                         async: false,
                                         success: function(response) {
@@ -2509,6 +2509,9 @@
                                             async: false,
                                             success: function(response) {
                                                 window.location = response.url;
+                                            },
+                                            fail: function(response){
+                                                console.log('this is failed',response)
                                             }
                                         })
                                     }, 100);
