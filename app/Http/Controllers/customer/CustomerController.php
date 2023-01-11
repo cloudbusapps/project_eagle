@@ -600,6 +600,7 @@ class CustomerController extends Controller
             foreach ($request->data as $assessment) {
                 $inscope = CustomerInscope::find($assessment['rowId']);
                 $inscope->Manhour = $assessment['manhourValue'];
+                $inscope->UserId = $assessment['userId']??null;
                 $update = $inscope->save();
             }
             if ($update) {

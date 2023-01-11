@@ -22,7 +22,7 @@ return new class extends Migration
             $table->longText('Solution');
             $table->integer('Manhour')->nullable(true);
             $table->longText('Assumption');
-            $table->uuid('UserId'); // Id of assigned user to the req.
+            $table->uuid('UserId')->nullable(); // Id of assigned user to the req.
             $table->integer('ThirdParty')->default(0); // 1 - Assigned to TP, 0 - No
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();

@@ -58,6 +58,7 @@
                                     <th scope="col">Customer Name</th>
                                     <th scope="col">Industry</th>
                                     <th scope="col">Contact Person</th>
+                                    <th scope="col">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -72,6 +73,7 @@
 
                                         <td>{{ $data->Industry }}</td>
                                         <td>{{ $data->ContactPerson }}</td>
+                                        <td>{!! getStatus($data->Status)!!}</td>
                                     </tr>
                                 @endforeach
                             </tbody>

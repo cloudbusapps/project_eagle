@@ -1590,16 +1590,16 @@
                                                                             style="white-space: break-spaces;">{{ $inscope->Assumption }}</small>
                                                                     </td>
                                                                     <td>
-                                                                        {{-- <select name="RequirementConsultant[]" id="RequirementConsultant{{ $index}}" class="form-select"
-                                                                            required select2>
+                                                                        <select name="RequirementConsultant[]" id="RequirementConsultant{{ $index}}" class="form-select"
+                                                                            required>
 
                                                                             @foreach ($assignedConsultants as $assignedConsultant)
-                                                                                <option  value="{{ $assignedConsultant->Id }}">
+                                                                                <option {{ $inscope->UserId==$assignedConsultant->Id?'selected':''}}  value="{{ $assignedConsultant->Id }}">
                                                                                     {{ $assignedConsultant->FirstName . ' ' . $assignedConsultant->LastName }}
                                                                                 </option>
                                                                             @endforeach
 
-                                                                        </select> --}}
+                                                                        </select>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
@@ -1974,6 +1974,8 @@
                                             rowId: $("input[name='RowId[]']").eq(index)
                                                 .val(),
                                             manhourValue: $("input[name='Manhour[]']")
+                                                .eq(index).val(),
+                                            userId: $("select[name='RequirementConsultant[]']")
                                                 .eq(index).val()
                                         }
                                         data.push(obj);

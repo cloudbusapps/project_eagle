@@ -57,7 +57,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
-            <form action="{{ $action }}" method="POST" id="formDepartment" validated="false" todo="{{ $todo }}">
+            <form action="{{ $action }}" method="POST" id="formCompanySetting" validated="false" todo="{{ $todo }}">
                 @csrf
                 @method($method)
 
@@ -88,16 +88,16 @@
                             </div>
                         </div>
                         <div class="row my-3">
-                            <label for="Holidays" class="col-sm-2">Number of Paid Holidays <code>*</code></label>
+                            <label for="PaidHoliday" class="col-sm-2">Number of Paid Holidays <code>*</code></label>
                             <div class="col-sm-10">
-                                <input type="number" class="form-control" id="Holidays" name="Holidays" placeholder="Holidays"
+                                <input type="number" class="form-control" id="PaidHoliday" name="PaidHoliday" placeholder="Holidays"
                                 value="{{ old('PaidHoliday') ?? $PaidHoliday }}" required>
                             </div>
                         </div>
                         <div class="row my-3">
-                            <label for="Holidays" class="col-sm-2">Annual Working Hours</label>
+                            <label for="AnnualWorkingHours" class="col-sm-2">Annual Working Hours</label>
                             <div class="col-sm-10">
-                                <input type="number" class="form-control" id="Holidays" name="Holidays" placeholder="Holidays"
+                                <input type="number" class="form-control" id="AnnualWorkingHours" name="AnnualWorkingHours" placeholder="Holidays"
                                 value="{{ old('AnnualWorkingHours') ?? $AnnualWorkingHours }}" disabled>
                             </div>
                         </div>
@@ -118,22 +118,49 @@
 
     $(document).ready(function() {
         
-        // ----- DATATABLES -----
-        let tableComplexity = $('#tableComplexity')
-            .css({ "min-width": "99%" })
-            .removeAttr("width")
-            .DataTable({
-                scrollX: true,
-                scrollY: '300px',
-                sorting: [],
-                scrollCollapse: true,
-                columnDefs: [
-                    { targets: 0,  width: 10  },
-                    { targets: 1,  width: 150 },
-                    { targets: 2,  width: 100 },
-                ],
-            });
-        // ----- END DATATABLES -----
+        // ----- SUBMIT -----
+        $(document).on('submit', '#formCompanySetting', function(e) {
+            let isValidated = $(this).attr('validated') == "true";
+            let todo        = $(this).attr('todo');
+
+            if (!isValidated) {
+                e.preventDefault();
+
+                let content = todo == 'insert' ? `
+                <div class="d-flex justify-content-center align-items-center flex-column text-center">
+                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                    <b class="mt-4">Are you sure you want to save new company settings?</b>
+                </div>` : `
+                <div class="d-flex justify-content-center align-items-center flex-column text-center">
+                    <img src="/assets/img/modal/update.svg" class="py-1" height="150" width="150">
+                    <b class="mt-4">Are you sure you want to update this company settings?</b>
+                </div>`;
+    
+                let confirmation = $.confirm({
+                    title: false,
+                    content,
+                    buttons: {
+                        no: {
+                            btnClass: 'btn-default',
+                        },
+                        yes: {
+                            btnClass: 'btn-blue',
+                            keys: ['enter'],
+                            action: function(){
+                                $('#formCompanySetting').attr('validated', 'true').submit();
+        
+                                confirmation.buttons.yes.setText(`<span class="spinner-border spinner-border-sm"></span> Please wait...`);
+                                confirmation.buttons.yes.disable();
+                                confirmation.buttons.no.hide();
+        
+                                return false;
+                            }
+                        },
+                    }
+                });
+            }
+        })
+        // ----- END SUBMIT -----
 
     })
 
