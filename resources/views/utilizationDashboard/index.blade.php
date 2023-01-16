@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+<?php
+$CustomerName  = !empty($data) ? $data['CustomerName'] ?? '' : '';
+?>
     <main id="main" class="main">
         <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
             <div class="container-fluid">
@@ -23,6 +26,7 @@
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0">
             <div class="container-fluid">
                 <div class="row">
+                    {{-- SUMMARY OF PROJECT ASSIGNED PER RESOURCE --}}
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
@@ -66,6 +70,7 @@
                             </div>
                         </div>
                     </div>
+                    {{-- SUMMARY OF MAN HOURS PER RESOURCE --}}
                     <div class="col-md-12 mt-3">
                         <div class="card">
                             <div class="card-header">
@@ -103,6 +108,79 @@
                             </div>
                         </div>
                     </div>
+                    {{-- MONTHLY SUMMARY OF UTILIZATION --}}
+                    <div id="summaryUtilization" class="col-md-12 mt-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0 font-weight-bold">DAILY SUMMARY OF UTILIZATION</h5>
+                                <div class="text-end">
+                                    <button value="DAILY" name="btnUtilization" type="submit" class="btn btn-success text-white btnFilterForm">Daily</button>
+                                    <button value="MONTHLY" name="btnUtilization" type="submit" class="btn btn-secondary btnFilterForm">Monthly</button>
+                                    <button value="YEARLY" name="btnUtilization" type="submit" class="btn btn-secondary btnFilterForm">Yearly</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">#</th>
+                                            <th rowspan="2" style="vertical-align : middle;text-align:center;">Resource</th>
+                                            <th colspan="2" class="text-center">MONDAY</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">Used Hours</th>
+                                            <th class="text-center">Utilization</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Arjay Diangzon</td>
+                                            <td class="text-center">160</td>
+                                            <td class="text-center">100%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                     {{-- SUMMARY OF UTILIZATION PER PROJECT --}}
+                     <div class="col-md-12 mt-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0 font-weight-bold">SUMMARY OF UTILIZATION PER PROJECT</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">#</th>
+                                            <th rowspan="2">Resource</th>
+                                            <th colspan="2" class="text-center">Project Eagle</th>
+                                            <th colspan="2" class="text-center">Carmen's Best</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">Assessed</th>
+                                            <th class="text-center">Used Hours</th>
+                                            <th class="text-center">Assessed</th>
+                                            <th class="text-center">Used Hours</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Arjay Diangzon</td>
+                                            <td class="text-center">160</td>
+                                            <td class="text-center">2.4</td>
+                                            <td class="text-center">160</td>
+                                            <td class="text-center">5</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- SUMMARY OF UTILIZATION FOR ADMIN TASK --}}
                     <div class="col-md-12 mt-3">
                         <div class="card">
                             <div class="card-header">
@@ -138,6 +216,7 @@
                             </div>
                         </div>
                     </div>
+                    {{-- SUMMARY OF UTILIZATION FOR TRAILHEAD AND TRAINING --}}
                     <div class="col-md-12 mt-3">
                         <div class="card">
                             <div class="card-header">
@@ -173,43 +252,51 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12 mt-3">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0 font-weight-bold">MONTHLY SUMMARY OF UTILIZATION</h5>
-                            </div>
-                            <div class="card-body">
-                                <table class="table table-bordered table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th rowspan="2">#</th>
-                                            <th rowspan="2">Resource</th>
-                                            <th colspan="2" class="text-center">January 2022</th>
-                                            <th colspan="2" class="text-center">February 2022</th>
-                                        </tr>
-                                        <tr>
-                                            <th class="text-center">Used Hours</th>
-                                            <th class="text-center">Utilization</th>
-                                            <th class="text-center">Used Hours</th>
-                                            <th class="text-center">Utilization</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Arjay Diangzon</td>
-                                            <td class="text-center">160</td>
-                                            <td class="text-center">100%</td>
-                                            <td class="text-center">160</td>
-                                            <td class="text-center">100%</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    
+                   
                 </div>
             </div>
         </div>
     </main>
+    <script>
+        $(document).ready(function() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            // ------ FILTER BUTTON FOR UTILIZATION ------
+            $(document).on('click', 'button[name="btnUtilization"]', function() {
+                $('button[name="btnUtilization"]').removeClass('btn-success');
+                $('button[name="btnUtilization"]').addClass('btn-secondary');
+                $(this).toggleClass('btn-success'); 
+                let filterType = $(this).val()
+                let title = $('#summaryUtilization .card .card-header h5').text(filterType+' SUMMARY OF UTILIZATION')
+            })
+            // ------ END FILTER BUTTON FOR UTILIZATION -----
+
+            // FILTER TABLE
+            $(document).on('click', '.btnFilterForm', function(e) {
+                e.preventDefault();
+                let type = $(this).val();
+                let tableContainer = $(this).closest('.card-header').next()
+                tableContainer.html(PRELOADER)
+
+                    setTimeout(() => {
+                        var method = 'GET';
+                        $.ajax({
+                            type: method,
+                            url: `utilizationDashboard/filter/${type}`,
+                            async: false,
+                            success: function(html) {
+                                tableContainer.html(html)
+                            }
+                        })
+                    }, 100);
+                });
+            // END FILTER TABLE
+        })
+       
+    </script>
 @endsection

@@ -114,6 +114,10 @@
               <a class="ms-link {{ 'projectPhase' == $setupModule ? 'active' : '' }}" 
                 href="{{ route('projectPhase') }}">Project Phases</a>
             </li>
+            <li>
+              <a class="ms-link {{ 'projectPhase' == $setupModule ? 'active' : '' }}" 
+                href="{{ route('companySetting') }}">Company Setting</a>
+            </li>
           </ul>
         </li>
         <a class="m-link {{ $subModule == 'dataManagement' ? 'active' : '' }}" href="{{ route('dataManagement') }}">

@@ -90,29 +90,19 @@
                                 <div class="row mb-3">
                                     <label for="inputText" class="col-sm-2 label">User Name</label>
                                     <div class="col-sm-9">
-                                        <select select2 name="UsersId" id="UsersIdSelect" class="form-select"
-                                            id="floatingSelect">
-                                            <option value="" selected disabled>Select User</option>
-                                            @foreach ($userList as $users)
-                                                <option value="{{ $users->Id }}">
-                                                    <strong>{{ $users->FirstName . ' ' . $users->LastName }}</strong>-{{ $users->Title }}
-
+                                        <select name="UsersId[]" id="UsersIdSelect" class="form-select"
+                                            id="floatingSelect" multiple>
+                                            <option value="" disabled></option>
+                                            @foreach ($userLists as $user)
+                                                <option {{ $savedUsers->contains('Id',$user->Id) ? 'selected':'' }} value="{{ $user->Id }}">
+                                                    <strong>{{ $user->FirstName . ' ' . $user->LastName }}</strong>
                                                 </option>
                                             @endforeach
                                         </select>
                                         <div class="invalid-feedback">
                                         </div>
                                     </div>
-                                    <div class="col-sm-1">
-                                        <button id="btnAddUser" type="button" class="btn btn-outline-success text-end"><i
-                                                class="bi bi-plus-lg"></i>
-                                        </button>
-                                    </div>
                                 </div>
-                            </div>
-                            <div id="userDiv" class="profile-overview container">
-                                <label for="inputText" class="col label mb-2">Selected:</label>
-
                             </div>
                             <div class="button-footer text-end">
                                 <a href="{{ route('projects') }}" class="btn btn-secondary">Cancel</a>
@@ -143,77 +133,12 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
-            let users = [];
-            const savedUser = @json($savedUser);
-            if (savedUser.length > 0) {
-                savedUser.forEach(e => {
-                    users.push(e.Id)
-                    let body = `
-                <div id="userContainer" class="row mb-3">
-                                <div class="col-11 text-left mb-2">
-                                   <strong> ${e.FirstName} ${e.LastName} </strong>- ${e.Title}
-                                </div>
-                                <div class="col-1">
-                                    <a id="btnDeleteUser" type="button" class="btn btn-outline-danger text-end"><i
-                                            class="bi bi-trash"></i>
-                                    </a>
-                                </div>
-                            </div>
-                  `;
-                    $('#userDiv').append(body);
-                });
-            }
 
-
-
-            // ------ ADD  USER---------
-            $("#btnAddUser").click(function() {
-                const selectedVal = $('#UsersIdSelect :selected');
-                if (selectedVal.val() === "") {
-                    return ""
-                }
-
-                if (users.indexOf(selectedVal.val()) != -1) {
-                    $('#UsersIdSelect').addClass('is-invalid');
-                    // $('#UsersIdSelect').closest('.col-sm-9').find('.invalid-feedback').text(
-                    //     `User already picked`);
-                    return showToast('danger', 'User already picked!');
-                }
-                $('#UsersIdSelect').removeClass('is-invalid');
-                $('#UsersIdSelect').closest('.col-sm-9').find('.invalid-feedback').text(``);
-
-                users.push(selectedVal.val())
-
-
-                let body = `
-                <div id="userContainer" class="row mb-3">
-                                <div class="col-11 text-left mb-2">
-                                    ${selectedVal.text()}
-                                </div>
-                                <div class="col-1">
-                                    <a id="btnDeleteUser" type="button" class="btn btn-outline-danger text-end"><i
-                                            class="bi bi-trash"></i>
-                                    </a>
-                                </div>
-                            </div>
-                  `;
-                $('#userDiv').append(body);
-                $('#UsersIdSelect').val('');
+            // ----- PLACEHOLDER
+            $("#UsersIdSelect").select2({
+                placeholder: "Select atleast one(1) resource"
             });
-
-
-
-
-
-            // ----- DELETE USER -----
-            $(document).on('click', '#btnDeleteUser', function() {
-                let parent = $(this).closest('#userContainer');
-                const index = parent.index() - 1
-                users.splice(index, 1)
-                parent.fadeOut(500, function() {
-                    parent.remove();
-                })
-            });
+            // ----- END PLACEHOLDER
 
             // ----- SUBMIT FORM -----
             $(document).on('submit', '#formUserResource', function(e) {
@@ -247,17 +172,8 @@
                                 btnClass: 'btn-blue',
                                 keys: ['enter'],
                                 action: function() {
-                                    $.ajax({
-                                        method: "{{ $method }}",
-                                        url: '{{ $action }}',
-                                        dataType: 'json',
-                                        data: {
-                                            usersId: users,
-                                        },
-                                        success: function(response) {
-                                            window.location = response.url;
-                                        }
-                                    });
+                                    $('#formUserResource').attr('validated', 'true')
+                                        .submit();
                                     confirmation.buttons.yes.setText(
                                         `<span class="spinner-border spinner-border-sm"></span> Please wait...`
                                     );

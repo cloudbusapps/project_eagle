@@ -321,8 +321,8 @@ class ProjectController extends Controller
             'type'           => 'insert',
             'projectId'           => $Id,
             'projectData'        => [],
-            'userList' => $userList,
-            'savedUser' => $savedUser
+            'userLists' => $userList,
+            'savedUsers' => $savedUser
         ];
         return view('projects.resource', $data);
     }
@@ -350,8 +350,12 @@ class ProjectController extends Controller
 
     public function saveResource(Request $request, $Id)
     {
-
-        $users = $request->usersId;
+        $validator = $request->validate([
+            'UsersId' => ['required'],
+        ],[
+            'UsersId.required'=>'Select atleast 1 resource'
+        ]);
+        $users = $request->UsersId;
         $deleteUsers = Resource::where('ProjectId', $Id)->delete();
 
 
@@ -367,17 +371,15 @@ class ProjectController extends Controller
             }
 
             $saveUser = Resource::insert($data);
-            if ($saveUser) {
-                $request->session()->flash('success', 'Users updated');
-                return response()->json(['url' => url('projects/projectDetails/' . $Id)]);
-            }
         }
-        if ($deleteUsers) {
-            $request->session()->flash('success', 'Users updated');
-            return response()->json(['url' => url('projects/projectDetails/' . $Id)]);
+        if ($saveUser) {
+            return redirect()
+            ->route('projects.projectDetails', ['Id' => $Id])
+            ->with('success', "Users has been updated in this project");
         } else {
             return redirect()
-                ->route('projects')->with('fail', 'Something went wrong, try again later');
+                ->route('projects.projectDetails', ['Id' => $Id])
+                ->with('fail', 'Something went wrong, try again later');
         }
     }
 

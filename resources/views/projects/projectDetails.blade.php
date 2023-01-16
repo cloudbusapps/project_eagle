@@ -165,7 +165,6 @@
 
                         <table id="resourcesTable" class="table table-striped" style="width:100%">
                             <thead>
-
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Name</th>

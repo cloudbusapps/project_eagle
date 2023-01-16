@@ -17,6 +17,8 @@ use App\Models\customer\CustomerProjectPhasesDetails;
 use App\Models\customer\CustomerRemarks;
 use App\Models\admin\ThirdParty;
 use App\Models\admin\Designation;
+use App\Models\Project;
+use App\Models\Resource;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Customer;
@@ -35,7 +37,7 @@ class CustomerController extends Controller
     {
         isReadAllowed(config('constant.ID.MODULES.MODULE_TWO.OPPORTUNITY'), true);
 
-        $customerData = Customer::all();
+        $customerData = Customer::whereNot('Status',11)->get();
         $data = [
             'title'   => "Opportunity",
             'data'    => $customerData
@@ -598,6 +600,7 @@ class CustomerController extends Controller
             foreach ($request->data as $assessment) {
                 $inscope = CustomerInscope::find($assessment['rowId']);
                 $inscope->Manhour = $assessment['manhourValue'];
+                $inscope->UserId = $assessment['userId']??null;
                 $update = $inscope->save();
             }
             if ($update) {
@@ -759,6 +762,7 @@ class CustomerController extends Controller
 
     function updateResourceCost(Request $request, $Id) 
     {
+        
         $data = [];
         $customerData = Customer::find($Id);
         $resourceData = $request->resourceData;
@@ -843,6 +847,55 @@ class CustomerController extends Controller
         }
 
     }
+    function convertToProject(Request $request, $Id){
+        $validator = $request->validate([
+            'ProjectName' => ['required'],
+            'Description' => ['required'],
+        ]);
+        $customerData = Customer::find($Id);
+        $customerName = $customerData->CustomerName;
+
+        $project = new Project();
+        $project->Id             = Str::uuid();
+        $project->CustomerId     = $Id;
+        $project->Name           = $request->ProjectName;
+        $project->Description    = $request->Description;
+        $project->CreatedById    = Auth::id();
+        $project->UpdatedById    = Auth::id();
+        $project->created_at     = now();
+
+        // CHANGE STATUS TO CONVERTED
+        $customerData->Status = 11;
+
+        // COPY CUSTOMER RESOURCE INTO PROJECT RESOURCE
+        $project->save();
+        $projectId = $project->Id;
+        $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)
+        ->get();
+        
+        $resourceData = [];
+
+        foreach ($assignedConsultants as $user) {
+            $resourceData[] = [
+                'Id'            => Str::uuid(),
+                'ProjectId'     => $projectId,
+                'UserId'        => $user->UserId,
+            ];
+        }
+
+
+        $saveUser = Resource::insert($resourceData);
+
+        if ($saveUser) {
+            $request->session()->flash('success', "<b>{$customerName}</b> successfully converted into projects!");
+            return response()->json(['url' => url('projects/projectView')]);
+        } else {
+            $request->session()->flash('fail', 'Something went wrong, please try again later');
+            return response()->json(['url' => url('opportunity/edit/' . $Id)]);
+        }
+
+
+    }
 
     function update(Request $request, $Id)
     {
@@ -881,6 +934,9 @@ class CustomerController extends Controller
         // PROPOSAL
         else if ($customerData->Status == 8) {
             $this->updateProposal($request, $Id, $customerData);
+        }
+        else if ($customerData->Status == 9) {
+            $this->convertToProject($request, $Id, $customerData);
         }
 
 

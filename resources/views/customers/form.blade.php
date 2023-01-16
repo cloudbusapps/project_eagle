@@ -1591,10 +1591,10 @@
                                                                     </td>
                                                                     <td>
                                                                         <select name="RequirementConsultant[]" id="RequirementConsultant{{ $index}}" class="form-select"
-                                                                            required select2>
+                                                                            required>
 
                                                                             @foreach ($assignedConsultants as $assignedConsultant)
-                                                                                <option  value="{{ $assignedConsultant->Id }}">
+                                                                                <option {{ $inscope->UserId==$assignedConsultant->Id?'selected':''}}  value="{{ $assignedConsultant->Id }}">
                                                                                     {{ $assignedConsultant->FirstName . ' ' . $assignedConsultant->LastName }}
                                                                                 </option>
                                                                             @endforeach
@@ -1709,7 +1709,7 @@
                                         <label for="DateSubmitted" class="col-sm-2 label">Date Submitted
                                             <?= $RequiredLabel ?></label>
                                         <div class="col-sm-10">
-                                            <input value="{{ $customerProposal->DateSubmitted ?? '' }}" class="form-control" type="date" id="DateSubmitted" name="DateSubmitted" />
+                                            <input value="{{ $customerProposal->DateSubmitted ?? '' }}" class="form-control" type="date" id="DateSubmitted" name="DateSubmitted"/>
                                         </div>
                                     </div>
 
@@ -1763,7 +1763,7 @@
                                                 <label for="inputText" class="col-sm-2 label">Date Signed
                                                     <?= $RequiredLabel ?></label>
                                                 <div class="col-sm-10">
-                                                    <input value="{{ $customerProposal->SignedDateSubmitted ?? ''}}" class="form-control" type="date" id="SignedDateSubmitted" name="SignedDateSubmitted" />
+                                                    <input value="{{ $customerProposal->SignedDateSubmitted ?? ''}}" class="form-control" type="date" id="SignedDateSubmitted" name="SignedDateSubmitted"/>
                                                 </div>
                                             </div>
                                             @if ($data['ProposalStatus']==3)
@@ -1816,7 +1816,7 @@
                                 @elseif ($Status == 9 || Request::get('progress') == 'success')
                                     <h6 class="text-success text-center">Opportunity Won</h6>
                                     <div class="text-end">
-                                        <button type="submit" class="btn btn-primary btnUpdateForm">
+                                        <button class="btn btn-primary btnConvert">
                                             Proceed to project proper
                                         </button>
                                     </div>
@@ -1974,6 +1974,8 @@
                                             rowId: $("input[name='RowId[]']").eq(index)
                                                 .val(),
                                             manhourValue: $("input[name='Manhour[]']")
+                                                .eq(index).val(),
+                                            userId: $("select[name='RequirementConsultant[]']")
                                                 .eq(index).val()
                                         }
                                         data.push(obj);
@@ -2203,9 +2205,8 @@
                 }
 
                 if (!isValidated) {
-
                     e.preventDefault();
-                    let content = todo == 'insert' ? `
+                         content = todo == 'insert' ? `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
                     <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
                     <b class="mt-4">Are you sure you want to add new customer?</b>
@@ -2214,6 +2215,7 @@
                     <img src="/assets/img/modal/update.svg" class="py-1" height="150" width="150">
                     <b class="mt-4">Are you sure you want to update this customer?</b>
                 </div>`;
+                   
 
                     let confirmation = $.confirm({
                         title: false,
@@ -2440,7 +2442,7 @@
                                 setTimeout(() => {
                                     $.ajax({
                                         type: 'POST',
-                                        url: `/customer/edit/{{ $Id }}/updateResourceCost`,
+                                        url: `/opportunity/edit/{{ $Id }}/updateResourceCost`,
                                         data:{ resourceData },
                                         async: false,
                                         success: function(response) {
@@ -2456,6 +2458,76 @@
                 });
             })
             // ----- END UPDATE RESOURCE COST -----
+
+            // ----- CONVERT INTO PROJECT -----
+            $(document).on('click', '.btnConvert', function(e) {
+                e.preventDefault();
+                let content = `
+                <div class="d-flex justify-content-center align-items-center flex-column text-center">
+                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                    <b class="mt-4">Add project name and description</b>
+                    <div class="col-md-12 m-2">
+                        <div class="form-floating text-start">
+                            <input type="text" class="form-control" name="ProjectName" id="ProjectName" placeholder="Your Name">
+                            <label for="floatingName">Project Name</label>
+                        </div>
+                    </div>
+                    <div class="col-12 m-2">
+                        <div class="form-floating text-start">
+                            <textarea class="form-control" name="Description" placeholder="Description" id="Description" style="height: 100px;"></textarea>
+                            <label for="floatingTextarea">Description</label>
+                        </div>
+                    </div>
+                </div>`;
+
+                let confirmation = $.confirm({
+                    title: false,
+                    content,
+                    buttons: {
+                        no: {
+                            btnClass: 'btn-default',
+                        },
+                        yes: {
+                            btnClass: 'btn-blue',
+                            keys: ['enter'],
+                            action: function() {
+                                let ProjectName = $(`[name="ProjectName"]`).val()?.trim();
+                                let Description = $(`[name="Description"]`).val()?.trim();
+                                if ((ProjectName && ProjectName.length) && (Description && Description.length)) {
+                                    confirmation.buttons.yes.setText(
+                                    `<span class="spinner-border spinner-border-sm"></span> Please wait...`
+                                    );
+                                    confirmation.buttons.yes.disable();
+                                    confirmation.buttons.no.hide();
+                                    setTimeout(() => {
+                                        var method = 'POST';
+                                        $.ajax({
+                                            type: method,
+                                            url: `{{ $Id }}/convertToProject`,
+                                            data: {
+                                                ProjectName,
+                                                Description
+                                            },
+                                            async: false,
+                                            success: function(response) {
+                                                window.location = response.url;
+                                            },
+                                            fail: function(response){
+                                                console.log('this is failed',response)
+                                            }
+                                        })
+                                    }, 100);
+                                } else{
+                                    showToast('danger', `Fill all required inputs`)
+                                }
+                                
+                                return false;
+                            }
+                        },
+                    }
+                });
+            })
+            // ----- END CONVERT INTO PROJECT -----
 
         })
     </script>

@@ -83,6 +83,9 @@ return new class extends Migration
              * 6 - Project Phases
              * 7 - Assessment
              * 8 - Proposal
+             * 9 - Success
+             * 10 - Reject
+             * 11 - Converted into project
              */
             $table->integer('Status')->nullable(true);
 
