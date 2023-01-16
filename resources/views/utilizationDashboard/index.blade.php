@@ -2,8 +2,14 @@
 
 @section('content')
 <?php
-$CustomerName  = !empty($data) ? $data['CustomerName'] ?? '' : '';
+// $projectResources  = !empty($data) ? $data['projectResources'] ?? '' : '';
 ?>
+<style>
+    .scrollableX{
+        overflow-x: auto;
+        max-width: 100%;
+    }
+</style>
     <main id="main" class="main">
         <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
             <div class="container-fluid">
@@ -27,49 +33,50 @@ $CustomerName  = !empty($data) ? $data['CustomerName'] ?? '' : '';
             <div class="container-fluid">
                 <div class="row">
                     {{-- SUMMARY OF PROJECT ASSIGNED PER RESOURCE --}}
+                    {{-- MAKE IT BY TITLE, FC,TC,BA... --}}
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="mb-0 font-weight-bold">SUMMARY OF PROJECT ASSIGNED PER RESOURCE</h5>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body scrollableX">
                                 <table class="table table-striped table-hover">
                                     <thead>
                                         <tr>
                                             <th>#</th>
                                             <th>Resource</th>
-                                            <th class="text-center">
-                                                <div>Project Eagle</div>
-                                                <small>(Complex)</small>
-                                            </th>
-                                            <th class="text-center">
-                                                <div>Carmen's Best</div>
-                                                <small>(Intermediate)</small>
-                                            </th>
-                                            <th class="text-center">
-                                                <div>Project Eagle</div>
-                                                <small>(Complex)</small>
-                                            </th>
-                                            <th class="text-center">
-                                                <div>Carmen's Best</div>
-                                                <small>(Intermediate)</small>
-                                            </th>
+                                            @foreach ($projects as $project)
+                                                <th class="text-center">
+                                                    <div>{{ $project->Name}}</div>
+                                                    <small>(Complex)</small>
+                                                </th>
+                                            @endforeach
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @foreach ($projectResources as $index=> $projectResource)
                                         <tr>
-                                            <td>1</td>
-                                            <td>Arjay Diangzon</td>
-                                            <td class="text-center"><i class="bi bi-check-circle text-success"></i></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"><i class="bi bi-check-circle text-success"></i></td>
-                                            <td class="text-center"><i class="bi bi-check-circle text-success"></i></td>
+                                            
+                                                <td>{{ $index+1}}</td>
+                                                <td>{{ $projectResource['FullName']}}</td>
+                                                @foreach ($projects as $project)
+                                                        @if (in_array($project->Id,$projectResource['ProjectsId']))
+                                                            <td class="text-center"><i class="bi bi-check-circle text-success"></i></td>
+                                                        @else
+                                                            <td class="text-center"></td>
+                                                        @endif
+                                                @endforeach
+                                               
+                                                
                                         </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
+
+                    {{-- MAKE IT A PER PROJECT BASIS, DISPLAY USED AND BUDGETED HOURS PER PROJECT, MAY ANOTHER TABLE FOR COMPLEXITY COUNTS --}}
                     {{-- SUMMARY OF MAN HOURS PER RESOURCE --}}
                     <div class="col-md-12 mt-3">
                         <div class="card">
@@ -115,6 +122,7 @@ $CustomerName  = !empty($data) ? $data['CustomerName'] ?? '' : '';
                                 <h5 class="mb-0 font-weight-bold">DAILY SUMMARY OF UTILIZATION</h5>
                                 <div class="text-end">
                                     <button value="DAILY" name="btnUtilization" type="submit" class="btn btn-success text-white btnFilterForm">Daily</button>
+                                    <button value="WEEKLY" name="btnUtilization" type="submit" class="btn btn-secondary text-white btnFilterForm">Weekly</button>
                                     <button value="MONTHLY" name="btnUtilization" type="submit" class="btn btn-secondary btnFilterForm">Monthly</button>
                                     <button value="YEARLY" name="btnUtilization" type="submit" class="btn btn-secondary btnFilterForm">Yearly</button>
                                 </div>
