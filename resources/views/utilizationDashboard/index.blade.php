@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+<?php
+$CustomerName  = !empty($data) ? $data['CustomerName'] ?? '' : '';
+?>
     <main id="main" class="main">
         <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
             <div class="container-fluid">
@@ -111,9 +114,9 @@
                             <div class="card-header">
                                 <h5 class="mb-0 font-weight-bold">DAILY SUMMARY OF UTILIZATION</h5>
                                 <div class="text-end">
-                                    <button value="DAILY" name="btnUtilization" type="submit" class="btn btn-success text-white btnUpdateForm">Daily</button>
-                                    <button value="MONTHLY" name="btnUtilization" type="submit" class="btn btn-secondary btnUpdateForm">Monthly</button>
-                                    <button value="YEARLY" name="btnUtilization" type="submit" class="btn btn-secondary btnUpdateForm">Yearly</button>
+                                    <button value="DAILY" name="btnUtilization" type="submit" class="btn btn-success text-white btnFilterForm">Daily</button>
+                                    <button value="MONTHLY" name="btnUtilization" type="submit" class="btn btn-secondary btnFilterForm">Monthly</button>
+                                    <button value="YEARLY" name="btnUtilization" type="submit" class="btn btn-secondary btnFilterForm">Yearly</button>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -121,13 +124,10 @@
                                     <thead>
                                         <tr>
                                             <th rowspan="2">#</th>
-                                            <th rowspan="2">Resource</th>
-                                            <th colspan="2" class="text-center">January 2022</th>
-                                            <th colspan="2" class="text-center">February 2022</th>
+                                            <th rowspan="2" style="vertical-align : middle;text-align:center;">Resource</th>
+                                            <th colspan="2" class="text-center">MONDAY</th>
                                         </tr>
                                         <tr>
-                                            <th class="text-center">Used Hours</th>
-                                            <th class="text-center">Utilization</th>
                                             <th class="text-center">Used Hours</th>
                                             <th class="text-center">Utilization</th>
                                         </tr>
@@ -136,8 +136,6 @@
                                         <tr>
                                             <td>1</td>
                                             <td>Arjay Diangzon</td>
-                                            <td class="text-center">160</td>
-                                            <td class="text-center">100%</td>
                                             <td class="text-center">160</td>
                                             <td class="text-center">100%</td>
                                         </tr>
@@ -262,6 +260,11 @@
     </main>
     <script>
         $(document).ready(function() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
 
             // ------ FILTER BUTTON FOR UTILIZATION ------
             $(document).on('click', 'button[name="btnUtilization"]', function() {
@@ -270,9 +273,29 @@
                 $(this).toggleClass('btn-success'); 
                 let filterType = $(this).val()
                 let title = $('#summaryUtilization .card .card-header h5').text(filterType+' SUMMARY OF UTILIZATION')
-                console.log(title)
             })
             // ------ END FILTER BUTTON FOR UTILIZATION -----
+
+            // FILTER TABLE
+            $(document).on('click', '.btnFilterForm', function(e) {
+                e.preventDefault();
+                let type = $(this).val();
+                let tableContainer = $(this).closest('.card-header').next()
+                tableContainer.html(PRELOADER)
+
+                    setTimeout(() => {
+                        var method = 'GET';
+                        $.ajax({
+                            type: method,
+                            url: `utilizationDashboard/filter/${type}`,
+                            async: false,
+                            success: function(html) {
+                                tableContainer.html(html)
+                            }
+                        })
+                    }, 100);
+                });
+            // END FILTER TABLE
         })
        
     </script>

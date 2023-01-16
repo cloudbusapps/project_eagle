@@ -42,7 +42,8 @@ Route::group(['middleware' => 'auth'], function () {
     
     // UTILIZATION DASHBOARD
     Route::get('/utilizationDashboard', [UtilizationDashboardController::class, 'index'])->name('utilizationDashboard');
-
+    Route::get('/utilizationDashboard/filter/{type}', [UtilizationDashboardController::class, 'filter'])->name('utilizationDashboard.filter');
+        
     // USER
     Route::prefix('user')->group(function () {
         // PROFILE
