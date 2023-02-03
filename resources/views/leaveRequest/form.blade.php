@@ -534,6 +534,8 @@
                                     confirmation.buttons.reject.setText(`<span class="spinner-border spinner-border-sm"></span> Please wait...`);
                                     confirmation.buttons.reject.disable();
                                     confirmation.buttons.cancel.hide();
+                                } else{
+                                    showToast('danger', `Message is required`)
                                 }
         
                                 return false;

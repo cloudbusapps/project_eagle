@@ -31,7 +31,9 @@
                 'OTHERS' => 'ad193685-e4fc-41e5-9212-12224fea0001',
             ],
             'PROJECTS' => [
-                'OTHERS' => 'ab68a8ac-e4fc-41e5-9212-12224fea0000',
+                'OTHERS'                    => 'ab68a8ac-e4fc-41e5-9212-12224fea0000',
+                'ADMIN_TASK'                => 'ab68a8ac-e4fc-41e5-9212-12224fea0001',
+                'TRAILHEAD_AND_TRAINING'    => 'ab68a8ac-e4fc-41e5-9212-12224fea0002',
             ],
             'PROJECT_PHASES' => [
                 'BUILD' => 'ab68a8ac-5a0e-4fd7-96f9-066417133081',
