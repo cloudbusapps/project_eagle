@@ -28,6 +28,7 @@ class LeaveTypeSeeder extends Seeder
             [
                 'Id'          => $VacationLeaveId,
                 'Name'        => 'Vacation Leave',
+                'Acronym'     => 'VL',
                 'Status'      => 1,
                 'CreatedById' => $AdminId,
                 'UpdatedById' => $AdminId,
@@ -35,6 +36,7 @@ class LeaveTypeSeeder extends Seeder
             [
                 'Id'          => $SickLeaveId,
                 'Name'        => 'Sick Leave',
+                'Acronym'     => 'SL',
                 'Status'      => 1,
                 'CreatedById' => $AdminId,
                 'UpdatedById' => $AdminId,
@@ -42,6 +44,7 @@ class LeaveTypeSeeder extends Seeder
             [
                 'Id'          => Str::uuid(),
                 'Name'        => 'Offset Leave',
+                'Acronym'     => 'OL',
                 'Status'      => 1,
                 'CreatedById' => $AdminId,
                 'UpdatedById' => $AdminId,
@@ -49,6 +52,7 @@ class LeaveTypeSeeder extends Seeder
             [
                 'Id'          => Str::uuid(),
                 'Name'        => 'Emergency Leave',
+                'Acronym'     => 'EL',
                 'Status'      => 1,
                 'CreatedById' => $AdminId,
                 'UpdatedById' => $AdminId,

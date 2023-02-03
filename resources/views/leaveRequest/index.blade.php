@@ -164,9 +164,9 @@
 
                                         @foreach ($leaveTypes as $dt)
                                         <?php 
-                                            $className = $dt['Id'] == config('constant.ID.LEAVE_TYPES.VACATION_LEAVE') ? 'text-success' : ($dt['Id'] == config('constant.ID.LEAVE_TYPES.SICK_LEAVE') ? 'text-danger' : 'text-info'); 
+                                            $className = $dt['Id'] == config('constant.ID.LEAVE_TYPES.VACATION_LEAVE') ? 'text-success' : ($dt['Id'] == config('constant.ID.LEAVE_TYPES.SICK_LEAVE') ? 'text-danger' : 'text-dark'); 
                                         ?>
-                                        <label class="{{ $className }} mx-2"><input type="checkbox" class="leaveTypes" leaveType="{{ $dt['Id'] }}" checked> {{ $dt['Name'] }}</label>
+                                        <label class="{{ $className }} mx-2"><input type="checkbox" class="leaveTypes" leaveType="{{ $dt['Id'] }}" checked> {{ $dt['Name'] }} ({{ $dt['Acronym'] }})</label>
                                         @endforeach
 
                                     </div>
