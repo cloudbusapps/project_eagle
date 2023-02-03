@@ -51,7 +51,7 @@ class LeaveRequestController extends Controller
             ->where('mfa.ApproverId', Auth::id())
             ->get();
 
-        $approvedData = LeaveRequest::select('leave_requests.*', 'lt.Name AS LeaveType', 'u.FirstName', 'u.LastName')
+        $approvedData = LeaveRequest::select('leave_requests.*', 'lt.Name AS LeaveType', 'lt.Acronym', 'u.FirstName', 'u.LastName')
             ->leftJoin('leave_types AS lt', 'leave_requests.LeaveTypeId', 'lt.Id')
             ->leftJoin('users AS u', 'u.Id', 'UserId')
             ->where('leave_requests.Status', 2)
@@ -60,10 +60,10 @@ class LeaveRequestController extends Controller
         foreach ($approvedData as $dt) {
             $calendarData[] = [
                 'id'        => $dt['Id'],
-                'title'     => $dt['FirstName'].' '.$dt['LastName'],
+                'title'     => $dt['Acronym'].' - '.$dt['FirstName'].' '.$dt['LastName'],
                 'start'     => $dt['StartDate'],
                 'end'       => date('Y-m-d', strtotime($dt['EndDate'].' +1 day')),
-                'className' => $dt['LeaveTypeId'] == config('constant.ID.LEAVE_TYPES.VACATION_LEAVE') ? 'bg-success' : ($dt['LeaveTypeId'] == config('constant.ID.LEAVE_TYPES.SICK_LEAVE') ? 'bg-danger' : 'bg-info'),
+                'className' => $dt['LeaveTypeId'] == config('constant.ID.LEAVE_TYPES.VACATION_LEAVE') ? 'bg-success' : ($dt['LeaveTypeId'] == config('constant.ID.LEAVE_TYPES.SICK_LEAVE') ? 'bg-danger' : 'bg-dark'),
                 'leaveType' => $dt['LeaveTypeId'],
                 'color'     => 'black',
                 'allDay'    => true,
@@ -130,7 +130,7 @@ class LeaveRequestController extends Controller
                     $Link        = route('leaveRequest.view', ['Id' => $Id]);
                     $Icon        = '/assets/img/icons/for-approval.png';
 
-                    Mail::to($email)->send(new LeaveRequestMail($data, $approver));
+                    // Mail::to($email)->send(new LeaveRequestMail($data, $approver));
                     Notification::sendNow($approver, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
                 }
             } else {
@@ -148,7 +148,7 @@ class LeaveRequestController extends Controller
                     $Icon        = '/assets/img/icons/rejected.png';
                 }
 
-                Mail::to($email)->send(new LeaveRequestMail($data, $user));
+                // Mail::to($email)->send(new LeaveRequestMail($data, $user));
                 Notification::sendNow($user, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
             }
         }
