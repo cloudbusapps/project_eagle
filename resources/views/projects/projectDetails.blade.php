@@ -280,7 +280,7 @@
                 scrollCollapse: true,
             });
             // ----- END DATATABLES -----
-            let useDataTable = $('#userStoryTable').DataTable({
+            let userDataTable = $('#userStoryTable').DataTable({
                 scrollX: true,
                 scrollY: '500px',
                 sorting: [],
