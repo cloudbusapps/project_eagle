@@ -429,13 +429,13 @@ class LeaveRequestController extends Controller
 
         if ($ModuleFormApprover->update($data)) {
             $newStatus = getFormStatus(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id);
-            $this->sendMail($Id, $nextLevelApprover, $newStatus);
+           
             $LeaveRequest->Status = $newStatus;
             if ($LeaveRequest->save()) {
                 if ($newStatus == 2) { // APPROVED
                     $this->deductLeaveCredit($LeaveRequest);
                 }
-
+                $this->sendMail($Id, $nextLevelApprover, $newStatus);
                 return redirect()
                     ->route('leaveRequest')
                     ->with('tab', 'My Forms')
@@ -464,9 +464,9 @@ class LeaveRequestController extends Controller
 
         if ($ModuleFormApprover->update($data) && $LeaveRequest->save()) {
             $newStatus = 3;
-            $this->sendMail($Id, false, $newStatus);
             $LeaveRequest->Status = $newStatus;
             if ($LeaveRequest->save()) {
+            $this->sendMail($Id, false, $newStatus);
                 return redirect()
                     ->route('leaveRequest')
                     ->with('tab', 'My Forms')
