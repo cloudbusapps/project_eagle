@@ -18,6 +18,7 @@ use App\Models\UserLeaveBalance;
 use App\Mail\LeaveRequestMail;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\SystemNotification;
+use Spatie\Activitylog\Models\Activity;
 
 
 class LeaveRequestController extends Controller
@@ -70,6 +71,31 @@ class LeaveRequestController extends Controller
                 'url'       => route('leaveRequest.view', ['Id' => $dt['Id']]),
             ];
         }
+        if(isAdminOrHead()){
+            $leaveHistory = Activity::select('activity_log.*','leave_types.Name AS LeaveName','leave_requests.DocumentNumber')
+            ->where('subject_type','App\Models\LeaveRequest')
+            ->leftJoin('leave_requests','leave_requests.Id','activity_log.subject_id')
+            ->leftJoin('leave_types','leave_types.Id','leave_requests.LeaveTypeId')
+            ->orWhere(function($query){
+                $query->where('leave_requests.Id',DB::raw('"activity_log"."subject_id"'))
+                ->where('leave_requests.UserId',Auth::id());
+            })
+            ->orderBy('created_at','ASC')
+            ->get();
+        } else{
+            $leaveHistory = Activity::select('activity_log.*','leave_types.Name AS LeaveName','leave_requests.DocumentNumber')
+            ->where('causer_id',Auth::id())
+            ->where('subject_type','App\Models\LeaveRequest')
+            ->leftJoin('leave_requests','leave_requests.Id','activity_log.subject_id')
+            ->leftJoin('leave_types','leave_types.Id','leave_requests.LeaveTypeId')
+            ->orWhere(function($query){
+                $query->where('leave_requests.Id',DB::raw('"activity_log"."subject_id"'))
+                ->where('leave_requests.UserId',Auth::id());
+            })
+            ->orderBy('created_at','ASC')
+            ->get();
+        }
+        
 
         $data = [
             'title'           => 'Leave',
@@ -78,6 +104,7 @@ class LeaveRequestController extends Controller
             'calendarData'    => $calendarData,
             'leaveTypes'      => LeaveType::where('Status', 1)->get(),
             'MODULE_ID'       => config('constant.ID.MODULES.MODULE_ONE.LEAVE'),
+            'leavesHistory'   => $leaveHistory,
         ];
 
         return view('leaveRequest.index', $data);
@@ -131,7 +158,7 @@ class LeaveRequestController extends Controller
                     $Link        = route('leaveRequest.view', ['Id' => $Id]);
                     $Icon        = '/assets/img/icons/for-approval.png';
 
-                    Mail::to($email)->send(new LeaveRequestMail($data, $approver));
+                    // Mail::to($email)->send(new LeaveRequestMail($data, $approver));
                     Notification::sendNow($approver, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
                 }
             } else {
@@ -149,7 +176,7 @@ class LeaveRequestController extends Controller
                     $Icon        = '/assets/img/icons/rejected.png';
                 }
 
-                Mail::to($email)->send(new LeaveRequestMail($data, $user));
+                // Mail::to($email)->send(new LeaveRequestMail($data, $user));
                 Notification::sendNow($user, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
             }
         }

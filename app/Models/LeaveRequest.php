@@ -27,6 +27,7 @@ class LeaveRequest extends Model
         'EndDate',
         'LeaveDuration',
         'Reason',
+        'Status'
     ];
 
     protected static function boot() {

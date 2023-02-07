@@ -27,6 +27,7 @@ class UserLeaveBalance extends Model
         'Balance',
         // CHANGED FROM Accumulated to Acrued
         'Accrued',
+        'Year'
     ];
 
     protected static function boot() {

@@ -13,9 +13,13 @@ class DashboardController extends Controller
 {
     public function index() {
         if(isAdminOrHead()){
-            $approvedData = LeaveRequest::select('leave_requests.*', 'lt.Name AS LeaveType', 'lt.Acronym', 'u.FirstName', 'u.LastName')
+            $approvedData = LeaveRequest::select('leave_requests.*', 'lt.Name AS LeaveType', 'lt.Acronym', 'u.FirstName', 'u.LastName','p.Name AS ProjectName')
             ->leftJoin('leave_types AS lt', 'leave_requests.LeaveTypeId', 'lt.Id')
             ->leftJoin('users AS u', 'u.Id', 'UserId')
+            ->leftJoin('projects AS p', function($join){
+                $join->on('p.KickoffDate', '>=', 'leave_requests.StartDate');
+                $join->on('p.KickoffDate','<=','leave_requests.EndDate');
+            })
             ->where('leave_requests.Status', 2)
             ->whereMonth('leave_requests.StartDate', now()->month)
             ->orderBy('leave_requests.StartDate','ASC','leave_requests.EndDate','ASC')

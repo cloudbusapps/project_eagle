@@ -69,13 +69,14 @@
                   </div>
                 @endforeach
               </div>
-              <table id="leaveSummary" class="table table-bordered table-striped table-hover">
+              <table id="leaveSummary" style="width:100%;" class="table table-bordered table-striped table-hover">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Employee Name</th>
                         <th>Leave Type</th>
                         <th>Date</th>
+                        {{-- <th>Conflicts With</th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -92,6 +93,7 @@
                           (date('M d', strtotime($leaveData->StartDate)).' - '.date('M d, Y', strtotime($leaveData->EndDate)))
                           }}
                       </td>
+                      {{-- <td>{{$leaveData['ProjectName']?$leaveData['ProjectName']:"None"}}</td> --}}
                     </tr>
                   @endforeach
                 </tbody>

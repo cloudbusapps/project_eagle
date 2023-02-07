@@ -186,8 +186,41 @@
                         {{-- LOGS HISTORY --}}
                         <div class="tab-pane fade {{ in_array(Session::get('tab'), ['LeaveHistory']) ? 'show active' : '' }}" id="leave-history" role="tabpanel">
                             <div class="card">
-                                <div class="card-body">
-                                  <div id="myCalendar"></div>
+                                <div class="card-body container overflow-auto mh-75">
+                                        @if ($leavesHistory && count($leavesHistory))
+                                            @foreach ($leavesHistory as $leaveHistory)
+                                            <?php
+                                            $attributeProperty = json_decode($leaveHistory['properties'],true)['attributes'];
+                                            $oldProperties=[];
+                                            if(count(json_decode($leaveHistory['properties'],true))>2){
+                                                $oldProperties = json_decode($leaveHistory['properties'],true)['old'];
+                                            }
+                                            
+                                            ?>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <ul class="list-group">
+                                                        @if ($attributeProperty['Status']>1)
+                                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                            <div><b>{{ $leaveHistory['DocumentNumber'] }}</b>-Leave Request Approved</div>
+                                                            <span>{{ date('F d, Y h:i A', strtotime($leaveHistory['created_at'])) }}</span>
+                                                        </li>
+                                                        <ul>
+                                                            <li>{{ $attributeProperty['LeaveDuration'] }} is deducted from your {{ $leaveHistory['LeaveName'] }} credits</li>
+                                                        </ul>
+                                                        @else
+                                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <div><b>{{ $leaveHistory['DocumentNumber'] }}</b>-{{ $leaveHistory['description'] }}</div>
+                                                                <span>{{ date('F d, Y h:i A', strtotime($leaveHistory['created_at'])) }}</span>
+                                                            </li>
+                                                        @endif
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        @else
+                                        <h6 class="text-center">No History Logs</h6>
+                                        @endif
                                 </div>
                             </div>
                         </div>
