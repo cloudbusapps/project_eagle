@@ -96,7 +96,8 @@ class LeaveRequestController extends Controller
     }
 
     public function sendMail($Id, $nextLevelApprover = 0, $Status = 0) {
-        $data = LeaveRequest::select('leave_requests.*', 'u.FirstName', 'u.LastName')
+        $data = LeaveRequest::select('leave_requests.*', 'u.FirstName', 'u.LastName','lt.Name as LeaveType')
+            ->leftJoin('leave_types AS lt', 'lt.Id', '=','leave_requests.LeaveTypeId')
             ->leftJoin('users AS u', 'u.Id', 'UserId')
             ->where('leave_requests.Id', $Id)
             ->first();
@@ -130,7 +131,7 @@ class LeaveRequestController extends Controller
                     $Link        = route('leaveRequest.view', ['Id' => $Id]);
                     $Icon        = '/assets/img/icons/for-approval.png';
 
-                    // Mail::to($email)->send(new LeaveRequestMail($data, $approver));
+                    Mail::to($email)->send(new LeaveRequestMail($data, $approver));
                     Notification::sendNow($approver, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
                 }
             } else {
@@ -148,7 +149,7 @@ class LeaveRequestController extends Controller
                     $Icon        = '/assets/img/icons/rejected.png';
                 }
 
-                // Mail::to($email)->send(new LeaveRequestMail($data, $user));
+                Mail::to($email)->send(new LeaveRequestMail($data, $user));
                 Notification::sendNow($user, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
             }
         }
@@ -164,13 +165,8 @@ class LeaveRequestController extends Controller
             'LeaveBalance'  => ['required'],
             'Reason'        => ['required', 'string', 'max:500'],
         ]);
-        $LeaveBalance = UserLeaveBalance::where('UserId', Auth::id())
-            ->where('LeaveTypeId', $request->LeaveTypeId)
-            ->where('Balance', '>', 0)
-            ->orderBy('Year', 'ASC')
-            ->first();
 
-        if($LeaveBalance){
+        
             $destinationPath = 'uploads/leaveRequest';
 
             $number = getLastDocumentNumber(LeaveRequest::orderBy('DocumentNumber', 'DESC')->first()->DocumentNumber ?? null);
@@ -223,12 +219,6 @@ class LeaveRequestController extends Controller
                     ->with('tab', 'My Forms')
                     ->with('success', "<b>{$DocumentNumber}</b> successfully saved!");
             } 
-        } else {
-            return redirect()
-            ->route('leaveRequest')
-            ->with('tab', 'My Forms')
-            ->with('fail', "You have no available credit for the leave");
-        }
     }
 
     public function view($Id) {
@@ -488,11 +478,11 @@ class LeaveRequestController extends Controller
     
 
     public function externalApprove($Id) {
-        echo $Id;
+        return redirect()->route('leaveRequest.view', ['Id' => $Id]);
     }
 
     public function externalReject($Id) {
-        echo $Id;
+        return redirect()->route('leaveRequest.view', ['Id' => $Id]);
     }
 
 }

@@ -50,8 +50,8 @@
             <br><br>
             <div>
                 <div>Details</div>
-                <div><label>Status</label> {{ $data->Status }}</div>
-                <div><label>Leave Type</label> {{ $data->LeaveType }}</div>
+                <div><label>Status: </label> {{ $data->Status }}</div>
+                <div><label>Leave Type:</label> {{ $data->LeaveType }}</div>
                 <div><label>Date:</label> {{ $data->StartDate == $data->EndDate ? date('F d, Y', strtotime($data->StartDate)) : (date('F d', strtotime($data->StartDate)).' - '.date('F d, Y', strtotime($data->EndDate))) }}</div>
                 <div><label>Reason:</label> {{ $data->Reason }}</div>
             </div>

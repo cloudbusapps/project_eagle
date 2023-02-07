@@ -53,6 +53,9 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link {{ in_array(Session::get('tab'), ['Calendar']) ? 'active' : '' }}" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar-content" type="button" role="tab">Calendar</button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link {{ in_array(Session::get('tab'), ['LeaveHistory']) ? 'active' : '' }}" id="history-tab" data-bs-toggle="tab" data-bs-target="#leave-history" type="button" role="tab">Leave History</button>
+                        </li>
 
                         
                     </ul>
@@ -171,9 +174,18 @@
 
                                     </div>
                                     <div>
-                                        <label><input type="checkbox" checked name="viewAll"> View All</label>
+                                        <label class="mx-2"><input type="checkbox" checked name="viewAll"> View All</label>
                                     </div>
                                 </div>
+                                <div class="card-body">
+                                  <div id="myCalendar"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- LOGS HISTORY --}}
+                        <div class="tab-pane fade {{ in_array(Session::get('tab'), ['LeaveHistory']) ? 'show active' : '' }}" id="leave-history" role="tabpanel">
+                            <div class="card">
                                 <div class="card-body">
                                   <div id="myCalendar"></div>
                                 </div>

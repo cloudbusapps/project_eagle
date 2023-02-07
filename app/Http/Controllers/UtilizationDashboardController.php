@@ -17,7 +17,7 @@ use Auth;
 class UtilizationDashboardController extends Controller
 {
     public function index() {
-        if(Auth::id()==config('constant.ID.USERS.BA_HEAD') ||Auth::id() == config('constant.ID.USERS.ADMIN') ){
+        if(Auth::id()==config('constant.ID.USERS.BA_HEAD') ||Auth::id() == config('constant.ID.USERS.ADMIN')){
             $data = [
                 'title'   => "Utilizatiion Dashboard",   
                 'activities' => Activity::where(DB::raw('DATE("created_at")'), date('Y-m-d'))
