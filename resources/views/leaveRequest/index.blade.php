@@ -201,13 +201,15 @@
                                                 <div class="col">
                                                     <ul class="list-group">
                                                         @if ($attributeProperty['Status']>1)
-                                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                            <div><b>{{ $leaveHistory['DocumentNumber'] }}</b>-Leave Request Approved</div>
-                                                            <span>{{ date('F d, Y h:i A', strtotime($leaveHistory['created_at'])) }}</span>
+                                                        <li class="list-group-item">
+                                                            <div class=" d-flex justify-content-between align-items-center">
+                                                                <div><b>{{ $leaveHistory['DocumentNumber'] }}</b>-Leave Request Approved</div>
+                                                                <span>{{ date('F d, Y h:i A', strtotime($leaveHistory['created_at'])) }}</span>
+                                                            </div>
+                                                            <ul>
+                                                                <li>{{ $attributeProperty['LeaveDuration'] }} is deducted from your {{ $leaveHistory['LeaveName'] }} credits</li>
+                                                            </ul>
                                                         </li>
-                                                        <ul>
-                                                            <li>{{ $attributeProperty['LeaveDuration'] }} is deducted from your {{ $leaveHistory['LeaveName'] }} credits</li>
-                                                        </ul>
                                                         @else
                                                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                                                 <div><b>{{ $leaveHistory['DocumentNumber'] }}</b>-{{ $leaveHistory['description'] }}</div>
