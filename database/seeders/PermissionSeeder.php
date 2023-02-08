@@ -33,6 +33,7 @@ class PermissionSeeder extends Seeder
         $module1DashboardId = 1;
         $module1LeaveId     = 4;
         $module2CustomerId  = 18;
+        $module2DashboardId  = 8;
 
         $Designations = DB::table('designations')->get();
         foreach ($Designations as $dt) {

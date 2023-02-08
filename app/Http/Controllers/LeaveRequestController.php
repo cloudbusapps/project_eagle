@@ -18,6 +18,7 @@ use App\Models\UserLeaveBalance;
 use App\Mail\LeaveRequestMail;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\SystemNotification;
+use Spatie\Activitylog\Models\Activity;
 
 
 class LeaveRequestController extends Controller
@@ -70,6 +71,31 @@ class LeaveRequestController extends Controller
                 'url'       => route('leaveRequest.view', ['Id' => $dt['Id']]),
             ];
         }
+        if(isAdminOrHead()){
+            $leaveHistory = Activity::select('activity_log.*','leave_types.Name AS LeaveName','leave_requests.DocumentNumber')
+            ->where('subject_type','App\Models\LeaveRequest')
+            ->leftJoin('leave_requests','leave_requests.Id','activity_log.subject_id')
+            ->leftJoin('leave_types','leave_types.Id','leave_requests.LeaveTypeId')
+            ->orWhere(function($query){
+                $query->where('leave_requests.Id',DB::raw('"activity_log"."subject_id"'))
+                ->where('leave_requests.UserId',Auth::id());
+            })
+            ->orderBy('created_at','ASC')
+            ->get();
+        } else{
+            $leaveHistory = Activity::select('activity_log.*','leave_types.Name AS LeaveName','leave_requests.DocumentNumber')
+            ->where('causer_id',Auth::id())
+            ->where('subject_type','App\Models\LeaveRequest')
+            ->leftJoin('leave_requests','leave_requests.Id','activity_log.subject_id')
+            ->leftJoin('leave_types','leave_types.Id','leave_requests.LeaveTypeId')
+            ->orWhere(function($query){
+                $query->where('leave_requests.Id',DB::raw('"activity_log"."subject_id"'))
+                ->where('leave_requests.UserId',Auth::id());
+            })
+            ->orderBy('created_at','ASC')
+            ->get();
+        }
+        
 
         $data = [
             'title'           => 'Leave',
@@ -78,6 +104,7 @@ class LeaveRequestController extends Controller
             'calendarData'    => $calendarData,
             'leaveTypes'      => LeaveType::where('Status', 1)->get(),
             'MODULE_ID'       => config('constant.ID.MODULES.MODULE_ONE.LEAVE'),
+            'leavesHistory'   => $leaveHistory,
         ];
 
         return view('leaveRequest.index', $data);
@@ -96,12 +123,13 @@ class LeaveRequestController extends Controller
     }
 
     public function sendMail($Id, $nextLevelApprover = 0, $Status = 0) {
-        $data = LeaveRequest::select('leave_requests.*', 'u.FirstName', 'u.LastName')
+        $data = LeaveRequest::select('leave_requests.*', 'u.FirstName', 'u.LastName','lt.Name as LeaveType')
+            ->leftJoin('leave_types AS lt', 'lt.Id', '=','leave_requests.LeaveTypeId')
             ->leftJoin('users AS u', 'u.Id', 'UserId')
             ->where('leave_requests.Id', $Id)
             ->first();
 
-        if ($data) {
+        if ($data) { 
             if ($Status == 1) {
                 if ($nextLevelApprover) {
                     $nextApprover = ModuleFormApprover::where('ModuleId', config('constant.ID.MODULES.MODULE_ONE.LEAVE'))
@@ -165,58 +193,59 @@ class LeaveRequestController extends Controller
             'Reason'        => ['required', 'string', 'max:500'],
         ]);
 
-        $destinationPath = 'uploads/leaveRequest';
-
-        $number = getLastDocumentNumber(LeaveRequest::orderBy('DocumentNumber', 'DESC')->first()->DocumentNumber ?? null);
-        $DocumentNumber = generateDocumentNumber('LRF', $number);
         
-        $LeaveRequest = new LeaveRequest;
-        $LeaveRequest->DocumentNumber = $DocumentNumber;
-        $LeaveRequest->UserId         = $request->UserId;
-        $LeaveRequest->LeaveTypeId    = $request->LeaveTypeId;
-        $LeaveRequest->StartDate      = $request->StartDate;
-        $LeaveRequest->EndDate        = $request->EndDate;
-        $LeaveRequest->LeaveDuration  = $request->LeaveDuration;
-        $LeaveRequest->LeaveBalance   = $request->LeaveBalance;
-        $LeaveRequest->Reason         = $request->Reason;
-        $LeaveRequest->Status         = 1;
+            $destinationPath = 'uploads/leaveRequest';
 
-        if ($LeaveRequest->save()) {
-            $Id = $LeaveRequest->Id;
+            $number = getLastDocumentNumber(LeaveRequest::orderBy('DocumentNumber', 'DESC')->first()->DocumentNumber ?? null);
+            $DocumentNumber = generateDocumentNumber('LRF', $number);
             
-            $files = $request->file('File');
-            if ($files && count($files)) {
-                $leaveRequestFileData = [];
-                foreach ($files as $index => $file) {
-                    $filenameArr = explode('.', $file->getClientOriginalName());
-                    $extension   = array_splice($filenameArr, count($filenameArr)-1, 1);
-                    $filename    = $DocumentNumber.'['.$index.']'.time().'.'.$extension[0];
+            $LeaveRequest = new LeaveRequest;
+            $LeaveRequest->DocumentNumber = $DocumentNumber;
+            $LeaveRequest->UserId         = $request->UserId;
+            $LeaveRequest->LeaveTypeId    = $request->LeaveTypeId;
+            $LeaveRequest->StartDate      = $request->StartDate;
+            $LeaveRequest->EndDate        = $request->EndDate;
+            $LeaveRequest->LeaveDuration  = $request->LeaveDuration;
+            $LeaveRequest->LeaveBalance   = $request->LeaveBalance;
+            $LeaveRequest->Reason         = $request->Reason;
+            $LeaveRequest->Status         = 1;
     
-                    $file->move($destinationPath, $filename);
-
-                    $leaveRequestFileData[] = [
-                        'Id'             => Str::uuid(),
-                        'LeaveRequestId' => $Id,
-                        'File'           => $filename,
-                        'CreatedById'    => Auth::id(),
-                        'UpdatedById'    => Auth::id(),
-                        'created_at'    => now(),
-                        'updated_at'    => now(),
-                    ];
+            if ($LeaveRequest->save()) {
+                $Id = $LeaveRequest->Id;
+                
+                $files = $request->file('File');
+                if ($files && count($files)) {
+                    $leaveRequestFileData = [];
+                    foreach ($files as $index => $file) {
+                        $filenameArr = explode('.', $file->getClientOriginalName());
+                        $extension   = array_splice($filenameArr, count($filenameArr)-1, 1);
+                        $filename    = $DocumentNumber.'['.$index.']'.time().'.'.$extension[0];
+        
+                        $file->move($destinationPath, $filename);
+    
+                        $leaveRequestFileData[] = [
+                            'Id'             => Str::uuid(),
+                            'LeaveRequestId' => $Id,
+                            'File'           => $filename,
+                            'CreatedById'    => Auth::id(),
+                            'UpdatedById'    => Auth::id(),
+                            'created_at'    => now(),
+                            'updated_at'    => now(),
+                        ];
+                    }
+    
+                    LeaveRequestFiles::where('LeaveRequestId', $Id)->delete();
+                    LeaveRequestFiles::insert($leaveRequestFileData);
                 }
-
-                LeaveRequestFiles::where('LeaveRequestId', $Id)->delete();
-                LeaveRequestFiles::insert($leaveRequestFileData);
-            }
-
-            setFormApprovers(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id); // SET APPROVERS
-            $this->sendMail($Id, 0, 1); // ID, APPROVER LEVEL: 0 | FIRST, STATUS: 1 - FOR APPROVAL
-
-            return redirect()
-                ->route('leaveRequest')
-                ->with('tab', 'My Forms')
-                ->with('success', "<b>{$DocumentNumber}</b> successfully saved!");
-        } 
+    
+                setFormApprovers(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id); // SET APPROVERS
+                $this->sendMail($Id, 0, 1); // ID, APPROVER LEVEL: 0 | FIRST, STATUS: 1 - FOR APPROVAL
+    
+                return redirect()
+                    ->route('leaveRequest')
+                    ->with('tab', 'My Forms')
+                    ->with('success', "<b>{$DocumentNumber}</b> successfully saved!");
+            } 
     }
 
     public function view($Id) {
@@ -417,13 +446,13 @@ class LeaveRequestController extends Controller
 
         if ($ModuleFormApprover->update($data)) {
             $newStatus = getFormStatus(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id);
-            $this->sendMail($Id, $nextLevelApprover, $newStatus);
+           
             $LeaveRequest->Status = $newStatus;
             if ($LeaveRequest->save()) {
                 if ($newStatus == 2) { // APPROVED
                     $this->deductLeaveCredit($LeaveRequest);
                 }
-
+                $this->sendMail($Id, $nextLevelApprover, $newStatus);
                 return redirect()
                     ->route('leaveRequest')
                     ->with('tab', 'My Forms')
@@ -452,9 +481,9 @@ class LeaveRequestController extends Controller
 
         if ($ModuleFormApprover->update($data) && $LeaveRequest->save()) {
             $newStatus = 3;
-            $this->sendMail($Id, false, $newStatus);
             $LeaveRequest->Status = $newStatus;
             if ($LeaveRequest->save()) {
+            $this->sendMail($Id, false, $newStatus);
                 return redirect()
                     ->route('leaveRequest')
                     ->with('tab', 'My Forms')
@@ -476,11 +505,11 @@ class LeaveRequestController extends Controller
     
 
     public function externalApprove($Id) {
-        echo $Id;
+        return redirect()->route('leaveRequest.view', ['Id' => $Id]);
     }
 
     public function externalReject($Id) {
-        echo $Id;
+        return redirect()->route('leaveRequest.view', ['Id' => $Id]);
     }
 
 }

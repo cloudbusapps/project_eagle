@@ -867,7 +867,7 @@ class UserProfileController extends Controller
 
     public function updateLeaveBalance(Request $request, $Id) {
         $LeaveBalance = $request->LeaveBalance ?? [];
-
+        // THERE IS ERROR HERE THAT BREAKS THE COMPUTATION OF BALANCES UPON UPDATING
         if (isset($LeaveBalance) && count($LeaveBalance)) {
             $data = [];
             foreach ($LeaveBalance as $key => $dt) {

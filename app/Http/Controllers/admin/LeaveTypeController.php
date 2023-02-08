@@ -102,7 +102,8 @@ class LeaveTypeController extends Controller
     public function isActive($Id) {
         return UserLeaveBalance::where('LeaveTypeId', $Id)
             ->where('Balance', '>', 0)
-            ->where('Accumulated', '>', 0)
+            // CHANGED FROM Accumulated to Acrued
+            ->where('Accrued', '>', 0)
             ->count() ? true : false;
     }
 

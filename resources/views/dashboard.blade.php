@@ -25,8 +25,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-8">
-          <div class="row row-cols-xl-3 row-cols-lg-4 row-cols-md-2 row-cols-sm-2 row-cols-1 g-2 mb-3 row-deck">
-            <div class="col">
+            {{-- <div class="col">
               <div class="card">
                 <div class="card-body">
                   <div class="text-muted text-uppercase small">Total Users</div>
@@ -56,8 +55,53 @@
                   </div>
                 </div>
               </div>
+            </div> --}}
+            {{-- {{ json_encode($leavesData)}} --}}
+          @if (isAdminOrHead())
+          <div class="card">
+            <div class="card-body">
+              <div class="fw-bold text-uppercase text-center">Summary of Leaves</div>
+              <div class="row mb-1">
+                @foreach ($leaveTypes as $leaveType)
+                  <div class="col-sm mt-1 text-center">
+                    <div class="text-truncate">{{ $leaveType['Name'] }}</div>
+                    <a class="fw-bold h4 mb-0">{{ $leaveType['totalLeave'] ?? 0 }}</a>
+                  </div>
+                @endforeach
+              </div>
+              <table id="leaveSummary" style="width:100%;" class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Employee Name</th>
+                        <th>Leave Type</th>
+                        <th>Date</th>
+                        {{-- <th>Conflicts With</th> --}}
+                    </tr>
+                </thead>
+                <tbody>
+                  @foreach ($leavesData as $index=>$leaveData)
+                    <tr>
+                      <td>{{ $index+1 }}</td>
+                      <td>
+                        <a href="{{ route('leaveRequest.view', ['Id' => $leaveData['Id']]) }}" >{{ $leaveData['FirstName'].' '.$leaveData['LastName'] }}</a>
+                      </td>
+                      <td>{{ $leaveData['LeaveType'] }}</td>
+                      <td>
+                        {{ $leaveData->StartDate == $leaveData->EndDate ? 
+                          (date('F d, Y', strtotime($leaveData->StartDate))) :
+                          (date('M d', strtotime($leaveData->StartDate)).' - '.date('M d, Y', strtotime($leaveData->EndDate)))
+                          }}
+                      </td>
+                      {{-- <td>{{$leaveData['ProjectName']?$leaveData['ProjectName']:"None"}}</td> --}}
+                    </tr>
+                  @endforeach
+                </tbody>
+            </table>
             </div>
           </div>
+          @endif
+             
         </div>
         <div class="col-md-4">
           <div class="card">
@@ -88,6 +132,16 @@
     </div>
   </div>
 </main>
+<script>
+   $(document).ready(function() {
+
+    const leaveSummaryTable = $('#leaveSummary').DataTable();
+    let column_index = 0;
+    function filterLeave(leaveType){
+      leaveSummaryTable.columns(column_index).search(leaveType, true, false).draw();
+    }
+   })
+</script>
     
 @endsection
 
