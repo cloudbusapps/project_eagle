@@ -72,10 +72,11 @@ class LeaveRequestController extends Controller
             ];
         }
         if(isAdminOrHead()){
-            $leaveHistory = Activity::select('activity_log.*','leave_types.Name AS LeaveName','leave_requests.DocumentNumber')
+            $leaveHistory = Activity::select('activity_log.*','leave_types.Name AS LeaveName','leave_requests.DocumentNumber','users.FirstName','users.LastName')
             ->where('subject_type','App\Models\LeaveRequest')
             ->leftJoin('leave_requests','leave_requests.Id','activity_log.subject_id')
             ->leftJoin('leave_types','leave_types.Id','leave_requests.LeaveTypeId')
+            ->leftJoin('users','users.Id','=','leave_requests.UserId')
             ->orWhere(function($query){
                 $query->where('leave_requests.Id',DB::raw('"activity_log"."subject_id"'))
                 ->where('leave_requests.UserId',Auth::id());
@@ -83,11 +84,12 @@ class LeaveRequestController extends Controller
             ->orderBy('created_at','ASC')
             ->get();
         } else{
-            $leaveHistory = Activity::select('activity_log.*','leave_types.Name AS LeaveName','leave_requests.DocumentNumber')
+            $leaveHistory = Activity::select('activity_log.*','leave_types.Name AS LeaveName','leave_requests.DocumentNumber','users.FirstName','users.LastName')
             ->where('causer_id',Auth::id())
             ->where('subject_type','App\Models\LeaveRequest')
             ->leftJoin('leave_requests','leave_requests.Id','activity_log.subject_id')
             ->leftJoin('leave_types','leave_types.Id','leave_requests.LeaveTypeId')
+            ->leftJoin('users','users.Id','=','leave_requests.UserId')
             ->orWhere(function($query){
                 $query->where('leave_requests.Id',DB::raw('"activity_log"."subject_id"'))
                 ->where('leave_requests.UserId',Auth::id());
