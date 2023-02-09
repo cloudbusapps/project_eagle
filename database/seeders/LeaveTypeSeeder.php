@@ -57,6 +57,22 @@ class LeaveTypeSeeder extends Seeder
                 'CreatedById' => $AdminId,
                 'UpdatedById' => $AdminId,
             ],
+            [
+                'Id'          => Str::uuid(),
+                'Name'        => 'Paternity Leave',
+                'Acronym'     => 'PL',
+                'Status'      => 1,
+                'CreatedById' => $AdminId,
+                'UpdatedById' => $AdminId,
+            ],
+            [
+                'Id'          => Str::uuid(),
+                'Name'        => 'Maternity Leave',
+                'Acronym'     => 'ML',
+                'Status'      => 1,
+                'CreatedById' => $AdminId,
+                'UpdatedById' => $AdminId,
+            ],
         ]);
     }
 }
