@@ -20,13 +20,15 @@ class TimekeepingController extends Controller
             'title' => 'Timekeeping',
             'data'  => Timekeeping::where('UserId', Auth::id()) 
                 ->orderBy('Date', 'DESC')
-                ->get()
+                ->get(),
+            'MODULE_ID' => config('constant.ID.MODULES.MODULE_TWO.TIMEKEEPING')
         ];
 
         return view('timekeeping.index', $data);
     }
 
     public function form() {
+        isCreateAllowed(config('constant.ID.MODULES.MODULE_TWO.TIMEKEEPING'), true);
         $data = [
             'title'    => "New Timekeeping",
             'projects' => Project::all(),

@@ -73,6 +73,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>Document Number</th>
                         <th>Employee Name</th>
                         <th>Leave Type</th>
                         <th>Date</th>
@@ -84,8 +85,9 @@
                     <tr>
                       <td>{{ $index+1 }}</td>
                       <td>
-                        <a href="{{ route('leaveRequest.view', ['Id' => $leaveData['Id']]) }}" >{{ $leaveData['FirstName'].' '.$leaveData['LastName'] }}</a>
+                        <a href="{{ route('leaveRequest.view', ['Id' => $leaveData['Id']]) }}" >{{ $leaveData['DocumentNumber']}}</a>
                       </td>
+                      <td>{{ $leaveData['FirstName'].' '.$leaveData['LastName'] }}</td>
                       <td>{{ $leaveData['LeaveType'] }}</td>
                       <td>
                         {{ $leaveData->StartDate == $leaveData->EndDate ? 

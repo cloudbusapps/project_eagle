@@ -17,9 +17,11 @@
     }
 
     $Others = config('constant.ID.PROJECTS.OTHERS');
+    $AdminTask = config('constant.ID.PROJECTS.ADMIN_TASK');
+    $TrailheadTraining = config('constant.ID.PROJECTS.TRAILHEAD_AND_TRAINING');
 ?>
 
-<main id="main" class="main" projects="{{ $projects }}" others="{{ $Others }}">
+<main id="main" class="main" projects="{{ $projects }}" adminTask="{{ $AdminTask }}" trailheadTraining="{{ $TrailheadTraining }}" others="{{ $Others }}">
 
     <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
         <div class="container-fluid">
@@ -132,6 +134,10 @@
                                                                                 @endforeach
                                                                             @endif
 
+                                                                            <option value="{{ $AdminTask }}"
+                                                                                {{ $dt->ProjectId == $AdminTask ? 'selected' : '' }}>Admin Task</option>
+                                                                            <option value="{{ $TrailheadTraining }}"
+                                                                                {{ $dt->ProjectId == $TrailheadTraining ? 'selected' : '' }}>Trailhead and Training</option>
                                                                             <option value="{{ $Others }}"
                                                                                 {{ $dt->ProjectId == $Others ? 'selected' : '' }}>Others</option>
                                                                         </select>
@@ -180,6 +186,8 @@
                                                                             @endforeach
                                                                         @endif
 
+                                                                        <option value="{{ $AdminTask }}">Admin Task</option>
+                                                                        <option value="{{ $TrailheadTraining }}">Trailhead and Training</option>
                                                                         <option value="{{ $Others }}">Others</option>
                                                                     </select>
                                                                 </div>
@@ -234,7 +242,9 @@
         
         // ----- GLOBAL VARIABLES -----
         let projectList = JSON.parse($('main').attr('projects') ?? []);
-        let others      = $('main').attr('others');
+        let adminTask           = $('main').attr('adminTask');
+        let trailheadTraining   = $('main').attr('trailheadTraining');
+        let others              = $('main').attr('others');
         // ----- END GLOBAL VARIABLES -----
 
 
@@ -289,6 +299,8 @@
                             style="width: 100%;">
                             <option value="" selected disabled>Select Project Name</option>
                             ${projectOptions}
+                            <option value="${adminTask}">Admin Task</option>
+                            <option value="${trailheadTraining}">Trailhead and Training</option>
                             <option value="${others}">Others</option>
                         </select>
                     </div>

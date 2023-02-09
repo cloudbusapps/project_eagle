@@ -207,7 +207,7 @@
                                                                 <span>{{ date('F d, Y h:i A', strtotime($leaveHistory['created_at'])) }}</span>
                                                             </div>
                                                             <ul>
-                                                                <li>{{ $attributeProperty['LeaveDuration'] }} is deducted from your {{ $leaveHistory['LeaveName'] }} credits</li>
+                                                                <li>{{ $attributeProperty['LeaveDuration'] }} is deducted from {{ $leaveHistory['FirstName'] }} {{ $leaveHistory['LastName'] }}'s {{ $leaveHistory['LeaveName'] }} credits</li>
                                                             </ul>
                                                         </li>
                                                         @else

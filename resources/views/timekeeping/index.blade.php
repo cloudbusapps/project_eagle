@@ -38,11 +38,13 @@
 
             <div class="card">
                 <div class="card-body">
-                    <div class="w-100 text-end mb-3">
-                        <a href="{{ route('timekeeping.add') }}" class="btn btn-outline-primary px-2 py-1">
-                            <i class="bi bi-plus-lg"></i> New
-                        </a>
-                    </div>
+                    @if (isCreateAllowed($MODULE_ID))
+                        <div class="w-100 text-end mb-3">
+                            <a href="{{ route('timekeeping.add') }}" class="btn btn-outline-primary px-2 py-1">
+                                <i class="bi bi-plus-lg"></i> New
+                            </a>
+                        </div> 
+                    @endif
 
                     <table class="table table-striped table-hover" id="tableTimekeeping">
                         <thead>
