@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('customer_business_process', function (Blueprint $table) {
             $table->uuid('Id')->primary();
-            $table->uuid('CustomerId')->unsigned();
+            $table->uuid('CustomerId');
             $table->longText('Note');
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();

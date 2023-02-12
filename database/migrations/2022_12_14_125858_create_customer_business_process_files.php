@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('customer_business_process_files', function (Blueprint $table) {
             $table->uuid('Id')->primary();
             $table->uuid('BusinessProcessId')->nullable();
-            $table->uuid('CustomerId')->unsigned();
+            $table->uuid('CustomerId');
             $table->string('File');
             $table->longText('Note')->nullable();
             $table->uuid('CreatedById')->nullable();

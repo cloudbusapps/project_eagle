@@ -200,7 +200,7 @@
                                             <div class="row">
                                                 <div class="col">
                                                     <ul class="list-group">
-                                                        @if ($attributeProperty['Status']>1)
+                                                        @if ($attributeProperty['Status']==2)
                                                         <li class="list-group-item">
                                                             <div class=" d-flex justify-content-between align-items-center">
                                                                 <div><b>{{ $leaveHistory['DocumentNumber'] }}</b>-Leave Request Approved</div>

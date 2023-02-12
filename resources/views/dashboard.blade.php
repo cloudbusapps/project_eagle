@@ -60,8 +60,9 @@
           @if (isAdminOrHead())
           <div class="card">
             <div class="card-body">
-              <div class="fw-bold text-uppercase text-center">Summary of Leaves</div>
-              <div class="row mb-1">
+              {{-- <div class="fw-bold text-uppercase text-center">Summary of Leaves</div> --}}
+              <h5 class="card-title">Summary of Leaves</h5>
+              <div class="row">
                 @foreach ($leaveTypes as $leaveType)
                   <div class="col-sm mt-1 text-center">
                     <div class="text-truncate">{{ $leaveType['Name'] }}</div>

@@ -307,12 +307,12 @@ class ModuleSeeder extends Seeder
             ],
         ];
 
+        // DB::select("SELECT 
+        //     setval(pg_get_serial_sequence('modules', 'id'), 
+        //     max(id)) 
+        // FROM modules");
+        
         Module::insert($data);
-        DB::select("SELECT 
-            setval(pg_get_serial_sequence('modules', 'id'), 
-            max(id)) 
-        FROM modules");
-
         DB::table('module_table_related')->insert($relatedData);
     }
 }

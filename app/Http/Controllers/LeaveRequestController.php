@@ -78,10 +78,10 @@ class LeaveRequestController extends Controller
             ->leftJoin('leave_types','leave_types.Id','leave_requests.LeaveTypeId')
             ->leftJoin('users','users.Id','=','leave_requests.UserId')
             ->orWhere(function($query){
-                $query->where('leave_requests.Id',DB::raw('"activity_log"."subject_id"'))
+                $query->where('leave_requests.Id',DB::raw('activity_log.subject_id'))
                 ->where('leave_requests.UserId',Auth::id());
             })
-            ->orderBy('created_at','ASC')
+            ->orderBy('created_at','DESC')
             ->get();
         } else{
             $leaveHistory = Activity::select('activity_log.*','leave_types.Name AS LeaveName','leave_requests.DocumentNumber','users.FirstName','users.LastName')
@@ -91,10 +91,10 @@ class LeaveRequestController extends Controller
             ->leftJoin('leave_types','leave_types.Id','leave_requests.LeaveTypeId')
             ->leftJoin('users','users.Id','=','leave_requests.UserId')
             ->orWhere(function($query){
-                $query->where('leave_requests.Id',DB::raw('"activity_log"."subject_id"'))
+                $query->where('leave_requests.Id',DB::raw('activity_log.subject_id'))
                 ->where('leave_requests.UserId',Auth::id());
             })
-            ->orderBy('created_at','ASC')
+            ->orderBy('created_at','DESC')
             ->get();
         }
         
