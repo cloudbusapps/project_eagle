@@ -196,58 +196,61 @@ class LeaveRequestController extends Controller
         ]);
 
         
-            $destinationPath = 'uploads/leaveRequest';
+        $destinationPath = 'uploads/leaveRequest';
 
-            $number = getLastDocumentNumber(LeaveRequest::orderBy('DocumentNumber', 'DESC')->first()->DocumentNumber ?? null);
-            $DocumentNumber = generateDocumentNumber('LRF', $number);
-            
-            $LeaveRequest = new LeaveRequest;
-            $LeaveRequest->DocumentNumber = $DocumentNumber;
-            $LeaveRequest->UserId         = $request->UserId;
-            $LeaveRequest->LeaveTypeId    = $request->LeaveTypeId;
-            $LeaveRequest->StartDate      = $request->StartDate;
-            $LeaveRequest->EndDate        = $request->EndDate;
-            $LeaveRequest->LeaveDuration  = $request->LeaveDuration;
-            $LeaveRequest->LeaveBalance   = $request->LeaveBalance;
-            $LeaveRequest->Reason         = $request->Reason;
-            $LeaveRequest->Status         = 1;
-    
-            if ($LeaveRequest->save()) {
-                $Id = $LeaveRequest->Id;
-                
-                $files = $request->file('File');
-                if ($files && count($files)) {
-                    $leaveRequestFileData = [];
-                    foreach ($files as $index => $file) {
-                        $filenameArr = explode('.', $file->getClientOriginalName());
-                        $extension   = array_splice($filenameArr, count($filenameArr)-1, 1);
-                        $filename    = $DocumentNumber.'['.$index.']'.time().'.'.$extension[0];
+        $number = getLastDocumentNumber(LeaveRequest::orderBy('DocumentNumber', 'DESC')->first()->DocumentNumber ?? null);
+        $DocumentNumber = generateDocumentNumber('LRF', $number);
         
-                        $file->move($destinationPath, $filename);
+        $LeaveRequest = new LeaveRequest;
+        $LeaveRequest->DocumentNumber = $DocumentNumber;
+        $LeaveRequest->UserId         = $request->UserId;
+        $LeaveRequest->LeaveTypeId    = $request->LeaveTypeId;
+        $LeaveRequest->StartDate      = $request->StartDate;
+        $LeaveRequest->EndDate        = $request->EndDate;
+        $LeaveRequest->LeaveDuration  = $request->LeaveDuration;
+        $LeaveRequest->LeaveBalance   = $request->LeaveBalance;
+        $LeaveRequest->Reason         = $request->Reason;
+        $LeaveRequest->Status         = 1;
+
+        if ($LeaveRequest->save()) {
+            $Id = $LeaveRequest->Id;
+            
+            $files = $request->file('File');
+            if ($files && count($files)) {
+                $leaveRequestFileData = [];
+                foreach ($files as $index => $file) {
+                    $filenameArr = explode('.', $file->getClientOriginalName());
+                    $extension   = array_splice($filenameArr, count($filenameArr)-1, 1);
+                    $filename    = $DocumentNumber.'['.$index.']'.time().'.'.$extension[0];
     
-                        $leaveRequestFileData[] = [
-                            'Id'             => Str::uuid(),
-                            'LeaveRequestId' => $Id,
-                            'File'           => $filename,
-                            'CreatedById'    => Auth::id(),
-                            'UpdatedById'    => Auth::id(),
-                            'created_at'    => now(),
-                            'updated_at'    => now(),
-                        ];
-                    }
-    
-                    LeaveRequestFiles::where('LeaveRequestId', $Id)->delete();
-                    LeaveRequestFiles::insert($leaveRequestFileData);
+                    $file->move($destinationPath, $filename);
+
+                    $leaveRequestFileData[] = [
+                        'Id'             => Str::uuid(),
+                        'LeaveRequestId' => $Id,
+                        'File'           => $filename,
+                        'CreatedById'    => Auth::id(),
+                        'UpdatedById'    => Auth::id(),
+                        'created_at'    => now(),
+                        'updated_at'    => now(),
+                    ];
                 }
-    
-                setFormApprovers(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id); // SET APPROVERS
-                $this->sendMail($Id, 0, 1); // ID, APPROVER LEVEL: 0 | FIRST, STATUS: 1 - FOR APPROVAL
-    
-                return redirect()
-                    ->route('leaveRequest')
-                    ->with('tab', 'My Forms')
-                    ->with('success', "<b>{$DocumentNumber}</b> successfully saved!");
-            } 
+
+                LeaveRequestFiles::where('LeaveRequestId', $Id)->delete();
+                LeaveRequestFiles::insert($leaveRequestFileData);
+            }
+
+            setFormApprovers(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id); // SET APPROVERS
+            $this->sendMail($Id, 0, 1); // ID, APPROVER LEVEL: 0 | FIRST, STATUS: 1 - FOR APPROVAL
+
+            $FullName = Auth::user()->FirstName . ' ' . Auth::user()->LastName;
+            activity()->log("{$FullName} - {$DocumentNumber} created leave request");
+
+            return redirect()
+                ->route('leaveRequest')
+                ->with('tab', 'My Forms')
+                ->with('success', "<b>{$DocumentNumber}</b> successfully saved!");
+        } 
     }
 
     public function view($Id) {
