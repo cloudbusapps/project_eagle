@@ -21,6 +21,7 @@ use App\Models\admin\LeaveType;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
+use App\Models\LeaveRequest;
 
 class UserProfileController extends Controller
 {
@@ -894,8 +895,14 @@ class UserProfileController extends Controller
             }
 
             if ($data && count($data)) {
+                $LeaveRequest = new LeaveRequest;
                 $save = UserLeaveBalance::upsert($data, 'Id');
+                $userName = User::select(DB::raw("CONCAT(FirstName,' ',LastName) AS UserFullName"))->where('Id',$Id)->first();
                 if ($save) {
+                    $FullName = Auth::user()->FirstName.' '.Auth::user()->LastName;
+                    $logMessage="{$FullName} updated {$userName->UserFullName}'s Leave Balance";
+                    $properties=['message'=>'test'];
+                    LeaveRequest::logActivity($logMessage,$LeaveRequest,$properties);
                     return redirect()
                         ->back()
                         ->with('card', 'Leave')
