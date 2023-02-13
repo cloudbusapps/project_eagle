@@ -24,7 +24,7 @@ class EmployeeDirectoryController extends Controller
         
         $filterData = [
             'Employee Name' => DB::table('users')
-                ->select(DB::raw('CONCAT("FirstName", \' \', "LastName") AS optval'))
+                ->select(DB::raw('CONCAT(FirstName, \' \', LastName) AS optval'))
                 ->orderBy('FirstName', 'ASC')
                 ->get(),
             // 'Title'         => User::select('Title AS optval')->distinct('Title')->get(),
@@ -36,20 +36,20 @@ class EmployeeDirectoryController extends Controller
         if ($filterBy == "Employee Name") {
             $userData = User::select('users.*', 'd.Name AS designation')
                 ->leftJoin('designations AS d', 'd.Id', 'users.DesignationId')
-                ->where(DB::raw('LOWER(CONCAT("FirstName", \' \', "LastName"))'), 'LIKE', "%{$search}%")
+                ->where(DB::raw('LOWER(CONCAT(FirstName, \' \', LastName))'), 'LIKE', "%{$search}%")
                 ->orderBy('users.FirstName')
                 ->get();
         } else if ($filterBy == "Title") {
             $userData = User::select('users.*', 'd.Name AS designation')
                 ->leftJoin('designations AS d', 'd.Id', 'users.DesignationId')
-                ->where(DB::raw('LOWER("Title")'), 'LIKE', "%{$search}%")
+                ->where(DB::raw('LOWER(Title)'), 'LIKE', "%{$search}%")
                 ->orderBy('users.FirstName')
                 ->get();
         } else if ($filterBy == "Certification") {
             $userData = User::select('users.*', 'd.Name AS designation')
                 ->leftJoin('designations AS d', 'd.Id', 'users.DesignationId')
                 ->leftJoin('user_certifications AS uc', 'UserId', 'users.Id')
-                ->where(DB::raw('LOWER("uc"."Code")'), 'LIKE', "%{$search}%")
+                ->where(DB::raw('LOWER(uc.Code)'), 'LIKE', "%{$search}%")
                 ->groupBy('users.Id', 'd.Name')
                 ->orderBy('users.FirstName')
                 ->get();
@@ -57,7 +57,7 @@ class EmployeeDirectoryController extends Controller
             $userData = User::select('users.*', 'd.Name AS designation')
                 ->leftJoin('designations AS d', 'd.Id', 'users.DesignationId')
                 ->leftJoin('user_skills AS us', 'UserId', 'users.Id')
-                ->where(DB::raw('LOWER("us"."Title")'), 'LIKE', "%{$search}%")
+                ->where(DB::raw('LOWER(us.Title)'), 'LIKE', "%{$search}%")
                 ->groupBy('users.Id', 'd.Name')
                 ->orderBy('users.FirstName')
                 ->get();
@@ -67,13 +67,13 @@ class EmployeeDirectoryController extends Controller
                     ->leftJoin('designations AS d', 'd.Id', 'users.DesignationId')
                     ->leftJoin('user_skills AS us', 'us.UserId', 'users.Id')
                     ->leftJoin('user_certifications AS uc', 'uc.UserId', 'users.Id')
-                    ->where(DB::raw('LOWER("us"."Title")'), 'LIKE', "%{$search}%")
-                    ->orWhere(DB::raw('LOWER("uc"."Code")'), 'LIKE', "%{$search}%")
-                    ->orWhere(DB::raw('LOWER("FirstName")'), 'LIKE', "%{$search}%")
-                    ->orWhere(DB::raw('LOWER("LastName")'), 'LIKE', "%{$search}%")
-                    ->orWhere(DB::raw('LOWER("users"."Title")'), 'LIKE', "%{$search}%")
-                    ->orWhere(DB::raw('LOWER("users"."EmployeeNumber")'), 'LIKE', "%{$search}%")
-                    ->orWhere(DB::raw('LOWER("users"."email")'), 'LIKE', "%{$search}%")
+                    ->where(DB::raw('LOWER(us.Title)'), 'LIKE', "%{$search}%")
+                    ->orWhere(DB::raw('LOWER(uc.Code)'), 'LIKE', "%{$search}%")
+                    ->orWhere(DB::raw('LOWER(FirstName)'), 'LIKE', "%{$search}%")
+                    ->orWhere(DB::raw('LOWER(LastName)'), 'LIKE', "%{$search}%")
+                    ->orWhere(DB::raw('LOWER(users.Title)'), 'LIKE', "%{$search}%")
+                    ->orWhere(DB::raw('LOWER(users.EmployeeNumber)'), 'LIKE', "%{$search}%")
+                    ->orWhere(DB::raw('LOWER(users.email)'), 'LIKE', "%{$search}%")
                     ->groupBy('users.Id', 'd.Name')
                     ->orderBy('users.FirstName')
                     ->get();

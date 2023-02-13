@@ -81,7 +81,7 @@ class LeaveRequestController extends Controller
                 $query->where('leave_requests.Id',DB::raw('activity_log.subject_id'))
                 ->where('leave_requests.UserId',Auth::id());
             })
-            ->orderBy('created_at','DESC')
+            ->orderBy('created_at','ASC')
             ->get();
         } else{
             $leaveHistory = Activity::select('activity_log.*','leave_types.Name AS LeaveName','leave_requests.DocumentNumber','users.FirstName','users.LastName')
@@ -94,7 +94,7 @@ class LeaveRequestController extends Controller
                 $query->where('leave_requests.Id',DB::raw('activity_log.subject_id'))
                 ->where('leave_requests.UserId',Auth::id());
             })
-            ->orderBy('created_at','DESC')
+            ->orderBy('created_at','ASC')
             ->get();
         }
         
