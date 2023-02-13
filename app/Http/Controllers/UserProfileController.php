@@ -55,7 +55,7 @@ class UserProfileController extends Controller
                 ->get();
 
             $userData = DB::table('users AS u')
-                ->select('u.*', DB::raw('"d"."Name" AS department, "d2"."Name" AS designation'))
+                ->select('u.*', DB::raw('d.Name AS department, d2.Name AS designation'))
                 ->leftJoin('departments AS d', 'DepartmentId', '=', 'd.Id')
                 ->leftJoin('designations AS d2', 'DesignationId', '=', 'd2.Id')
                 ->where('u.Id', $UserId)
@@ -85,7 +85,7 @@ class UserProfileController extends Controller
 
     public function generate($UserId, $action = 'print') {
         $userData = DB::table('users AS u')
-            ->select('u.*', DB::raw('"d"."Name" AS department'))
+            ->select('u.*', DB::raw('d.Name AS department'))
             ->leftJoin('departments AS d', 'DepartmentId', '=', 'd.Id')
             ->where('u.Id', $UserId)
             ->first();
