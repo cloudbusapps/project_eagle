@@ -21,6 +21,7 @@ use App\Models\admin\LeaveType;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
+use App\Models\LeaveRequest;
 
 class UserProfileController extends Controller
 {
@@ -55,7 +56,7 @@ class UserProfileController extends Controller
                 ->get();
 
             $userData = DB::table('users AS u')
-                ->select('u.*', DB::raw('"d"."Name" AS department, "d2"."Name" AS designation'))
+                ->select('u.*', DB::raw('d.Name AS department, d2.Name AS designation'))
                 ->leftJoin('departments AS d', 'DepartmentId', '=', 'd.Id')
                 ->leftJoin('designations AS d2', 'DesignationId', '=', 'd2.Id')
                 ->where('u.Id', $UserId)
@@ -85,7 +86,7 @@ class UserProfileController extends Controller
 
     public function generate($UserId, $action = 'print') {
         $userData = DB::table('users AS u')
-            ->select('u.*', DB::raw('"d"."Name" AS department'))
+            ->select('u.*', DB::raw('d.Name AS department'))
             ->leftJoin('departments AS d', 'DepartmentId', '=', 'd.Id')
             ->where('u.Id', $UserId)
             ->first();
@@ -894,8 +895,14 @@ class UserProfileController extends Controller
             }
 
             if ($data && count($data)) {
+                $LeaveRequest = new LeaveRequest;
                 $save = UserLeaveBalance::upsert($data, 'Id');
+                $userName = User::select(DB::raw("CONCAT(FirstName,' ',LastName) AS UserFullName"))->where('Id',$Id)->first();
                 if ($save) {
+                    $FullName = Auth::user()->FirstName.' '.Auth::user()->LastName;
+                    $logMessage="{$FullName} updated {$userName->UserFullName}'s Leave Balance";
+                    $properties=['message'=>'test'];
+                    LeaveRequest::logActivity($logMessage,$LeaveRequest,$properties);
                     return redirect()
                         ->back()
                         ->with('card', 'Leave')

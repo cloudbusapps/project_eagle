@@ -190,32 +190,22 @@
                                         @if ($leavesHistory && count($leavesHistory))
                                             @foreach ($leavesHistory as $leaveHistory)
                                             <?php
-                                            $attributeProperty = json_decode($leaveHistory['properties'],true)['attributes'];
-                                            $oldProperties=[];
-                                            if(count(json_decode($leaveHistory['properties'],true))>2){
-                                                $oldProperties = json_decode($leaveHistory['properties'],true)['old'];
-                                            }
-                                            
+                                            // $attributeProperty = json_decode($leaveHistory['properties'],true)['attributes'];
                                             ?>
                                             <div class="row">
                                                 <div class="col">
                                                     <ul class="list-group">
-                                                        @if ($attributeProperty['Status']==2)
                                                         <li class="list-group-item">
                                                             <div class=" d-flex justify-content-between align-items-center">
-                                                                <div><b>{{ $leaveHistory['DocumentNumber'] }}</b>-Leave Request Approved</div>
+                                                                <span>{{ $leaveHistory['description'] }}</span>
                                                                 <span>{{ date('F d, Y h:i A', strtotime($leaveHistory['created_at'])) }}</span>
                                                             </div>
+                                                            @if (count($leaveHistory['properties']))
                                                             <ul>
-                                                                <li>{{ $attributeProperty['LeaveDuration'] }} is deducted from {{ $leaveHistory['FirstName'] }} {{ $leaveHistory['LastName'] }}'s {{ $leaveHistory['LeaveName'] }} credits</li>
+                                                                <li>{{ $leaveHistory['properties']['message'] }}</li>
                                                             </ul>
+                                                            @endif
                                                         </li>
-                                                        @else
-                                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                                <div><b>{{ $leaveHistory['DocumentNumber'] }}</b>-{{ $leaveHistory['description'] }}</div>
-                                                                <span>{{ date('F d, Y h:i A', strtotime($leaveHistory['created_at'])) }}</span>
-                                                            </li>
-                                                        @endif
                                                     </ul>
                                                 </div>
                                             </div>

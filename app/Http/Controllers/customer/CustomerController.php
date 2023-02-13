@@ -648,7 +648,7 @@ class CustomerController extends Controller
         ]);
         $files = $request->file('FileProposal');
         $fileSigned = $request->file('FileSigned');
-        $destinationPath = 'uploads/Proposal';
+        $destinationPath = 'uploads/proposal';
 
         if($request->ProposalStatus == 3){
 

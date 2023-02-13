@@ -244,7 +244,7 @@ class LeaveRequestController extends Controller
             $this->sendMail($Id, 0, 1); // ID, APPROVER LEVEL: 0 | FIRST, STATUS: 1 - FOR APPROVAL
 
             $FullName = Auth::user()->FirstName . ' ' . Auth::user()->LastName;
-            activity()->log("{$FullName} - {$DocumentNumber} created leave request");
+            LeaveRequest::logActivity("{$FullName} - {$DocumentNumber} created leave request",$LeaveRequest);
 
             return redirect()
                 ->route('leaveRequest')
@@ -383,6 +383,9 @@ class LeaveRequestController extends Controller
             setFormApprovers(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id); // SET APPROVERS
             $this->sendMail($Id, 0, 1); // ID, APPROVER: 0 - FIRST, STATUS: 1 - FOR APPROVAL
 
+            $FullName = Auth::user()->FirstName . ' ' . Auth::user()->LastName;
+            LeaveRequest::logActivity("{$FullName} - {$DocumentNumber} updated leave request",$LeaveRequest);
+
             return redirect()
                 ->route('leaveRequest')
                 ->with('tab', 'My Forms')
@@ -435,7 +438,13 @@ class LeaveRequestController extends Controller
     }
     
     public function approve(Request $request, $Id, $UserId) {
-        $LeaveRequest = LeaveRequest::find($Id);
+        $LeaveRequest = LeaveRequest::select('leave_requests.*','leave_types.Name as LeaveType',DB::raw("CONCAT(users.FirstName,' ',users.LastName) AS FullName"))
+        ->where('leave_requests.Id',$Id)
+        ->leftJoin('leave_types','leave_types.Id','leave_requests.LeaveTypeId')
+        ->leftJoin('users','users.Id','leave_requests.UserId')
+        ->first();
+        $DocumentNumber = $LeaveRequest->DocumentNumber;
+
         $ModuleFormApprover = ModuleFormApprover::where('ModuleId', config('constant.ID.MODULES.MODULE_ONE.LEAVE'))
             ->where('TableId', $Id)
             ->where('ApproverId', $UserId)
@@ -453,10 +462,21 @@ class LeaveRequestController extends Controller
             $newStatus = getFormStatus(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id);
            
             $LeaveRequest->Status = $newStatus;
+            $FullName = Auth::user()->FirstName . ' ' . Auth::user()->LastName;
             if ($LeaveRequest->save()) {
                 if ($newStatus == 2) { // APPROVED
                     $this->deductLeaveCredit($LeaveRequest);
+                    $attributes=[
+                        'message'=>"{$LeaveRequest->LeaveDuration} is deducted from {$LeaveRequest->FullName}'s {$LeaveRequest->LeaveType} credit"
+                    ];
+                    LeaveRequest::logActivity("{$FullName} approved {$DocumentNumber} leave request",$LeaveRequest,$attributes);
+                } else{
+                    
+                    LeaveRequest::logActivity("{$FullName} approved {$DocumentNumber} leave request proceeding to next approver",$LeaveRequest);
                 }
+                
+                
+                
                 $this->sendMail($Id, $nextLevelApprover, $newStatus);
                 return redirect()
                     ->route('leaveRequest')
@@ -473,6 +493,8 @@ class LeaveRequestController extends Controller
         ]);
 
         $LeaveRequest = LeaveRequest::find($Id);
+        $DocumentNumber = $LeaveRequest->DocumentNumber;
+
         $ModuleFormApprover = ModuleFormApprover::where('ModuleId', config('constant.ID.MODULES.MODULE_ONE.LEAVE'))
             ->where('TableId', $Id)
             ->where('ApproverId', $UserId)
@@ -488,6 +510,8 @@ class LeaveRequestController extends Controller
             $newStatus = 3;
             $LeaveRequest->Status = $newStatus;
             if ($LeaveRequest->save()) {
+            $FullName = Auth::user()->FirstName . ' ' . Auth::user()->LastName;
+            LeaveRequest::logActivity("{$FullName} rejected {$DocumentNumber} leave request",$LeaveRequest);
             $this->sendMail($Id, false, $newStatus);
                 return redirect()
                     ->route('leaveRequest')
