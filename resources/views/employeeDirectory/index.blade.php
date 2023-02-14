@@ -14,6 +14,11 @@
                         <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
                     </ol>
                 </div>
+                <div class="col text-end">
+                    <a class="btn btn-outline-primary btnAddUser" href="{{ route('employeeDirectory.add') }}">
+                        <i class="bi bi-plus-lg"></i> New User
+                    </a>
+                </div>
             </div>
         </div>
     </div>  

@@ -59,7 +59,7 @@
             <div class="row">
                 <div class="col-xl-4">
                     <div class="card">
-                        @if ($requestId == Auth::id())
+                        @if ($requestId == Auth::id()|| isAdminOrHead('admin'))
                         <a href="#" class="text-secondary btnEditImage" id="{{ Auth::id() }}"
                             style="position: absolute; right: 0; margin: 10px;">
                             <i class="bi bi-pencil"></i>

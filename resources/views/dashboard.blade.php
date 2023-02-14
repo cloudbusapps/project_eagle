@@ -32,7 +32,7 @@
                 <div class="card-body">
                   <div class="text-muted text-uppercase small">For Approval Leave</div>
                   <div class="mt-1">
-                    <a href="{{ route('projects') }}" class="fw-bold h4 mb-0">{{ $total['pendingLeave'] ?? 0 }}</a>
+                    <a href="{{ route('leaveRequest') }}" class="fw-bold h4 mb-0">{{ $total['pendingLeave'] ?? 0 }}</a>
                   </div>
                 </div>
               </div>
@@ -103,12 +103,12 @@
                   <div class="row">
                     @foreach ($leaveTypes as $leaveType)
                       <div class="col-sm mt-1 text-center">
-                        <div class="text-truncate">{{ $leaveType['Name'] }}</div>
-                        <a class="fw-bold h4 mb-0">{{ $leaveType['totalLeave'] ?? 0 }}</a>
+                        <span class="text-truncate">{{ $leaveType['Name'] }}</span>
+                        <a href="javascript:void(0);" class="fw-bold h4 mb-0 filterType pe-auto">{{ $leaveType['totalLeave'] ?? 0 }}</a>
                       </div>
                     @endforeach
                   </div>
-                  <table id="leaveSummary" style="width:100%;" class="table table-bordered table-striped table-hover">
+                  <table id="leaveSummary" style="width:100%;" class="table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -141,13 +141,10 @@
               </div>
             </div>
             @endif
-
           </div>
-            
-             
         </div>
         <div class="col-md-4">
-          <div class="card">
+          <div class="card" style="max-height: 500px">
             <div class="card-body">
               <h5 class="card-title">Recent Activity</h5>
               <div class="activity">
@@ -177,12 +174,53 @@
 </main>
 <script>
    $(document).ready(function() {
+    
+    let tempLeaveValue = '';
 
-    const leaveSummaryTable = $('#leaveSummary').DataTable();
-    const tableUpcomingLeave = $('#tableUpcomingLeave').DataTable();
+    $(document).on('click','.filterType',function(e){
+      let leaveType = $(this).closest('div').find("span").text();
+      let textColor = $(this);
+      if(tempLeaveValue==leaveType){
+        filterLeave('');
+        tempLeaveValue = '';
+        textColor.removeClass('text-success')
+        
+      } else{
+        filterLeave(leaveType);
+        tempLeaveValue = leaveType;
+        $('.filterType').removeClass('text-success')
+        textColor.addClass('text-success')
+      }
+
+      
+    })
+
+    const leaveSummaryTable = $('#leaveSummary')
+    .DataTable({
+      scrollX: true,
+      scrollY: '300px',
+      sorting: [],
+      scrollCollapse: true,
+    });
+
+    const tableUpcomingLeave = $('#tableUpcomingLeave')
+    .DataTable({
+      scrollX: true,
+      scrollY: '300px',
+      sorting: [],
+      scrollCollapse: true,
+      columnDefs: [
+                    { targets: 0,  width: 10  },
+                    { targets: 1,  width: 80 },
+                    { targets: 2,  width: 90 },
+                    { targets: 3,  width: 80 },
+                    { targets: 4,  width: 70 },
+                ],
+    });
+    
     let column_index = 0;
     function filterLeave(leaveType){
-      leaveSummaryTable.columns(column_index).search(leaveType, true, false).draw();
+      leaveSummaryTable.columns(3).search(leaveType, true, false).draw();
     }
    })
 </script>
