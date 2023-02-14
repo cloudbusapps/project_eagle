@@ -33,7 +33,10 @@ class DashboardController extends Controller
                     ->get(),
                 'total' => [
                     'users' => DB::table('users')->count(),
-                    'projects' => DB::table('projects')->count()
+                    'projects' => DB::table('projects')->count(),
+                    'approvedLeave' => DB::table('leave_requests')->where('Status',2)->count(),
+                    'pendingLeave' => DB::table('leave_requests')->where('Status',1)->count(),
+                    'rejectedLeave' => DB::table('leave_requests')->where('Status',3)->count(),
                 ],
                 'leavesData' => $approvedData,
                 'leaveTypes' => LeaveType::where('Status',1)

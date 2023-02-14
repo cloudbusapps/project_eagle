@@ -32,7 +32,7 @@
                 <div class="card-body">
                   <div class="text-muted text-uppercase small">Rejected Leave</div>
                   <div class="mt-1">
-                    <a href="{{ route('employeeDirectory') }}" class="fw-bold h4 mb-0">{{ $total['users'] ?? 0 }}</a>
+                    <a href="{{ route('employeeDirectory') }}" class="fw-bold h4 mb-0">{{ $total['rejectedLeave'] ?? 0 }}</a>
                   </div>
                 </div>
               </div>
@@ -42,7 +42,7 @@
                 <div class="card-body">
                   <div class="text-muted text-uppercase small">Approved Leave</div>
                   <div class="mt-1">
-                    <a href="{{ route('employeeDirectory') }}" class="fw-bold h4 mb-0">{{ $total['users'] ?? 0 }}</a>
+                    <a href="{{ route('employeeDirectory') }}" class="fw-bold h4 mb-0">{{ $total['approvedLeave'] ?? 0 }}</a>
                   </div>
                 </div>
               </div>
@@ -52,7 +52,7 @@
                 <div class="card-body">
                   <div class="text-muted text-uppercase small">For Approval Leave</div>
                   <div class="mt-1">
-                    <a href="{{ route('projects') }}" class="fw-bold h4 mb-0">{{ $total['projects'] ?? 0 }}</a>
+                    <a href="{{ route('projects') }}" class="fw-bold h4 mb-0">{{ $total['pendingLeave'] ?? 0 }}</a>
                   </div>
                 </div>
               </div>
