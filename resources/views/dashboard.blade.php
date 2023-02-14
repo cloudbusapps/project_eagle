@@ -26,13 +26,13 @@
       <div class="row">
         <div class="col-md-8">
           <div class="row">
-    
+            
             <div class="col">
               <div class="card">
                 <div class="card-body">
-                  <div class="text-muted text-uppercase small">Rejected Leave</div>
+                  <div class="text-muted text-uppercase small">For Approval Leave</div>
                   <div class="mt-1">
-                    <a href="{{ route('employeeDirectory') }}" class="fw-bold h4 mb-0">{{ $total['rejectedLeave'] ?? 0 }}</a>
+                    <a href="{{ route('projects') }}" class="fw-bold h4 mb-0">{{ $total['pendingLeave'] ?? 0 }}</a>
                   </div>
                 </div>
               </div>
@@ -50,9 +50,9 @@
             <div class="col">
               <div class="card">
                 <div class="card-body">
-                  <div class="text-muted text-uppercase small">For Approval Leave</div>
+                  <div class="text-muted text-uppercase small">Rejected Leave</div>
                   <div class="mt-1">
-                    <a href="{{ route('projects') }}" class="fw-bold h4 mb-0">{{ $total['pendingLeave'] ?? 0 }}</a>
+                    <a href="{{ route('employeeDirectory') }}" class="fw-bold h4 mb-0">{{ $total['rejectedLeave'] ?? 0 }}</a>
                   </div>
                 </div>
               </div>
@@ -73,18 +73,18 @@
                         </tr>
                     </thead>
                     <tbody>
-                      @foreach ($leavesData as $index=>$leaveData)
+                      @foreach ($upcomingLeaves as $index=>$upcomingLeave)
                         <tr>
                           <td>{{ $index+1 }}</td>
                           <td>
-                            <a href="{{ route('leaveRequest.view', ['Id' => $leaveData['Id']]) }}" >{{ $leaveData['DocumentNumber']}}</a>
+                            <a href="{{ route('leaveRequest.view', ['Id' => $upcomingLeave['Id']]) }}" >{{ $upcomingLeave['DocumentNumber']}}</a>
                           </td>
-                          <td>{{ $leaveData['FirstName'].' '.$leaveData['LastName'] }}</td>
-                          <td>{{ $leaveData['LeaveType'] }}</td>
+                          <td>{{ $upcomingLeave['FirstName'].' '.$upcomingLeave['LastName'] }}</td>
+                          <td>{{ $upcomingLeave['LeaveType'] }}</td>
                           <td>
-                            {{ $leaveData->StartDate == $leaveData->EndDate ? 
-                              (date('F d, Y', strtotime($leaveData->StartDate))) :
-                              (date('M d', strtotime($leaveData->StartDate)).' - '.date('M d, Y', strtotime($leaveData->EndDate)))
+                            {{ $upcomingLeave->StartDate == $upcomingLeave->EndDate ? 
+                              (date('F d, Y', strtotime($upcomingLeave->StartDate))) :
+                              (date('M d', strtotime($upcomingLeave->StartDate)).' - '.date('M d, Y', strtotime($upcomingLeave->EndDate)))
                               }}
                           </td>
                         </tr>
