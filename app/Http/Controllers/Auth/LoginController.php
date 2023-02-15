@@ -34,7 +34,7 @@ class LoginController extends Controller
             return redirect()->intended('dashboard')->withSuccess('Signed in');
         }
   
-        return back()->with('fail', 'Access Denied!')->withInput();
+        return back()->with('fail', 'Incorrect email address or password.')->withInput();
     }
 
     public function logout() {
