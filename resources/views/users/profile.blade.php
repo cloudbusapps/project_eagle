@@ -59,7 +59,7 @@
             <div class="row">
                 <div class="col-xl-4">
                     <div class="card">
-                        @if ($requestId == Auth::id()|| isAdminOrHead('admin'))
+                        @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                         <a href="#" class="text-secondary btnEditImage" id="{{ Auth::id() }}"
                             style="position: absolute; right: 0; margin: 10px;">
                             <i class="bi bi-pencil"></i>
@@ -90,7 +90,7 @@
                     <div class="card mt-3">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0 card-title py-0">Skills</h5>
-                            @if ($requestId == Auth::id())
+                            @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                             <a href="#" class="text-secondary btnEditSkill" id="{{ Auth::id() }}">
                                 <i class="bi bi-pencil"></i>
                             </a>
@@ -210,7 +210,7 @@
                                         </div>
                                     </div>
 
-                                    @if ($requestId == Auth::id())
+                                    @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                     <div class="w-100 mt-4">
                                         <a href="{{ route('user.editPersonalInformation', ['Id' => Auth::id()]) }}"
                                             class="btn btn-outline-secondary px-2 py-1 btnEditProfile">
@@ -220,7 +220,7 @@
                                     @endif
                                 </div>
                                 <div class="tab-pane fade {{ Session::get('tab') == 'Education' ? 'show active' : '' }}" id="bordered-justified-education" role="tabpanel" aria-labelledby="education-tab">
-                                    @if ($requestId == Auth::id())
+                                    @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                     <div class="w-100 text-end mb-3">
                                         <a href="{{ route('user.addEducation', ['Id' => $userData->Id]) }}" class="btn btn-outline-primary px-2 py-1">
                                             <i class="bi bi-plus-lg"></i> New
@@ -244,7 +244,7 @@
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>
-                                                @if ($requestId == Auth::id())
+                                                @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                                 <a href="{{ route('user.editEducation', ['Id' => $dt['Id']]) }}">
                                                     {{ $dt['DegreeTitle'] }}
                                                 </a>
@@ -266,7 +266,7 @@
                                         
                                     @endif
 
-                                    @if ($requestId == Auth::id())
+                                    @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                     <div class="w-100 text-end mb-3">
                                         <a href="{{ route('user.addCertification', ['Id' => $userData->Id]) }}" class="btn btn-outline-primary px-2 py-1">
                                             <i class="bi bi-plus-lg"></i> New
@@ -306,7 +306,7 @@
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>
-                                                @if ($requestId == Auth::id())
+                                                @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                                 <a href="{{ route('user.editCertification', ['Id' => $cert['Id']]) }}">
                                                     {{ $cert['Code'] }}
                                                 </a>
@@ -328,7 +328,7 @@
                                         
                                     @endif
 
-                                    @if ($requestId == Auth::id())
+                                    @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                     <div class="w-100 text-end mb-3">
                                         <a href="{{ route('user.addAward', ['Id' => $userData->Id]) }}" class="btn btn-outline-primary px-2 py-1">
                                             <i class="bi bi-plus-lg"></i> New
@@ -352,7 +352,7 @@
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>
-                                                @if ($requestId == Auth::id())
+                                                @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                                 <a href="{{ route('user.editAward', ['Id' => $award['Id']]) }}">
                                                     {{ $award['Title'] }}
                                                 </a>
@@ -373,7 +373,7 @@
                                         
                                     @endif
 
-                                    @if ($requestId == Auth::id())
+                                    @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                     <div class="w-100 text-end mb-3">
                                         <a href="{{ route('user.addExperience', ['Id' => $userData->Id]) }}" class="btn btn-outline-primary px-2 py-1">
                                             <i class="bi bi-plus-lg"></i> New
@@ -398,7 +398,7 @@
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>
-                                                @if ($requestId == Auth::id())
+                                                @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                                 <a href="{{ route('user.editExperience', ['Id' => $experience['Id']]) }}">
                                                     {{ $experience['JobTitle'] }}
                                                 </a>

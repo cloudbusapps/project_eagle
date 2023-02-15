@@ -186,7 +186,7 @@
                         {{-- LOGS HISTORY --}}
                         <div class="tab-pane fade {{ in_array(Session::get('tab'), ['LeaveHistory']) ? 'show active' : '' }}" id="leave-history" role="tabpanel">
                             <div class="card">
-                                <div class="card-body container overflow-auto mh-75">
+                                <div style="max-height:500px" class="card-body container overflow-auto">
                                         @if ($leavesHistory && count($leavesHistory))
                                             @foreach ($leavesHistory as $leaveHistory)
                                             <?php
@@ -202,7 +202,17 @@
                                                             </div>
                                                             @if (count($leaveHistory['properties']))
                                                             <ul>
-                                                                <li>{{ $leaveHistory['properties']['message'] }}</li>
+                                                                @foreach($leaveHistory['properties'] as $leaveProperties)
+                                                                {{-- <li>{{ dd($leaveProperties) }}</li> --}}
+                                                                @if(is_array($leaveProperties['data']))
+                                                                    @foreach (  $leaveProperties['data'] as $leavePropertiesArray)
+                                                                        <li>{{ $leavePropertiesArray['Id'] }}</li>
+                                                                    @endforeach
+                                                                @else
+                                                                <li>{{ $leaveProperties['data'] }}</li>
+                                                                @endif
+                                                                
+                                                                @endforeach
                                                             </ul>
                                                             @endif
                                                         </li>
