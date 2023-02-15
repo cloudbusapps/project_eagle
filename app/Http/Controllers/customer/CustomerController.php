@@ -860,6 +860,7 @@ class CustomerController extends Controller
         $project->CustomerId     = $Id;
         $project->Name           = $request->ProjectName;
         $project->Description    = $request->Description;
+        $project->IsComplex      = $customerData->IsComplex;
         $project->CreatedById    = Auth::id();
         $project->UpdatedById    = Auth::id();
         $project->created_at     = now();

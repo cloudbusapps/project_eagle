@@ -56,6 +56,9 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link {{ in_array(Session::get('tab'), ['LeaveHistory']) ? 'active' : '' }}" id="history-tab" data-bs-toggle="tab" data-bs-target="#leave-history" type="button" role="tab">Leave History</button>
                         </li>
+                        {{-- <div class="col text-end">
+                            <a href="#"><i class="bi bi-arrow-clockwise fa-lg"></i></a>
+                        </div> --}}
 
                         
                     </ul>

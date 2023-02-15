@@ -26,6 +26,15 @@ return new class extends Migration
             $table->string('Notes')->nullable(true);
             $table->string('Link')->nullable(true);
             $table->integer('IsCapable')->nullable();
+
+
+            /**
+             * ----- IsComplex -----
+             * 0 or null - Not Applicable
+             * 1 - Complex
+             * 2 - Intermediate
+             * 3 - Easy
+             */
             $table->integer('IsComplex')->nullable();
             $table->string('ThirdPartyId')->nullable();
             $table->string('ThirdPartyName')->nullable();
