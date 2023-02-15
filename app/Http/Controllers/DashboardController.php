@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\DB;
 use Auth;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -22,7 +23,20 @@ class DashboardController extends Controller
             })
             ->where('leave_requests.Status', 2)
             ->whereMonth('leave_requests.StartDate', now()->month)
-            ->orderBy('leave_requests.StartDate','ASC','leave_requests.EndDate','ASC')
+            ->orderBy('leave_requests.StartDate','DESC','leave_requests.EndDate','DESC')
+            ->get();
+
+            // UPCOMING LEAVE 14 DAYS FROM NOW
+            $upcomingLeaves = LeaveRequest::select('leave_requests.*', 'lt.Name AS LeaveType', 'lt.Acronym', 'u.FirstName', 'u.LastName','p.Name AS ProjectName')
+            ->leftJoin('leave_types AS lt', 'leave_requests.LeaveTypeId', 'lt.Id')
+            ->leftJoin('users AS u', 'u.Id', 'UserId')
+            ->leftJoin('projects AS p', function($join){
+                $join->on('p.KickoffDate', '>=', 'leave_requests.StartDate');
+                $join->on('p.KickoffDate','<=','leave_requests.EndDate');
+            })
+            ->where('leave_requests.Status', 2)
+            ->whereBetween('leave_requests.StartDate',[Carbon::today(),Carbon::today()->addDays(14)])
+            ->orderBy('leave_requests.StartDate','DESC','leave_requests.EndDate','DESC')
             ->get();
 
             $data = [
@@ -33,9 +47,13 @@ class DashboardController extends Controller
                     ->get(),
                 'total' => [
                     'users' => DB::table('users')->count(),
-                    'projects' => DB::table('projects')->count()
+                    'projects' => DB::table('projects')->count(),
+                    'approvedLeave' => DB::table('leave_requests')->where('Status',2)->count(),
+                    'pendingLeave' => DB::table('leave_requests')->where('Status',1)->count(),
+                    'rejectedLeave' => DB::table('leave_requests')->where('Status',3)->count(),
                 ],
-                'leavesData' => $approvedData,
+                'leavesData'     => $approvedData,
+                'upcomingLeaves' => $upcomingLeaves,
                 'leaveTypes' => LeaveType::where('Status',1)
                     ->get(['*',
                         DB::raw("(SELECT COUNT(*) FROM leave_requests WHERE Status = 2 AND leave_types.Id = LeaveTypeId) AS totalLeave")])

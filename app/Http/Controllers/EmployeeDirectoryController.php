@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\admin\Department;
+use App\Models\admin\Designation;
 use Illuminate\Http\Request;
 
 use Session;
@@ -106,6 +108,55 @@ class EmployeeDirectoryController extends Controller
         ];
 
         return view('employeeDirectory.profile', $data);
+    }
+
+    public function add(){
+        try {
+            $data = [
+                'title'        => 'Add New User',
+                'departments'  => Department::all(),
+                'designations' => Designation::all(),
+            ];
+
+            return view('employeeDirectory.createUser', $data);
+        } catch (\Exception $e) {   
+            abort(500);
+        }
+    }
+
+    public function save(Request $request){
+        $validator = $request->validate([
+            'EmployeeNumber'=> ['required','unique:users,EmployeeNumber'],
+            'FirstName'     => ['required'],
+            'LastName'      => ['required'],
+            'Gender'        => ['required'],
+            'email'         => ['required','email','unique:users,email'],
+            'ContactNumber' => ['required'],
+            'DepartmentId'  => ['required'],
+            'DesignationId' => ['required'],
+            'Address'       => ['required', 'string', 'max:500'],
+           ]);
+           $user = new User;
+           $user->EmployeeNumber = $request->EmployeeNumber;
+           $user->FirstName = $request->FirstName;
+           $user->MiddleName = $request->MiddleName;
+           $user->LastName = $request->LastName;
+           $user->Gender = $request->Gender;
+           $user->email = $request->email;
+           $user->ContactNumber = $request->ContactNumber;
+           $user->DepartmentId = $request->DepartmentId;
+           $user->DesignationId = $request->DesignationId;
+           $user->Address = $request->Address;
+
+           if($user->save()){
+            return redirect()
+            ->route('employeeDirectory')
+            ->with('success', "<b>{$user->FirstName} {$user->LastName}<!b> Successfully added");
+           } else{
+            return redirect()
+                ->route('employeeDirectory')
+                ->with('fail', "Something went wrong, try again later");
+           }
     }
 
 }

@@ -99,7 +99,12 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     // EMPLOYEE DIRECTORY
-    Route::get('/directory', [EmployeeDirectoryController::class, 'index'])->name('employeeDirectory');
+    
+    Route::prefix('directory')->group(function () {
+        Route::get('/', [EmployeeDirectoryController::class, 'index'])->name('employeeDirectory');
+        Route::get('/add', [EmployeeDirectoryController::class, 'add'])->name('employeeDirectory.add');
+        Route::post('/save', [EmployeeDirectoryController::class, 'save'])->name('employeeDirectory.save');
+    });
 
     //PROJECTS
     Route::prefix('projects')->group(function () {

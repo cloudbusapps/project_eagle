@@ -413,21 +413,22 @@ class LeaveRequestController extends Controller
             $Remaining = $Credit - $LeaveDuration;
 
             if ($Remaining < 0) {
-                $Credit = 0;
+                // $Credit = 0;
                 $Remaining = abs($Remaining);
 
                 $Accrued = $Accrued - $Remaining;
                 $Accrued = $Accrued > 0 ? $Accrued : 0;
-            } else {
-                $Credit = $Remaining;
-            }
+            } 
+            // else {
+            //     $Credit = $Remaining;
+            // }
 
             $Used = $Used + $LeaveDuration;
             $Balance = $Balance - $LeaveDuration;
             $Balance = $Balance > 0 ? $Balance : 0;
 
             $data = [
-                'Credit'  => $Credit,
+                // 'Credit'  => $Credit,
                 'Accrued' => $Accrued,
                 'Used'    => $Used,
                 'Balance' => $Balance,
