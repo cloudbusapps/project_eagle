@@ -22,6 +22,15 @@ return new class extends Migration
             $table->date('ClosedDate')->nullable();
             $table->json('UsersId')->nullable();
 
+            /**
+             * ----- IsComplex -----
+             * 0 or null - Not Applicable
+             * 1 - Complex
+             * 2 - Intermediate
+             * 3 - Easy
+             */
+            $table->integer('IsComplex')->nullable();
+
             // will change it to ProjectManagerID if needed
             $table->uuid('ProjectManagerId')->nullable();
             $table->uuid('CreatedById')->nullable();

@@ -901,7 +901,7 @@ class UserProfileController extends Controller
                 if ($save) {
                     $FullName = Auth::user()->FirstName.' '.Auth::user()->LastName;
                     $logMessage="{$FullName} updated {$userName->UserFullName}'s Leave Balance";
-                    $properties=['message'=>'test'];
+                    $properties=["data"=>$data];
                     LeaveRequest::logActivity($logMessage,$LeaveRequest,$properties);
                     return redirect()
                         ->back()
