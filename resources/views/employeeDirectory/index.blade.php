@@ -16,7 +16,7 @@
                 </div>
                 <div class="col text-end">
                     <a class="btn btn-outline-primary btnAddUser" href="{{ route('employeeDirectory.add') }}">
-                        <i class="bi bi-plus-lg"></i> New User
+                        <i class="bi bi-plus-lg"></i> New
                     </a>
                 </div>
             </div>

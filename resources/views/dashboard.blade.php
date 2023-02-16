@@ -26,7 +26,7 @@
       <div class="row">
         <div class="col-12">
           <div class="row">
-            <div style="max-height: 600px;" class="col mb-3">
+            <div style="max-height: 600px;" class="col-md-8 mb-3">
               <div class="row">
                 <div class="col">
                   <div class="card">
@@ -96,8 +96,8 @@
                 </div>
               </div>
             </div>
-            <div class="col" style="max-height: 600px">
-              <div class="card">
+            <div class="col-md-4" style="max-height: 600px">
+              <div class="card" style="min-height: 300px;">
                 <div class="card-body">
                   <h5 class="card-title">Recent Activity</h5>
                   <div class="activity">
@@ -129,51 +129,55 @@
         @if (isAdminOrHead())
             <div class="col mt-3">
               <div class="row">
-                @foreach ($leaveTypes as $leaveType)
-                  <div class="col mb-3">
-                    <div class="card">
-                      <div class="card-body">
-                        <span class=" text-truncate text-muted text-uppercase small">{{ $leaveType['Name'] }}</span>
-                        <div class="mt-1">
-                          <a href="javascript:void(0);" class="fw-bold h4 mb-0 filterType pe-auto">{{ $leaveType['totalLeave'] ?? 0 }}</a>
+                <div class="col-md-4 row">
+                  @foreach ($leaveTypes as $leaveType)
+                    <div class="col-md-6 col-sm-12 mb-3">
+                      <div class="card">
+                        <div class="card-body">
+                          <span class=" text-truncate text-muted text-uppercase small">{{ $leaveType['Name'] }}</span>
+                          <div class="mt-1">
+                            <a href="javascript:void(0);" class="fw-bold h4 mb-0 filterType pe-auto">{{ $leaveType['totalLeave'] ?? 0 }}</a>
+                          </div>
                         </div>
                       </div>
                     </div>
+                  @endforeach
+                </div>
+                <div class="col-md-8 col-sm-12">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title pb-3">Summary of Leave</h5>
+                      <table id="leaveSummary" style="width:100%;" class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Document Number</th>
+                                <th>Employee Name</th>
+                                <th>Leave Type</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          @foreach ($leavesData as $index=>$leaveData)
+                            <tr>
+                              <td>{{ $index+1 }}</td>
+                              <td>
+                                <a href="{{ route('leaveRequest.view', ['Id' => $leaveData['Id']]) }}" >{{ $leaveData['DocumentNumber']}}</a>
+                              </td>
+                              <td>{{ $leaveData['FirstName'].' '.$leaveData['LastName'] }}</td>
+                              <td>{{ $leaveData['LeaveType'] }}</td>
+                              <td>
+                                {{ $leaveData->StartDate == $leaveData->EndDate ? 
+                                  (date('F d, Y', strtotime($leaveData->StartDate))) :
+                                  (date('M d', strtotime($leaveData->StartDate)).' - '.date('M d, Y', strtotime($leaveData->EndDate)))
+                                  }}
+                              </td>
+                            </tr>
+                          @endforeach
+                        </tbody>
+                    </table>
+                    </div>
                   </div>
-                @endforeach
-              </div>
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title pb-3">Summary of Leave</h5>
-                  <table id="leaveSummary" style="width:100%;" class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Document Number</th>
-                            <th>Employee Name</th>
-                            <th>Leave Type</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                      @foreach ($leavesData as $index=>$leaveData)
-                        <tr>
-                          <td>{{ $index+1 }}</td>
-                          <td>
-                            <a href="{{ route('leaveRequest.view', ['Id' => $leaveData['Id']]) }}" >{{ $leaveData['DocumentNumber']}}</a>
-                          </td>
-                          <td>{{ $leaveData['FirstName'].' '.$leaveData['LastName'] }}</td>
-                          <td>{{ $leaveData['LeaveType'] }}</td>
-                          <td>
-                            {{ $leaveData->StartDate == $leaveData->EndDate ? 
-                              (date('F d, Y', strtotime($leaveData->StartDate))) :
-                              (date('M d', strtotime($leaveData->StartDate)).' - '.date('M d, Y', strtotime($leaveData->EndDate)))
-                              }}
-                          </td>
-                        </tr>
-                      @endforeach
-                    </tbody>
-                </table>
                 </div>
               </div>
             </div>
