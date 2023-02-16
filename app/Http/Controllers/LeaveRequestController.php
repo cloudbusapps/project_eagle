@@ -468,7 +468,7 @@ class LeaveRequestController extends Controller
                 if ($newStatus == 2) { // APPROVED
                     $this->deductLeaveCredit($LeaveRequest);
                     $attributes=[
-                        'data'=>"{$LeaveRequest->LeaveDuration} is deducted from {$LeaveRequest->FullName}'s {$LeaveRequest->LeaveType} credit"
+                        ['data'=>"{$LeaveRequest->LeaveDuration} is deducted from {$LeaveRequest->FullName}'s {$LeaveRequest->LeaveType} credit"]
                     ];
                     LeaveRequest::logActivity("{$FullName} approved {$DocumentNumber} leave request",$LeaveRequest,$attributes);
                 } else{

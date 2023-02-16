@@ -25,6 +25,7 @@ use App\Models\LeaveRequest;
 
 class UserProfileController extends Controller
 {
+    private $ModuleId = 3;
     public function getUserLeaveBalance($UserId = null) {
         $leaveBalanceData = [];
 
@@ -840,7 +841,7 @@ class UserProfileController extends Controller
         }
 
         $html = '
-        <form method="POST" action="'. route('user.updateLeaveBalance', ['Id' => $Id]) .'">
+        <form enctype="multipart/form-data" id="leaveBalanceForm" validated="false" method="POST" action="'. route('user.updateLeaveBalance', ['Id' => $Id]) .'">
             '. csrf_field() .'
             <table class="table table-bordered table-hover my-2">
                 <thead>
@@ -901,8 +902,9 @@ class UserProfileController extends Controller
                 if ($save) {
                     $FullName = Auth::user()->FirstName.' '.Auth::user()->LastName;
                     $logMessage="{$FullName} updated {$userName->UserFullName}'s Leave Balance";
-                    $properties=["data"=>$data];
+                    $properties=[["data"=>$data]];
                     LeaveRequest::logActivity($logMessage,$LeaveRequest,$properties);
+
                     return redirect()
                         ->back()
                         ->with('card', 'Leave')
@@ -917,6 +919,58 @@ class UserProfileController extends Controller
             ->with('fail', "There's an error occured. Please try again later...");
     }
     // ----- END LEAVE BALANCE -----
+
+
+    // ----- START STATUS CHANGE -----
+    public function editProfileStatus($Id) {
+        
+        $user= User::find($Id);
+        $userStatus = $user->Status;
+
+        $modalBody ='';
+        $actionButton ='';
+
+        if($userStatus==1){
+            $modalBody ='Deactivate this Account?';
+            $actionButton ='<button type="submit" class="btn btn-danger">Deactivate</button>';
+        } else{
+            $modalBody ='Activate this Account?';
+            $actionButton ='<button type="submit" class="btn btn-success">Activate</button>';
+        }
+
+        $html = '
+        <form method="POST" action="'. route('user.updateStatus', ['Id' => $Id]) .'">
+            '. csrf_field() .'
+            '.$modalBody.'
+            <div class="modal-footer mt-3 pb-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                '.$actionButton.'
+            </div>
+        </form>';
+
+        return $html;
+    }
+
+    public function updateProfileStatus($Id){
+        $user= User::find($Id);
+        $FullName= $user->FirstName.' '.$user->LastName;
+        $newStatus = $user->Status == 1 ? 0 : 1;
+        $user->Status = $newStatus;
+
+        $statusMessage = $newStatus == 1 ? 'activated':'deactivated';
+
+        if($user->update()){
+            return redirect()
+            ->back()
+            ->with('card', 'Leave')
+            ->with('success', "{$FullName} successfully {$statusMessage}");
+        } else{
+            return redirect()
+            ->back()
+            ->with('fail', "There's an error occured. Please try again later...");
+        }
+    }
+    // ----- END STATUS CHANGE -----
 
 
 

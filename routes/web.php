@@ -95,6 +95,10 @@ Route::group(['middleware' => 'auth'], function () {
             // SKILL
             Route::get('/getFormSkill/{Id}', [UserProfileController::class, 'getFormSkill'])->name('user.getFormSkill');
             Route::post('/saveSkill/{Id}', [UserProfileController::class, 'saveSkill'])->name('user.saveSkill');
+            
+            // STATUS
+            Route::get('/edit/status/{Id}', [UserProfileController::class, 'editProfileStatus'])->name('user.editStatus');
+            Route::post('/edit/status/{Id}/update', [UserProfileController::class, 'updateProfileStatus'])->name('user.updateStatus');
         });
     });
 

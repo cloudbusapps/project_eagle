@@ -2,6 +2,16 @@
 
 @section('content')
 
+<?php
+$userStatus = $userData->Status;
+if($userStatus==1){
+    $statusButton ='<a class="btn btn-outline-success btnStatus" id='.$requestId.'>Activated</a>';
+} else{
+    $statusButton ='<a class="btn btn-outline-danger btnStatus" id='.$requestId.'>Deactivated</a>';
+}
+
+?>
+
 <style>
 
     .skills .badge {
@@ -26,6 +36,7 @@
                 </div>
             </div>
         </div>
+        
     </div>  
 
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mb-3">
@@ -86,6 +97,13 @@
                                 </a>
                             </div>
                         </div>
+                    </div> 
+                    <div class="card mt-3">
+                        <div class="card-body justify-content-center align-items-center">
+                            <span class="fw-bold">Status:</span>
+                            <?= $statusButton ?>
+                        </div>
+                        
                     </div>
                     <div class="card mt-3">
                         <div class="card-header d-flex justify-content-between align-items-center">
@@ -688,6 +706,32 @@
         })
         // ----- END BUTTON EDIT SKILL -----
 
+        // ----- BUTTON STATUS CHANGE -----
+        $(document).on('click', '.btnStatus', function() {
+            let Id = $(this).attr('id');
+            $('#custom-modal .modal-dialog').removeClass('modal-lg').addClass('modal-md');
+            $('#custom-modal .modal-title').text('Change Status');
+            $('#custom-modal .modal-body').html(PRELOADER);
+            $('#custom-modal').modal('show');
+
+            setTimeout(() => {
+                $.ajax({
+                    method: 'GET',
+                    url: `/user/profile/edit/status/${Id}/`,
+                    async: false,
+                    dataType: 'html',
+                    encode: true,
+                    success: function(result) {
+                        $('#custom-modal .modal-body').html(result);
+                    },
+                    error: function() {
+                        $('#custom-modal .modal-body').html(`<h6 class="text-danger">There's an error occured. Please try again later...</h6>`);
+                    }
+                })
+            }, 500);
+        })
+        // ----- END BUTTON STATUS CHANGE -----
+
 
         // ----- BUTTON SAVE SKILL -----
         function saveSkill() {
@@ -914,6 +958,51 @@
             }, 500);
         })
         // ----- END BUTTON LEAVE BALANCE -----
+
+
+
+
+        
+        $(document).on('submit', '#leaveBalanceForm', function(e) {
+
+        let isValidated = $(this).attr('validated') == "true";
+
+        if (!isValidated) {
+            e.preventDefault();
+            const content=`
+        <div class="d-flex justify-content-center align-items-center flex-column text-center">
+            <img src="/assets/img/modal/update.svg" class="py-1" height="150" width="150">
+            <b class="mt-4">Are you sure you want to update this user's leave balance?</b>
+        </div>`;
+        
+
+            let confirmation = $.confirm({
+                title: false,
+                content,
+                buttons: {
+                    no: {
+                        btnClass: 'btn-default',
+                    },
+                    yes: {
+                        btnClass: 'btn-blue',
+                        keys: ['enter'],
+                        action: function() {
+                            $('#leaveBalanceForm').attr('validated', 'true')
+                                .submit();
+
+                            confirmation.buttons.yes.setText(
+                                `<span class="spinner-border spinner-border-sm"></span> Please wait...`
+                            );
+                            confirmation.buttons.yes.disable();
+                            confirmation.buttons.no.hide();
+
+                            return false;
+                        }
+                    },
+                }
+            });
+        }
+        })
 
     })
 

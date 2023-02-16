@@ -29,6 +29,36 @@
                 <div class="col-12 pb-3">
                     <div class="card">
                         <div class="card-body">
+                            <div class="card-title">
+                                @if ($errors->any())
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        @foreach ($errors->all() as $error)
+                                            <div>
+                                                <i class="bi bi-exclamation-octagon me-1"></i>
+                                                {{ $error }}
+                                            </div>
+                                        @endforeach
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Close"></button>
+                                    </div>
+                                @endif
+                                @if (Session::get('success'))
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        <i class="bi bi-check-circle me-1"></i>
+                                        <?= Session::get('success') ?>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Close"></button>
+                                    </div>
+                                @endif
+                                @if (Session::get('fail'))
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <i class="bi bi-exclamation-octagon me-1"></i>
+                                        <?= Session::get('danger') ?>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Close"></button>
+                                    </div>
+                                @endif
+                            </div>
                             <form action="{{ route('employeeDirectory') }}" method="GET">
                                 <div class="row">
                                     <div class="col-md-4 col-sm-12">

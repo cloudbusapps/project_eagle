@@ -12,6 +12,7 @@ use App\Models\UserCertification;
 use App\Models\UserSkill;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Auth;
 
 class EmployeeDirectoryController extends Controller
 {
@@ -100,6 +101,7 @@ class EmployeeDirectoryController extends Controller
     }
 
     public function viewUserProfile($Id) {
+        isReadAllowed($this->ModuleId, true);
         $data = [
             'title'          => 'Profile',
             'userData'       => User::where('Id', $Id)->first(),
@@ -111,6 +113,7 @@ class EmployeeDirectoryController extends Controller
     }
 
     public function add(){
+        isCreateAllowed($this->ModuleId,true);
         try {
             $data = [
                 'title'        => 'Add New User',
@@ -124,7 +127,9 @@ class EmployeeDirectoryController extends Controller
         }
     }
 
+    // ADDING USER VIA ADMIN
     public function save(Request $request){
+        isCreateAllowed($this->ModuleId,true);
         $validator = $request->validate([
             'EmployeeNumber'=> ['required','unique:users,EmployeeNumber'],
             'FirstName'     => ['required'],
@@ -148,7 +153,14 @@ class EmployeeDirectoryController extends Controller
            $user->DesignationId = $request->DesignationId;
            $user->Address = $request->Address;
 
+           //STOPING LOGGING oF EVENT IN ORDER TO LOG DIFFERENT MESSAGE
+           $user->disableLogging();
+
+
            if($user->save()){
+            $AdminFullName = Auth::user()->FirstName.' '.Auth::user()->LastName;
+           
+            activity()->log("{$AdminFullName} added {$user->FirstName} {$user->LastName} in the employee directory");
             return redirect()
             ->route('employeeDirectory')
             ->with('success', "<b>{$user->FirstName} {$user->LastName}<!b> Successfully added");

@@ -22,7 +22,7 @@ class DashboardController extends Controller
                 $join->on('p.KickoffDate','<=','leave_requests.EndDate');
             })
             ->where('leave_requests.Status', 2)
-            ->whereMonth('leave_requests.StartDate', now()->month)
+            // ->whereMonth('leave_requests.StartDate', now()->month)
             ->orderBy('leave_requests.StartDate','DESC','leave_requests.EndDate','DESC')
             ->get();
 
@@ -39,25 +39,50 @@ class DashboardController extends Controller
             ->orderBy('leave_requests.StartDate','DESC','leave_requests.EndDate','DESC')
             ->get();
 
-            $data = [
-                'title'   => "Dashboard",   
-                'activities' => Activity::where(DB::raw("DATE(created_at)"), date('Y-m-d'))
-                    ->orderBy('updated_at', 'DESC')
-                    ->limit(6)
-                    ->get(),
-                'total' => [
-                    'users' => DB::table('users')->count(),
-                    'projects' => DB::table('projects')->count(),
-                    'approvedLeave' => DB::table('leave_requests')->where('Status',2)->count(),
-                    'pendingLeave' => DB::table('leave_requests')->where('Status',1)->count(),
-                    'rejectedLeave' => DB::table('leave_requests')->where('Status',3)->count(),
-                ],
-                'leavesData'     => $approvedData,
-                'upcomingLeaves' => $upcomingLeaves,
-                'leaveTypes' => LeaveType::where('Status',1)
-                    ->get(['*',
-                        DB::raw("(SELECT COUNT(*) FROM leave_requests WHERE Status = 2 AND leave_types.Id = LeaveTypeId) AS totalLeave")])
-            ];
+            if(isAdminOrHead()){
+                $data = [
+                    'title'   => "Dashboard",   
+                    'activities' => Activity::where(DB::raw("DATE(created_at)"), date('Y-m-d'))
+                        ->orderBy('updated_at', 'DESC')
+                        ->limit(6)
+                        ->get(),
+                    'total' => [
+                        'users' => DB::table('users')->count(),
+                        'projects' => DB::table('projects')->count(),
+                        'approvedLeave' => DB::table('leave_requests')->where('Status',2)->count(),
+                        'pendingLeave' => DB::table('leave_requests')->where('Status',1)->count(),
+                        'rejectedLeave' => DB::table('leave_requests')->where('Status',3)->count(),
+                    ],
+                    'leavesData'     => $approvedData,
+                    'upcomingLeaves' => $upcomingLeaves,
+                    'leaveTypes' => LeaveType::where('Status',1)
+                        ->get(['*',
+                            DB::raw("(SELECT COUNT(*) FROM leave_requests WHERE Status = 2 AND leave_types.Id = LeaveTypeId) AS totalLeave")])
+                ];
+            } else{
+                $data = [
+                    'title'   => "Dashboard",   
+                    'activities' => Activity::where(DB::raw("DATE(created_at)"), date('Y-m-d'))
+                        ->orderBy('updated_at', 'DESC')
+                        ->where('causer_id',Auth::id())
+                        ->limit(6)
+                        ->get(),
+                    'total' => [
+                        'users' => DB::table('users')->count(),
+                        'projects' => DB::table('projects')->count(),
+                        'approvedLeave' => DB::table('leave_requests')->where('Status',2)->where('UserId',Auth::id())->count(),
+                        'pendingLeave' => DB::table('leave_requests')->where('Status',1)->where('UserId',Auth::id())->count(),
+                        'rejectedLeave' => DB::table('leave_requests')->where('Status',3)->where('UserId',Auth::id())->count(),
+                    ],
+                    'leavesData'     => $approvedData,
+                    'upcomingLeaves' => $upcomingLeaves,
+                    'leaveTypes' => LeaveType::where('Status',1)
+                        ->get(['*',
+                            DB::raw("(SELECT COUNT(*) FROM leave_requests WHERE Status = 2 AND leave_types.Id = LeaveTypeId) AS totalLeave")])
+                ];
+            }
+
+            
 
         // } else{
         //     $data = [

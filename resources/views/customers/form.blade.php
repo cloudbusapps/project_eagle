@@ -595,16 +595,20 @@
 
                                                     {{-- EASY --}}
                                                     <div class="checkbox-group">
+                                                        <span class="text-white fw-bold" colspan="100%">asdfasdfasdfasdf</span>
+                                                        
                                                         <tr style="background-color:#333333;">
                                                             <td class="text-white fw-bold" colspan="100%">Easy</td>
                                                         </tr>
                                                         <tr>
+                                                            
                                                             <td>Easy</td>
                                                             <td class="text-center">
                                                                 <div class="custom-control custom-checkbox">
+                                                                    
                                                                     <input type="checkbox"
                                                                         class="custom-control-input mainComplexity"
-                                                                        value="1" id="mainCheck"
+                                                                        value="2" id="mainCheck"
                                                                         name="complexityEasy"
                                                                         {{ $data['IsComplex'] == 2 ? 'checked' : '' }}
                                                                         {{ $complexityDisableField }}>
@@ -2335,7 +2339,7 @@
                 let isChecked = this.checked;
                 
                 // UNCHECK OTHER COMPLEXITY BY GROUP
-                let test = $('.checkbox-group');
+                let test = $(this).parents('div .checkbox-group').find('span').text();
                 // test.prop('checked', false);
                 console.log(test)
 
