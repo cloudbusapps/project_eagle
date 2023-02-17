@@ -593,61 +593,113 @@
                                                 </thead>
                                                 <tbody>
 
-                                                    @foreach ($complexities as $index => $complexity)
-                                                        <input type="hidden"
-                                                            name="complexity[{{ $complexity['Id'] }}][Id]"
-                                                            value="{{ $complexity['Id'] }}">
-                                                        <input type="hidden"
-                                                            name="complexity[{{ $complexity['Id'] }}][Title]"
-                                                            value="{{ $complexity['Title'] }}">
-
+                                                    {{-- EASY --}}
+                                                    <div class="checkbox-group">
+                                                        <span class="text-white fw-bold" colspan="100%">asdfasdfasdfasdf</span>
+                                                        
+                                                        <tr style="background-color:#333333;">
+                                                            <td class="text-white fw-bold" colspan="100%">Easy</td>
+                                                        </tr>
                                                         <tr>
-                                                            <td>{{ $complexity['Title'] }}
-
-                                                                @if (count($complexity['Details']) > 0)
-                                                                    <table
-                                                                        class="table table-bordered table-hover mt-2 mb-0">
-                                                                        @foreach ($complexity['Details'] as $SubDetail)
-                                                                            <input type="hidden"
-                                                                                name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Id]"
-                                                                                value="{{ $SubDetail['Id'] }}">
-                                                                            <input type="hidden"
-                                                                                name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Title]"
-                                                                                value="{{ $SubDetail['Title'] }}">
-
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <li>{{ $SubDetail['Title'] }}</li>
-                                                                                </td>
-                                                                                <td class="text-center">
-                                                                                    <div
-                                                                                        class="custom-control custom-checkbox">
-                                                                                        <input type="checkbox"
-                                                                                            class="custom-control-input subComplexity"
-                                                                                            id="subCheck"
-                                                                                            name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Selected]"
-                                                                                            value={{ $SubDetail['Id'] }}
-                                                                                            {{ $SubDetail['Checked'] == 1 ? 'checked' : '' }}
-                                                                                            {{ $complexityDisableField }}>
-                                                                                    </div>
-                                                                                </td>
-                                                                            </tr>
-                                                                        @endforeach
-                                                                    </table>
-                                                                @endif
-                                                            </td>
+                                                            
+                                                            <td>Easy</td>
                                                             <td class="text-center">
                                                                 <div class="custom-control custom-checkbox">
+                                                                    
                                                                     <input type="checkbox"
                                                                         class="custom-control-input mainComplexity"
-                                                                        value={{ $complexity['Id'] }} id="mainCheck"
-                                                                        name="complexity[{{ $complexity['Id'] }}][Selected]"
-                                                                        {{ $complexity['Checked'] == 1 ? 'checked' : '' }}
+                                                                        value="2" id="mainCheck"
+                                                                        name="complexityEasy"
+                                                                        {{ $data['IsComplex'] == 2 ? 'checked' : '' }}
                                                                         {{ $complexityDisableField }}>
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                    @endforeach
+                                                    </div>
+
+
+                                                    {{-- INTERMEDIATE --}}
+                                                    <div class="checkbox-group">
+                                                        <tr style="background-color:#333333;">
+                                                            <td class="text-white fw-bold" colspan="100%">Intermediate</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Intermediate</td>
+                                                            <td class="text-center">
+                                                                <div class="custom-control custom-checkbox">
+                                                                    <input type="checkbox"
+                                                                        class="custom-control-input mainComplexity"
+                                                                        value="3" id="mainCheck"
+                                                                        name="complexityIntermediate"
+                                                                        {{ $data['IsComplex'] == 3 ? 'checked' : '' }}
+                                                                        {{ $complexityDisableField }}>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </div>
+                                                 
+
+                                                    {{-- COMPLEX --}}
+                                                    <div class="checkbox-group">
+                                                        <tr style="background-color:#333333;">
+                                                            <td class="text-white fw-bold" colspan="100%">Complex</td></tr>
+                                                        @foreach ($complexities as $index => $complexity)
+                                                            <input type="hidden"
+                                                                name="complexity[{{ $complexity['Id'] }}][Id]"
+                                                                value="{{ $complexity['Id'] }}">
+                                                            <input type="hidden"
+                                                                name="complexity[{{ $complexity['Id'] }}][Title]"
+                                                                value="{{ $complexity['Title'] }}">
+                                                                
+    
+                                                            <tr>
+                                                                <td>{{ $complexity['Title'] }}
+    
+                                                                    @if (count($complexity['Details']) > 0)
+                                                                        <table
+                                                                            class="table table-bordered table-hover mt-2 mb-0">
+                                                                            @foreach ($complexity['Details'] as $SubDetail)
+                                                                                <input type="hidden"
+                                                                                    name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Id]"
+                                                                                    value="{{ $SubDetail['Id'] }}">
+                                                                                <input type="hidden"
+                                                                                    name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Title]"
+                                                                                    value="{{ $SubDetail['Title'] }}">
+    
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        <li>{{ $SubDetail['Title'] }}</li>
+                                                                                    </td>
+                                                                                    <td class="text-center">
+                                                                                        <div
+                                                                                            class="custom-control custom-checkbox">
+                                                                                            <input type="checkbox"
+                                                                                                class="custom-control-input subComplexity"
+                                                                                                id="subCheck"
+                                                                                                name="complexity[{{ $complexity['Id'] }}][Sub][{{ $SubDetail['Id'] }}][Selected]"
+                                                                                                value={{ $SubDetail['Id'] }}
+                                                                                                {{ $SubDetail['Checked'] == 1 ? 'checked' : '' }}
+                                                                                                {{ $complexityDisableField }}>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            @endforeach
+                                                                        </table>
+                                                                    @endif
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <div class="custom-control custom-checkbox">
+                                                                        <input type="checkbox"
+                                                                            class="custom-control-input mainComplexity"
+                                                                            value={{ $complexity['Id'] }} id="mainCheck"
+                                                                            name="complexity[{{ $complexity['Id'] }}][Selected]"
+                                                                            {{ $complexity['Checked'] == 1 ? 'checked' : '' }}
+                                                                            {{ $complexityDisableField }}>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </div>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -1931,14 +1983,14 @@
             // ----- END BUTTON ADD LIMITATIONS ROW -----
 
             // ----- CHECKBOX IF COMPLEX OR NOT -----
-            $(document).on('click', 'input[name="IsComplex"]', function() {
-                $('input[name="IsComplex"]').not(this).prop('checked', false);
-                checkDisabled();
-            });
-            function checkDisabled() {
-                const table = $('#mainTable');
-                $('#IsComplex').prop('checked') ? table.show() : table.hide();
-            }
+            // $(document).on('click', 'input[name="IsComplex"]', function() {
+            //     $('input[name="IsComplex"]').not(this).prop('checked', false);
+            //     checkDisabled();
+            // });
+            // function checkDisabled() {
+            //     const table = $('#mainTable');
+            //     $('#IsComplex').prop('checked') ? table.show() : table.hide();
+            // }
             // ----- END CHECKBOX IF COMPLEX OR NOT -----
 
             // UPDATE FOR MANHOUR ASSESSMENT
@@ -2285,6 +2337,13 @@
             // ----- CHANGE MAIN COMPLEXITY -----
             $(document).on('change', `input[type=checkbox].mainComplexity`, function() {
                 let isChecked = this.checked;
+                
+                // UNCHECK OTHER COMPLEXITY BY GROUP
+                let test = $(this).parents('div .checkbox-group').find('span').text();
+                // test.prop('checked', false);
+                console.log(test)
+
+
                 let $table = $(this).closest('tr').find('table');
                 let hasChecked = $table.find(`[type=checkbox].subComplexity:checked`).length;
                 if (!isChecked) {

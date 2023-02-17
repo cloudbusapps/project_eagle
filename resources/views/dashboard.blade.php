@@ -134,7 +134,7 @@
                     <div class="col-md-6 col-sm-12 mb-3">
                       <div class="card">
                         <div class="card-body">
-                          <span class=" text-truncate text-muted text-uppercase small">{{ $leaveType['Name'] }}</span>
+                          <span class="text-muted text-uppercase small">{{ $leaveType['Name'] }}</span>
                           <div class="mt-1">
                             <a href="javascript:void(0);" class="fw-bold h4 mb-0 filterType pe-auto">{{ $leaveType['totalLeave'] ?? 0 }}</a>
                           </div>

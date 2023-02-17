@@ -26,15 +26,16 @@ class LoginController extends Controller
         ]);
    
         $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt(['email'=> $request->email,'password' => $request->password,'Status'=>1])) {
             $request->session()->put('LoggedUser', Auth::id());
 
             $fullname = Auth::user()->FirstName . ' ' . Auth::user()->LastName;
             activity()->log("{$fullname} logged in");
+                
             return redirect()->intended('dashboard')->withSuccess('Signed in');
         }
   
-        return back()->with('fail', 'Incorrect email address or password.')->withInput();
+        return back()->with('fail', 'Incorrect email address, password or deactivated.')->withInput();
     }
 
     public function logout() {

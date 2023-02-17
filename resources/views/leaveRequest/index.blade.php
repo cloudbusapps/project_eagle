@@ -207,14 +207,15 @@
                                                             <ul>
                                                                 @foreach($leaveHistory['properties'] as $leaveProperties)
                                                                 {{-- <li>{{ dd($leaveProperties) }}</li> --}}
-                                                                @if(is_array($leaveProperties['data']))
-                                                                    @foreach (  $leaveProperties['data'] as $leavePropertiesArray)
-                                                                        <li>{{ $leavePropertiesArray['Id'] }}</li>
-                                                                    @endforeach
-                                                                @else
-                                                                <li>{{ $leaveProperties['data'] }}</li>
-                                                                @endif
-                                                                
+                                                                    @if ($leaveProperties)
+                                                                        @if(is_array($leaveProperties['data']))
+                                                                        @foreach (  $leaveProperties['data'] as $leavePropertiesArray)
+                                                                            <li>{{ $leavePropertiesArray['Credit'] }}</li>
+                                                                        @endforeach
+                                                                        @else
+                                                                        <li>{{ $leaveProperties['data'] }}</li>
+                                                                        @endif
+                                                                    @endif
                                                                 @endforeach
                                                             </ul>
                                                             @endif
