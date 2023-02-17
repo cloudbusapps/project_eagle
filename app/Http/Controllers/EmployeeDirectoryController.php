@@ -163,11 +163,12 @@ class EmployeeDirectoryController extends Controller
             activity()->log("{$AdminFullName} added {$user->FirstName} {$user->LastName} in the employee directory");
             return redirect()
             ->route('employeeDirectory')
-            ->with('success', "<b>{$user->FirstName} {$user->LastName}<!b> Successfully added");
+            ->with('success', "<b>{$user->FirstName} {$user->LastName}</b> successfully added!");
            } else{
             return redirect()
                 ->route('employeeDirectory')
-                ->with('fail', "Something went wrong, try again later");
+                ->with('fail', "Something went wrong, try again later")
+                ->withInputs();
            }
     }
 
