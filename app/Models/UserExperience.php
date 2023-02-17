@@ -53,7 +53,15 @@ class UserExperience extends Model
         if (!empty($activity->causer)) {
             $JobTitle = $activity->subject->JobTitle;
             $FullName = $activity->causer->FirstName . ' ' . $activity->causer->LastName;
-            $activity->description = "{$FullName} {$eventName} experience <b>{$JobTitle}</b>";
+
+
+            if($activity->causer->IsAdmin==1){
+                $user = User::find($activity->subject->UserId);
+                $userFullName = $user->FirstName.' '.$user->LastName;
+                $activity->description = "{$FullName} {$eventName} {$userFullName}'s experience <b>{$JobTitle}</b>";
+            } else{
+                $activity->description = "{$FullName} {$eventName} experience <b>{$JobTitle}</b>";
+            }
         }
     }
 }

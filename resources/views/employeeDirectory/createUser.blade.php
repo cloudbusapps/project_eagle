@@ -124,12 +124,9 @@
                                 {{-- <input type="text" class="form-control" id="Title" name="Title" placeholder="Title" required
                                     value="{{ old('Title') ?? $userData['Title'] }}"> --}}
     
-                                <select name="DesignationId" id="DesignationId" class="form-control" select2 required>
-                                    <option value="" selected disabled>Select Designation</option>
-                                    @foreach ($designations as $dt)
-                                    <option value="{{ $dt['Id'] }}">{{ $dt['Name'] }}</option>
-                                    @endforeach
-                                </select>
+                                    <select name="DesignationId" id="DesignationId" class="form-control" select2 required data="{{ $designations }}">
+                                        <option value="" selected disabled>Select Designation</option>
+                                    </select>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -156,6 +153,34 @@
 <script>
 
     $(document).ready(function() {
+        let departmentList = JSON.parse($(`[name="DepartmentId"]`).attr('data'));
+        let designationList = JSON.parse($(`[name="DesignationId"]`).attr('data'));
+        $(`[name="DepartmentId"]`).trigger('change');
+
+        // ----- DESIGNATION OPTION -----
+        function designationOption(departmentId = null, designationId = null) {
+            let designationOptions = designationList.filter(dt => dt.DepartmentId == departmentId);
+            let html = `<option value="" selected disabled>Select Designation</option>`;
+            designationOptions.map(dt => {
+                let { Id, Name } = dt;
+                html += `<option value="${Id}">${Name}</option>`;
+            })
+            $(`[name="DesignationId"]`).html(html);
+            initSelect2();
+        }
+
+        let saveDepartmentId  = $(`[name="DepartmentId"]`).val();
+        let saveDesignationId = $(`[name="DesignationId"]`).attr('DesignationId');
+        designationOption(saveDepartmentId, saveDesignationId);
+        // ----- END DESIGNATION OPTION -----
+
+
+        // ----- SELECT DEPARTMENT -----
+        $(document).on('change', `[name="DepartmentId"]`, function() {
+            let departmentId = $(this).val();
+            designationOption(departmentId);
+        })
+        // ----- END SELECT DEPARTMENT -----
 
 
          // ----- SUBMIT FORM -----

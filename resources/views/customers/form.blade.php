@@ -595,15 +595,15 @@
 
                                                     {{-- EASY --}}
                                                     <div class="checkbox-group">
-                                                        <span class="text-white fw-bold" colspan="100%">asdfasdfasdfasdf</span>
+                                                        
                                                         
                                                         <tr style="background-color:#333333;">
                                                             <td class="text-white fw-bold" colspan="100%">Easy</td>
                                                         </tr>
                                                         <tr>
-                                                            
-                                                            <td>Easy</td>
+                                                             <td>Easy</td>
                                                             <td class="text-center">
+                                                               
                                                                 <div class="custom-control custom-checkbox">
                                                                     
                                                                     <input type="checkbox"
@@ -620,6 +620,7 @@
 
                                                     {{-- INTERMEDIATE --}}
                                                     <div class="checkbox-group">
+                                                        <span class="text-white fw-bold" colspan="100%">Intermediate</span>
                                                         <tr style="background-color:#333333;">
                                                             <td class="text-white fw-bold" colspan="100%">Intermediate</td>
                                                         </tr>
@@ -641,6 +642,7 @@
 
                                                     {{-- COMPLEX --}}
                                                     <div class="checkbox-group">
+                                                        <span class="text-white fw-bold" colspan="100%">Complex</span>
                                                         <tr style="background-color:#333333;">
                                                             <td class="text-white fw-bold" colspan="100%">Complex</td></tr>
                                                         @foreach ($complexities as $index => $complexity)
@@ -2339,7 +2341,7 @@
                 let isChecked = this.checked;
                 
                 // UNCHECK OTHER COMPLEXITY BY GROUP
-                let test = $(this).parents('div .checkbox-group').find('span').text();
+                let test = $(this).closest('tr').find('span').text();
                 // test.prop('checked', false);
                 console.log(test)
 
