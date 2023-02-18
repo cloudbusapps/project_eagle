@@ -17,6 +17,12 @@ return new class extends Migration
             $table->uuid('Id');
             $table->uuid('DepartmentId');
             $table->string('Name');
+            $table->string('Initial')->nullable();
+            $table->decimal('BeginnerRate', 15, 2)->default(0.00);
+            $table->decimal('IntermediateRate', 15, 2)->default(0.00);
+            $table->decimal('SeniorRate', 15, 2)->default(0.00);
+            $table->decimal('ExpertRate', 15, 2)->default(0.00);
+            $table->decimal('DefaultRate', 15, 2)->default(0.00);
             $table->integer('Status')->default(1);
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();

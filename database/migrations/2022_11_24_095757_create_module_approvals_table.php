@@ -19,8 +19,8 @@ return new class extends Migration
             $table->uuid('DesignationId')->nullable();
             $table->integer('Level');
             $table->uuid('ApproverId')->nullable();
-            $table->uuid('CreatedById');
-            $table->uuid('UpdatedById');
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
         });
     }

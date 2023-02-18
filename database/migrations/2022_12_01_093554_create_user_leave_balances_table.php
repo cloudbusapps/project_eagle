@@ -17,8 +17,11 @@ return new class extends Migration
             $table->uuid('Id')->primary();
             $table->uuid('UserId');
             $table->uuid('LeaveTypeId');
+            $table->year('Year');
+            $table->decimal('Credit', 10, 2)->default(0);
+            $table->decimal('Accrued', 10, 2)->default(0);
+            $table->decimal('Used', 10, 2)->default(0);
             $table->decimal('Balance', 10, 2)->default(0);
-            $table->decimal('Accumulated', 10, 2)->default(0);
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();
             $table->timestamps();

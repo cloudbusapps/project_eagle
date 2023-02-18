@@ -21,9 +21,30 @@ use App\Models\admin\LeaveType;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
+use App\Models\LeaveRequest;
 
 class UserProfileController extends Controller
 {
+    private $ModuleId = 3;
+
+    public function getUserLeaveBalance($UserId = null) {
+        $leaveBalanceData = [];
+
+        $leaveTypes = LeaveType::where('Status', 1)->get();
+        foreach ($leaveTypes as $dt) {
+            $leaveBalanceData[] = [
+                'Id'      => $dt->Id,
+                'Name'    => $dt->Name,
+                'Balance' => UserLeaveBalance::where('UserId', $UserId)
+                    ->where('LeaveTypeId', $dt->Id)
+                    ->orderBy('Year', 'DESC')
+                    ->get()
+            ];
+        }
+
+        return $leaveBalanceData;
+    }
+
     public function index(Request $request) {
         $UserId = $request->Id ? $request->Id : Auth::id();
         try {
@@ -37,16 +58,13 @@ class UserProfileController extends Controller
                 ->get();
 
             $userData = DB::table('users AS u')
-                ->select('u.*', DB::raw('"d"."Name" AS department, "d2"."Name" AS designation'))
+                ->select('u.*', DB::raw('d.Name AS department, d2.Name AS designation'))
                 ->leftJoin('departments AS d', 'DepartmentId', '=', 'd.Id')
                 ->leftJoin('designations AS d2', 'DesignationId', '=', 'd2.Id')
                 ->where('u.Id', $UserId)
                 ->first();
 
-            $leaveBalance = LeaveType::select('leave_types.*', 
-                DB::raw('(SELECT "Balance" FROM user_leave_balances WHERE "UserId" = \''. $UserId .'\' AND "LeaveTypeId" = "leave_types"."Id") AS "Balance"'))
-                ->where('Status', 1)
-                ->get();
+            
 
             $data = [
                 'title'          => 'Profile',
@@ -57,20 +75,20 @@ class UserProfileController extends Controller
                 'experiences'    => UserExperience::where('UserId', $UserId)->get(),
                 'educations'     => UserEducation::where('UserId', $UserId)->get(),
                 'projects'       => $projects,
-                'leaveBalance'   => $leaveBalance,
+                'leaveBalance'   => $this->getUserLeaveBalance($UserId),
                 'requestId'      => $UserId,
             ];
     
             return view('users.profile', $data);
-        } catch (\Illuminate\Database\QueryException $e) {
-            dd($e);
+        } catch (\Exception $e) {
+            dd($e->getMessage());
             abort('500');
         }
     }
 
     public function generate($UserId, $action = 'print') {
         $userData = DB::table('users AS u')
-            ->select('u.*', DB::raw('"d"."Name" AS department'))
+            ->select('u.*', DB::raw('d.Name AS department'))
             ->leftJoin('departments AS d', 'DepartmentId', '=', 'd.Id')
             ->where('u.Id', $UserId)
             ->first();
@@ -102,7 +120,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formPersonalInformation', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             abort(500);
         }
     }
@@ -136,8 +154,16 @@ class UserProfileController extends Controller
         $user->DesignationId  = $request->DesignationId;
         $user->email          = $request->email;
 
+        if($Id!==Auth::id()){
+            $FullName = Auth::user()->FirstName.' '.Auth::user()->LastName;
+            $user->disableLogging();
+        }
+
         if ($user->save()) {
-            return redirect()->route('user.viewProfile')
+            if($Id!==Auth::id()){
+                activity()->log("{$FullName} updated {$user->FirstName} {$user->LastName}'s personal information");
+            }
+            return redirect()->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Overview')
                 ->with('success', 'Personal Information successfully updated!');
         }
@@ -157,7 +183,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formCertification', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -181,12 +207,12 @@ class UserProfileController extends Controller
 
         if ($UserCertification->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Certification')
                 ->with('success', "<b>{$Code}</b> successfully saved!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Certification')
                 ->with('fail', "<b>{$Code}</b> failed to save!");
         }
@@ -202,7 +228,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formCertification', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -225,12 +251,12 @@ class UserProfileController extends Controller
 
         if ($UserCertification->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserCertification->UserId])
                 ->with('tab', 'Certification')
                 ->with('success', "<b>{$Code}</b> successfully updated!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserCertification->UserId])
                 ->with('tab', 'Certification')
                 ->with('fail', "<b>{$Code}</b> failed to update!");
         }
@@ -243,12 +269,12 @@ class UserProfileController extends Controller
 
         if ($UserCertification->delete()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserCertification->UserId])
                 ->with('tab', 'Certification')
                 ->with('success', "<b>{$Code}</b> successfully deleted!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserCertification->UserId])
                 ->with('tab', 'Certification')
                 ->with('fail', "<b>{$Code}</b> failed to delete!");
         }
@@ -266,7 +292,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formAward', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -288,12 +314,12 @@ class UserProfileController extends Controller
 
         if ($UserAward->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Award')
                 ->with('success', "<b>{$Title}</b> successfully saved!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Award')
                 ->with('fail', "<b>{$Title}</b> failed to save!");
         }
@@ -309,7 +335,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formAward', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -330,12 +356,12 @@ class UserProfileController extends Controller
 
         if ($UserAward->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserAward->UserId])
                 ->with('tab', 'Award')
                 ->with('success', "<b>{$Title}</b> successfully updated!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserAward->UserId])
                 ->with('tab', 'Award')
                 ->with('fail', "<b>{$Title}</b> failed to update!");
         }
@@ -348,12 +374,12 @@ class UserProfileController extends Controller
 
         if ($UserAward->delete()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserAward->UserId])
                 ->with('tab', 'Award')
                 ->with('success', "<b>{$Title}</b> successfully deleted!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserAward->UserId])
                 ->with('tab', 'Award')
                 ->with('fail', "<b>{$Title}</b> failed to delete!");
         }
@@ -371,7 +397,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formExperience', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -397,12 +423,12 @@ class UserProfileController extends Controller
 
         if ($UserExperience->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Experience')
                 ->with('success', "<b>{$JobTitle}</b> successfully saved!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Experience')
                 ->with('fail', "<b>{$JobTitle}</b> failed to save!");
         }
@@ -418,7 +444,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formExperience', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -443,12 +469,12 @@ class UserProfileController extends Controller
 
         if ($UserExperience->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserExperience->UserId])
                 ->with('tab', 'Experience')
                 ->with('success', "<b>{$JobTitle}</b> successfully updated!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserExperience->UserId])
                 ->with('tab', 'Experience')
                 ->with('fail', "<b>{$JobTitle}</b> failed to update!");
         }
@@ -461,12 +487,12 @@ class UserProfileController extends Controller
 
         if ($UserExperience->delete()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserExperience->UserId])
                 ->with('tab', 'Experience')
                 ->with('success', "<b>{$JobTitle}</b> successfully deleted!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserExperience->UserId])
                 ->with('tab', 'Experience')
                 ->with('fail', "<b>{$JobTitle}</b> failed to delete!");
         }
@@ -484,7 +510,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formEducation', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -509,12 +535,12 @@ class UserProfileController extends Controller
 
         if ($UserEducation->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Education')
                 ->with('success', "<b>{$DegreeTitle}</b> successfully saved!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Education')
                 ->with('fail', "<b>{$DegreeTitle}</b> failed to save!");
         }
@@ -530,7 +556,7 @@ class UserProfileController extends Controller
             ];
     
             return view('users.formEducation', $data);
-        } catch (Exception $e) {   
+        } catch (\Exception $e) {   
             return redirect()->back()->withErrors('fail', $e->getMessage());
         }
     }
@@ -554,12 +580,12 @@ class UserProfileController extends Controller
 
         if ($UserEducation->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserEducation->UserId])
                 ->with('tab', 'Education')
                 ->with('success', "<b>{$DegreeTitle}</b> successfully updated!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserEducation->UserId])
                 ->with('tab', 'Education')
                 ->with('fail', "<b>{$DegreeTitle}</b> failed to update!");
         }
@@ -572,12 +598,12 @@ class UserProfileController extends Controller
 
         if ($UserEducation->delete()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserEducation->UserId])
                 ->with('tab', 'Education')
                 ->with('success', "<b>{$DegreeTitle}</b> successfully deleted!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserEducation->UserId])
                 ->with('tab', 'Education')
                 ->with('fail', "<b>{$DegreeTitle}</b> failed to delete!");
         }
@@ -739,13 +765,13 @@ class UserProfileController extends Controller
             
             if ($User->save()) {
                 return redirect()
-                    ->route('user.viewProfile')
+                    ->route('user.viewProfile',['Id'=>$Id])
                     ->with('card', 'Image')
                     ->with('success', "Profile image successfully updated!");
             } 
         } catch (\Throwable $th) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('card', 'Image')
                 ->with('fail', "There's an error occured. Please try again later...");
         }
@@ -758,40 +784,86 @@ class UserProfileController extends Controller
 
     // ----- LEAVE BALANCE -----
     public function editLeaveBalance($Id) {
-        $UserLeaveBalance = LeaveType::select('leave_types.*', 
-            DB::raw('(SELECT "Balance" FROM user_leave_balances WHERE "UserId" = \''.$Id.'\' AND "LeaveTypeId" = "leave_types"."Id") AS "Balance"'))
-            ->where('Status', 1)
-            ->get();
+        $UserLeaveBalance = $this->getUserLeaveBalance($Id);
 
-        $leaveHTML = '';
-        foreach ($UserLeaveBalance as $index => $dt) {
-            $count = $index + 1;
-            $balance = $dt['Balance'] ?? 0;
+        $index = 0;
+        $tbodyHTML   = '';
 
-            $leaveHTML .= "
-            <tr>
-                <td>{$count}</td>
-                <td>{$dt['Name']}</td>
-                <td>
-                    <input type='hidden' name='LeaveTypeId[]' value='{$dt['Id']}'>
-                    <input type='number' step='0.01' name='Balance[]' value='{$balance}' class='form-control text-center'>
-                </td>
-            </tr>";
+        foreach ($UserLeaveBalance as $dt) {
+            $Name        = $dt['Name'];
+            $LeaveTypeId = $dt['Id'];
+
+            if (isset($dt['Balance']) && count($dt['Balance'])) {
+                foreach ($dt['Balance'] as $i => $bal) {
+                    $UserLeaveBalanceId = $bal['Id'] ?? Str::uuid();
+                    $Year    = $bal['Year'];
+                    $Credit  = $bal['Credit'];
+                    $Accrued = $bal['Accrued'];
+                    $Used    = $bal['Used'];
+
+                    $LeaveTypeDisplay = $i == 0 ? '<td rowspan="'. count($dt['Balance']) .'">'. $Name .'</td>' : '';
+
+                    $tbodyHTML .= '
+                    <input type="hidden" name="LeaveBalance['.$index.'][Id]" value="'. $UserLeaveBalanceId .'">
+                    <input type="hidden" name="LeaveBalance['.$index.'][Year]" value="'. $Year .'">
+                    <input type="hidden" name="LeaveBalance['.$index.'][LeaveTypeId]" value="'. $LeaveTypeId .'">
+                    <tr>
+                        '. $LeaveTypeDisplay .'
+                        <td>'. $Year .'</td>
+                        <td class="text-center">
+                            <input type="number" step="0.01" name="LeaveBalance['.$index.'][Credit]" value="'. $Credit .'" class="form-control text-center">
+                        </td>
+                        <td class="text-center">
+                            <input type="number" step="0.01" name="LeaveBalance['.$index.'][Accrued]" value="'. $Accrued .'" class="form-control text-center">
+                        </td>
+                        <td class="text-center">
+                            <input type="number" step="0.01" name="LeaveBalance['.$index.'][Used]" value="'. $Used .'" class="form-control text-center">
+                        </td>
+                    </tr>';
+
+                    $index++;
+                }
+            } else {
+                $UserLeaveBalanceId = Str::uuid();
+                $Year = date('Y');
+
+                $tbodyHTML .= '
+                <input type="hidden" name="LeaveBalance['.$index.'][Id]" value="'. $UserLeaveBalanceId .'">
+                <input type="hidden" name="LeaveBalance['.$index.'][Year]" value="'. $Year .'">
+                <input type="hidden" name="LeaveBalance['.$index.'][LeaveTypeId]" value="'. $LeaveTypeId .'">
+                <tr>
+                    <td>'. $Name .'</td>
+                    <td>'. $Year .'</td>
+                    <td class="text-center">
+                        <input type="number" step="0.01" name="LeaveBalance['.$index.'][Credit]" value="0" class="form-control text-center">
+                    </td>
+                    <td class="text-center">
+                        <input type="number" step="0.01" name="LeaveBalance['.$index.'][Accrued]" value="0" class="form-control text-center">
+                    </td>
+                    <td class="text-center">
+                        <input type="number" step="0.01" name="LeaveBalance['.$index.'][Used]" value="0" class="form-control text-center">
+                    </td>
+                </tr>';
+
+                $index++;
+            }
         }
 
         $html = '
-        <form method="POST" action="'. route('user.updateLeaveBalance', ['Id' => $Id]) .'">
+        <form enctype="multipart/form-data" id="leaveBalanceForm" validated="false" method="POST" action="'. route('user.updateLeaveBalance', ['Id' => $Id]) .'">
             '. csrf_field() .'
-            <table class="table table-striped table-hover">
+            <table class="table table-bordered table-hover my-2">
                 <thead>
                     <tr>
-                        <th>#</th>
                         <th>Leave Type</th>
-                        <th>Balance</th>
+                        <th>Year</th>
+                        <th>Credit</th>
+                        <th>Accrued</th>
+                        <th>Used</th>
                     </tr>
                 </thead>
                 <tbody>
-                    '.$leaveHTML.'
+                    '.$tbodyHTML.'
                 </tbody>
             </table>
             <div class="modal-footer mt-3 pb-0">
@@ -799,33 +871,49 @@ class UserProfileController extends Controller
                 <button type="submit" class="btn btn-warning">Update</button>
             </div>
         </form>';
+
         return $html;
     }
 
 
     public function updateLeaveBalance(Request $request, $Id) {
-        
-        $delete = UserLeaveBalance::where('UserId', $Id)->delete();
-
-        $LeaveTypeId = $request->LeaveTypeId;
-        $Balance     = $request->Balance;
-        
-        if ($LeaveTypeId && count($LeaveTypeId)) {
+        $LeaveBalance = $request->LeaveBalance ?? [];
+        // THERE IS ERROR HERE THAT BREAKS THE COMPUTATION OF BALANCES UPON UPDATING
+        if (isset($LeaveBalance) && count($LeaveBalance)) {
             $data = [];
-            foreach ($LeaveTypeId as $index => $ltId) {
+            foreach ($LeaveBalance as $key => $dt) {
+                $UserLeaveBalanceId = $dt['Id'] ?? Str::uuid();
+                $Year        = $dt['Year'] ?? '';
+                $LeaveTypeId = $dt['LeaveTypeId'] ?? '';
+                $Credit      = $dt['Credit'] ?? 0;
+                $Accrued     = $dt['Accrued'] ?? 0;
+                $Used        = $dt['Used'] ?? 0;
+                $Balance     = ($Accrued + $Credit) - $Used;
+
                 $data[] = [
-                    'Id'            => Str::uuid(),
-                    'UserId'        => $Id,
-                    'LeaveTypeId'   => $ltId,
-                    'Balance'       => $Balance[$index],
-                    'Accumulated'   => 0,
+                    'Id'          => $UserLeaveBalanceId,
+                    'Year'        => $Year,
+                    'LeaveTypeId' => $LeaveTypeId,
+                    'UserId'      => $Id,
+                    'Accrued'     => $Accrued,
+                    'Credit'      => $Credit,
+                    'Used'        => $Used,
+                    'Balance'     => $Balance,
                     'CreatedById' => Auth::id(),
                     'UpdatedById' => Auth::id(),
                 ];
             }
+
             if ($data && count($data)) {
-                $save = DB::table('user_leave_balances')->insert($data);
+                $LeaveRequest = new LeaveRequest;
+                $save = UserLeaveBalance::upsert($data, 'Id');
+                $userName = User::select(DB::raw("CONCAT(FirstName,' ',LastName) AS UserFullName"))->where('Id',$Id)->first();
                 if ($save) {
+                    $FullName = Auth::user()->FirstName.' '.Auth::user()->LastName;
+                    $logMessage="{$FullName} updated {$userName->UserFullName}'s Leave Balance";
+                    $properties=[["data"=>$data]];
+                    LeaveRequest::logActivity($logMessage,$LeaveRequest,$properties);
+
                     return redirect()
                         ->back()
                         ->with('card', 'Leave')
@@ -840,6 +928,61 @@ class UserProfileController extends Controller
             ->with('fail', "There's an error occured. Please try again later...");
     }
     // ----- END LEAVE BALANCE -----
+
+
+    // ----- START STATUS CHANGE -----
+    public function editProfileStatus($Id) {
+        
+        $user= User::find($Id);
+        $userStatus = $user->Status;
+
+        $modalBody ='';
+        $actionButton ='';
+
+        if($userStatus==1){
+            $modalBody ='Deactivate this Account?';
+            $actionButton ='<button type="submit" class="btn btn-danger">Deactivate</button>';
+        } else{
+            $modalBody ='Activate this Account?';
+            $actionButton ='<button type="submit" class="btn btn-success">Activate</button>';
+        }
+
+        $html = '
+        <form method="POST" action="'. route('user.updateStatus', ['Id' => $Id]) .'">
+            '. csrf_field() .'
+            '.$modalBody.'
+            <div class="modal-footer mt-3 pb-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                '.$actionButton.'
+            </div>
+        </form>';
+
+        return $html;
+    }
+
+    public function updateProfileStatus($Id){
+        $user= User::find($Id);
+        $FullName= $user->FirstName.' '.$user->LastName;
+        $newStatus = $user->Status == 1 ? 0 : 1;
+        $user->Status = $newStatus;
+
+        $statusMessage = $newStatus == 1 ? 'activated':'deactivated';
+        $user->disableLogging();
+        if($user->update()){
+            $AdminFullName = Auth::user()->FirstName.' '.Auth::user()->LastName;
+           
+            activity()->log("{$AdminFullName} {$statusMessage} {$user->FirstName} {$user->LastName}'s status");
+            return redirect()
+            ->back()
+            ->with('card', 'Leave')
+            ->with('success', "{$FullName} successfully {$statusMessage}");
+        } else{
+            return redirect()
+            ->back()
+            ->with('fail', "There's an error occured. Please try again later...");
+        }
+    }
+    // ----- END STATUS CHANGE -----
 
 
 

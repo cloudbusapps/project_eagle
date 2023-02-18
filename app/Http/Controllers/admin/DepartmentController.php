@@ -26,7 +26,8 @@ class DepartmentController extends Controller
     public function form() {
         $data = [
             'title' => "New Department",
-            'employees' => User::where('IsAdmin', false)->where('Status', 1)->get()
+            // 'employees' => User::where('IsAdmin', false)->where('Status', 1)->get()
+            'employees' => User::where('Status', 1)->get()
         ];
         return view('admin.departments.form', $data);
     }
@@ -53,7 +54,8 @@ class DepartmentController extends Controller
         $data = [
             'title' => "Edit Department",
             'data'  => Department::find($Id),
-            'employees' => User::where('IsAdmin', false)->where('Status', 1)->get()
+            // 'employees' => User::where('IsAdmin', false)->where('Status', 1)->get()
+            'employees' => User::where('Status', 1)->get()
         ];
         return view('admin.departments.form', $data);
     }

@@ -3,7 +3,8 @@
 @section('content')
 
 <?php
-    $DepartmentId = $Name = $todo = null;
+    $DepartmentId = $Name = $Initial = $todo = null;
+    $BeginnerRate = $IntermediateRate = $SeniorRate = $ExpertRate = $DefaultRate = 0;
     $Status = 1;
 
     if (isset($data) && !empty($data)) {
@@ -14,7 +15,13 @@
         <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
         $DepartmentId = (!empty($data)) ? ($data['DepartmentId'] ?? '') : '';
         $Name         = (!empty($data)) ? ($data['Name'] ?? '') : '';
+        $Initial      = (!empty($data)) ? ($data['Initial'] ?? '') : '';
         $Status       = (!empty($data)) ? ($data['Status'] ?? '') : '';
+        $BeginnerRate     = (!empty($data)) ? ($data['BeginnerRate'] ?? '') : '';
+        $IntermediateRate = (!empty($data)) ? ($data['IntermediateRate'] ?? '') : '';
+        $SeniorRate       = (!empty($data)) ? ($data['SeniorRate'] ?? '') : '';
+        $ExpertRate       = (!empty($data)) ? ($data['ExpertRate'] ?? '') : '';
+        $DefaultRate      = (!empty($data)) ? ($data['DefaultRate'] ?? '') : '';
     } else {
         $todo   = "insert";
         $method = "POST";
@@ -84,6 +91,13 @@
                                     </div>
                                 </div>
                                 <div class="row my-3">
+                                    <label for="Initial" class="col-sm-2">Initial <code>*</code></label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="Initial" name="Initial" placeholder="Initial"
+                                            value="{{ old('Initial') ?? $Initial }}" required>
+                                    </div>
+                                </div>
+                                <div class="row my-3">
                                     <label for="Status" class="col-sm-2">Status</label>
                                     <div class="col-sm-10">
                                         <select name="Status" id="Status" class="form-select" select2>
@@ -91,6 +105,75 @@
                                             <option value="0" {{ $Status == 0 ? "selected" : "" }}>Inactive</option>
                                         </select>
                                     </div>
+                                </div>
+                                <div class="row my-3 px-3">
+                                    <table class="table table-bordered table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 50px;">Default</th>
+                                                <th style="width: 50%;">Level</th>
+                                                <th style="width: 50%;">Rate</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="text-center">
+                                                    <input type="radio" id="radioBeginnerRate" name="DefaultRate" value="{{ $BeginnerRate }}" 
+                                                        {{ $DefaultRate == 0 || $BeginnerRate == $DefaultRate ? 'checked' : '' }}>
+                                                </td>
+                                                <td>Entry Level</td>
+                                                <td>
+                                                    <input type="number" step="0.01" name="BeginnerRate" 
+                                                        class="form-control text-end" 
+                                                        value="{{ $BeginnerRate }}"
+                                                        onkeyup="document.querySelector('#radioBeginnerRate').value = this.value"
+                                                        required>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-center">
+                                                    <input type="radio" id="radioIntermediateRate" name="DefaultRate" value="{{ $IntermediateRate }}"
+                                                        {{ $IntermediateRate == $DefaultRate ? 'checked' : '' }}>
+                                                </td>
+                                                <td>Intermediate</td>
+                                                <td>
+                                                    <input type="number" step="0.01" name="IntermediateRate" 
+                                                        class="form-control text-end" 
+                                                        value="{{ $IntermediateRate }}"
+                                                        onkeyup="document.querySelector('#radioIntermediateRate').value = this.value"
+                                                        required>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-center">
+                                                    <input type="radio" id="radioSeniorRate" name="DefaultRate" value="{{ $SeniorRate }}"
+                                                        {{ $SeniorRate == $DefaultRate ? 'checked' : '' }}>
+                                                </td>
+                                                <td>Senior</td>
+                                                <td>
+                                                    <input type="number" step="0.01" name="SeniorRate" 
+                                                        class="form-control text-end" 
+                                                        value="{{ $SeniorRate }}"
+                                                        onkeyup="document.querySelector('#radioSeniorRate').value = this.value"
+                                                        required>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-center">
+                                                    <input type="radio" id="radioExpertRate" name="DefaultRate" value="{{ $ExpertRate }}"
+                                                        {{ $ExpertRate == $DefaultRate ? 'checked' : '' }}>
+                                                </td>
+                                                <td>Expert</td>
+                                                <td>
+                                                    <input type="number" step="0.01" name="ExpertRate" 
+                                                        class="form-control text-end" 
+                                                        value="{{ $ExpertRate }}"
+                                                        onkeyup="document.querySelector('#radioExpertRate').value = this.value"
+                                                        required>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                             <div class="card-footer text-end">

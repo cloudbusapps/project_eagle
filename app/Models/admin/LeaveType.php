@@ -23,6 +23,7 @@ class LeaveType extends Model
     protected $fillable = [
         'Id',
         'Name',
+        'Acronym',
         'Status',
     ];
 

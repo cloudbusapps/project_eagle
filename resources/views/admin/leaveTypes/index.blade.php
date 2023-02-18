@@ -64,7 +64,7 @@
                                 <td>{{ $index + 1 }}</td>
                                 <td>
                                     <a href="{{ route('leaveType.edit', ['Id' => $dt->Id]) }}">
-                                        {{ $dt->Name }}
+                                        {{ $dt->Name }} ({{ $dt->Acronym }})
                                     </a>
                                 </td>
                                 <td><?= $status ?></td>

@@ -4,13 +4,65 @@
 
     return [
         'ID' => [
+            'USERS' => [
+                'ADMIN'       => 'bf147f71-9c39-4776-b407-2d094d14a391',
+                'BA_HEAD'     => 'bf147f71-9c39-4776-b407-2d094d14a392',
+                'ALVIN_AGATO' => 'bf147f71-9c39-4776-b407-2d094d14a393',
+            ],
             'DEPARTMENTS' => [
-                'CLOUD_BUSINESS_APPLICATION' => 'a429fa2f-1f52-4bb7-8aea-29a41eddaeb0',
-                'TECHNOLOGY_CONSULTING'      => 'a8a6d19e-f824-48cc-9e5d-2800563f6a3f',
+                'INFORMATION_TECHNOLOGY'     => 'a8a6d19e-f824-48cc-9e5d-2800563f6a30',
+                'CLOUD_BUSINESS_APPLICATION' => 'a8a6d19e-f824-48cc-9e5d-2800563f6a31',
+                'TECHNOLOGY_CONSULTING'      => 'a8a6d19e-f824-48cc-9e5d-2800563f6a32',
+            ],
+            'DESIGNATIONS' => [
+                'ADMINISTRATOR'         => 'a429fa2f-1f52-4bb7-8aea-29a41eddaeb0',
+                'PROJECT_MANAGER'       => 'a429fa2f-1f52-4bb7-8aea-29a41eddaeb1',
+                'BA_HEAD'               => 'a429fa2f-1f52-4bb7-8aea-29a41eddaeb2',
+                'BUSINESS_ANALYST'      => 'a429fa2f-1f52-4bb7-8aea-29a41eddaeb3',
+                'TECHNICAL_CONSULTANT'  => 'a429fa2f-1f52-4bb7-8aea-29a41eddaeb4',
+                'FUNCTIONAL_CONSULTANT' => 'a429fa2f-1f52-4bb7-8aea-29a41eddaeb5',
+                'CUSTOMER_MANAGER'      => 'a429fa2f-1f52-4bb7-8aea-29a41eddaeb6',
             ],
             'LEAVE_TYPES' => [
-                'SICK_LEAVE'     => 'ad193685-e4fc-41e5-9212-12224fea640f',
-                'VACATION_LEAVE' => '38d24c5e-407d-480a-840a-a23d2e1e7439',
+                'SICK_LEAVE'     => 'ad193685-e4fc-41e5-9212-12224fea6401',
+                'VACATION_LEAVE' => 'ad193685-e4fc-41e5-9212-12224fea6402',
+            ],
+            'THIRD_PARTIES' => [
+                'OTHERS' => 'ad193685-e4fc-41e5-9212-12224fea0001',
+            ],
+            'PROJECTS' => [
+                'OTHERS'                    => 'ab68a8ac-e4fc-41e5-9212-12224fea0000',
+                'ADMIN_TASK'                => 'ab68a8ac-e4fc-41e5-9212-12224fea0001',
+                'TRAILHEAD_AND_TRAINING'    => 'ab68a8ac-e4fc-41e5-9212-12224fea0002',
+            ],
+            'PROJECT_PHASES' => [
+                'BUILD' => 'ab68a8ac-5a0e-4fd7-96f9-066417133081',
+            ],
+            'MODULES' => [
+                'MODULE_ONE' => [
+                    'DASHBOARD'             => 1,
+                    'ONBOARDING_PROCEDURES' => 2,
+                    'DIRECTORY'             => 3,
+                    'LEAVE'                 => 4,
+                    'EVALUATIONS'           => 5,
+                    'TRAININGS'             => 6,
+                    'CERTIFICATIONS'        => 7
+                ],
+                'MODULE_TWO' => [
+                    'DASHBOARD'           => 8,
+                    'OPPORTUNITY'         => 9,
+                    'PROJECT_UTILIZATION' => 10,
+                    'PROJECTS'            => 11,
+                    'RESOURCES'           => 12,
+                    'COMPONENTS'          => 13,
+                    'BUDGET'              => 14,
+                    'OVERTIME'            => 15,
+                    'TIMEKEEPING'         => 16,
+                ],
+                'MODULE_THREE' => [
+                    'DASHBOARD' => 17,
+                    'REPORTS'   => 18,
+                ]
             ],
         ],
     ];

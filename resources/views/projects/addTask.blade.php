@@ -48,7 +48,7 @@
                         <h4 class="mb-0">{{ $title }}</h4>
                         <ol class="breadcrumb bg-transparent mb-0">
                             <li class="breadcrumb-item"><a class="text-secondary" href="#">Projects</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('projects.view') }}">List of Project</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('projects') }}">List of Project</a></li>
                             <li class="breadcrumb-item"><a
                                     href="{{ route('projects.userStoryDetails', ['Id' => $UserStoryId]) }}">User Story
                                     Details</a>

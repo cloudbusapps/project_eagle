@@ -69,7 +69,9 @@ function viewNotification(id = '', link = '') {
 
 // ----- INITIALIZE SELECT2 -----
 function initSelect2() {
-    $(`[select2]`).select2();
+    $(`[select2]`).select2({
+        width: 'resolve'
+    });
 }
 // ----- END INITIALIZE SELECT2 -----
 
@@ -83,11 +85,26 @@ function initDateRangePicker() {
             format: 'MMMM DD, YYYY'
         }
     }, function(start, end, label) {
-        console.log(start.format('YYYY-MM-DD'));
-        console.log(end.format('YYYY-MM-DD'));
+        // console.log(start.format('YYYY-MM-DD'));
+        // console.log(end.format('YYYY-MM-DD'));
     });
 }
 // ----- END INITIALIZE DATERANGEPICKER -----
+
+
+// ----- GET FILE ICON -----
+function getFileIcon(filename = 'unknown.png') {
+    filename = filename.split('.');
+    switch (filename[filename.length - 1]) {
+        case 'jpg': return 'jpg.png';
+        case 'png': return 'png.png';
+        case 'pdf': return 'pdf.png';
+        case 'xlsx': case 'xls': return 'excel.png';
+        case 'docx': case 'doc': return 'word.png';
+        default: return 'unknown.png';
+    }
+}
+// ----- END GET FILE ICON -----
 
 
 

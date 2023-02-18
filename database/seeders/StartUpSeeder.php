@@ -22,164 +22,18 @@ class StartUpSeeder extends Seeder
      */
     public function run()
     {
-        $DepartmentId  = Str::uuid();
-        $DesignationId = Str::uuid();
-        $UserId        = Str::uuid();
-
-        $CloudDepartmentId = config('constant.ID.DEPARTMENTS.CLOUD_BUSINESS_APPLICATION');
-        $TCDepartmentId    = config('constant.ID.DEPARTMENTS.TECHNOLOGY_CONSULTING');
-        $TCDesignationId   = Str::uuid();
-        $FCDesignationId   = Str::uuid();
-        $GMDesignationId   = Str::uuid();
-
-        $SickLeaveId     = config('constant.ID.LEAVE_TYPES.SICK_LEAVE');
-        $VacationLeaveId = config('constant.ID.LEAVE_TYPES.VACATION_LEAVE');
-
         // ----- DEPARTMENT -----
-        DB::table('departments')->insert([
-            [
-                'Id'     => $DepartmentId,
-                'Name'   => 'Information Technology',
-                'Status' => 1
-            ],
-            [
-                'Id'     => $CloudDepartmentId,
-                'Name'   => 'Cloud Business Applications',
-                'Status' => 1
-            ],
-            [
-                'Id'     => $TCDepartmentId,
-                'Name'   => 'Technology Consulting',
-                'Status' => 1
-            ]
-        ]);
+        $this->call(DepartmentSeeder::class);
         // ----- END DEPARTMENT -----
 
 
         // ----- DESIGNATION -----
-        DB::table('designations')->insert([
-            [
-                'Id'           => $DesignationId,
-                'DepartmentId' => $DepartmentId,
-                'Name'         => 'Administrator',
-                'Status'       => 1
-            ],
-            [
-                'Id'           => $TCDesignationId,
-                'DepartmentId' => $CloudDepartmentId,
-                'Name'         => 'Technical Consultant',
-                'Status'       => 1
-            ],
-            [
-                'Id'           => $GMDesignationId,
-                'DepartmentId' => $CloudDepartmentId,
-                'Name'         => 'General Manager - Cloud Applications',
-                'Status'       => 1
-            ],
-            [
-                'Id'           => $FCDesignationId,
-                'DepartmentId' => $CloudDepartmentId,
-                'Name'         => 'Functional Consultant',
-                'Status'       => 1
-            ],
-            [
-                'Id'           => Str::uuid(),
-                'DepartmentId' => $CloudDepartmentId,
-                'Name'         => 'Business Analyst',
-                'Status'       => 1
-            ],
-        ]);
+        $this->call(DesignationSeeder::class);
         // ----- END DESIGNATION -----
 
 
         // ----- USERS -----
-        DB::table('users')->insert([
-            [
-                'Id'                => $UserId,
-                'EmployeeNumber'    => 'EPLDT-000001',
-                'FirstName'         => 'Project',
-                'LastName'          => 'Eagle',
-                'Gender'            => 'Male',
-                'Address'           => 'Makati City, Philippines',
-                'ContactNumber'     => fake()->phoneNumber(),
-                'DepartmentId'      => $DepartmentId,
-                'DesignationId'     => $DesignationId,
-                'About'             => fake()->paragraph(3),
-                'email'             => 'projecteagle@epldt.com',
-                'email_verified_at' => now(),
-                'password'          => Hash::make('projecteagle'),
-                'IsAdmin'           => true,
-                'Status'            => 1,
-            ],
-            [
-                'Id'                => Str::uuid(),
-                'EmployeeNumber'    => 'EPLDT-000004',
-                'FirstName'         => 'Arjay',
-                'LastName'          => 'Diangzon',
-                'Gender'            => 'Male',
-                'Address'           => 'Makati City, Philippines',
-                'ContactNumber'     => fake()->phoneNumber(),
-                'DepartmentId'      => $CloudDepartmentId,
-                'DesignationId'     => $TCDesignationId,
-                'About'             => fake()->paragraph(3),
-                'email'             => 'arjaydiangzon@epldt.com',
-                'email_verified_at' => now(),
-                'password'          => Hash::make('arjaydiangzon'),
-                'IsAdmin'           => false,
-                'Status'            => 1,
-            ],
-            [
-                'Id'                => Str::uuid(),
-                'EmployeeNumber'    => 'EPLDT-000002',
-                'FirstName'         => 'Monica',
-                'LastName'          => 'Borje',
-                'Gender'            => 'Female',
-                'Address'           => 'Makati City, Philippines',
-                'ContactNumber'     => fake()->phoneNumber(),
-                'DepartmentId'      => $CloudDepartmentId,
-                'DesignationId'     => $GMDesignationId,
-                'About'             => fake()->paragraph(3),
-                'email'             => 'monicaborje@epldt.com',
-                'email_verified_at' => now(),
-                'password'          => Hash::make('monicaborje'),
-                'IsAdmin'           => false,
-                'Status'            => 1,
-            ],
-            [
-                'Id'                => Str::uuid(),
-                'EmployeeNumber'    => 'EPLDT-000003',
-                'FirstName'         => 'Alvin',
-                'LastName'          => 'Agato',
-                'Gender'            => 'Male',
-                'Address'           => 'Makati City, Philippines',
-                'ContactNumber'     => fake()->phoneNumber(),
-                'DepartmentId'      => $CloudDepartmentId,
-                'DesignationId'     => $FCDesignationId,
-                'About'             => fake()->paragraph(3),
-                'email'             => 'alvinagato@epldt.com',
-                'email_verified_at' => now(),
-                'password'          => Hash::make('alvinagato'),
-                'IsAdmin'           => false,
-                'Status'            => 1,
-            ],
-            [
-                'Id'                => Str::uuid(),
-                'EmployeeNumber'    => 'EPLDT-000005',
-                'FirstName'         => 'Hashim',
-                'LastName'          => 'Mascara',
-                'Gender'            => 'Male',
-                'Address'           => 'Makati City, Philippines',
-                'ContactNumber'     => fake()->phoneNumber(),
-                'DepartmentId'      => $CloudDepartmentId,
-                'DesignationId'     => $TCDesignationId,
-                'About'             => fake()->paragraph(3),
-                'email'             => 'hashimmascara@epldt.com',
-                'email_verified_at' => now(),
-                'password'          => Hash::make('hashimmascara'),
-                'IsAdmin'           => false,
-                'Status'            => 1,
-            ],
-        ]);
+        $this->call(UserSeeder::class);
         // ----- END USERS -----
 
 
@@ -189,22 +43,41 @@ class StartUpSeeder extends Seeder
 
 
         // ----- LEAVE TYPE -----
-        DB::table('leave_types')->insert([
-            [
-                'Id'          => $VacationLeaveId,
-                'Name'        => 'Vacation Leave',
-                'Status'      => 1,
-                'CreatedById' => $UserId,
-                'UpdatedById' => $UserId,
-            ],
-            [
-                'Id'          => $SickLeaveId,
-                'Name'        => 'Sick Leave',
-                'Status'      => 1,
-                'CreatedById' => $UserId,
-                'UpdatedById' => $UserId,
-            ],
-        ]);
+        $this->call(LeaveTypeSeeder::class);
         // ----- END LEAVE TYPE -----
+
+
+        // ----- COMPLEXITY -----
+        $this->call(ComplexitySeeder::class);
+        // ----- END COMPLEXITY -----
+
+
+        // ----- PROJECT PHASES -----
+        $this->call(ProjectPhaseSeeder::class);
+        // ----- END PROJECT PHASES -----
+
+
+        // ----- THIRD PARTIES -----
+        $this->call(ThirdPartySeeder::class);
+        // ----- END THIRD PARTIES -----
+
+
+        // ----- PERMISSION -----
+        $this->call(PermissionSeeder::class);
+        // ----- END PERMISSION -----
+
+        
+        // ----- APPROVAL -----
+        $this->call(ApprovalSeeder::class);
+        // ----- END APPROVAL -----
+
+
+        // ----- PROJECT -----
+        $this->call(ProjectSeeder::class);
+        // ----- END PROJECT -----
+
+        // ----- COMPANY SETTING -----
+        $this->call(CompanySettingSeeder::class);
+        // ----- END COMPANY SETTING -----
     }
 }

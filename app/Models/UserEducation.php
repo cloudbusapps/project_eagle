@@ -53,7 +53,17 @@ class UserEducation extends Model
         if (!empty($activity->causer)) {
             $DegreeTitle = $activity->subject->DegreeTitle;
             $FullName = $activity->causer->FirstName . ' ' . $activity->causer->LastName;
-            $activity->description = "{$FullName} {$eventName} education <b>{$DegreeTitle}</b>";
+
+            if($activity->causer->IsAdmin==1){
+                $user = User::find($activity->subject->UserId);
+                $userFullName = $user->FirstName.' '.$user->LastName;
+                $activity->description = "{$FullName} {$eventName} {$userFullName}'s education <b>{$DegreeTitle}</b>";
+            } else{
+                $activity->description = "{$FullName} {$eventName} education <b>{$DegreeTitle}</b>";
+            }
+
+
+            
         }
     }
 }

@@ -15,20 +15,27 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->uuid('Id')->primary();
-            $table->string('Name')->nullable(false);
-            $table->string('Description')->nullable(false);
-            $table->date('KickoffDate')->nullable(false);
-            $table->date('ClosedDate')->nullable(false);
-            $table->json('UsersId')->nullable(true);
+            $table->string('Name');
+            $table->string('Description')->nullable();
+            $table->string('CustomerId')->nullable();
+            $table->date('KickoffDate')->nullable();
+            $table->date('ClosedDate')->nullable();
+            $table->json('UsersId')->nullable();
+
+            /**
+             * ----- IsComplex -----
+             * 0 or null - Not Applicable
+             * 1 - Complex
+             * 2 - Intermediate
+             * 3 - Easy
+             */
+            $table->integer('IsComplex')->nullable();
 
             // will change it to ProjectManagerID if needed
-            $table->uuid('ProjectManagerId')->nullable(true);
-            $table->uuid('CreatedById')->nullable(false);
-            $table->uuid('UpdatedById')->nullable(true);
+            $table->uuid('ProjectManagerId')->nullable();
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
-
-            $table->foreign('CreatedById')->references('Id')->on('users');
-            $table->foreign('UpdatedById')->references('Id')->on('users');
         });
     }
 

@@ -2,6 +2,25 @@
 
 @section('content')
 
+<?php
+$userStatus = $userData->Status;
+if(Auth::user()->IsAdmin==1){
+    if($userStatus==1){
+    $statusButton ='<a class="btn btn-outline-success btnStatus" id='.$requestId.'>Activated</a>';
+} else{
+    $statusButton ='<a class="btn btn-outline-danger btnStatus" id='.$requestId.'>Deactivated</a>';
+}
+} else{
+    if($userStatus==1){
+    $statusButton ='<span class="btn btn-outline-success" id='.$requestId.'>Activated</span>';
+} else{
+    $statusButton ='<span class="btn btn-outline-danger" id='.$requestId.'>Deactivated</span>';
+}
+}
+
+
+?>
+
 <style>
 
     .skills .badge {
@@ -26,6 +45,7 @@
                 </div>
             </div>
         </div>
+        
     </div>  
 
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mb-3">
@@ -59,8 +79,8 @@
             <div class="row">
                 <div class="col-xl-4">
                     <div class="card">
-                        @if ($requestId == Auth::id())
-                        <a href="#" class="text-secondary btnEditImage" id="{{ Auth::id() }}"
+                        @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
+                        <a href="#" class="text-secondary btnEditImage" id="{{ $requestId }}"
                             style="position: absolute; right: 0; margin: 10px;">
                             <i class="bi bi-pencil"></i>
                         </a>
@@ -86,12 +106,18 @@
                                 </a>
                             </div>
                         </div>
+                    </div> 
+                    <div class="card mt-3">
+                        <div class="card-body justify-content-center align-items-center">
+                            <span class="fw-bold">Status:</span>
+                            <?= $statusButton ?>
+                        </div>
                     </div>
                     <div class="card mt-3">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0 card-title py-0">Skills</h5>
-                            @if ($requestId == Auth::id())
-                            <a href="#" class="text-secondary btnEditSkill" id="{{ Auth::id() }}">
+                            @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
+                            <a href="#" class="text-secondary btnEditSkill" id="{{ $requestId }}">
                                 <i class="bi bi-pencil"></i>
                             </a>
                             @endif
@@ -111,38 +137,6 @@
                             @endif
 
                             </div>
-                        </div>
-                    </div>
-                    <div class="card mt-3">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0 card-title py-0">Leave Balance</h5>
-                            @if (Auth::user()->IsAdmin)
-                            <a href="#" class="text-secondary btnEditLeaveBalance" id="{{ $requestId }}">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            @endif
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-striped table-hover" id="tableLeaveBalance">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Leave Type</th>
-                                        <th>Remaining</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                    @foreach ($leaveBalance as $index => $dt)
-                                    <tr>
-                                        <td class="text-center">{{ $index + 1 }}</td>
-                                        <td>{{ $dt['Name'] }}</td>
-                                        <td class="text-center">{{ $dt['Balance'] ?? 0 }}</td>
-                                    </tr>
-                                    @endforeach
-
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>
@@ -174,6 +168,12 @@
                                         <p>{{ $userData->About }}</p>
 
                                         <h5 class="card-title">Personal Info</h5>
+                                        <div class="row mb-1">
+                                            <div class="col-lg-4 col-sm-5 label ">Employee ID:</div>
+                                            <div class="col-lg-8 col-sm-7">
+                                                {{ $userData->Id ?? '-' }}
+                                            </div>
+                                        </div>
                                         <div class="row mb-1">
                                             <div class="col-lg-4 col-sm-5 label ">Employee #:</div>
                                             <div class="col-lg-8 col-sm-7">
@@ -236,9 +236,9 @@
                                         </div>
                                     </div>
 
-                                    @if ($requestId == Auth::id())
+                                    @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                     <div class="w-100 mt-4">
-                                        <a href="{{ route('user.editPersonalInformation', ['Id' => Auth::id()]) }}"
+                                        <a href="{{ route('user.editPersonalInformation', ['Id' => $requestId]) }}"
                                             class="btn btn-outline-secondary px-2 py-1 btnEditProfile">
                                             <i class="bi bi-pencil"></i> Edit
                                         </a>
@@ -246,7 +246,7 @@
                                     @endif
                                 </div>
                                 <div class="tab-pane fade {{ Session::get('tab') == 'Education' ? 'show active' : '' }}" id="bordered-justified-education" role="tabpanel" aria-labelledby="education-tab">
-                                    @if ($requestId == Auth::id())
+                                    @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                     <div class="w-100 text-end mb-3">
                                         <a href="{{ route('user.addEducation', ['Id' => $userData->Id]) }}" class="btn btn-outline-primary px-2 py-1">
                                             <i class="bi bi-plus-lg"></i> New
@@ -270,7 +270,7 @@
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>
-                                                @if ($requestId == Auth::id())
+                                                @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                                 <a href="{{ route('user.editEducation', ['Id' => $dt['Id']]) }}">
                                                     {{ $dt['DegreeTitle'] }}
                                                 </a>
@@ -292,7 +292,7 @@
                                         
                                     @endif
 
-                                    @if ($requestId == Auth::id())
+                                    @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                     <div class="w-100 text-end mb-3">
                                         <a href="{{ route('user.addCertification', ['Id' => $userData->Id]) }}" class="btn btn-outline-primary px-2 py-1">
                                             <i class="bi bi-plus-lg"></i> New
@@ -332,7 +332,7 @@
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>
-                                                @if ($requestId == Auth::id())
+                                                @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                                 <a href="{{ route('user.editCertification', ['Id' => $cert['Id']]) }}">
                                                     {{ $cert['Code'] }}
                                                 </a>
@@ -354,7 +354,7 @@
                                         
                                     @endif
 
-                                    @if ($requestId == Auth::id())
+                                    @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                     <div class="w-100 text-end mb-3">
                                         <a href="{{ route('user.addAward', ['Id' => $userData->Id]) }}" class="btn btn-outline-primary px-2 py-1">
                                             <i class="bi bi-plus-lg"></i> New
@@ -378,7 +378,7 @@
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>
-                                                @if ($requestId == Auth::id())
+                                                @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                                 <a href="{{ route('user.editAward', ['Id' => $award['Id']]) }}">
                                                     {{ $award['Title'] }}
                                                 </a>
@@ -399,7 +399,7 @@
                                         
                                     @endif
 
-                                    @if ($requestId == Auth::id())
+                                    @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                     <div class="w-100 text-end mb-3">
                                         <a href="{{ route('user.addExperience', ['Id' => $userData->Id]) }}" class="btn btn-outline-primary px-2 py-1">
                                             <i class="bi bi-plus-lg"></i> New
@@ -424,7 +424,7 @@
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>
-                                                @if ($requestId == Auth::id())
+                                                @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                                 <a href="{{ route('user.editExperience', ['Id' => $experience['Id']]) }}">
                                                     {{ $experience['JobTitle'] }}
                                                 </a>
@@ -476,6 +476,63 @@
                                 </div>
                             @endif
                             
+                        </div>
+                    </div>
+
+                    <div class="card mt-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 card-title py-0">Leave Balance</h5>
+                            @if (Auth::user()->IsAdmin)
+                            <a href="#" class="text-secondary btnEditLeaveBalance" id="{{ $requestId }}">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            @endif
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered table-hover my-2" id="tableLeaveBalance">
+                                <thead>
+                                    <tr>
+                                        <th>Leave Type</th>
+                                        <th>Year</th>
+                                        <th>Credit</th>
+                                        <th>Accrued</th>
+                                        <th>Used</th>
+                                        <th>Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @if (isset($leaveBalance) && count($leaveBalance))
+                                        @foreach ($leaveBalance as $i => $dt)
+                                            @if (isset($dt['Balance']) && count($dt['Balance']))
+                                                @foreach ($dt['Balance'] as $x => $bal)
+                                                    <tr>
+                                                        @if ($x == 0)
+                                                            <td rowspan="{{ count($dt['Balance']) }}">{{ $dt['Name'] }}</td>
+                                                        @endif 
+        
+                                                        <td>{{ $bal->Year }}</td>
+                                                        <td class="text-center">{{ $bal->Credit }}</td>
+                                                        <td class="text-center">{{ $bal->Accrued }}</td>
+                                                        <td class="text-center">{{ $bal->Used }}</td>
+                                                        <td class="text-center">{{ $bal->Balance }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @else
+                                                <tr>
+                                                    <td>{{ $dt['Name'] }}</td>
+                                                    <td>{{ date('Y') }}</td>
+                                                    <td class="text-center">0</td>
+                                                    <td class="text-center">0</td>
+                                                    <td class="text-center">0</td>
+                                                    <td class="text-center">0</td>
+                                                </tr>
+                                            @endif
+
+                                        @endforeach
+                                    @endif
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -657,6 +714,32 @@
         })
         // ----- END BUTTON EDIT SKILL -----
 
+        // ----- BUTTON STATUS CHANGE -----
+        $(document).on('click', '.btnStatus', function() {
+            let Id = $(this).attr('id');
+            $('#custom-modal .modal-dialog').removeClass('modal-lg').addClass('modal-md');
+            $('#custom-modal .modal-title').text('Change Status');
+            $('#custom-modal .modal-body').html(PRELOADER);
+            $('#custom-modal').modal('show');
+
+            setTimeout(() => {
+                $.ajax({
+                    method: 'GET',
+                    url: `/user/profile/edit/status/${Id}/`,
+                    async: false,
+                    dataType: 'html',
+                    encode: true,
+                    success: function(result) {
+                        $('#custom-modal .modal-body').html(result);
+                    },
+                    error: function() {
+                        $('#custom-modal .modal-body').html(`<h6 class="text-danger">There's an error occured. Please try again later...</h6>`);
+                    }
+                })
+            }, 500);
+        })
+        // ----- END BUTTON STATUS CHANGE -----
+
 
         // ----- BUTTON SAVE SKILL -----
         function saveSkill() {
@@ -726,25 +809,57 @@
 
 
         // ----- BUTTON UPDATE SKILL -----
-        $(document).on('click', '.btnUpdateSkill', function() {
+        $(document).on('click', '.btnUpdateSkill', function(e) {
             let Id = $(this).attr('id');
             let skills = [];
 
-            $('#custom-modal .skill-title').each(function() {
-                let skill = $(this).text()?.trim();
-                skills.push(skill);
-            })
+            e.preventDefault();
 
-            $.ajax({
-                method: 'POST',
-                url: `/user/profile/saveSkill/${Id}`,
-                async: false,
-                data: { skills },
-                dataType: 'json',
-                success: function(result) {
-                    window.location.reload();
+            const content=`
+        <div class="d-flex justify-content-center align-items-center flex-column text-center">
+            <img src="/assets/img/modal/update.svg" class="py-1" height="150" width="150">
+            <b class="mt-4">Are you sure you want to update this user's skill?</b>
+        </div>`;
+        
+
+            let confirmation = $.confirm({
+                title: false,
+                content,
+                buttons: {
+                    no: {
+                        btnClass: 'btn-default',
+                    },
+                    yes: {
+                        btnClass: 'btn-blue',
+                        keys: ['enter'],
+                        action: function() {
+                            $('#custom-modal .skill-title').each(function() {
+                                let skill = $(this).text()?.trim();
+                                skills.push(skill);
+                            })
+
+                            $.ajax({
+                                method: 'POST',
+                                url: `/user/profile/saveSkill/${Id}`,
+                                async: false,
+                                data: { skills },
+                                dataType: 'json',
+                                success: function(result) {
+                                    window.location.reload();
+                                }
+                            })
+
+                            confirmation.buttons.yes.setText(
+                                `<span class="spinner-border spinner-border-sm"></span> Please wait...`
+                            );
+                            confirmation.buttons.yes.disable();
+                            confirmation.buttons.no.hide();
+
+                            return false;
+                        }
+                    },
                 }
-            })
+            });
         })
         // ----- END BUTTON UPDATE SKILL -----
 
@@ -883,6 +998,51 @@
             }, 500);
         })
         // ----- END BUTTON LEAVE BALANCE -----
+
+
+
+
+        
+        $(document).on('submit', '#leaveBalanceForm', function(e) {
+
+        let isValidated = $(this).attr('validated') == "true";
+
+        if (!isValidated) {
+            e.preventDefault();
+            const content=`
+        <div class="d-flex justify-content-center align-items-center flex-column text-center">
+            <img src="/assets/img/modal/update.svg" class="py-1" height="150" width="150">
+            <b class="mt-4">Are you sure you want to update this user's leave balance?</b>
+        </div>`;
+        
+
+            let confirmation = $.confirm({
+                title: false,
+                content,
+                buttons: {
+                    no: {
+                        btnClass: 'btn-default',
+                    },
+                    yes: {
+                        btnClass: 'btn-blue',
+                        keys: ['enter'],
+                        action: function() {
+                            $('#leaveBalanceForm').attr('validated', 'true')
+                                .submit();
+
+                            confirmation.buttons.yes.setText(
+                                `<span class="spinner-border spinner-border-sm"></span> Please wait...`
+                            );
+                            confirmation.buttons.yes.disable();
+                            confirmation.buttons.no.hide();
+
+                            return false;
+                        }
+                    },
+                }
+            });
+        }
+        })
 
     })
 

@@ -24,70 +24,220 @@
   <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-8">
-          <div class="row row-cols-xl-3 row-cols-lg-4 row-cols-md-2 row-cols-sm-2 row-cols-1 g-2 mb-3 row-deck">
-            <div class="col">
-              <div class="card">
-                <div class="card-body">
-                  <div class="text-muted text-uppercase small">Total Users</div>
-                  <div class="mt-1">
-                    <a href="{{ route('employeeDirectory') }}" class="fw-bold h4 mb-0">{{ $total['users'] ?? 0 }}</a>
+        <div class="col-12">
+          <div class="row">
+            <div style="max-height: 600px;" class="col-md-8 mb-3">
+              <div class="row">
+                <div class="col">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="text-muted text-uppercase small">For Approval Leave</div>
+                      <div class="mt-1">
+                        <a href="{{ route('leaveRequest') }}" class="fw-bold h4 mb-0">{{ $total['pendingLeave'] ?? 0 }}</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="text-muted text-uppercase small">Approved Leave</div>
+                      <div class="mt-1">
+                        <a href="{{ route('employeeDirectory') }}" class="fw-bold h4 mb-0">{{ $total['approvedLeave'] ?? 0 }}</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="text-muted text-uppercase small">Rejected Leave</div>
+                      <div class="mt-1">
+                        <a href="{{ route('employeeDirectory') }}" class="fw-bold h4 mb-0">{{ $total['rejectedLeave'] ?? 0 }}</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col mt-3">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title pb-3">Upcoming Leave</h5>
+                    <table id="tableUpcomingLeave" style="width:100%;" class="table table-striped table-hover">
+                      <thead>
+                          <tr>
+                              <th>#</th>
+                              <th>Document Number</th>
+                              <th>Employee Name</th>
+                              <th>Leave Type</th>
+                              <th>Date</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                        @foreach ($upcomingLeaves as $index=>$upcomingLeave)
+                          <tr>
+                            <td>{{ $index+1 }}</td>
+                            <td>
+                              <a href="{{ route('leaveRequest.view', ['Id' => $upcomingLeave['Id']]) }}" >{{ $upcomingLeave['DocumentNumber']}}</a>
+                            </td>
+                            <td>{{ $upcomingLeave['FirstName'].' '.$upcomingLeave['LastName'] }}</td>
+                            <td>{{ $upcomingLeave['LeaveType'] }}</td>
+                            <td>
+                              {{ $upcomingLeave->StartDate == $upcomingLeave->EndDate ? 
+                                (date('F d, Y', strtotime($upcomingLeave->StartDate))) :
+                                (date('M d', strtotime($upcomingLeave->StartDate)).' - '.date('M d, Y', strtotime($upcomingLeave->EndDate)))
+                                }}
+                            </td>
+                          </tr>
+                        @endforeach
+                      </tbody>
+                  </table>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="col">
-              <div class="card">
+            <div class="col-md-4" style="max-height: 600px">
+              <div class="card" style="min-height: 300px;">
                 <div class="card-body">
-                  <div class="text-muted text-uppercase small">Total Projects</div>
-                  <div class="mt-1">
-                    <a href="{{ route('projects.view') }}" class="fw-bold h4 mb-0">{{ $total['projects'] ?? 0 }}</a>
+                  <h5 class="card-title">Recent Activity</h5>
+                  <div class="activity">
+    
+                      @if (count($activities))
+                      <ul class="timeline">
+                      @foreach ($activities as $act)
+                      <li class="timeline-item">
+                          <small class="activite-label w-25">{{ activityTime($act['created_at']) }}</small>
+                          <small class="w-75">
+                              <?= $act['description'] ?>
+                          </small>
+                        </li>
+                      @endforeach
+                      </ul>
+                      @else
+                      <div class="text-center text-muted"><h6>No activities yet</h6></div>
+                      @endif
+    
                   </div>
                 </div>
               </div>
             </div>
-            <div class="col">
-              <div class="card">
-                <div class="card-body">
-                  <div class="text-muted text-uppercase small">Stock In</div>
-                  <div class="mt-1">
-                    <span class="fw-bold h4 mb-0">55</span>
-                    <span class="text-success ms-1">Unit</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+
+            
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Recent Activity</h5>
-              <div class="activity">
 
-                  @if (count($activities))
-                  <ul class="timeline">
-                  @foreach ($activities as $act)
-                  <li class="timeline-item">
-                      <small class="activite-label w-25">{{ activityTime($act['created_at']) }}</small>
-                      <small class="w-75">
-                          <?= $act['description'] ?>
-                      </small>
-                    </li>
+        @if (isAdminOrHead())
+            <div class="col mt-3">
+              <div class="row">
+                <div class="col-md-4 row">
+                  @foreach ($leaveTypes as $leaveType)
+                    <div class="col-md-6 col-sm-12 mb-3">
+                      <div class="card">
+                        <div class="card-body">
+                          <span class="text-muted text-uppercase small">{{ $leaveType['Name'] }}</span>
+                          <div class="mt-1">
+                            <a href="javascript:void(0);" class="fw-bold h4 mb-0 filterType pe-auto">{{ $leaveType['totalLeave'] ?? 0 }}</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   @endforeach
-                  </ul>
-                  @else
-                  <div class="text-center text-muted"><h6>No activities yet</h6></div>
-                  @endif
-
+                </div>
+                <div class="col-md-8 col-sm-12">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title pb-3">Summary of Leave</h5>
+                      <table id="leaveSummary" style="width:100%;" class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Document Number</th>
+                                <th>Employee Name</th>
+                                <th>Leave Type</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          @foreach ($leavesData as $index=>$leaveData)
+                            <tr>
+                              <td>{{ $index+1 }}</td>
+                              <td>
+                                <a href="{{ route('leaveRequest.view', ['Id' => $leaveData['Id']]) }}" >{{ $leaveData['DocumentNumber']}}</a>
+                              </td>
+                              <td>{{ $leaveData['FirstName'].' '.$leaveData['LastName'] }}</td>
+                              <td>{{ $leaveData['LeaveType'] }}</td>
+                              <td>
+                                {{ $leaveData->StartDate == $leaveData->EndDate ? 
+                                  (date('F d, Y', strtotime($leaveData->StartDate))) :
+                                  (date('M d', strtotime($leaveData->StartDate)).' - '.date('M d, Y', strtotime($leaveData->EndDate)))
+                                  }}
+                              </td>
+                            </tr>
+                          @endforeach
+                        </tbody>
+                    </table>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+            @endif
       </div>
     </div>
   </div>
 </main>
+<script>
+   $(document).ready(function() {
+    
+    let tempLeaveValue = '';
+
+    $(document).on('click','.filterType',function(e){
+      let leaveType = $(this).closest('div').prev().text();
+      let textColor = $(this);
+      if(tempLeaveValue==leaveType){
+        filterLeave('');
+        tempLeaveValue = '';
+        textColor.removeClass('text-success')
+        
+      } else{
+        filterLeave(leaveType);
+        tempLeaveValue = leaveType;
+        $('.filterType').removeClass('text-success')
+        textColor.addClass('text-success')
+      }
+
+      
+    })
+
+    const leaveSummaryTable = $('#leaveSummary')
+    .DataTable({
+      scrollX: true,
+      scrollY: '300px',
+      sorting: [],
+      scrollCollapse: true,
+    });
+
+    const tableUpcomingLeave = $('#tableUpcomingLeave')
+    .DataTable({
+      scrollX: true,
+      scrollY: '300px',
+      sorting: [],
+      scrollCollapse: true,
+      columnDefs: [
+                    { targets: 0,  width: 10  },
+                    { targets: 1,  width: 80 },
+                    { targets: 2,  width: 90 },
+                    { targets: 3,  width: 80 },
+                    { targets: 4,  width: 70 },
+                ],
+    });
+    
+    let column_index = 0;
+    function filterLeave(leaveType){
+      leaveSummaryTable.columns(3).search(leaveType, true, false).draw();
+    }
+   })
+</script>
     
 @endsection
 

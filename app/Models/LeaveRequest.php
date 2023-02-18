@@ -8,13 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Auth;
 use function PHPUnit\Framework\isNull;
+
+
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Models\Activity;
 
 class LeaveRequest extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory;
 
     protected $primaryKey = 'Id';
     protected $KeyType = 'string';
@@ -27,6 +29,7 @@ class LeaveRequest extends Model
         'EndDate',
         'LeaveDuration',
         'Reason',
+        'Status'
     ];
 
     protected static function boot() {
@@ -43,16 +46,26 @@ class LeaveRequest extends Model
         });
     } 
 
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()->logFillable();
+    public static function logActivity($logMessage,$model,$properties=[]){
+        $FullName = Auth::user()->FirstName . ' ' . Auth::user()->LastName;
+        activity()
+        ->performedOn($model)
+        ->causedBy(auth()->user())
+        ->withProperties($properties)
+        ->log($logMessage);
+
     }
 
-    public function tapActivity(Activity $activity, string $eventName)
-    {
-        if (!empty($activity->causer)) {
-            $FullName = $activity->causer->FirstName . ' ' . $activity->causer->LastName;
-            $activity->description = "{$FullName} {$eventName} leave request";
-        }
-    }
+    // public function getActivitylogOptions(): LogOptions
+    // {
+    //     return LogOptions::defaults()->logFillable();
+    // }
+
+    // public function tapActivity(Activity $activity, string $eventName)
+    // {
+    //     if (!empty($activity->causer)) {
+    //         $FullName = $activity->causer->FirstName . ' ' . $activity->causer->LastName;
+    //         $activity->description = "{$FullName} {$eventName} leave request";
+    //     }
+    // }
 }

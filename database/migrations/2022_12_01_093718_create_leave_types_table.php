@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('leave_types', function (Blueprint $table) {
             $table->uuid('Id')->primary();
             $table->string('Name')->unique();
+            $table->string('Acronym')->nullable();
             $table->integer('Status')->default(1);
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();

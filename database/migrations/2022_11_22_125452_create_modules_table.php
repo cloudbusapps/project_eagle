@@ -22,8 +22,9 @@ return new class extends Migration
             $table->string('RouteName')->nullable();
             $table->string('Prefix');
             $table->string('Icon')->default('default.png');
-            $table->integer('Status')->default(1);
             $table->integer('SortOrder')->default(1);
+            $table->string('TableName')->nullable();
+            $table->integer('Status')->default(1);
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();
             $table->timestamps();

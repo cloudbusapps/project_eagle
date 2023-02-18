@@ -12,7 +12,10 @@ class LoginController extends Controller
 {
     public function index() {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            if(Auth::user()->Status==1){
+                return redirect()->route('dashboard');
+            }
+            
         }
 
         $data['title'] = "Login";
@@ -27,14 +30,23 @@ class LoginController extends Controller
    
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
-            $request->session()->put('LoggedUser', Auth::id());
+            if(Auth::user()->Status==1){
+                $request->session()->put('LoggedUser', Auth::id());
 
-            $fullname = Auth::user()->FirstName . ' ' . Auth::user()->LastName;
-            activity()->log("{$fullname} logged in");
-            return redirect()->intended('dashboard')->withSuccess('Signed in');
+                $fullname = Auth::user()->FirstName . ' ' . Auth::user()->LastName;
+                activity()->log("{$fullname} logged in");
+                    
+                return redirect()->intended('dashboard')->withSuccess('Signed in');
+
+            } else{
+                return back()->with('fail', 'User is deactivated.')->withInput();
+            }
+           
+        } else{
+            return back()->with('fail', 'Incorrect email address or password.')->withInput();
         }
   
-        return back()->with('fail', 'Access Denied!')->withInput();
+        
     }
 
     public function logout() {

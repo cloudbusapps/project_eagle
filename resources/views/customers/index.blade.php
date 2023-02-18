@@ -9,7 +9,7 @@
                     <div class="col">
                         <h4 class="mb-0">{{ $title }}</h4>
                         <ol class="breadcrumb bg-transparent mb-0">
-                            <li class="breadcrumb-item"><a class="text-secondary" href="#">Customers</a></li>
+                            <li class="breadcrumb-item"><a class="text-secondary" href="{{ route('dashboard') }}">Dashboard</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
                         </ol>
                     </div>
@@ -57,23 +57,23 @@
                                     <th scope="col">#</th>
                                     <th scope="col">Customer Name</th>
                                     <th scope="col">Industry</th>
-                                    <th scope="col">Project Name</th>
                                     <th scope="col">Contact Person</th>
+                                    <th scope="col">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($data as $index => $data)
                                     <tr>
-                                        <th scope="row">{{ $index + 1 }}</th>
+                                        <td>{{ $index + 1 }}</td>
 
                                         <td>
-                                            <a href="{{ route('customers.add', ['Id' => $data->Id]) }}">
+                                            <a href="{{ route('customers.edit', ['Id' => $data->Id]) }}">
                                                 {{ $data->CustomerName }}</a>
                                         </td>
 
                                         <td>{{ $data->Industry }}</td>
-                                        <td>{{ $data->ProjectName }}</td>
                                         <td>{{ $data->ContactPerson }}</td>
+                                        <td>{!! getStatus($data->Status)!!}</td>
                                     </tr>
                                 @endforeach
                             </tbody>

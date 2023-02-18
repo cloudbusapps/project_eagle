@@ -30,12 +30,14 @@ class LeaveTypeController extends Controller
     public function save(Request $request) {
         $validator = $request->validate([
             'Name' => ['required', 'string', 'max:255', 'unique:leave_types'],
+            'Acronym' => ['required', 'string', 'max:255'],
         ]);
         
         $Name = $request->Name;
         $LeaveType = new LeaveType;
-        $LeaveType->Name   = $request->Name;
-        $LeaveType->Status = $request->Status;
+        $LeaveType->Name    = $request->Name;
+        $LeaveType->Acronym = $request->Acronym;
+        $LeaveType->Status  = $request->Status;
 
         if ($LeaveType->save()) {
             return redirect()
@@ -58,12 +60,14 @@ class LeaveTypeController extends Controller
                 'required', 'string', 'max:255',
                 Rule::unique('leave_types')->ignore($Id, 'Id')
             ],
+            'Acronym' => ['required', 'string', 'max:255'],
         ]);
         
         $Name = $request->Name;
         $LeaveType = LeaveType::find($Id);
-        $LeaveType->Name   = $request->Name;
-        $LeaveType->Status = $request->Status;
+        $LeaveType->Name    = $request->Name;
+        $LeaveType->Acronym = $request->Acronym;
+        $LeaveType->Status  = $request->Status;
 
         if ($request->Status == 0 && $this->isActive($Id)) {
             return redirect()
@@ -73,7 +77,7 @@ class LeaveTypeController extends Controller
         } else {
             if ($LeaveType->save()) {
                 return redirect()
-                    ->route('department')
+                    ->route('leaveType')
                     ->with('success', "<b>{$Name}</b> successfully updated!");
             } 
         }
@@ -98,7 +102,8 @@ class LeaveTypeController extends Controller
     public function isActive($Id) {
         return UserLeaveBalance::where('LeaveTypeId', $Id)
             ->where('Balance', '>', 0)
-            ->where('Accumulated', '>', 0)
+            // CHANGED FROM Accumulated to Acrued
+            ->where('Accrued', '>', 0)
             ->count() ? true : false;
     }
 

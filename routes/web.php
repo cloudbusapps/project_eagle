@@ -15,7 +15,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\customer\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UtilizationDashboardController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\EmployeeDirectoryController;
 use App\Http\Controllers\ProjectController;
@@ -23,8 +25,8 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserStoryController;
 use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\LeaveRequestController;
-use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\TimekeepingController;
 
 // AUTH
 Route::get('/', [LoginController::class, 'index'])->name('auth.login');
@@ -37,7 +39,11 @@ Route::post('/register', [RegisterController::class, 'save'])->name('auth.save')
 Route::group(['middleware' => 'auth'], function () {
     // DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
+    
+    // UTILIZATION DASHBOARD
+    Route::get('/utilizationDashboard', [UtilizationDashboardController::class, 'index'])->name('utilizationDashboard');
+    Route::get('/utilizationDashboard/filter/{type}', [UtilizationDashboardController::class, 'filterUtilization'])->name('utilizationDashboard.filter');
+        
     // USER
     Route::prefix('user')->group(function () {
         // PROFILE
@@ -89,16 +95,25 @@ Route::group(['middleware' => 'auth'], function () {
             // SKILL
             Route::get('/getFormSkill/{Id}', [UserProfileController::class, 'getFormSkill'])->name('user.getFormSkill');
             Route::post('/saveSkill/{Id}', [UserProfileController::class, 'saveSkill'])->name('user.saveSkill');
+            
+            // STATUS
+            Route::get('/edit/status/{Id}', [UserProfileController::class, 'editProfileStatus'])->name('user.editStatus');
+            Route::post('/edit/status/{Id}/update', [UserProfileController::class, 'updateProfileStatus'])->name('user.updateStatus');
         });
     });
 
     // EMPLOYEE DIRECTORY
-    Route::get('/directory', [EmployeeDirectoryController::class, 'index'])->name('employeeDirectory');
+    
+    Route::prefix('directory')->group(function () {
+        Route::get('/', [EmployeeDirectoryController::class, 'index'])->name('employeeDirectory');
+        Route::get('/add', [EmployeeDirectoryController::class, 'add'])->name('employeeDirectory.add');
+        Route::post('/save', [EmployeeDirectoryController::class, 'save'])->name('employeeDirectory.save');
+    });
 
     //PROJECTS
     Route::prefix('projects')->group(function () {
         // DEFAULT
-        Route::get('/projectView', [ProjectController::class, 'view'])->name('projects.view');
+        Route::get('/projectView', [ProjectController::class, 'view'])->name('projects');
         Route::get('/projectDetails/{Id}', [ProjectController::class, 'viewProjectDetails'])->name('projects.projectDetails');
         Route::post('/add', [ProjectController::class, 'add'])->name('projects.add');
         Route::put('/update/{Id}', [ProjectController::class, 'update'])->name('projects.update');
@@ -158,18 +173,36 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/delete/{Id}', [OvertimeRequestController::class, 'deleteOvertimeRequest'])->name('overtimeRequest.delete');
         });
     });
-});
 
-// CUSTOMER
-Route::prefix('customer')->group(function () {
-    Route::get('/', [CustomerController::class, 'index'])->name('customers');
-    Route::get('/add', [CustomerController::class, 'form'])->name('customers.add');
-    Route::post('/save', [CustomerController::class, 'save'])->name('customers.save');
-    Route::get('/edit/{Id}', [CustomerController::class, 'edit'])->name('customers.edit');
-    Route::put('/edit/{Id}/update', [CustomerController::class, 'update'])->name('customers.update');
-    Route::get('/delete/{Id}', [CustomerController::class, 'delete'])->name('customers.delete');
+    // CUSTOMER
+    Route::prefix('opportunity')->group(function () {
+        Route::get('/', [CustomerController::class, 'index'])->name('customers');
+        Route::get('/add', [CustomerController::class, 'form'])->name('customers.add');
+        Route::post('/save', [CustomerController::class, 'save'])->name('customers.save');
+        Route::get('/edit/{Id}', [CustomerController::class, 'edit'])->name('customers.edit');
+        Route::put('/edit/{Id}/update', [CustomerController::class, 'update'])->name('customers.update');
+        Route::put('/edit/{Id}/updateConsultant', [CustomerController::class, 'updateConsultant'])->name('customers.updateConsultant');
+        Route::put('/edit/{Id}/updateManhour', [CustomerController::class, 'updateManhour'])->name('customers.updateManhour');
+        Route::put('/edit/{Id}/updateOIC', [CustomerController::class, 'updateOIC'])->name('customers.updateOIC');
+        Route::post('/edit/{Id}/updateResourceCost', [CustomerController::class, 'updateResourceCost'])->name('customers.updateResourceCost');
+        Route::put('/edit/{Id}/updateManualDSW', [CustomerController::class, 'updateManualDSW'])->name('customers.updateManualDSW');
+        Route::post('/edit/{Id}/reviseManhour', [CustomerController::class, 'reviseManhour'])->name('customers.reviseManhour');
+        Route::post('/edit/{Id}/convertToProject', [CustomerController::class, 'convertToProject'])->name('customers.convertToProject');
+        Route::get('/delete/{Id}', [CustomerController::class, 'delete'])->name('customers.delete');
+    });
+    
+    // TIMEKEEPING
+    Route::prefix('projectUtilization')->group(function () {
+        Route::prefix('timekeeping')->group(function () {
+            Route::get('/', [TimekeepingController::class, 'index'])->name('timekeeping');
+            Route::get('/add', [TimekeepingController::class, 'form'])->name('timekeeping.add');
+            Route::post('/save', [TimekeepingController::class, 'save'])->name('timekeeping.save');
+            Route::get('/edit/{Id}', [TimekeepingController::class, 'edit'])->name('timekeeping.edit');
+            Route::put('/edit/{Id}/update', [TimekeepingController::class, 'update'])->name('timekeeping.update');
+            Route::get('/delete/{Id}', [TimekeepingController::class, 'delete'])->name('timekeeping.delete');
+        });
+    });
 });
-// END CUSTOMER
 
 
 // ----- EXTERNAL ACTIONS -----
@@ -182,11 +215,15 @@ Route::prefix('leaveRequest')->group(function () {
 
 // ----- ADMIN -----
 use App\Http\Controllers\admin\ModuleController;
+use App\Http\Controllers\admin\DataManagementController;
 use App\Http\Controllers\admin\DepartmentController;
 use App\Http\Controllers\admin\DesignationController;
 use App\Http\Controllers\admin\ModuleApprovalController;
 use App\Http\Controllers\admin\LeaveTypeController;
 use App\Http\Controllers\admin\PermissionController;
+use App\Http\Controllers\admin\ComplexityController;
+use App\Http\Controllers\admin\ProjectPhaseController;
+use App\Http\Controllers\admin\CompanySettingController;
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function () {
     // MODULE
@@ -197,6 +234,24 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
         Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('module.edit');
         Route::put('/edit/{id}/update', [ModuleController::class, 'update'])->name('module.update');
         Route::get('/delete/{id}', [ModuleController::class, 'delete'])->name('module.delete');
+    });
+
+    // IMPORT
+    Route::prefix('dataManagement')->group(function () {
+        Route::get('/', [DataManagementController::class, 'index'])->name('dataManagement');
+        Route::get('/moduleTemplate', [DataManagementController::class, 'moduleTemplate'])->name('dataManagement.moduleTemplate');
+        Route::get('/exportModuleData', [DataManagementController::class, 'exportModuleData'])->name('dataManagement.exportModuleData');
+        Route::get('/importModuleData', [DataManagementController::class, 'importModuleData'])->name('dataManagement.importModuleData');
+        Route::post('/importModuleData/save', [DataManagementController::class, 'importModuleDataSave'])->name('dataManagement.importModuleData.save');
+        Route::post('/validateModuleHeader', [DataManagementController::class, 'validateModuleHeader'])->name('dataManagement.validateModuleHeader');
+
+
+
+        Route::get('/add', [DataManagementController::class, 'form'])->name('dataManagement.add');
+        Route::post('/save', [DataManagementController::class, 'save'])->name('dataManagement.save');
+        Route::get('/edit/{id}', [DataManagementController::class, 'edit'])->name('dataManagement.edit');
+        Route::put('/edit/{id}/update', [DataManagementController::class, 'update'])->name('dataManagement.update');
+        Route::get('/delete/{id}', [DataManagementController::class, 'delete'])->name('dataManagement.delete');
     });
 
     // SETUP
@@ -232,7 +287,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
         });
 
         // PERMISSION
-        Route::prefix('permission')->group(function() {
+        Route::prefix('permission')->group(function () {
             Route::get('/', [PermissionController::class, 'index'])->name('permission');
             Route::get('/edit/{Id}', [PermissionController::class, 'edit'])->name('permission.edit');
             Route::post('/edit/{Id}/save', [PermissionController::class, 'save'])->name('permission.save');
@@ -245,18 +300,36 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
             Route::get('/edit/{id}/{designationId}', [ModuleApprovalController::class, 'editDesignation'])->name('moduleApproval.edit.designation');
             Route::post('/edit/{id}/{designationId}/save', [ModuleApprovalController::class, 'saveDesignation'])->name('moduleApproval.edit.designation.save');
         });
-    });
 
-    // PROJECT MANAGEMENT
-    Route::prefix('projectManagement')->group(function () {
-        // DEFAULT
-        Route::get('/', [ProjectManagementController::class, 'index'])->name('projectManagement');
-        Route::get('/edit/{Id}', [ProjectManagementController::class, 'edit'])->name('pm.edit');
-        Route::put('/edit/{Id}/update/{ProjectCostId?}', [ProjectManagementController::class, 'update'])->name('pm.update');
+        // COMPLEXITY
+        Route::prefix('complexity')->group(function () {
+            Route::get('/', [ComplexityController::class, 'index'])->name('complexity');
+            Route::get('/add', [ComplexityController::class, 'form'])->name('complexity.add');
+            Route::post('/save', [ComplexityController::class, 'save'])->name('complexity.save');
+            Route::get('/edit/{Id}', [ComplexityController::class, 'edit'])->name('complexity.edit');
+            Route::put('/edit/{Id}/update', [ComplexityController::class, 'update'])->name('complexity.update');
+            Route::get('/delete/{Id}', [ComplexityController::class, 'delete'])->name('complexity.delete');
+        });
 
-        // RESOURCE COST
-        Route::get('/resourceCost/edit/{Id}', [ProjectManagementController::class, 'resourceCostEdit'])->name('pm.resourceCost.edit');
-        Route::put('/resourceCost/edit/{Id}/update/{ResourceCostId?}', [ProjectManagementController::class, 'resourceCostUpdate'])->name('pm.resourceCost.update');
+        // PROJECT PHASE
+        Route::prefix('projectPhase')->group(function () {
+            Route::get('/', [ProjectPhaseController::class, 'index'])->name('projectPhase');
+            Route::get('/add', [ProjectPhaseController::class, 'form'])->name('projectPhase.add');
+            Route::post('/save', [ProjectPhaseController::class, 'save'])->name('projectPhase.save');
+            Route::get('/edit/{Id}', [ProjectPhaseController::class, 'edit'])->name('projectPhase.edit');
+            Route::put('/edit/{Id}/update', [ProjectPhaseController::class, 'update'])->name('projectPhase.update');
+            Route::get('/delete/{Id}', [ProjectPhaseController::class, 'delete'])->name('projectPhase.delete');
+        });
+
+        // COMPANY SETTING
+        Route::prefix('companySetting')->group(function () {
+            Route::get('/', [CompanySettingController::class, 'index'])->name('companySetting');
+            Route::get('/add', [CompanySettingController::class, 'form'])->name('companySetting.add');
+            Route::post('/save', [CompanySettingController::class, 'save'])->name('companySetting.save');
+            Route::get('/edit/{Id}', [CompanySettingController::class, 'edit'])->name('companySetting.edit');
+            Route::put('/edit/{Id}/update', [CompanySettingController::class, 'update'])->name('companySetting.update');
+            Route::get('/delete/{Id}', [CompanySettingController::class, 'delete'])->name('companySetting.delete');
+        });
     });
 });
 // ----- END ADMIN -----

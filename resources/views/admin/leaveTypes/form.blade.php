@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-    $Name = $todo = null;
+    $Name = $Acronym = $todo = null;
     $Status = 1;
     $disabled = '';
 
@@ -13,8 +13,9 @@
         $action = route('leaveType.update', ['Id' => $data['Id']]);
         $button = '<a href="/admin/setup/leaveType/delete/'.$data['Id'].'" class="btn btn-danger btnDeleteForm">Delete</a>
         <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
-        $Name   = (!empty($data)) ? ($data['Name'] ?? '') : '';
-        $Status = (!empty($data)) ? ($data['Status'] ?? '') : '';
+        $Name    = (!empty($data)) ? ($data['Name'] ?? '') : '';
+        $Acronym = (!empty($data)) ? ($data['Acronym'] ?? '') : '';
+        $Status  = (!empty($data)) ? ($data['Status'] ?? '') : '';
 
         if (in_array($Name, ['Vacation Leave', 'Sick Leave'])) {
             $disabled = 'disabled';
@@ -73,6 +74,13 @@
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="Name" name="Name" placeholder="Leave Type"
                                             value="{{ old('Name') ?? $Name }}" required {{ $disabled }}>
+                                    </div>
+                                </div>
+                                <div class="row my-3">
+                                    <label for="Acronym" class="col-sm-2">Acronym <code>*</code></label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="Acronym" name="Acronym" placeholder="Acronym"
+                                            value="{{ old('Acronym') ?? $Acronym }}" required {{ $disabled }}>
                                     </div>
                                 </div>
                                 <div class="row my-3">

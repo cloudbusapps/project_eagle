@@ -21,8 +21,8 @@ return new class extends Migration
             $table->text('Description');
             $table->date('StartDate');
             $table->date('EndDate');
-            $table->uuid('CreatedById');
-            $table->uuid('UpdatedById');
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
 
             $table->foreign('UserId')->references('Id')->on('users');

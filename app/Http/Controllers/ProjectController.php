@@ -55,23 +55,23 @@ class ProjectController extends Controller
             'users.Id',
             DB::raw('(
                 SELECT SUM(
-                CAST(tasks."Duration" AS INT)
+                CAST(tasks.Duration AS INT)
                 ) As durationinseconds
                 FROM tasks
                 LEFT JOIN user_story
-                ON user_story."Id" = tasks."UserStoryId"
-            WHERE users."Id" = tasks."UserId" AND 
-             user_story."ProjectId" = \'' . $Id . '\'
+                ON user_story.Id = tasks.UserStoryId
+            WHERE users.Id = tasks.UserId AND 
+             user_story.ProjectId = \'' . $Id . '\'
             )'),
             DB::raw('(
                 SELECT SUM(
-                CAST(tasks."TimeCompleted" AS INT)
+                CAST(tasks.TimeCompleted AS INT)
                 ) As timecompleteinsec
                 FROM tasks
                 LEFT JOIN user_story
-                ON user_story."Id" = tasks."UserStoryId"
-            WHERE users."Id" = tasks."UserId" AND 
-             user_story."ProjectId" = \'' . $Id . '\'
+                ON user_story.Id = tasks.UserStoryId
+            WHERE users.Id = tasks.UserId AND 
+             user_story.ProjectId = \'' . $Id . '\'
             )'),
         )
             ->where('resources.ProjectId', $Id)
@@ -114,11 +114,11 @@ class ProjectController extends Controller
         $save = $userData->projects()->save($project);
         if ($save) {
             return redirect()
-                ->route('projects.view')
+                ->route('projects')
                 ->with('success', "Project <b>{$projectName}</b> has been created");
         } else {
             return redirect()
-                ->route('projects.view')->with('fail', 'Something went wrong, try again later');
+                ->route('projects')->with('fail', 'Something went wrong, try again later');
         }
     }
 
@@ -156,11 +156,11 @@ class ProjectController extends Controller
 
         if ($projectData->delete()) {
             return redirect()
-                ->route('projects.view')
+                ->route('projects')
                 ->with('success', "Project <b>{$projectName}</b> has been deleted");
         } else {
             return redirect()
-                ->route('projects.view')
+                ->route('projects')
                 ->with('fail', 'Something went wrong, try again later');
         }
     }
@@ -257,7 +257,7 @@ class ProjectController extends Controller
                 ->with('success', "User Story <b>{$UserStoryTitle}</b> has been created");
         } else {
             return redirect()
-                ->route('projects.view')->with('fail', 'Something went wrong, try again later');
+                ->route('projects')->with('fail', 'Something went wrong, try again later');
         }
     }
     function updateUserStory(Request $request, $Id)
@@ -321,8 +321,8 @@ class ProjectController extends Controller
             'type'           => 'insert',
             'projectId'           => $Id,
             'projectData'        => [],
-            'userList' => $userList,
-            'savedUser' => $savedUser
+            'userLists' => $userList,
+            'savedUsers' => $savedUser
         ];
         return view('projects.resource', $data);
     }
@@ -350,8 +350,12 @@ class ProjectController extends Controller
 
     public function saveResource(Request $request, $Id)
     {
-
-        $users = $request->usersId;
+        $validator = $request->validate([
+            'UsersId' => ['required'],
+        ],[
+            'UsersId.required'=>'Select atleast 1 resource'
+        ]);
+        $users = $request->UsersId;
         $deleteUsers = Resource::where('ProjectId', $Id)->delete();
 
 
@@ -367,17 +371,15 @@ class ProjectController extends Controller
             }
 
             $saveUser = Resource::insert($data);
-            if ($saveUser) {
-                $request->session()->flash('success', 'Users updated');
-                return response()->json(['url' => url('projects/projectDetails/' . $Id)]);
-            }
         }
-        if ($deleteUsers) {
-            $request->session()->flash('success', 'Users updated');
-            return response()->json(['url' => url('projects/projectDetails/' . $Id)]);
+        if ($saveUser) {
+            return redirect()
+            ->route('projects.projectDetails', ['Id' => $Id])
+            ->with('success', "Users has been updated in this project");
         } else {
             return redirect()
-                ->route('projects.view')->with('fail', 'Something went wrong, try again later');
+                ->route('projects.projectDetails', ['Id' => $Id])
+                ->with('fail', 'Something went wrong, try again later');
         }
     }
 
@@ -407,7 +409,7 @@ class ProjectController extends Controller
                 ->with('success', "Users has been updated in this project");
         } else {
             return redirect()
-                ->route('projects.view')->with('fail', 'Something went wrong, try again later');
+                ->route('projects')->with('fail', 'Something went wrong, try again later');
         }
     }
 

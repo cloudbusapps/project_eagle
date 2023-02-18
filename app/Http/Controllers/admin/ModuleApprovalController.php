@@ -21,8 +21,8 @@ class ModuleApprovalController extends Controller
                 ->where('WithApproval', true)
                 ->get(),
             'employees' => User::select('users.*', 'd.Name AS designation')
-                ->leftJoin('designations AS d', 'DesignationId', 'd.Id')
-                ->where('IsAdmin', false)->get(),
+                ->leftJoin('designations AS d', 'DesignationId', 'd.Id')->get(),
+                // ->where('IsAdmin', false)->get(),
             'designations' => Designation::where('Status', 1)->get()
         ];
         return view('admin.moduleApprovals.index', $data);

@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('leave_request_files', function (Blueprint $table) {
             $table->uuid('Id')->primary();
-            $table->uuid('LeaveRequestId')->unsigned();
-            $table->string('File');
-            $table->uuid('CreatedById');
-            $table->uuid('UpdatedById');
+            $table->uuid('LeaveRequestId');
+            $table->string('File')->nullable();
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
 
             // $table->foreign('LeaveRequestId')->references('Id')->on('leave_requests')->onDelete('cascade');

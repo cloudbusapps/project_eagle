@@ -30,7 +30,7 @@
                         <h4 class="mb-0">{{ $title }}</h4>
                         <ol class="breadcrumb bg-transparent mb-0">
                             <li class="breadcrumb-item"><a class="text-secondary" href="#">Projects</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('projects.view') }}">List of Project</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('projects') }}">List of Project</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
                         </ol>
                     </div>
@@ -165,7 +165,6 @@
 
                         <table id="resourcesTable" class="table table-striped" style="width:100%">
                             <thead>
-
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Name</th>
@@ -281,7 +280,7 @@
                 scrollCollapse: true,
             });
             // ----- END DATATABLES -----
-            let useDataTable = $('#userStoryTable').DataTable({
+            let userDataTable = $('#userStoryTable').DataTable({
                 scrollX: true,
                 scrollY: '500px',
                 sorting: [],

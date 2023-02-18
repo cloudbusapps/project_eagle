@@ -33,7 +33,7 @@
             @if (Session::get('fail'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert"> 
                     <i class="bi bi-exclamation-octagon me-1"></i>
-                    <?= Session::get('danger') ?>
+                    <?= Session::get('fail') ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
@@ -53,6 +53,12 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link {{ in_array(Session::get('tab'), ['Calendar']) ? 'active' : '' }}" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar-content" type="button" role="tab">Calendar</button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link {{ in_array(Session::get('tab'), ['LeaveHistory']) ? 'active' : '' }}" id="history-tab" data-bs-toggle="tab" data-bs-target="#leave-history" type="button" role="tab">Leave History</button>
+                        </li>
+                        {{-- <div class="col text-end">
+                            <a href="#"><i class="bi bi-arrow-clockwise fa-lg"></i></a>
+                        </div> --}}
 
                         
                     </ul>
@@ -164,18 +170,63 @@
 
                                         @foreach ($leaveTypes as $dt)
                                         <?php 
-                                            $className = $dt['Id'] == config('constant.ID.LEAVE_TYPES.VACATION_LEAVE') ? 'text-success' : ($dt['Id'] == config('constant.ID.LEAVE_TYPES.SICK_LEAVE') ? 'text-danger' : 'text-info'); 
+                                            $className = $dt['Id'] == config('constant.ID.LEAVE_TYPES.VACATION_LEAVE') ? 'text-success' : ($dt['Id'] == config('constant.ID.LEAVE_TYPES.SICK_LEAVE') ? 'text-danger' : 'text-dark'); 
                                         ?>
-                                        <label class="{{ $className }} mx-2"><input type="checkbox" class="leaveTypes" leaveType="{{ $dt['Id'] }}" checked> {{ $dt['Name'] }}</label>
+                                        <label class="{{ $className }} mx-2"><input type="checkbox" class="leaveTypes" leaveType="{{ $dt['Id'] }}" checked> {{ $dt['Name'] }} ({{ $dt['Acronym'] }})</label>
                                         @endforeach
 
                                     </div>
                                     <div>
-                                        <label><input type="checkbox" checked name="viewAll"> View All</label>
+                                        <label class="mx-2"><input type="checkbox" checked name="viewAll"> View All</label>
                                     </div>
                                 </div>
                                 <div class="card-body">
                                   <div id="myCalendar"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- LOGS HISTORY --}}
+                        <div class="tab-pane fade {{ in_array(Session::get('tab'), ['LeaveHistory']) ? 'show active' : '' }}" id="leave-history" role="tabpanel">
+                            <div class="card">
+                                <div style="max-height:500px" class="card-body container overflow-auto">
+                                        @if ($leavesHistory && count($leavesHistory))
+                                            @foreach ($leavesHistory as $leaveHistory)
+                                            <?php
+                                            // $attributeProperty = json_decode($leaveHistory['properties'],true)['attributes'];
+                                            ?>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <ul class="list-group">
+                                                        <li class="list-group-item">
+                                                            <div class=" d-flex justify-content-between align-items-center">
+                                                                <span>{{ $leaveHistory['description'] }}</span>
+                                                                <span>{{ date('F d, Y h:i A', strtotime($leaveHistory['created_at'])) }}</span>
+                                                            </div>
+                                                            @if (count($leaveHistory['properties']))
+                                                            <ul>
+                                                                @foreach($leaveHistory['properties'] as $leaveProperties)
+                                                                {{-- <li>{{ dd($leaveProperties) }}</li> --}}
+                                                                    @if ($leaveProperties)
+                                                                        @if(is_array($leaveProperties['data']))
+                                                                        @foreach (  $leaveProperties['data'] as $leavePropertiesArray)
+                                                                            <li>{{ $leavePropertiesArray['Credit'] }}</li>
+                                                                        @endforeach
+                                                                        @else
+                                                                        <li>{{ $leaveProperties['data'] }}</li>
+                                                                        @endif
+                                                                    @endif
+                                                                @endforeach
+                                                            </ul>
+                                                            @endif
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        @else
+                                        <h6 class="text-center">No History Logs</h6>
+                                        @endif
                                 </div>
                             </div>
                         </div>

@@ -23,9 +23,16 @@ return new class extends Migration
             $table->date('EndDate');
             $table->decimal('LeaveDuration', 10, 2);
             $table->text('Reason');
+
+            /*
+            Status
+            1 - Pending
+            2 - Approved
+            3 - Rejected
+            */
             $table->integer('Status')->default(0);
-            $table->uuid('CreatedById');
-            $table->uuid('UpdatedById');
+            $table->uuid('CreatedById')->nullable();
+            $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
         });
     }

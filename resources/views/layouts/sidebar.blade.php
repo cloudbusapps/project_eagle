@@ -106,8 +106,24 @@
               <a class="ms-link {{ 'moduleApproval' == $setupModule ? 'active' : '' }}" 
                 href="{{ route('moduleApproval') }}">Approval</a>
             </li>
+            <li>
+              <a class="ms-link {{ 'complexity' == $setupModule ? 'active' : '' }}" 
+                href="{{ route('complexity') }}">Complexity</a>
+            </li>
+            <li>
+              <a class="ms-link {{ 'projectPhase' == $setupModule ? 'active' : '' }}" 
+                href="{{ route('projectPhase') }}">Project Phases</a>
+            </li>
+            <li>
+              <a class="ms-link {{ 'projectPhase' == $setupModule ? 'active' : '' }}" 
+                href="{{ route('companySetting') }}">Company Setting</a>
+            </li>
           </ul>
         </li>
+        <a class="m-link {{ $subModule == 'dataManagement' ? 'active' : '' }}" href="{{ route('dataManagement') }}">
+          <img src="{{ asset('uploads/icons/dataManagement.png') }}" alt="Data Management" width="20" height="20">
+          <span class="ms-2">Data Management</span>
+        </a>
         {{-- 
         <!-- FOR DEVELOPER ONLY -->  
         <li>
@@ -177,9 +193,9 @@
                                                     onclick="viewNotification('{{ $notification->id }}', '{{ $data->Link ?? '#' }}')">
                                                     <img src="{{ $data->Icon ?? '/assets/img/icons/default.png' }}" height="30" width="30">
                                                     <div class="flex-fill ms-3">
-                                                        <p class="mb-0">
+                                                        <div class="mb-0">
                                                           <?= $data->Description ?>
-                                                        </p>
+                                                        </div>
                                                         <small>{{ activityTime($notification->created_at) }}</small>
                                                     </div>
                                                 </div>

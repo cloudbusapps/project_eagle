@@ -52,6 +52,14 @@ class UserCertification extends Model
     {
         $Code = $activity->subject->Code;
         $FullName = $activity->causer->FirstName . ' ' . $activity->causer->LastName;
-        $activity->description = "{$FullName} {$eventName} certification <b>{$Code}</b>";
+        
+        if($activity->causer->IsAdmin==1){
+            $user = User::find($activity->subject->UserId);
+            $userFullName = $user->FirstName.' '.$user->LastName;
+            $activity->description = "{$FullName} {$eventName} {$userFullName}'s certification <b>{$Code}</b>";
+        } else{
+            
+            $activity->description = "{$FullName} {$eventName} certification <b>{$Code}</b>";
+        }
     }
 }
