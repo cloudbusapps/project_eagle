@@ -26,6 +26,7 @@ use App\Models\LeaveRequest;
 class UserProfileController extends Controller
 {
     private $ModuleId = 3;
+
     public function getUserLeaveBalance($UserId = null) {
         $leaveBalanceData = [];
 
@@ -153,8 +154,16 @@ class UserProfileController extends Controller
         $user->DesignationId  = $request->DesignationId;
         $user->email          = $request->email;
 
+        if($Id!==Auth::id()){
+            $FullName = Auth::user()->FirstName.' '.Auth::user()->LastName;
+            $user->disableLogging();
+        }
+
         if ($user->save()) {
-            return redirect()->route('user.viewProfile')
+            if($Id!==Auth::id()){
+                activity()->log("{$FullName} updated {$user->FirstName} {$user->LastName}'s personal information");
+            }
+            return redirect()->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Overview')
                 ->with('success', 'Personal Information successfully updated!');
         }
@@ -198,12 +207,12 @@ class UserProfileController extends Controller
 
         if ($UserCertification->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Certification')
                 ->with('success', "<b>{$Code}</b> successfully saved!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Certification')
                 ->with('fail', "<b>{$Code}</b> failed to save!");
         }
@@ -242,12 +251,12 @@ class UserProfileController extends Controller
 
         if ($UserCertification->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserCertification->UserId])
                 ->with('tab', 'Certification')
                 ->with('success', "<b>{$Code}</b> successfully updated!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserCertification->UserId])
                 ->with('tab', 'Certification')
                 ->with('fail', "<b>{$Code}</b> failed to update!");
         }
@@ -260,12 +269,12 @@ class UserProfileController extends Controller
 
         if ($UserCertification->delete()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserCertification->UserId])
                 ->with('tab', 'Certification')
                 ->with('success', "<b>{$Code}</b> successfully deleted!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserCertification->UserId])
                 ->with('tab', 'Certification')
                 ->with('fail', "<b>{$Code}</b> failed to delete!");
         }
@@ -305,12 +314,12 @@ class UserProfileController extends Controller
 
         if ($UserAward->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Award')
                 ->with('success', "<b>{$Title}</b> successfully saved!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Award')
                 ->with('fail', "<b>{$Title}</b> failed to save!");
         }
@@ -347,12 +356,12 @@ class UserProfileController extends Controller
 
         if ($UserAward->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserAward->UserId])
                 ->with('tab', 'Award')
                 ->with('success', "<b>{$Title}</b> successfully updated!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserAward->UserId])
                 ->with('tab', 'Award')
                 ->with('fail', "<b>{$Title}</b> failed to update!");
         }
@@ -365,12 +374,12 @@ class UserProfileController extends Controller
 
         if ($UserAward->delete()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserAward->UserId])
                 ->with('tab', 'Award')
                 ->with('success', "<b>{$Title}</b> successfully deleted!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserAward->UserId])
                 ->with('tab', 'Award')
                 ->with('fail', "<b>{$Title}</b> failed to delete!");
         }
@@ -414,12 +423,12 @@ class UserProfileController extends Controller
 
         if ($UserExperience->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Experience')
                 ->with('success', "<b>{$JobTitle}</b> successfully saved!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Experience')
                 ->with('fail', "<b>{$JobTitle}</b> failed to save!");
         }
@@ -460,12 +469,12 @@ class UserProfileController extends Controller
 
         if ($UserExperience->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserExperience->UserId])
                 ->with('tab', 'Experience')
                 ->with('success', "<b>{$JobTitle}</b> successfully updated!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserExperience->UserId])
                 ->with('tab', 'Experience')
                 ->with('fail', "<b>{$JobTitle}</b> failed to update!");
         }
@@ -478,12 +487,12 @@ class UserProfileController extends Controller
 
         if ($UserExperience->delete()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserExperience->UserId])
                 ->with('tab', 'Experience')
                 ->with('success', "<b>{$JobTitle}</b> successfully deleted!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserExperience->UserId])
                 ->with('tab', 'Experience')
                 ->with('fail', "<b>{$JobTitle}</b> failed to delete!");
         }
@@ -526,12 +535,12 @@ class UserProfileController extends Controller
 
         if ($UserEducation->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Education')
                 ->with('success', "<b>{$DegreeTitle}</b> successfully saved!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('tab', 'Education')
                 ->with('fail', "<b>{$DegreeTitle}</b> failed to save!");
         }
@@ -571,12 +580,12 @@ class UserProfileController extends Controller
 
         if ($UserEducation->save()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserEducation->UserId])
                 ->with('tab', 'Education')
                 ->with('success', "<b>{$DegreeTitle}</b> successfully updated!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserEducation->UserId])
                 ->with('tab', 'Education')
                 ->with('fail', "<b>{$DegreeTitle}</b> failed to update!");
         }
@@ -589,12 +598,12 @@ class UserProfileController extends Controller
 
         if ($UserEducation->delete()) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserEducation->UserId])
                 ->with('tab', 'Education')
                 ->with('success', "<b>{$DegreeTitle}</b> successfully deleted!");
         } else {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$UserEducation->UserId])
                 ->with('tab', 'Education')
                 ->with('fail', "<b>{$DegreeTitle}</b> failed to delete!");
         }
@@ -756,13 +765,13 @@ class UserProfileController extends Controller
             
             if ($User->save()) {
                 return redirect()
-                    ->route('user.viewProfile')
+                    ->route('user.viewProfile',['Id'=>$Id])
                     ->with('card', 'Image')
                     ->with('success', "Profile image successfully updated!");
             } 
         } catch (\Throwable $th) {
             return redirect()
-                ->route('user.viewProfile')
+                ->route('user.viewProfile',['Id'=>$Id])
                 ->with('card', 'Image')
                 ->with('fail', "There's an error occured. Please try again later...");
         }
@@ -958,8 +967,11 @@ class UserProfileController extends Controller
         $user->Status = $newStatus;
 
         $statusMessage = $newStatus == 1 ? 'activated':'deactivated';
-
+        $user->disableLogging();
         if($user->update()){
+            $AdminFullName = Auth::user()->FirstName.' '.Auth::user()->LastName;
+           
+            activity()->log("{$AdminFullName} {$statusMessage} {$user->FirstName} {$user->LastName}'s status");
             return redirect()
             ->back()
             ->with('card', 'Leave')

@@ -4,11 +4,20 @@
 
 <?php
 $userStatus = $userData->Status;
-if($userStatus==1){
+if(Auth::user()->IsAdmin==1){
+    if($userStatus==1){
     $statusButton ='<a class="btn btn-outline-success btnStatus" id='.$requestId.'>Activated</a>';
 } else{
     $statusButton ='<a class="btn btn-outline-danger btnStatus" id='.$requestId.'>Deactivated</a>';
 }
+} else{
+    if($userStatus==1){
+    $statusButton ='<span class="btn btn-outline-success" id='.$requestId.'>Activated</span>';
+} else{
+    $statusButton ='<span class="btn btn-outline-danger" id='.$requestId.'>Deactivated</span>';
+}
+}
+
 
 ?>
 
@@ -71,7 +80,7 @@ if($userStatus==1){
                 <div class="col-xl-4">
                     <div class="card">
                         @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
-                        <a href="#" class="text-secondary btnEditImage" id="{{ Auth::id() }}"
+                        <a href="#" class="text-secondary btnEditImage" id="{{ $requestId }}"
                             style="position: absolute; right: 0; margin: 10px;">
                             <i class="bi bi-pencil"></i>
                         </a>
@@ -103,13 +112,12 @@ if($userStatus==1){
                             <span class="fw-bold">Status:</span>
                             <?= $statusButton ?>
                         </div>
-                        
                     </div>
                     <div class="card mt-3">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0 card-title py-0">Skills</h5>
                             @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
-                            <a href="#" class="text-secondary btnEditSkill" id="{{ Auth::id() }}">
+                            <a href="#" class="text-secondary btnEditSkill" id="{{ $requestId }}">
                                 <i class="bi bi-pencil"></i>
                             </a>
                             @endif
@@ -230,7 +238,7 @@ if($userStatus==1){
 
                                     @if ($requestId == Auth::id() || Auth::user()->IsAdmin)
                                     <div class="w-100 mt-4">
-                                        <a href="{{ route('user.editPersonalInformation', ['Id' => Auth::id()]) }}"
+                                        <a href="{{ route('user.editPersonalInformation', ['Id' => $requestId]) }}"
                                             class="btn btn-outline-secondary px-2 py-1 btnEditProfile">
                                             <i class="bi bi-pencil"></i> Edit
                                         </a>
@@ -801,25 +809,57 @@ if($userStatus==1){
 
 
         // ----- BUTTON UPDATE SKILL -----
-        $(document).on('click', '.btnUpdateSkill', function() {
+        $(document).on('click', '.btnUpdateSkill', function(e) {
             let Id = $(this).attr('id');
             let skills = [];
 
-            $('#custom-modal .skill-title').each(function() {
-                let skill = $(this).text()?.trim();
-                skills.push(skill);
-            })
+            e.preventDefault();
 
-            $.ajax({
-                method: 'POST',
-                url: `/user/profile/saveSkill/${Id}`,
-                async: false,
-                data: { skills },
-                dataType: 'json',
-                success: function(result) {
-                    window.location.reload();
+            const content=`
+        <div class="d-flex justify-content-center align-items-center flex-column text-center">
+            <img src="/assets/img/modal/update.svg" class="py-1" height="150" width="150">
+            <b class="mt-4">Are you sure you want to update this user's skill?</b>
+        </div>`;
+        
+
+            let confirmation = $.confirm({
+                title: false,
+                content,
+                buttons: {
+                    no: {
+                        btnClass: 'btn-default',
+                    },
+                    yes: {
+                        btnClass: 'btn-blue',
+                        keys: ['enter'],
+                        action: function() {
+                            $('#custom-modal .skill-title').each(function() {
+                                let skill = $(this).text()?.trim();
+                                skills.push(skill);
+                            })
+
+                            $.ajax({
+                                method: 'POST',
+                                url: `/user/profile/saveSkill/${Id}`,
+                                async: false,
+                                data: { skills },
+                                dataType: 'json',
+                                success: function(result) {
+                                    window.location.reload();
+                                }
+                            })
+
+                            confirmation.buttons.yes.setText(
+                                `<span class="spinner-border spinner-border-sm"></span> Please wait...`
+                            );
+                            confirmation.buttons.yes.disable();
+                            confirmation.buttons.no.hide();
+
+                            return false;
+                        }
+                    },
                 }
-            })
+            });
         })
         // ----- END BUTTON UPDATE SKILL -----
 
