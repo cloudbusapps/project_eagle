@@ -8,7 +8,7 @@
     <link rel="icon" href="{{ asset('assets/img/epldt-suite-logo.png') }}" type="image/x-icon">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="base-url" content="{{ URL::to('/') }}">
-    <title>ePLDT - {{ $title ?? '' }}</title>
+    <title>[TESTING] ePLDT - {{ $title ?? '' }}</title>
 
     <link rel="stylesheet" href="{{ asset('assets/css/jquery-confirm.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
