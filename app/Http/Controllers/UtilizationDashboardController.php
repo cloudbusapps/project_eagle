@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\timekeeping\Timekeeping;
 use App\Models\timekeeping\TimekeepingDetails;
+
 use Illuminate\Http\Request;
 
 // MODELS
 use Spatie\Activitylog\Models\Activity;
+use App\Models\admin\CompanySetting;
 use App\Models\Resource;
 use App\Models\Project;
 use App\Models\User;
@@ -17,7 +20,7 @@ use Auth;
 class UtilizationDashboardController extends Controller
 {
     public function index() {
-        if(Auth::id()==config('constant.ID.USERS.BA_HEAD') ||Auth::id() == config('constant.ID.USERS.ADMIN')){
+        if(Auth::id()==config('constant.ID.USERS.BA_HEAD') ||Auth::user()->IsAdmin==1){
             $data = [
                 'title'   => "Utilizatiion Dashboard",   
                 'activities' => Activity::where(DB::raw('DATE("created_at")'), date('Y-m-d'))
@@ -31,6 +34,8 @@ class UtilizationDashboardController extends Controller
                 'projectResources' => $this->getUserProject('admin'),
                 'projects' => Project::all(),
                 'users' => DB::table('users')->where('IsAdmin',false)->get(),
+                'timekeepingDatas' => $this->getEmployeeHours(),
+                'WorkinghoursData' => $this->WorkinghoursData(),
             ];
         } else{
             $data = [
@@ -56,13 +61,14 @@ class UtilizationDashboardController extends Controller
 
     // HELPERS FOR UTILIZATION DASHBOARD CONTROLLER
 
-    public function getUserProject($type=''){
-        if($type==='admin'){
+    public function getUserProject($userType=''){
+        if($userType==='admin'){
             $projectResources= Resource::select('resources.*','projects.Name AS ProjectName')
             ->leftJoin('projects','resources.ProjectId','projects.Id')
             ->get();
             $users = User::where('IsAdmin',false)->orderBy('DesignationId')
             ->leftJoin('designations','designations.Id','=','users.DesignationId')
+            ->where('users.Status',1)
             ->get(['users.*','designations.Name AS DesignationName']);
         } else{
             $projectResources= Resource::select('resources.*','projects.Name AS ProjectName')
@@ -94,6 +100,55 @@ class UtilizationDashboardController extends Controller
         }
         return $data;
 
+    }
+
+    function WorkinghoursData(){
+        $TotalLeaveHoursPerYear = 120;
+        $CompanySetting = CompanySetting::select('AnnualWorkingHours')->first();
+        // $forecastedAnnualHours = $CompanySetting->AnnualWorkingHours - $TotalLeaveHoursPerYear;
+
+        $users = User::where('IsAdmin',false)->orderBy('DesignationId')
+        ->leftJoin('designations','designations.Id','=','users.DesignationId')
+        ->leftJoin('timekeepings','timekeepings.UserId','=','users.Id')
+        // ->leftJoin('leave_requests','leave_requests.UserId','=','users.Id')
+        ->leftJoin('leave_requests', function($join){
+            $join->on('leave_requests.UserId', '=', 'users.Id');
+            $join->where('leave_requests.Status','=',2);
+        })
+        ->where('users.Status',1)
+        ->groupBy('users.Id')
+        ->get(['users.*','designations.Name AS DesignationName',
+        DB::raw('SUM(timekeepings.TotalHours) as TotalSumHours, SUM(leave_requests.LeaveDuration) as TotalLeaveDuration')]);
+
+        $data=[];
+        foreach($users as $user){
+
+            $forecastedAnnualHours = $CompanySetting->AnnualWorkingHours - ($user->TotalLeaveDuration*8);
+
+            $temp=[
+                'FullName' =>$user->FirstName.' '.$user->LastName,
+                'TotalSumHours' => $user->TotalSumHours,
+                'DesignationName' =>$user->DesignationName,
+                'forecastedAnnualHours' => $forecastedAnnualHours
+            ];
+            $data[]=$temp;
+        }
+        
+        return $data;
+
+    }
+
+    function getEmployeeHours($EmployeeId=''){
+        if($EmployeeId==''){
+            $timeKeepingData = Timekeeping::select('timekeepings.*','U.FirstName','U.LastName',
+            DB::raw('SUM(timekeepings.TotalHours) as TotalSumHours'),'D.Name AS DesignationName')
+            ->leftJoin('users as U','U.Id','=','timekeepings.UserId')
+            ->leftJoin('designations as D','D.Id','=','U.DesignationId')
+            ->groupBy('timekeepings.UserId')
+            ->get();
+
+            return $timeKeepingData;
+        } else{}
     }
 
     function filterUtilization(Request $request, $type){
