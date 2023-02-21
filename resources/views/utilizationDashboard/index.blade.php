@@ -43,7 +43,7 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="mb-0 font-weight-bold">SUMMARY OF PROJECT ASSIGNED PER RESOURCE</h5>
+                                <h5 class="mb-0 font-weight-bold">FORECASTED VS ACTUAL HOURS PER YEAR</h5>
                             </div>
                             <div class="card-body scrollableX">
                                 <table id="forecastedVSActualTable" class="table table-striped table-hover">
@@ -52,8 +52,8 @@
                                             <th>#</th>
                                             <th>Resource</th>
                                             <th>Designation</th>
-                                            <th>Forecasted work hours</th>
-                                            <th>Resource Utilization</th>
+                                            <th class="text-center">Forecasted work hours</th>
+                                            <th class="text-center">Resource Utilization</th>
                                         </tr>
                                     </thead>
                                     <tbody>

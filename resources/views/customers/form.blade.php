@@ -594,51 +594,64 @@
                                                 <tbody>
 
                                                     {{-- EASY --}}
-                                                    <div class="checkbox-group">
-                                                        
+                                                    <tr class="checkbox-group">
                                                         <tr style="background-color:#333333;">
                                                             <td class="text-white fw-bold" colspan="100%">Easy</td>
                                                         </tr>
                                                         <tr>
+                                                            <input type="hidden"
+                                                            name="complexity[Easy][Id]"
+                                                            value="EasyId">
+                                                        <input type="hidden"
+                                                            name="complexity[Easy][Title]"
+                                                            value="EasyTitle">
                                                              <td>Easy</td>
                                                             <td class="text-center">
-                                                               
                                                                 <div class="custom-control custom-checkbox">
-                                                                    <input type="checkbox"
+                                                                    <input 
+                                                                    data-id="easy"
+                                                                    type="checkbox"
                                                                         class="custom-control-input mainComplexity"
-                                                                        value="2" id="mainCheck"
-                                                                        name="complexityEasy"
+                                                                        value="3" id="mainCheck"
+                                                                        name="complexity[Easy]"
                                                                         {{ $data['IsComplex'] == 2 ? 'checked' : '' }}
                                                                         {{ $complexityDisableField }}>
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                    </div>
+                                                    </tr>
+                                                        
 
 
                                                     {{-- INTERMEDIATE --}}
-                                                    <div class="checkbox-group">
                                                         <tr style="background-color:#333333;">
                                                             <td class="text-white fw-bold" colspan="100%">Intermediate</td>
                                                         </tr>
-                                                        <tr>
+                                                        <tr class="checkbox-group">
+                                                            <input type="hidden"
+                                                            name="complexity[Intermediate][Id]"
+                                                            value="IntermediateId">
+                                                        <input type="hidden"
+                                                            name="complexity[Intermediate][Title]"
+                                                            value="IntermediateTitle">
+
                                                             <td>Intermediate</td>
                                                             <td class="text-center">
                                                                 <div class="custom-control custom-checkbox">
-                                                                    <input type="checkbox"
+                                                                    <input 
+                                                                    data-id="intermediate"
+                                                                    type="checkbox"
                                                                         class="custom-control-input mainComplexity"
-                                                                        value="3" id="mainCheck"
-                                                                        name="complexityIntermediate"
+                                                                        value="2" id="mainCheck"
+                                                                        name="complexity[Intermediate]"
                                                                         {{ $data['IsComplex'] == 3 ? 'checked' : '' }}
                                                                         {{ $complexityDisableField }}>
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                    </div>
                                                  
 
                                                     {{-- COMPLEX --}}
-                                                    <div class="checkbox-group">
                                                        <tr style="background-color:#333333;">
                                                             <td class="text-white fw-bold" colspan="100%">Complex</td>
                                                         </tr>
@@ -651,7 +664,7 @@
                                                                 value="{{ $complexity['Title'] }}">
                                                                 
     
-                                                            <tr>
+                                                            <tr class="checkbox-group">
                                                                 <td>{{ $complexity['Title'] }}
     
                                                                     @if (count($complexity['Details']) > 0)
@@ -688,7 +701,9 @@
                                                                 </td>
                                                                 <td class="text-center">
                                                                     <div class="custom-control custom-checkbox">
-                                                                        <input type="checkbox"
+                                                                        <input
+                                                                        data-id="complex"
+                                                                        type="checkbox"
                                                                             class="custom-control-input mainComplexity"
                                                                             value={{ $complexity['Id'] }} id="mainCheck"
                                                                             name="complexity[{{ $complexity['Id'] }}][Selected]"
@@ -698,7 +713,6 @@
                                                                 </td>
                                                             </tr>
                                                         @endforeach
-                                                    </div>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -2338,9 +2352,19 @@
                 let isChecked = this.checked;
                 
                 // UNCHECK OTHER COMPLEXITY BY GROUP
-                let test = $(".checkbox-group").not(this).find('#mainCheck').prop('checked',false);
-                // test.prop('checked', false);
-                console.log(test)
+                let checkbox = $(this).data('id');
+                let checkboxGroup = $('.mainComplexity').each(function(i,obj){
+                   if(checkbox!==$(obj).data('id')){
+                        $(obj).prop('checked', false);
+                        let $table = $(obj).closest('tr').find('table');
+                        let hasChecked = $table.find(`[type=checkbox].subComplexity:checked`).length;
+                        if (isChecked) {
+                            $table.find(`[type=checkbox].subComplexity`).prop('checked', false);
+                        }
+                   }
+                   
+                })
+
 
 
                 let $table = $(this).closest('tr').find('table');

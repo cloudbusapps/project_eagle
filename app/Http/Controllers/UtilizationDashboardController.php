@@ -148,7 +148,17 @@ class UtilizationDashboardController extends Controller
             ->get();
 
             return $timeKeepingData;
-        } else{}
+        } else{
+            $timeKeepingData = Timekeeping::select('timekeepings.*','U.FirstName','U.LastName',
+            DB::raw('SUM(timekeepings.TotalHours) as TotalSumHours'),'D.Name AS DesignationName')
+            ->where('timekeepings.UserId',$EmployeeId)
+            ->leftJoin('users as U','U.Id','=','timekeepings.UserId')
+            ->leftJoin('designations as D','D.Id','=','U.DesignationId')
+            ->groupBy('timekeepings.UserId')
+            ->get();
+
+            return $timeKeepingData;
+        }
     }
 
     function filterUtilization(Request $request, $type){

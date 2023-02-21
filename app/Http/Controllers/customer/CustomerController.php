@@ -283,9 +283,12 @@ class CustomerController extends Controller
 
     function updateComplexity($request, $Id, $customerData)
     {
+        // dd($request);
+        // return;
         $IsComplex = 0;
 
         $complexity = $request->complexity ?? [];
+        
         if (count($complexity)) {
             CustomerComplexity::where('CustomerId', $Id);
             CustomerComplexityDetails::where('CustomerId', $Id);
@@ -320,13 +323,16 @@ class CustomerController extends Controller
                 }
             }
             CustomerComplexityDetails::insert($complexitySubData);
-
             $customerData->Status    = 2; // PROCEED TO DSW
             $customerData->DSWStatus = 1; // STARTED DSW
         }
 
         $customerData->IsComplex = $IsComplex;
         if (!$IsComplex) {
+            // return redirect()
+            // ->route('customers')
+            // ->with('fail', "Something went wrong, please try again");
+
             $customerData->Status    = 3; // PROCEED TO BUSINESS PROCESS
             $customerData->DSWStatus = 0; // NOT APPLICABLE DSW
         }
