@@ -2592,6 +2592,7 @@
                                             },
                                             async: false,
                                             success: function(response) {
+                                                return console.log(response)
                                                 window.location = response.url;
                                             },
                                             fail: function(response){

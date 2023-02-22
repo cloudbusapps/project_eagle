@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\customer;
 
 use App\Http\Controllers\Controller;
+
 use App\Models\customer\CustomerBusinessProcess;
 use App\Models\customer\CustomerBusinessProcessFiles;
 use App\Models\customer\CustomerConsultant;
@@ -15,9 +16,12 @@ use App\Models\customer\CustomerComplexityDetails;
 use App\Models\customer\CustomerProjectPhases;
 use App\Models\customer\CustomerProjectPhasesDetails;
 use App\Models\customer\CustomerRemarks;
+
 use App\Models\admin\ThirdParty;
 use App\Models\admin\Designation;
 use App\Models\Project;
+use App\Models\Task;
+
 use App\Models\Resource;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -283,8 +287,6 @@ class CustomerController extends Controller
 
     function updateComplexity($request, $Id, $customerData)
     {
-        // dd($request);
-        // return;
         $IsComplex = 0;
 
         $complexity = $request->complexity ?? [];
@@ -853,17 +855,23 @@ class CustomerController extends Controller
         }
 
     }
-    function convertToProject(Request $request, $Id){
+    function convertToProject(Request $request, $CustomerId){
         $validator = $request->validate([
             'ProjectName' => ['required'],
             'Description' => ['required'],
         ]);
-        $customerData = Customer::find($Id);
+        // dd($request);
+        // return;
+
+        
+        
+
+        $customerData = Customer::find($CustomerId);
         $customerName = $customerData->CustomerName;
 
         $project = new Project();
         $project->Id             = Str::uuid();
-        $project->CustomerId     = $Id;
+        $project->CustomerId     = $CustomerId;
         $project->Name           = $request->ProjectName;
         $project->Description    = $request->Description;
         $project->IsComplex      = $customerData->IsComplex;
@@ -877,8 +885,7 @@ class CustomerController extends Controller
         // COPY CUSTOMER RESOURCE INTO PROJECT RESOURCE
         $project->save();
         $projectId = $project->Id;
-        $assignedConsultants = CustomerConsultant::where('CustomerId', $Id)
-        ->get();
+        $assignedConsultants = CustomerConsultant::where('CustomerId', $CustomerId)->get();
         
         $resourceData = [];
 
@@ -893,12 +900,36 @@ class CustomerController extends Controller
 
         $saveUser = Resource::insert($resourceData);
 
+        //COPY INSCOPE LIMITATIONS TO TASK TABLE
+    //  $inscopeDatas = CustomerInscope::where('CustomerId', $CustomerId)->get();
+     
+    //     if(isset($inscopeDatas)){
+    //         $inscopeArr = [];
+    //         foreach($inscopeDatas as $inscopeData){
+    //             // WILL TEMPORARY USE USERSTORYID AS PROJECTID BECAUSE USER STORY MODULE IS NOT YET CERTAIN IF WILL CONTINUE TO USE
+    //             $inscopeArr[] = [
+    //                'Title' => $inscopeData->Title,
+    //                'Description' => $inscopeData->Description,
+    //                'Manhour' => $inscopeData->Manhour,
+    //                'ThirdParty' => $inscopeData->ThirdParty,
+    //                'Module' => $inscopeData->Module,
+    //                'Solution' => $inscopeData->Solution,
+    //                'Assumption' => $inscopeData->Assumption,
+    //                'CreatedById' => $inscopeData->CreatedById,
+    //                'UpdatedById' => $inscopeData->UpdatedById,
+    //                'UserStoryId' => $projectId
+    //             ];
+    //         }
+    //          $saveTask = Task::insert($inscopeArr);
+    //     }
+    //     return $saveTask;
+
         if ($saveUser) {
             $request->session()->flash('success', "<b>{$customerName}</b> successfully converted into projects!");
             return response()->json(['url' => url('projects/projectView')]);
         } else {
             $request->session()->flash('fail', 'Something went wrong, please try again later');
-            return response()->json(['url' => url('opportunity/edit/' . $Id)]);
+            return response()->json(['url' => url('opportunity/edit/' . $CustomerId)]);
         }
 
 
