@@ -79,15 +79,13 @@ class TaskController extends Controller
     {
         $userData = User::Where('Id', '=', session('LoggedUser'))->first();
 
-        $durationInSeconds = (string) $request->TaskDuration * 60 * 60;
-
         $taskName         = $request->TaskName;
         $taskDescription  = $request->TaskDescription;
         $taskStartDate    = $request->TaskStartDate;
         $taskEndDate      = $request->TaskEndDate;
         $actualTaskStartDate    = $request->ActualTaskStartDate;
         $actualTaskEndDate      = $request->ActualTaskEndDate;
-        $taskDuration      = $durationInSeconds;
+        $taskDuration      = $request->Manhour;
 
         $taskUserAssigned = $request->TaskUserAssigned;
         $taskStatus       = $request->TaskStatus;
@@ -101,7 +99,7 @@ class TaskController extends Controller
         $task->EndDate     = $taskEndDate;
         $task->ActualStartDate   = $actualTaskStartDate;
         $task->ActualEndDate     = $actualTaskEndDate;
-        $task->Duration     = $taskDuration;
+        $task->Manhour     = $taskDuration;
 
         $task->UserId      = $taskUserAssigned;
         $task->Status      = $taskStatus;
@@ -171,14 +169,13 @@ class TaskController extends Controller
     function updateTask(Request $request, $Id)
     {
         $task = Task::Where('Id', '=',  $Id)->first();
-        $durationInSeconds = (string) $request->TaskDuration * 60 * 60;
         $taskName         = $request->TaskName;
         $taskDescription  = $request->TaskDescription;
         $taskStartDate    = $request->TaskStartDate;
         $taskEndDate      = $request->TaskEndDate;
         $actualTaskStartDate    = $request->ActualTaskStartDate;
         $actualTaskEndDate      = $request->ActualTaskEndDate;
-        $taskDuration      = $durationInSeconds;
+        $taskDuration      = $request->Manhour;
         $taskUserAssigned = $request->TaskUserAssigned;
         $taskStatus       = $request->TaskStatus;
 
@@ -188,7 +185,7 @@ class TaskController extends Controller
         $task->EndDate     = $taskEndDate;
         $task->ActualStartDate   = $actualTaskStartDate;
         $task->ActualEndDate     = $actualTaskEndDate;
-        $task->Duration     = $taskDuration;
+        $task->Manhour     = $taskDuration;
         $task->UserId      = $taskUserAssigned;
         $task->Status      = $taskStatus;
 

@@ -38,6 +38,41 @@
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0">
             <div class="container-fluid">
                 <div class="row">
+
+                    {{-- FORECASTED VS ACTUAL --}}
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0 font-weight-bold">FORECASTED VS ACTUAL HOURS PER YEAR</h5>
+                            </div>
+                            <div class="card-body scrollableX">
+                                <table id="forecastedVSActualTable" class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Resource</th>
+                                            <th>Designation</th>
+                                            <th class="text-center">Forecasted work hours</th>
+                                            <th class="text-center">Resource Utilization</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($WorkinghoursData as $index=> $WorkinghourData)
+                                        <tr>
+                                            <td>{{ $index+1 }}</td>
+                                            <td>{{ $WorkinghourData['FullName']}}</td>
+                                            <td>{{ $WorkinghourData['DesignationName']}}</td>
+                                            <td class="text-center">{{ $WorkinghourData['forecastedAnnualHours'] }}</td>
+                                            <td class="text-center">{{ $WorkinghourData['TotalSumHours']?  $WorkinghourData['TotalSumHours']:0}}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
                     {{-- SUMMARY OF PROJECT ASSIGNED PER RESOURCE --}}
                     {{-- MAKE IT BY TITLE, FC,TC,BA... --}}
                     <div class="col-md-12">
@@ -98,7 +133,7 @@
                                 <h5 class="mb-0 font-weight-bold">SUMMARY OF MAN HOURS PER RESOURCE</h5>
                             </div>
                             <div class="card-body">
-                                <table class="table table-striped table-hover">
+                                <table id="manhoursPerResourceTable" class="table table-striped table-hover">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -110,13 +145,16 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @foreach ($timekeepingDatas as $index=> $timekeepingData)
                                         <tr>
-                                            <td>1</td>
-                                            <td>Arjay Diangzon</td>
+                                            <td>{{ $index+1 }}</td>
+                                            <td>{{ $timekeepingData->FirstName.' '.$timekeepingData->LastName }}</td>
                                             <td class="text-center">10</td>
-                                            <td class="text-center">4</td>
+                                            <td class="text-center">{{ $timekeepingData->TotalSumHours }}</td>
                                             <td class="text-center">6</td>
                                         </tr>
+                                        @endforeach
+                                        
                                     </tbody>
                                 </table>
                             </div>
@@ -280,9 +318,9 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
-            // ------ START TABLE ------
+            // ------ START PROJECT TABLE ------
             var groupColumn = 2;
-            let dataTable = $('#projectPerResourceTable').DataTable({
+            let projectPerResourceTable = $('#projectPerResourceTable').DataTable({
                 columnDefs: [{ visible: false, targets: groupColumn }],
                 scrollX: true,
                 sorting: [],
@@ -306,7 +344,42 @@
                         });
                 },
             });
-            // ------ END TABLE ------
+            // ------ END PROJECT TABLE ------
+
+            // ------ START RESOURCE TABLE ------
+            let manhoursPerResourceTable = $('#manhoursPerResourceTable').DataTable({
+                scrollX: true,
+                sorting: [],
+                scrollCollapse: true,
+            });
+            // ------ END RESOURCE TABLE ------
+
+            // ------ START ACTUAL VS FORECAST TABLE ------
+            let forecastedVSActualTable = $('#forecastedVSActualTable').DataTable({
+                columnDefs: [{ visible: false, targets: groupColumn }],
+                scrollX: true,
+                sorting: [],
+                scrollCollapse: true,
+                drawCallback: function (settings) {
+                    var api = this.api();
+                    var rows = api.rows({ page: 'current' }).nodes();
+                    var last = null;
+        
+                    api
+                        .column(groupColumn, { page: 'current' })
+                        .data()
+                        .each(function (group, i) {
+                            if (last !== group) {
+                                $(rows)
+                                    .eq(i)
+                                    .before('<tr class="group"><td colspan="100%">' + group + '</td></tr>');
+        
+                                last = group;
+                            }
+                        });
+                },
+            });
+            // ------ END ACTUAL VS FORECAST TABLE ------
 
             // ------ FILTER BUTTON FOR UTILIZATION ------
             $(document).on('click', 'button[name="btnUtilization"]', function() {

@@ -54,25 +54,21 @@ class ProjectController extends Controller
             'users.Title',
             'users.Id',
             DB::raw('(
-                SELECT SUM(
-                CAST(tasks.Duration AS INT)
-                ) As durationinseconds
+                SELECT SUM(tasks.Manhour)
                 FROM tasks
                 LEFT JOIN user_story
                 ON user_story.Id = tasks.UserStoryId
             WHERE users.Id = tasks.UserId AND 
              user_story.ProjectId = \'' . $Id . '\'
-            )'),
+            ) AS TotalManhours'),
             DB::raw('(
-                SELECT SUM(
-                CAST(tasks.TimeCompleted AS INT)
-                ) As timecompleteinsec
+                SELECT SUM(tasks.TimeCompleted)
                 FROM tasks
                 LEFT JOIN user_story
                 ON user_story.Id = tasks.UserStoryId
             WHERE users.Id = tasks.UserId AND 
              user_story.ProjectId = \'' . $Id . '\'
-            )'),
+            ) AS TotalTimeCompleted'),
         )
             ->where('resources.ProjectId', $Id)
             ->leftJoin('users', 'users.Id', '=', 'resources.UserId')

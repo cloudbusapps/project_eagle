@@ -186,21 +186,21 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($taskData as $index => $tasks)
+                                @foreach ($taskData as $index => $task)
                                     <?php
                                     
-                                    $fullname = $tasks->FirstName . ' ' . $tasks->LastName;
+                                    $fullname = $task->FirstName . ' ' . $task->LastName;
                                     $timeCompleted = '----';
-                                    $durationAssgined = '----';
+                                    $durationAssigned = '----';
                                     
-                                    if (!empty($tasks->TimeCompleted)) {
-                                        $timeCompleted = secondsToTime($tasks->TimeCompleted);
+                                    if (!empty($task->TimeCompleted)) {
+                                        $timeCompleted = $task->TimeCompleted;
                                     }
-                                    if (!empty($tasks->Duration)) {
-                                        $durationAssgined = secondsToTime($tasks->Duration);
+                                    if (!empty($task->Manhour)) {
+                                        $durationAssigned = $task->Manhour;
                                     }
                                     
-                                    switch ($tasks->Status) {
+                                    switch ($task->Status) {
                                         case 'Done':
                                             $statusDisplay = '<span class="badge rounded-pill bg-success">Done</span>';
                                             break;
@@ -216,16 +216,16 @@
                                     <tr>
                                         <th scope="row">{{ $index + 1 }}</th>
                                         <td>
-                                            <a href="{{ route('projects.editTask', ['Id' => $tasks->Id]) }}">
-                                                {{ $tasks->Title }}</a>
+                                            <a href="{{ route('projects.editTask', ['Id' => $task->Id]) }}">
+                                                {{ $task->Title }}</a>
                                         </td>
-                                        <td>{{ $tasks->Description }}</td>
-                                        <td>{{ date('d-M-Y', strtotime($tasks->StartDate)) }}</td>
-                                        <td>{{ date('d-M-Y', strtotime($tasks->EndDate)) }}</td>
-                                        <td>{{ $tasks->UserId ? $fullname : '----' }}</td>
+                                        <td>{{ $task->Description }}</td>
+                                        <td>{{ date('d-M-Y', strtotime($task->StartDate)) }}</td>
+                                        <td>{{ date('d-M-Y', strtotime($task->EndDate)) }}</td>
+                                        <td>{{ $task->UserId ? $fullname : '----' }}</td>
                                         <td><?= $statusDisplay ?></td>
 
-                                        <td><?= $durationAssgined ?></td>
+                                        <td><?= $durationAssigned ?></td>
                                         <td><?= $timeCompleted ?></td>
                                     </tr>
                                 @endforeach
