@@ -32,7 +32,7 @@
         $ActualTaskDuration = !empty($taskData) ? (!empty($taskData['TimeCompleted']) ? (int) $taskData['TimeCompleted'] / 60 / 60 : '') : '';
         $UserId = !empty($taskData) ? $taskData['UserId'] ?? '' : '';
         $status = !empty($taskData) ? $taskData['Status'] ?? '' : '';
-        $isEditable = $UserId == Auth::id() ? '' : 'readonly';
+        $isEditable = $UserId == (Auth::id()|| Auth::user()->IsAdmin) ? '' : 'readonly';
     } else {
         return redirect()->back();
     }
@@ -205,7 +205,7 @@
                             <div class="form-footer text-end">
                                 <a href="{{ route('projects.userStoryDetails', ['Id' => $UserStoryId]) }}"
                                     class="btn btn-secondary">Cancel</a>
-                                @if ($UserId == Auth::id() || $UserId === '')
+                                @if ($UserId == Auth::id() || $UserId === '' || Auth::user()->IsAdmin)
                                     <?= $button ?>
                                 @endif
                             </div>

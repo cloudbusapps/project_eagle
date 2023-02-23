@@ -40,37 +40,40 @@
                 <div class="row">
 
                     {{-- FORECASTED VS ACTUAL --}}
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0 font-weight-bold">FORECASTED VS ACTUAL HOURS PER YEAR</h5>
-                            </div>
-                            <div class="card-body scrollableX">
-                                <table id="forecastedVSActualTable" class="table table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Resource</th>
-                                            <th>Designation</th>
-                                            <th class="text-center">Forecasted work hours</th>
-                                            <th class="text-center">Resource Utilization</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($WorkinghoursData as $index=> $WorkinghourData)
-                                        <tr>
-                                            <td>{{ $index+1 }}</td>
-                                            <td>{{ $WorkinghourData['FullName']}}</td>
-                                            <td>{{ $WorkinghourData['DesignationName']}}</td>
-                                            <td class="text-center">{{ $WorkinghourData['forecastedAnnualHours'] }}</td>
-                                            <td class="text-center">{{ $WorkinghourData['TotalSumHours']?  $WorkinghourData['TotalSumHours']:0}}</td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                    @if (isAdminOrHead())
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0 font-weight-bold">FORECASTED VS ACTUAL HOURS PER YEAR</h5>
+                                </div>
+                                <div class="card-body scrollableX">
+                                    <table id="forecastedVSActualTable" class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Resource</th>
+                                                <th>Designation</th>
+                                                <th class="text-center">Forecasted work hours</th>
+                                                <th class="text-center">Resource Utilization</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($WorkinghoursData as $index=> $WorkinghourData)
+                                            <tr>
+                                                <td>{{ $index+1 }}</td>
+                                                <td>{{ $WorkinghourData['FullName']}}</td>
+                                                <td>{{ $WorkinghourData['DesignationName']}}</td>
+                                                <td class="text-center">{{ $WorkinghourData['forecastedAnnualHours'] }}</td>
+                                                <td class="text-center">{{ $WorkinghourData['TotalSumHours']?  $WorkinghourData['TotalSumHours']:0}}</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
+                    
 
 
                     {{-- SUMMARY OF PROJECT ASSIGNED PER RESOURCE --}}
@@ -149,9 +152,9 @@
                                         <tr>
                                             <td>{{ $index+1 }}</td>
                                             <td>{{ $timekeepingData->FirstName.' '.$timekeepingData->LastName }}</td>
-                                            <td class="text-center">10</td>
+                                            <td class="text-center">{{ $timekeepingData->TotalBudgetedHours }}</td>
                                             <td class="text-center">{{ $timekeepingData->TotalSumHours }}</td>
-                                            <td class="text-center">6</td>
+                                            <td class="text-center">{{ $timekeepingData->TotalBudgetedHours - $timekeepingData->TotalSumHours }}</td>
                                         </tr>
                                         @endforeach
                                         
@@ -310,6 +313,7 @@
                 </div>
             </div>
         </div>
+
     </main>
     <script>
         $(document).ready(function() {

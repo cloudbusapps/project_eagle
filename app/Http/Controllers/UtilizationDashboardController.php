@@ -53,6 +53,7 @@ class UtilizationDashboardController extends Controller
                 ->leftJoin('projects','projects.Id','=','resources.ProjectId')
                 ->get(['projects.*','resources.ProjectId']),
                 'users' => DB::table('users')->where('Id',Auth::id())->get(),
+                'timekeepingDatas' => $this->getEmployeeHours(),
             ];
         }
 
@@ -141,7 +142,13 @@ class UtilizationDashboardController extends Controller
     function getEmployeeHours($EmployeeId=''){
         if($EmployeeId==''){
             $timeKeepingData = Timekeeping::select('timekeepings.*','U.FirstName','U.LastName',
-            DB::raw('SUM(timekeepings.TotalHours) as TotalSumHours'),'D.Name AS DesignationName')
+            DB::raw('SUM(timekeepings.TotalHours) as TotalSumHours'),
+            DB::raw('(
+                SELECT SUM(tasks.Manhour)
+                FROM tasks
+            WHERE u.Id = tasks.UserId
+            ) AS TotalBudgetedHours'),
+            'D.Name AS DesignationName')
             ->leftJoin('users as U','U.Id','=','timekeepings.UserId')
             ->leftJoin('designations as D','D.Id','=','U.DesignationId')
             ->groupBy('timekeepings.UserId')
