@@ -30,14 +30,13 @@ return new class extends Migration
             $table->date('EndDate')->nullable(false);
             $table->date('ActualStartDate')->nullable(true);
             $table->date('ActualEndDate')->nullable(true);
-            $table->string('Duration')->nullable(true);
-            $table->string('TimeCompleted')->nullable(true);
+            $table->integer('TimeCompleted')->nullable(true);
+
+            /*
+            
+            */
             $table->string('Status');
             $table->timestamps();
-
-            $table->foreign('CreatedById')->references('Id')->on('users');
-            $table->foreign('UpdatedById')->references('Id')->on('users');
-            $table->foreign('UserStoryId')->references('Id')->on('user_story');
         });
     }
 

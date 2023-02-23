@@ -860,6 +860,7 @@ class CustomerController extends Controller
             'ProjectName' => ['required'],
             'Description' => ['required'],
         ]);
+        
         // dd($request);
         // return;
 
@@ -901,30 +902,35 @@ class CustomerController extends Controller
         $saveUser = Resource::insert($resourceData);
 
         //COPY INSCOPE LIMITATIONS TO TASK TABLE
-    //  $inscopeDatas = CustomerInscope::where('CustomerId', $CustomerId)->get();
-     
-    //     if(isset($inscopeDatas)){
-    //         $inscopeArr = [];
-    //         foreach($inscopeDatas as $inscopeData){
-    //             // WILL TEMPORARY USE USERSTORYID AS PROJECTID BECAUSE USER STORY MODULE IS NOT YET CERTAIN IF WILL CONTINUE TO USE
-    //             $inscopeArr[] = [
-    //                'Title' => $inscopeData->Title,
-    //                'Description' => $inscopeData->Description,
-    //                'Manhour' => $inscopeData->Manhour,
-    //                'ThirdParty' => $inscopeData->ThirdParty,
-    //                'Module' => $inscopeData->Module,
-    //                'Solution' => $inscopeData->Solution,
-    //                'Assumption' => $inscopeData->Assumption,
-    //                'CreatedById' => $inscopeData->CreatedById,
-    //                'UpdatedById' => $inscopeData->UpdatedById,
-    //                'UserStoryId' => $projectId
-    //             ];
-    //         }
-    //          $saveTask = Task::insert($inscopeArr);
-    //     }
-    //     return $saveTask;
+        $inscopeDatas = CustomerInscope::where('customer_inscope_requirements.CustomerId', $CustomerId)
+        ->leftJoin('customer_assigned_consultants AS cac','cac.Id','=','customer_inscope_requirements.UserId')
+        ->leftJoin('users AS u','u.Id','=','cac.UserId')
+        ->get(['customer_inscope_requirements.*','u.FirstName','u.LastName','u.Id as RealUserId']);
+        
+        if(isset($inscopeDatas)){
+            $inscopeArr = [];
+            foreach($inscopeDatas as $inscopeData){
+                // WILL TEMPORARY USE USERSTORYID AS PROJECTID BECAUSE USER STORY MODULE IS NOT YET CERTAIN IF WILL CONTINUE TO USE
+                $inscopeArr[] = [
+                   'Id' => Str::uuid(),
+                   'Title' => $inscopeData->Title,
+                   'Description' => $inscopeData->Description,
+                   'Manhour' => $inscopeData->Manhour,
+                   'ThirdParty' => $inscopeData->ThirdParty,
+                   'Module' => $inscopeData->Module,
+                   'Solution' => $inscopeData->Solution,
+                   'UserId' => $inscopeData->RealUserId,
+                   'Assumption' => $inscopeData->Assumption,
+                   'CreatedById' => $inscopeData->CreatedById,
+                   'UpdatedById' => $inscopeData->UpdatedById,
+                   'UserStoryId' => $projectId,
+                   'Status' => 0
+                ];
+            }
+             $saveTask = Task::insert($inscopeArr);
+        }
 
-        if ($saveUser) {
+        if ($saveUser && $saveTask && $customerData->update()) {
             $request->session()->flash('success', "<b>{$customerName}</b> successfully converted into projects!");
             return response()->json(['url' => url('projects/projectView')]);
         } else {
