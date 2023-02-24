@@ -8,6 +8,10 @@ const PRELOADER = `
 </div>`;
 // ----- END PRELOADER -----
 
+// ----- ASSET URL -----
+const ASSET_URL = $('meta[name=asset-url]').attr('content');
+// ----- END ASSET URL -----
+
 
 // ----- PREVENT REFRESH -----
 window.onbeforeunload = function() {
@@ -25,7 +29,7 @@ function showToast(type = 'success', text = '') {
         new bs5.Toast({
             body: `
             <div class="d-flex gap-3">
-                <img class="rounded-circle" width="30" height="30" src="/assets/img/modal/success.png">
+                <img class="rounded-circle" width="30" height="30" src="${ASSET_URL}assets/img/modal/success.png">
                 <div>
                     <h4 class="mb-0">SUCCESS</h4>
                     <p>
@@ -40,7 +44,7 @@ function showToast(type = 'success', text = '') {
         new bs5.Toast({
             body: `
             <div class="d-flex gap-3">
-                <img class="rounded-circle" width="30" height="30" src="/assets/img/modal/error.png">
+                <img class="rounded-circle" width="30" height="30" src="${ASSET_URL}assets/img/modal/error.png">
                 <div>
                     <h4 class="mb-0">Error</h4>
                     <p>

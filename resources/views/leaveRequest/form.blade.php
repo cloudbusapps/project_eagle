@@ -394,7 +394,7 @@
                         case 'edit':
                             content = `
                             <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                                <img src="/assets/img/modal/update.svg" class="py-1" height="150" width="150">
+                                <img src="${ASSET_URL}assets/img/modal/update.svg" class="py-1" height="150" width="150">
                                 <b class="mt-4">Are you sure you want to update this leave request?</b>
                             </div>`;
                             break;
@@ -402,13 +402,13 @@
                             if (pending) {
                                 content = `
                                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                                    <img src="/assets/img/modal/revise.svg" class="py-3" height="150" width="150">
+                                    <img src="${ASSET_URL}assets/img/modal/revise.svg" class="py-3" height="150" width="150">
                                     <b class="mt-4">Are you sure you want to revise this leave request?</b>
                                 </div>`;
                             } else {
                                 content = `
                                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                                    <img src="${ASSET_URL}assets/img/modal/new.svg" class="py-3" height="150" width="150">
                                     <b class="mt-4">Are you sure you want to add new leave request?</b>
                                 </div>`;
                             }
