@@ -2011,7 +2011,7 @@
                 e.preventDefault();
                 let content = `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                    <img src="${ASSET_URL}assets/img/modal/new.svg" class="py-3" height="150" width="150">
                     <b class="mt-4">Are you sure you want to update the manhours?</b>
                 </div>`;
 
@@ -2073,7 +2073,7 @@
                 e.preventDefault();
                 let content = `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                    <img src="${ASSET_URL}assets/img/modal/new.svg" class="py-3" height="150" width="150">
                     <label>Remarks <code>*</code></label>    
                     <textarea class="form-control" name="reviseRemarks" rows="3" style="resize: none;"></textarea>
                     <b class="mt-4">Are you sure you want to revise the manhours?</b>
@@ -2135,7 +2135,7 @@
                     }
                     let content = `
                     <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                        <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                        <img src="${ASSET_URL}assets/img/modal/new.svg" class="py-3" height="150" width="150">
                         <b class="mt-4">${message}</b>
                     </div>`;
     
@@ -2190,7 +2190,7 @@
                     let message = "Are you sure you want to assign this user to OIC?";
                     let content = `
                     <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                        <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                        <img src="${ASSET_URL}assets/img/modal/new.svg" class="py-3" height="150" width="150">
                         <b class="mt-4">${message}</b>
                     </div>`;
     
@@ -2273,11 +2273,11 @@
                     e.preventDefault();
                          content = todo == 'insert' ? `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                    <img src="${ASSET_URL}assets/img/modal/new.svg" class="py-3" height="150" width="150">
                     <b class="mt-4">Are you sure you want to add new customer?</b>
                 </div>` : `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                    <img src="/assets/img/modal/update.svg" class="py-1" height="150" width="150">
+                    <img src="${ASSET_URL}assets/img/modal/update.svg" class="py-1" height="150" width="150">
                     <b class="mt-4">Are you sure you want to update this customer?</b>
                 </div>`;
                    
@@ -2477,7 +2477,7 @@
                 let message = "Are you sure you want to update resource cost?";
                 let content = `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                    <img src="${ASSET_URL}assets/img/modal/new.svg" class="py-3" height="150" width="150">
                     <b class="mt-4">${message}</b>
                 </div>`;
 
@@ -2546,7 +2546,7 @@
                 e.preventDefault();
                 let content = `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                    <img src="${ASSET_URL}assets/img/modal/new.svg" class="py-3" height="150" width="150">
                     <b class="mt-4">Add project name and description</b>
                     <div class="col-md-12 m-2">
                         <div class="form-floating text-start">
