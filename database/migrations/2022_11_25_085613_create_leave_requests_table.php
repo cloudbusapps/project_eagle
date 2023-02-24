@@ -21,12 +21,16 @@ return new class extends Migration
             $table->decimal('LeaveBalance', 10, 2);
             $table->date('StartDate');
             $table->date('EndDate');
+            $table->integer('IsWholeDay')->default(1); // 0 - No | 1 - Yes
+            $table->time('StartTime')->nullable();
+            $table->time('EndTime')->nullable();
             $table->decimal('LeaveDuration', 10, 2);
             $table->text('Reason');
 
             /*
             Status
-            1 - Pending
+            0 - Pending
+            1 - For Approval
             2 - Approved
             3 - Rejected
             */

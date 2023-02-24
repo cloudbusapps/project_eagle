@@ -35,11 +35,12 @@
 
 
     function isFormPending($ModuleId = 0, $TableId = '') {
-        $data = ModuleFormApprover::select(DB::raw('CASE WHEN SUM("Status") = 1 THEN \'true\' ELSE \'false\' END AS status'))
+        $data = ModuleFormApprover::select(DB::raw('CASE WHEN SUM("Status") = 1 THEN \'true\' ELSE \'false\' END AS status'), DB::raw('COUNT(*) as total'))
             ->where('ModuleId', $ModuleId)
             ->where('TableId', $TableId)
             ->first();
-        return $data ? $data->status == 'true' : false;
+
+        return !$data->total ? true : ($data->status == 'true');
     }
 
     function getFormStatus($ModuleId = 0, $TableId = '') {
