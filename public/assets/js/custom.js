@@ -9,6 +9,16 @@ const PRELOADER = `
 // ----- END PRELOADER -----
 
 
+// ----- PREVENT REFRESH -----
+window.onbeforeunload = function() {
+    if (['add', 'edit'].includes($('main').attr('event'))) {
+        return true; // SAME RESULT
+    }
+    return;
+}
+// ----- END PREVENT REFRESH -----
+
+
 // ----- SHOW TOAST -----
 function showToast(type = 'success', text = '') {
     if (type == 'success') {

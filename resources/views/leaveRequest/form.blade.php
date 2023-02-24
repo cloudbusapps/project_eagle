@@ -4,7 +4,8 @@
 
 <?php
 
-    $DocumentNumber = $LeaveTypeId = $StartDate = $EndDate = $Reason = $Status = null;
+    $DocumentNumber = $LeaveTypeId = $StartDate = $EndDate = $StartTime = $EndTime = $Reason = $Status = null;
+    $IsWholeDay    = 1;
     $LeaveDuration = 1;
     $LeaveBalance  = 0;
     $UserId        = Auth::id();
@@ -49,6 +50,9 @@
         $LeaveTypeId     = $data['LeaveTypeId'];
         $StartDate       = $data['StartDate'];
         $EndDate         = $data['EndDate'];
+        $IsWholeDay      = $data['IsWholeDay'];
+        $StartTime       = $data['StartTime'];
+        $EndTime         = $data['EndTime'];
         $Reason          = $data['Reason'];
         $Status          = $data['Status'];
         $LeaveDuration   = $data['LeaveDuration'];
@@ -59,15 +63,15 @@
     if ($currentApprover == Auth::id() && isEditAllowed($MODULE_ID)) {
         $button = '
         <div class="d-flex justify-content-end" style="gap: 5px;">
-            <form action="'. route('leaveRequest.approve', ['Id' => $data->Id, 'UserId' => Auth::id()]) .'" method="POST">
-                '. csrf_field() .'
-                <input type="hidden" name="Remarks" id="approveRemarks">
-                <button type="submit" class="btn btn-success btnApprove">Approve</button>    
-            </form>
             <form action="'. route('leaveRequest.reject', ['Id' => $data->Id, 'UserId' => Auth::id()]) .'" method="POST">
                 '. csrf_field() .'
                 <input type="hidden" name="Remarks" id="rejectRemarks">
                 <button type="submit" class="btn btn-danger btnReject">Reject</button>    
+            </form>
+            <form action="'. route('leaveRequest.approve', ['Id' => $data->Id, 'UserId' => Auth::id()]) .'" method="POST">
+                '. csrf_field() .'
+                <input type="hidden" name="Remarks" id="approveRemarks">
+                <button type="submit" class="btn btn-success btnApprove">Approve</button>    
             </form>
         </div>';
     }
@@ -75,8 +79,10 @@
 ?>
 
 <main id="main" class="main"
+    leaveTypeId="{{ $LeaveTypeId }}"
     sickLeaveId="{{ config('constant.ID.LEAVE_TYPES.SICK_LEAVE') }}"
-    vacationLeaveId="{{ config('constant.ID.LEAVE_TYPES.VACATION_LEAVE') }}">
+    vacationLeaveId="{{ config('constant.ID.LEAVE_TYPES.VACATION_LEAVE') }}"
+    event="{{ $event }}">
 
     <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
         <div class="container-fluid">
@@ -120,6 +126,7 @@
                         method="POST" 
                         enctype="multipart/form-data" 
                         todo="{{ $event }}" 
+                        pending="{{ $pending }}"
                         id="formLeaveRequest">
                     @endif
 
@@ -128,8 +135,8 @@
 
                         <input type="hidden" name="UserId" value="{{ $UserId }}">
                         <input type="hidden" name="LeaveBalance" value="{{ $LeaveBalance }}">
-                        <input type="hidden" name="StartDate" value="{{ $StartDate }}">
-                        <input type="hidden" name="EndDate" value="{{ $EndDate }}">
+                        <input type="hidden" name="StartDate" value="{{ $StartDate ?? date('Y-m-d') }}">
+                        <input type="hidden" name="EndDate" value="{{ $EndDate ?? date('Y-m-d') }}">
                         <input type="hidden" name="LeaveDuration" value="{{ $LeaveDuration }}">
 
                         <div class="card">
@@ -183,13 +190,40 @@
                                 <div class="row my-3">
                                     <label for="Date" class="col-sm-2">Date <?= $requiredLabel ?></label>
                                     <div class="col-sm-10">
-                                        <input type="text" 
-                                            class="form-control" 
-                                            name="Date" 
-                                            cdaterangepicker
-                                            required
-                                            {{ $disabledField }}
-                                            value="{{ date('F d, Y', strtotime($StartDate ?? now())).' - '.date('F d, Y', strtotime($EndDate ?? now())) }}">
+                                        <div>
+                                            <input type="text" 
+                                                class="form-control" 
+                                                name="Date" 
+                                                cdaterangepicker
+                                                required
+                                                {{ $disabledField }}
+                                                value="{{ date('F d, Y', strtotime($StartDate ?? now())).' - '.date('F d, Y', strtotime($EndDate ?? now())) }}">
+                                        </div>
+                                        <div class="mt-2 d-flex justify-content-between align-items-center">
+                                            <label class="align-items-start">
+                                                <input type="checkbox" name="IsWholeDay" id="IsWholeDay" {{ $IsWholeDay == 1 ? 'checked' : '' }}
+                                                    onchange="
+                                                    if (this.checked) {
+                                                        document.querySelector('[name=StartTime]').setAttribute('disabled', true);
+                                                        document.querySelector('[name=EndTime]').setAttribute('disabled', true);
+                                                        document.querySelector('[name=StartTime]').removeAttribute('required');
+                                                        document.querySelector('[name=EndTime]').removeAttribute('required');
+                                                        document.querySelector('[name=StartTime]').value = '';
+                                                        document.querySelector('[name=EndTime]').value = '';
+                                                    } else {
+                                                        document.querySelector('[name=StartTime]').removeAttribute('disabled');
+                                                        document.querySelector('[name=EndTime]').removeAttribute('disabled');
+                                                        document.querySelector('[name=StartTime]').setAttribute('required', true);
+                                                        document.querySelector('[name=EndTime]').setAttribute('required', true);
+                                                    }"
+                                                    {{ $LeaveDuration > 1 ? 'disabled' : $disabledField }}>
+                                                All day
+                                            </label>
+                                            <div class="d-flex justify-content-around gap-1" style="width: 80%;">
+                                                <input type="time" name="StartTime" id="StartTime" value="{{ $StartTime }}" class="form-control" {{ !$disabledField ? ($IsWholeDay == 1 ? 'disabled' : '') : ' disabled' }}>
+                                                <input type="time" name="EndTime" id="EndTime" value="{{ $EndTime }}" class="form-control" {{ !$disabledField ? ($IsWholeDay == 1 ? 'disabled' : '') : ' disabled' }}>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row my-3">
@@ -207,33 +241,35 @@
                                 <div class="row my-3">
                                     <label for="File" class="col-sm-2">Attachment</label>
                                     <div class="col-sm-10">
-
-                                        @if ($event != 'view')
-                                        <input type="file" class="form-control" id="File" name="File[]" placeholder="Attachment" multiple>
-                                        @endif
-
-                                        <div class="row mt-1" id="displayFile">
-                                        @if (isset($files) && count($files))
-                                        @foreach ($files as $file)
-                                            <div class="col-sm-6 col-md-4 parent" filename="{{ $file['File'] }}">
-                                                <div class="p-2 border border-1 rounded">
-                                                    <div class="row">
-                                                        <img src="/uploads/icons/{{ getFileIcon($file['File']) }}" class="col-sm-3">
-                                                        <div class="col-md-9">
-                                                            <div class="d-flex justify-content-between">
-                                                                <a href="{{ asset('uploads/leaveRequest/' . $file['File']) }}"
-                                                                    class="text-black fw-bold text-truncate display-file"
-                                                                    target="_blank">{{ $file['File'] }}</a>
+                                        @if (!in_array($event, ['view', 'revise']))
+                                            <input type="file" class="form-control" id="File" name="File[]" placeholder="Attachment" multiple>
+                                            <div class="row mt-1" id="displayFile"></div>
+                                        @else
+                                            <div class="row mt-1" id="displayFile">
+                                                @if (isset($files) && count($files))
+                                                @foreach ($files as $file)
+                                                    <div class="col-sm-6 col-md-4 parent" filename="{{ $file['File'] }}">
+                                                        <div class="p-2 border border-1 rounded">
+                                                            <div class="row">
+                                                                <img src="/uploads/icons/{{ getFileIcon($file['File']) }}" class="col-sm-3">
+                                                                <div class="col-md-9">
+                                                                    <div class="d-flex justify-content-between">
+                                                                        <a href="{{ asset('uploads/leaveRequest/' . $file['File']) }}"
+                                                                            class="text-black fw-bold text-truncate display-file"
+                                                                            target="_blank">{{ $file['File'] }}</a>
+                                                                    </div>
+                                                                    <span style="font-size:14px" class="text-muted">
+                                                                        {{ date('F d, Y', strtotime($file->created_at)) }}</span>
+                                                                </div>
                                                             </div>
-                                                            <span style="font-size:14px" class="text-muted">
-                                                                {{ date('F d, Y', strtotime($file->created_at)) }}</span>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                @endforeach
+                                                @else
+                                                    <div class="text-muted"><i>No attachments</i></div>
+                                                @endif
                                             </div>
-                                        @endforeach
                                         @endif
-                                        </div>
 
                                     </div>
                                 </div>
@@ -275,6 +311,7 @@
     $(document).ready(function() {
 
         // ----- GLOBAL VARIABLES -----
+        let LEAVE_TYPE_ID     = $('#main').attr('leaveTypeId');
         let SICK_LEAVE_ID     = $('#main').attr('sickLeaveId');
         let VACATION_LEAVE_ID = $('#main').attr('vacationLeaveId');
         // ----- END GLOBAL VARIABLES -----
@@ -339,6 +376,7 @@
         $(document).on('submit', '#formLeaveRequest', function(e) {
             let isValidated = $(this).attr('validated') == "true";
             let todo        = $(this).attr('todo');
+            let pending     = $(this).attr('pending');
 
             if (!isValidated) {
                 e.preventDefault();
@@ -353,13 +391,6 @@
                 } else {
                     let content = '';
                     switch (todo) {
-                        case 'revise':
-                            content = `
-                            <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                                <img src="/assets/img/modal/revise.svg" class="py-3" height="150" width="150">
-                                <b class="mt-4">Are you sure you want to revise this leave request?</b>
-                            </div>`;
-                            break;
                         case 'edit':
                             content = `
                             <div class="d-flex justify-content-center align-items-center flex-column text-center">
@@ -368,11 +399,19 @@
                             </div>`;
                             break;
                         default:
-                            content = `
-                            <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                                <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
-                                <b class="mt-4">Are you sure you want to add new leave request?</b>
-                            </div>`;
+                            if (pending) {
+                                content = `
+                                <div class="d-flex justify-content-center align-items-center flex-column text-center">
+                                    <img src="/assets/img/modal/revise.svg" class="py-3" height="150" width="150">
+                                    <b class="mt-4">Are you sure you want to revise this leave request?</b>
+                                </div>`;
+                            } else {
+                                content = `
+                                <div class="d-flex justify-content-center align-items-center flex-column text-center">
+                                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                                    <b class="mt-4">Are you sure you want to add new leave request?</b>
+                                </div>`;
+                            }
                     }
         
                     let confirmation = $.confirm({
@@ -386,6 +425,7 @@
                                 btnClass: 'btn-blue',
                                 keys: ['enter'],
                                 action: function(){
+                                    $('main').attr('event', 'saving');
                                     $('#formLeaveRequest').attr('validated', 'true').submit();
             
                                     confirmation.buttons.yes.setText(`<span class="spinner-border spinner-border-sm"></span> Please wait...`);
@@ -405,7 +445,15 @@
 
 
         // ----- INIT DATERANGEPICKER -----
-        function cInitDateRangePicker(minDate = null, maxDate = null) {
+        function cInitDateRangePicker(minDate = null, maxDate = null, firstLoad = true) {
+            if (firstLoad) {
+                if (LEAVE_TYPE_ID == VACATION_LEAVE_ID) {
+                    minDate = moment().add(14, 'days');
+                } else {
+                    maxDate = moment();
+                }
+            }
+
             $(`[cdaterangepicker]`).daterangepicker({
                 opens: 'left',
                 // drops: 'up',
@@ -420,6 +468,14 @@
                 let endDate   = end.format('YYYY-MM-DD');
                 let duration  = moment.duration(moment(endDate).diff(moment(startDate))).asDays() + 1;
                 
+                if (duration > 1) {
+                    $(`[name="IsWholeDay"]`).prop('checked', true);
+                    $(`[name="StartTime"], [name="EndTime"]`).val('');
+                    $(`[name="IsWholeDay"], [name="StartTime"], [name="EndTime"]`).prop('disabled', true);
+                } else {
+                    $(`[name="IsWholeDay"]`).removeAttr('disabled');
+                }
+
                 $(`[name="StartDate"]`).val(startDate);
                 $(`[name="EndDate"]`).val(endDate);
                 $(`[name="LeaveDuration"]`).val(duration);
@@ -427,6 +483,24 @@
         }
         cInitDateRangePicker();
         // ----- END INIT DATERANGEPICKER -----
+
+
+        // ----- CHANGE TIME -----
+        $(document).on('change', `[type=time]`, function() {
+            let date = $(`[name=StartDate]`).val();
+            let startTime = $(`[name=StartTime]`).val();
+            let endTime = $(`[name=EndTime]`).val();
+            let isWholeDay = $(`[name=IsWholeDay]`).prop('checked');
+            if (!isWholeDay && startTime && endTime) {
+                let startDate = moment(date+' '+startTime).format('YYYY-MM-DD HH:mm:ss');
+                let endDate   = moment(date+' '+endTime).format('YYYY-MM-DD HH:mm:ss');
+                let duration  = moment.duration(moment(endDate).diff(moment(startDate))).asHours();
+                    duration  = duration > 0 ? (duration / 8) : 0;
+                $(`[name="LeaveDuration"]`).val(duration);
+                console.log(duration);
+            }
+        })
+        // ----- END CHANGE TIME -----
 
 
         // ----- CHANGE LEAVE TYPE -----
@@ -445,11 +519,14 @@
                 minDate = null;
             }
 
-            cInitDateRangePicker(minDate, maxDate);
+            cInitDateRangePicker(minDate, maxDate, false);
             $(`[name="LeaveBalance"]`).val(balance);
             $(`[name="StartDate"]`).val($('[name=Date]').data('daterangepicker').startDate.format('YYYY-MM-DD'));
             $(`[name="EndDate"]`).val($('[name=Date]').data('daterangepicker').endDate.format('YYYY-MM-DD'));
             $(`[name="LeaveDuration"]`).val(1);
+
+            $(`[name="IsWholeDay"]`).prop('checked', true).removeAttr('disabled');
+            $(`[name="StartTime"], [name="EndTime"]`).prop('disabled', true).val('');
         })
         // ----- END CHANGE LEAVE TYPE -----
 

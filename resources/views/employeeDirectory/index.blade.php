@@ -2,6 +2,7 @@
 
 @section('content')
 
+
 <main id="main" class="main">
 
     <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
@@ -103,7 +104,7 @@
                         <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
                             <img src="{{ asset('uploads/profile/' . $user['Profile'] ?? 'default.png') }}" alt="Profile" class="rounded" width="150" height="150">
                             <div class="my-3 d-flex flex-column justify-content-center text-center">
-                                <a href="{{ route('user.viewProfile', ['Id' => $user['Id']]) }}" class="btnViewProfile">
+                                <a href="{{ route('user.viewProfile', ['Id' => $user['Id']]) }}" class="btnViewProfile {{ $user->Status==1 ? 'text-primary':'text-danger' }}">
                                     <h5>{{ $user['full_name'] }}</h5>
                                 </a>
                                 <small class="mb-0 fw-bold">{{ ($user['EmployeeNumber'] ?? '-') . ' | ' . ($user['designation'] ?? '-') }}</small>

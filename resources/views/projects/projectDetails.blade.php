@@ -185,12 +185,12 @@
                                             </a>
                                         </td>
                                         <td>{{ $user->Title ? $user->Title : '----' }}</td>
-                                        <td>{{ $user->durationinseconds ? secondsToTime($user->durationinseconds) : 0 }}
+                                        <td>{{ $user->TotalManhours ? $user->TotalManhours : 0 }}
                                         </td>
-                                        <td>{{ $user->timecompleteinsec ? secondsToTime($user->timecompleteinsec) : 0 }}
+                                        <td>{{ $user->TotalTimeCompleted ? $user->TotalTimeCompleted : 0 }}
                                         </td>
 
-                                        <td>{{ $user->timecompleteinsec ? availableTime($user->durationinseconds, $user->timecompleteinsec) : 0 }}
+                                        <td>{{ $user->TotalTimeCompleted ? availableTime($user->TotalManhours, $user->TotalTimeCompleted) : 0 }}
                                         </td>
                                     </tr>
                                 @endforeach

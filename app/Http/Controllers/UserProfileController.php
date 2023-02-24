@@ -932,55 +932,66 @@ class UserProfileController extends Controller
 
     // ----- START STATUS CHANGE -----
     public function editProfileStatus($Id) {
-        
-        $user= User::find($Id);
-        $userStatus = $user->Status;
-
-        $modalBody ='';
-        $actionButton ='';
-
-        if($userStatus==1){
-            $modalBody ='Deactivate this Account?';
-            $actionButton ='<button type="submit" class="btn btn-danger">Deactivate</button>';
+        if(Auth::user()->IsAdmin==1){
+            $user= User::find($Id);
+            $userStatus = $user->Status;
+    
+            $modalBody ='';
+            $actionButton ='';
+    
+            if($userStatus==1){
+                $modalBody ='Deactivate this Account?';
+                $actionButton ='<button type="submit" class="btn btn-danger">Deactivate</button>';
+            } else{
+                $modalBody ='Activate this Account?';
+                $actionButton ='<button type="submit" class="btn btn-success">Activate</button>';
+            }
+    
+            $html = '
+            <form method="POST" action="'. route('user.updateStatus', ['Id' => $Id]) .'">
+                '. csrf_field() .'
+                '.$modalBody.'
+                <div class="modal-footer mt-3 pb-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    '.$actionButton.'
+                </div>
+            </form>';
+    
+            return $html;
         } else{
-            $modalBody ='Activate this Account?';
-            $actionButton ='<button type="submit" class="btn btn-success">Activate</button>';
+            return $html = "<h6 class='text-center'>You don't have the right permission to execute this action.</h6>";
         }
-
-        $html = '
-        <form method="POST" action="'. route('user.updateStatus', ['Id' => $Id]) .'">
-            '. csrf_field() .'
-            '.$modalBody.'
-            <div class="modal-footer mt-3 pb-0">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                '.$actionButton.'
-            </div>
-        </form>';
-
-        return $html;
+        
     }
 
     public function updateProfileStatus($Id){
-        $user= User::find($Id);
-        $FullName= $user->FirstName.' '.$user->LastName;
-        $newStatus = $user->Status == 1 ? 0 : 1;
-        $user->Status = $newStatus;
-
-        $statusMessage = $newStatus == 1 ? 'activated':'deactivated';
-        $user->disableLogging();
-        if($user->update()){
-            $AdminFullName = Auth::user()->FirstName.' '.Auth::user()->LastName;
-           
-            activity()->log("{$AdminFullName} {$statusMessage} {$user->FirstName} {$user->LastName}'s status");
-            return redirect()
-            ->back()
-            ->with('card', 'Leave')
-            ->with('success', "{$FullName} successfully {$statusMessage}");
+        if(Auth::user()->IsAdmin==1){
+            $user= User::find($Id);
+            $FullName= $user->FirstName.' '.$user->LastName;
+            $newStatus = $user->Status == 1 ? 0 : 1;
+            $user->Status = $newStatus;
+    
+            $statusMessage = $newStatus == 1 ? 'activated':'deactivated';
+            $user->disableLogging();
+            if($user->update()){
+                $AdminFullName = Auth::user()->FirstName.' '.Auth::user()->LastName;
+               
+                activity()->log("{$AdminFullName} {$statusMessage} {$user->FirstName} {$user->LastName}'s status");
+                return redirect()
+                ->back()
+                ->with('card', 'Leave')
+                ->with('success', "{$FullName} successfully {$statusMessage}");
+            } else{
+                return redirect()
+                ->back()
+                ->with('fail', "There's an error occured. Please try again later...");
+            }
         } else{
             return redirect()
-            ->back()
-            ->with('fail', "There's an error occured. Please try again later...");
+                ->back()
+                ->with('fail', "You don't have the right permission to execute this action.");
         }
+        
     }
     // ----- END STATUS CHANGE -----
 
