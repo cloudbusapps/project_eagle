@@ -191,7 +191,7 @@
                                                 <div class="d-flex btnViewNotification"
                                                     style="cursor: pointer;"
                                                     onclick="viewNotification('{{ $notification->id }}', '{{ $data->Link ?? '#' }}')">
-                                                    <img src="{{ $data->Icon ?? '/assets/img/icons/default.png' }}" height="30" width="30">
+                                                    <img src="{{ asset($data->Icon ?? 'assets/img/icons/default.png') }}" height="30" width="30">
                                                     <div class="flex-fill ms-3">
                                                         <div class="mb-0">
                                                           <?= $data->Description ?>

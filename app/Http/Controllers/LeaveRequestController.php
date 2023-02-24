@@ -158,7 +158,7 @@ class LeaveRequestController extends Controller
                     $Title       = "Leave";
                     $Description = "<b>".$data->DocumentNumber."</b> - ".$data->FirstName.' '.$data->LastName." is asking for your approval.";
                     $Link        = route('leaveRequest.view', ['Id' => $Id]);
-                    $Icon        = '/assets/img/icons/for-approval.png';
+                    $Icon        = 'assets/img/icons/for-approval.png';
 
                     // Mail::to($email)->send(new LeaveRequestMail($data, $approver));
                     Notification::sendNow($approver, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
@@ -172,10 +172,10 @@ class LeaveRequestController extends Controller
 
                 if ($Status == 2) { // APPPROVED
                     $Description = "<b>".$data->DocumentNumber."</b> - Your leave has been approved.";
-                    $Icon        = '/assets/img/icons/approved.png';
+                    $Icon        = 'assets/img/icons/approved.png';
                 } else if ($Status == 3) {
                     $Description = "<b>".$data->DocumentNumber."</b> - Your leave has been rejected.";
-                    $Icon        = '/assets/img/icons/rejected.png';
+                    $Icon        = 'assets/img/icons/rejected.png';
                 }
 
                 // Mail::to($email)->send(new LeaveRequestMail($data, $user));
