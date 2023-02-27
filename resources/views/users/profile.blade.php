@@ -817,7 +817,7 @@ if(Auth::user()->IsAdmin==1){
 
             const content=`
         <div class="d-flex justify-content-center align-items-center flex-column text-center">
-            <img src="/assets/img/modal/update.svg" class="py-1" height="150" width="150">
+            <img src="${ASSET_URL}assets/img/modal/update.svg" class="py-1" height="150" width="150">
             <b class="mt-4">Are you sure you want to update this user's skill?</b>
         </div>`;
         
@@ -1011,7 +1011,7 @@ if(Auth::user()->IsAdmin==1){
             e.preventDefault();
             const content=`
         <div class="d-flex justify-content-center align-items-center flex-column text-center">
-            <img src="/assets/img/modal/update.svg" class="py-1" height="150" width="150">
+            <img src="${ASSET_URL}assets/img/modal/update.svg" class="py-1" height="150" width="150">
             <b class="mt-4">Are you sure you want to update this user's leave balance?</b>
         </div>`;
         

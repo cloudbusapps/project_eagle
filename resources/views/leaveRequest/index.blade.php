@@ -188,47 +188,43 @@
 
                         {{-- LOGS HISTORY --}}
                         <div class="tab-pane fade {{ in_array(Session::get('tab'), ['LeaveHistory']) ? 'show active' : '' }}" id="leave-history" role="tabpanel">
-                            <div class="card">
-                                <div style="max-height:500px" class="card-body container overflow-auto">
-                                        @if ($leavesHistory && count($leavesHistory))
-                                            @foreach ($leavesHistory as $leaveHistory)
-                                            <?php
-                                            // $attributeProperty = json_decode($leaveHistory['properties'],true)['attributes'];
-                                            ?>
-                                            <div class="row">
-                                                <div class="col">
-                                                    <ul class="list-group">
-                                                        <li class="list-group-item">
-                                                            <div class=" d-flex justify-content-between align-items-center">
-                                                                <span>{{ $leaveHistory['description'] }}</span>
-                                                                <span>{{ date('F d, Y h:i A', strtotime($leaveHistory['created_at'])) }}</span>
-                                                            </div>
-                                                            @if (count($leaveHistory['properties']))
-                                                            <ul>
-                                                                @foreach($leaveHistory['properties'] as $leaveProperties)
-                                                                {{-- <li>{{ dd($leaveProperties) }}</li> --}}
-                                                                    @if ($leaveProperties)
-                                                                        @if(is_array($leaveProperties['data']))
-                                                                        @foreach (  $leaveProperties['data'] as $leavePropertiesArray)
-                                                                            <li>{{ $leavePropertiesArray['Credit'] }}</li>
-                                                                        @endforeach
-                                                                        @else
-                                                                        <li>{{ $leaveProperties['data'] }}</li>
-                                                                        @endif
-                                                                    @endif
-                                                                @endforeach
-                                                            </ul>
-                                                            @endif
-                                                        </li>
-                                                    </ul>
+                            @if ($leavesHistory && count($leavesHistory))
+                                @foreach ($leavesHistory as $leaveHistory)
+                                <?php
+                                // $attributeProperty = json_decode($leaveHistory['properties'],true)['attributes'];
+                                ?>
+                                <div class="row" style="max-height:500px" class="card-body container overflow-auto">
+                                    <div class="col">
+                                        <ul class="list-group">
+                                            <li class="list-group-item">
+                                                <div class=" d-flex justify-content-between align-items-center">
+                                                    <span>{{ $leaveHistory['description'] }}</span>
+                                                    <span>{{ date('F d, Y h:i A', strtotime($leaveHistory['created_at'])) }}</span>
                                                 </div>
-                                            </div>
-                                            @endforeach
-                                        @else
-                                        <h6 class="text-center">No History Logs</h6>
-                                        @endif
+                                                @if (count($leaveHistory['properties']))
+                                                <ul>
+                                                    @foreach($leaveHistory['properties'] as $leaveProperties)
+                                                    {{-- <li>{{ dd($leaveProperties) }}</li> --}}
+                                                        @if ($leaveProperties)
+                                                            @if(is_array($leaveProperties['data']))
+                                                            @foreach (  $leaveProperties['data'] as $leavePropertiesArray)
+                                                                <li>{{ $leavePropertiesArray['Credit'] }}</li>
+                                                            @endforeach
+                                                            @else
+                                                            <li>{{ $leaveProperties['data'] }}</li>
+                                                            @endif
+                                                        @endif
+                                                    @endforeach
+                                                </ul>
+                                                @endif
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
+                                @endforeach
+                            @else
+                            <h6 class="text-center">No History Logs</h6>
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -21,7 +21,7 @@
     $TrailheadTraining = config('constant.ID.PROJECTS.TRAILHEAD_AND_TRAINING');
 ?>
 
-<main id="main" class="main" projects="{{ $projects }}" adminTask="{{ $AdminTask }}" trailheadTraining="{{ $TrailheadTraining }}" others="{{ $Others }}">
+<main id="main" class="main" projects="{{ $projects }}" adminTask="{{ $AdminTask }}" trailheadTraining="{{ $TrailheadTraining }}" others="{{ $Others }}" event='edit'>
 
     <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
         <div class="container-fluid">
@@ -378,11 +378,11 @@
 
                 let content = todo == 'insert' ? `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                    <img src="${ASSET_URL}assets/img/modal/new.svg" class="py-3" height="150" width="150">
                     <b class="mt-4">Are you sure you want to add new timekeeping?</b>
                 </div>` : `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                    <img src="/assets/img/modal/update.svg" class="py-1" height="150" width="150">
+                    <img src="${ASSET_URL}assets/img/modal/update.svg" class="py-1" height="150" width="150">
                     <b class="mt-4">Are you sure you want to update this timekeeping?</b>
                 </div>`;
     
@@ -397,6 +397,7 @@
                             btnClass: 'btn-blue',
                             keys: ['enter'],
                             action: function(){
+                                $('main').attr('event', 'saving');
                                 $('#formTimekeeping').attr('validated', 'true').submit();
         
                                 confirmation.buttons.yes.setText(`<span class="spinner-border spinner-border-sm"></span> Please wait...`);
