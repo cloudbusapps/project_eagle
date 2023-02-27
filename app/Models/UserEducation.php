@@ -59,7 +59,8 @@ class UserEducation extends Model
                 $userFullName = $user->FirstName.' '.$user->LastName;
                 $activity->description = "{$FullName} {$eventName} {$userFullName}'s education <b>{$DegreeTitle}</b>";
             } else{
-                $activity->description = "{$FullName} {$eventName} education <b>{$DegreeTitle}</b>";
+                $point = $activity->subject->Gender == 'Female' ? 'her' : 'his';
+                $activity->description = "{$FullName} {$eventName} {$point} education <b>{$DegreeTitle}</b>";
             }
 
 

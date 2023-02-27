@@ -56,7 +56,8 @@ class UserAward extends Model
                 $userFullName = $user->FirstName.' '.$user->LastName;
                 $activity->description = "{$FullName} {$eventName} {$userFullName}'s award <b>{$Title}</b>";
             } else{
-                $activity->description = "{$FullName} {$eventName} award <b>{$Title}</b>";
+                $point = $activity->subject->Gender == 'Female' ? 'her' : 'his';
+                $activity->description = "{$FullName} {$eventName} {$point} award <b>{$Title}</b>";
             }
             
         }

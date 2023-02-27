@@ -16,6 +16,7 @@
         font-weight: bold !important;
     }
 </style>
+
     <main id="main" class="main">
         <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
             <div class="container-fluid">
@@ -44,8 +45,13 @@
                         <div class="col-md-12 mb-3">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5 class="mb-0 font-weight-bold">FORECASTED VS ACTUAL HOURS PER YEAR</h5>
+                                    <h5 class="mb-0 font-weight-bold text-uppercase">FORECASTED VS ACTUAL HOURS THIS YEAR</h5>
+                                        <input type="text"
+                                        name="forecastVSActualHours"
+                                        style="width:200px"
+                                        autocomplete="off">
                                 </div>
+                                
                                 <div class="card-body scrollableX">
                                     <table id="forecastedVSActualTable" class="table table-striped table-hover">
                                         <thead>
@@ -415,7 +421,40 @@
                     }, 100);
                 });
             // END FILTER TABLE
+
+        // BELOW ARE FILTERING FUNCTION
+        // ----- INIT DATERANGEPICKER -----
+        // DEFAULT VALUE IS CURRENT YEAR
+        var startOfYear = moment().startOf('year').format('MM/DD/YYYY');
+        var endOfYear = moment().endOf('year').format('MM/DD/YYYY');
+
+        $(`input[name="forecastVSActualHours"]`).daterangepicker({
+            startDate: startOfYear,
+            endDate: endOfYear,
+            ranges: {
+            'Today': [moment(), moment()],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            'This Year': [startOfYear,endOfYear]
+            }
+        },function(start, end, label){
+            // CHANGE TITLE BASED ON LABEL SELECTED
+            let newTitle = `FORECASTED VS ACTUAL HOURS ${label}`;
+            $('input[name="forecastVSActualHours"]').closest('.card-header').find('h5').text(newTitle);
+
+
+            // SEND DATA TO CONTROLLER
+            
+
+
+            
+        });
+
+        // ----- END INIT DATERANGEPICKER -----
+
         })
-       
+        // END OF DOCUMENT
     </script>
 @endsection

@@ -58,8 +58,8 @@ class UserCertification extends Model
             $userFullName = $user->FirstName.' '.$user->LastName;
             $activity->description = "{$FullName} {$eventName} {$userFullName}'s certification <b>{$Code}</b>";
         } else{
-            
-            $activity->description = "{$FullName} {$eventName} certification <b>{$Code}</b>";
+            $point = $activity->subject->Gender == 'Female' ? 'her' : 'his';
+            $activity->description = "{$FullName} {$eventName} {$point} certification <b>{$Code}</b>";
         }
     }
 }

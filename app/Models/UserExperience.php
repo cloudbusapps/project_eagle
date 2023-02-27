@@ -53,6 +53,7 @@ class UserExperience extends Model
         if (!empty($activity->causer)) {
             $JobTitle = $activity->subject->JobTitle;
             $FullName = $activity->causer->FirstName . ' ' . $activity->causer->LastName;
+            
 
 
             if($activity->causer->IsAdmin==1){
@@ -60,7 +61,8 @@ class UserExperience extends Model
                 $userFullName = $user->FirstName.' '.$user->LastName;
                 $activity->description = "{$FullName} {$eventName} {$userFullName}'s experience <b>{$JobTitle}</b>";
             } else{
-                $activity->description = "{$FullName} {$eventName} experience <b>{$JobTitle}</b>";
+                $point = $activity->subject->Gender == 'Female' ? 'her' : 'his';
+                $activity->description = "{$FullName} {$eventName} {$point} experience <b>{$JobTitle}</b>";
             }
         }
     }

@@ -488,7 +488,7 @@ if(Auth::user()->IsAdmin==1){
                             </a>
                             @endif
                         </div>
-                        <div class="card-body">
+                        <div style="max-height:450px; overflow-x:auto" class="card-body">
                             <table class="table table-bordered table-hover my-2" id="tableLeaveBalance">
                                 <thead>
                                     <tr>
@@ -978,6 +978,7 @@ if(Auth::user()->IsAdmin==1){
             let Id = $(this).attr('id');
             $('#custom-modal .modal-dialog').removeClass('modal-lg').addClass('modal-md');
             $('#custom-modal .modal-title').text('Edit Leave Balance');
+            $('#custom-modal .modal-body').css({"maxHeight":"80vh","overflow-x":"auto"});
             $('#custom-modal .modal-body').html(PRELOADER);
             $('#custom-modal').modal('show');
 
