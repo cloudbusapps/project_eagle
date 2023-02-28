@@ -53,7 +53,7 @@ class UtilizationDashboardController extends Controller
                 ->leftJoin('projects','projects.Id','=','resources.ProjectId')
                 ->get(['projects.*','resources.ProjectId']),
                 'users' => DB::table('users')->where('Id',Auth::id())->get(),
-                'timekeepingDatas' => $this->getEmployeeHours(),
+                'timekeepingDatas' => $this->getEmployeeHours(Auth::id()),
             ];
         }
 
@@ -61,6 +61,11 @@ class UtilizationDashboardController extends Controller
     }
 
     // HELPERS FOR UTILIZATION DASHBOARD CONTROLLER
+
+    // DATA FOR DATATABLE
+    public function filterDataByDate(Request $request){
+        return $this->WorkinghoursData($request->startDate,$request->endDate);
+    }
 
     public function getUserProject($userType=''){
         if($userType==='admin'){
@@ -103,23 +108,41 @@ class UtilizationDashboardController extends Controller
 
     }
 
-    function WorkinghoursData(){
-        $TotalLeaveHoursPerYear = 120;
-        $CompanySetting = CompanySetting::select('AnnualWorkingHours')->first();
-        // $forecastedAnnualHours = $CompanySetting->AnnualWorkingHours - $TotalLeaveHoursPerYear;
+    function WorkinghoursData($startDate='',$endDate=''){
+        if($startDate!=='' && $endDate!==''){
 
-        $users = User::where('IsAdmin',false)->orderBy('DesignationId')
-        ->leftJoin('designations','designations.Id','=','users.DesignationId')
-        ->leftJoin('timekeepings','timekeepings.UserId','=','users.Id')
-        // ->leftJoin('leave_requests','leave_requests.UserId','=','users.Id')
-        ->leftJoin('leave_requests', function($join){
-            $join->on('leave_requests.UserId', '=', 'users.Id');
-            $join->where('leave_requests.Status','=',2);
-        })
-        ->where('users.Status',1)
-        ->groupBy('users.Id')
-        ->get(['users.*','designations.Name AS DesignationName',
-        DB::raw('SUM(timekeepings.TotalHours) as TotalSumHours, SUM(leave_requests.LeaveDuration) as TotalLeaveDuration')]);
+            $CompanySetting = CompanySetting::select('AnnualWorkingHours')->first();
+
+            $users = User::where('IsAdmin',false)->orderBy('DesignationId')
+            ->leftJoin('designations','designations.Id','=','users.DesignationId')
+            ->leftJoin('timekeepings','timekeepings.UserId','=','users.Id')
+            ->leftJoin('leave_requests', function($join){
+                $join->on('leave_requests.UserId', '=', 'users.Id');
+                $join->where('leave_requests.Status','=',2);
+            })
+            ->where('users.Status',1)
+            // ->whereBetween('timekeepings.Date', [$startDate, $endDate])
+            ->groupBy('users.Id')
+            ->get(['users.*','designations.Name AS DesignationName',
+            DB::raw('(SUM(CASE WHEN timekeepings.Date BETWEEN "'.$startDate.'" AND "'.$endDate.'" THEN timekeepings.TotalHours ELSE 0 END)) as TotalSumHours, SUM(leave_requests.LeaveDuration) as TotalLeaveDuration')]);
+        } else{
+            $CompanySetting = CompanySetting::select('AnnualWorkingHours')->first();
+
+            $users = User::where('IsAdmin',false)->orderBy('DesignationId')
+            ->leftJoin('designations','designations.Id','=','users.DesignationId')
+            ->leftJoin('timekeepings','timekeepings.UserId','=','users.Id')
+            ->leftJoin('leave_requests', function($join){
+                $join->on('leave_requests.UserId', '=', 'users.Id');
+                $join->where('leave_requests.Status','=',2);
+            })
+            ->where('users.Status',1)
+            
+            ->groupBy('users.Id')
+            ->get(['users.*','designations.Name AS DesignationName',
+            DB::raw('SUM(timekeepings.TotalHours) as TotalSumHours, SUM(leave_requests.LeaveDuration) as TotalLeaveDuration')]);
+        }
+
+       
 
         $data=[];
         foreach($users as $user){

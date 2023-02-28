@@ -41,8 +41,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // UTILIZATION DASHBOARD
-    Route::get('/utilizationDashboard', [UtilizationDashboardController::class, 'index'])->name('utilizationDashboard');
-    Route::get('/utilizationDashboard/filter/{type}', [UtilizationDashboardController::class, 'filterUtilization'])->name('utilizationDashboard.filter');
+    Route::prefix('utilizationDashboard')->group(function () {
+        Route::get('/', [UtilizationDashboardController::class, 'index'])->name('utilizationDashboard');
+        Route::get('/filter/{type}', [UtilizationDashboardController::class, 'filterUtilization'])->name('utilizationDashboard.filter');
+        Route::get('/filterDataByDate', [UtilizationDashboardController::class, 'filterDataByDate'])->name('utilizationDashboard.filterDataByDate');
+    });
+    
         
     // USER
     Route::prefix('user')->group(function () {

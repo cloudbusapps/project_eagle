@@ -56,7 +56,7 @@
                                     <table id="forecastedVSActualTable" class="table table-striped table-hover">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
+                                                {{-- <th>#</th> --}}
                                                 <th>Resource</th>
                                                 <th>Designation</th>
                                                 <th class="text-center">Forecasted work hours</th>
@@ -64,7 +64,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($WorkinghoursData as $index=> $WorkinghourData)
+                                            {{-- @foreach ($WorkinghoursData as $index=> $WorkinghourData)
                                             <tr>
                                                 <td>{{ $index+1 }}</td>
                                                 <td>{{ $WorkinghourData['FullName']}}</td>
@@ -72,7 +72,7 @@
                                                 <td class="text-center">{{ $WorkinghourData['forecastedAnnualHours'] }}</td>
                                                 <td class="text-center">{{ $WorkinghourData['TotalSumHours']?  $WorkinghourData['TotalSumHours']:0}}</td>
                                             </tr>
-                                            @endforeach
+                                            @endforeach --}}
                                         </tbody>
                                     </table>
                                 </div>
@@ -175,11 +175,7 @@
                             <div class="card-header">
                                 <h5 class="mb-0 font-weight-bold">DAILY SUMMARY OF UTILIZATION</h5>
                                 <div class="text-end">
-                                    <button value="DAILY" name="btnUtilization" type="submit" class="btn btn-success text-white btnFilterForm">Daily</button>
-                                    <button value="WEEKLY" name="btnUtilization" type="submit" class="btn btn-secondary text-white btnFilterForm">Weekly</button>
-                                    <button value="MONTHLY" name="btnUtilization" type="submit" class="btn btn-secondary btnFilterForm">Monthly</button>
-                                    <button value="YEARLY" name="btnUtilization" type="submit" class="btn btn-secondary btnFilterForm">Yearly</button>
-                                </div>
+                                   </div>
                             </div>
                             <div class="card-body">
                                 <table class="table table-bordered table-striped table-hover">
@@ -365,8 +361,14 @@
             // ------ END RESOURCE TABLE ------
 
             // ------ START ACTUAL VS FORECAST TABLE ------
-            let forecastedVSActualTable = $('#forecastedVSActualTable').DataTable({
-                columnDefs: [{ visible: false, targets: groupColumn }],
+
+             // DEFAULT VALUE IS CURRENT YEAR
+            var startOfYear = moment().startOf('year').format('MM/DD/YYYY');
+            var endOfYear = moment().endOf('year').format('MM/DD/YYYY');
+
+
+            $('#forecastedVSActualTable').DataTable({
+                columnDefs: [{ visible: false, targets: 1 }],
                 scrollX: true,
                 sorting: [],
                 scrollCollapse: true,
@@ -376,7 +378,7 @@
                     var last = null;
         
                     api
-                        .column(groupColumn, { page: 'current' })
+                        .column(1, { page: 'current' })
                         .data()
                         .each(function (group, i) {
                             if (last !== group) {
@@ -388,45 +390,35 @@
                             }
                         });
                 },
+
+                processing: true,
+
+                // SET TO TRUE IF DATA PROCESSED IS GREATER THAN 50,00 ROWS
+                serverSide: false,
+                
+                ajax: {
+                    url:"{{ route('utilizationDashboard.filterDataByDate') }}",
+                    type:'GET',
+                    data:{
+                        startDate:moment().startOf('year').format('YYYY-MM-DD'),
+                        endDate:moment().endOf('year').format('YYYY-MM-DD')
+                    },
+                    dataSrc:'',
+                    // dataSrc:function(res){
+                    //     console.log(res)
+                    // },
+                    error: function (xhr, error, thrown) {
+                        console.log(error);
+                    }
+                },
+                columns:[
+                    {data:'FullName'},
+                    {data:'DesignationName'},
+                    {data:'forecastedAnnualHours',className: "text-center"},
+                    {data:'TotalSumHours',className: "text-center"},
+                ]
             });
             // ------ END ACTUAL VS FORECAST TABLE ------
-
-            // ------ FILTER BUTTON FOR UTILIZATION ------
-            $(document).on('click', 'button[name="btnUtilization"]', function() {
-                $('button[name="btnUtilization"]').removeClass('btn-success');
-                $('button[name="btnUtilization"]').addClass('btn-secondary');
-                $(this).toggleClass('btn-success'); 
-                let filterType = $(this).val()
-                let title = $('#summaryUtilization .card .card-header h5').text(filterType+' SUMMARY OF UTILIZATION')
-            })
-            // ------ END FILTER BUTTON FOR UTILIZATION -----
-
-            // FILTER TABLE
-            $(document).on('click', '.btnFilterForm', function(e) {
-                e.preventDefault();
-                let type = $(this).val();
-                let tableContainer = $(this).closest('.card-header').next()
-                tableContainer.html(PRELOADER)
-
-                    setTimeout(() => {
-                        var method = 'GET';
-                        $.ajax({
-                            type: method,
-                            url: `utilizationDashboard/filter/${type}`,
-                            async: false,
-                            success: function(html) {
-                                tableContainer.html(html)
-                            }
-                        })
-                    }, 100);
-                });
-            // END FILTER TABLE
-
-        // BELOW ARE FILTERING FUNCTION
-        // ----- INIT DATERANGEPICKER -----
-        // DEFAULT VALUE IS CURRENT YEAR
-        var startOfYear = moment().startOf('year').format('MM/DD/YYYY');
-        var endOfYear = moment().endOf('year').format('MM/DD/YYYY');
 
         $(`input[name="forecastVSActualHours"]`).daterangepicker({
             startDate: startOfYear,
@@ -444,15 +436,58 @@
             let newTitle = `FORECASTED VS ACTUAL HOURS ${label}`;
             $('input[name="forecastVSActualHours"]').closest('.card-header').find('h5').text(newTitle);
 
+            const date={
+                startDate:start.format('YYYY-MM-DD'),
+                endDate:end.format('YYYY-MM-DD')
+            }
 
-            // SEND DATA TO CONTROLLER
-            
+            $('#forecastedVSActualTable').DataTable().destroy();
 
+            $('#forecastedVSActualTable').DataTable({
+                columnDefs: [{ visible: false, targets: 1 }],
+                scrollX: true,
+                sorting: [],
+                scrollCollapse: true,
+                drawCallback: function (settings) {
+                    var api = this.api();
+                    var rows = api.rows({ page: 'current' }).nodes();
+                    var last = null;
+        
+                    api
+                        .column(1, { page: 'current' })
+                        .data()
+                        .each(function (group, i) {
+                            if (last !== group) {
+                                $(rows)
+                                    .eq(i)
+                                    .before('<tr class="group"><td colspan="100%">' + group + '</td></tr>');
+        
+                                last = group;
+                            }
+                        });
+                },
 
-            
+                processing: true,
+                // SET TO TRUE IF DATA PROCESSED IS GREATER THAN 50,00 ROWS
+                serverSide: false,
+                
+                ajax: {
+                    url:"{{ route('utilizationDashboard.filterDataByDate') }}",
+                    type:'GET',
+                    data:date,
+                    dataSrc:'',
+                    error: function (xhr, error, thrown) {
+                        console.log(error);
+                    }
+                },
+                columns:[
+                    {data:'FullName'},
+                    {data:'DesignationName'},
+                    {data:'forecastedAnnualHours',className: "text-center"},
+                    {data:'TotalSumHours',className: "text-center"},
+                ]
+            }).draw();
         });
-
-        // ----- END INIT DATERANGEPICKER -----
 
         })
         // END OF DOCUMENT
