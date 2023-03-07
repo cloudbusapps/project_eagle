@@ -393,7 +393,7 @@
 
                 processing: true,
 
-                // SET TO TRUE IF DATA PROCESSED IS GREATER THAN 50,00 ROWS
+                // SET TO TRUE IF DATA PROCESSED IS GREATER THAN 50,000 ROWS
                 serverSide: false,
                 
                 ajax: {
@@ -468,7 +468,7 @@
                 },
 
                 processing: true,
-                // SET TO TRUE IF DATA PROCESSED IS GREATER THAN 50,00 ROWS
+                // SET TO TRUE IF DATA PROCESSED IS GREATER THAN 50,000 ROWS
                 serverSide: false,
                 
                 ajax: {

@@ -20,7 +20,7 @@ use Auth;
 class UtilizationDashboardController extends Controller
 {
     public function index() {
-        if(Auth::id()==config('constant.ID.USERS.BA_HEAD') ||Auth::user()->IsAdmin==1){
+        if(Auth::id()==config('constant.ID.USERS.BA_HEAD') || Auth::user()->IsAdmin==1){
             $data = [
                 'title'   => "Utilizatiion Dashboard",   
                 'activities' => Activity::where(DB::raw('DATE("created_at")'), date('Y-m-d'))
@@ -124,7 +124,9 @@ class UtilizationDashboardController extends Controller
             // ->whereBetween('timekeepings.Date', [$startDate, $endDate])
             ->groupBy('users.Id')
             ->get(['users.*','designations.Name AS DesignationName',
-            DB::raw('(SUM(CASE WHEN timekeepings.Date BETWEEN "'.$startDate.'" AND "'.$endDate.'" THEN timekeepings.TotalHours ELSE 0 END)) as TotalSumHours, SUM(leave_requests.LeaveDuration) as TotalLeaveDuration')]);
+            DB::raw('(SUM(CASE WHEN timekeepings.Date BETWEEN "'.$startDate.'" AND "'.$endDate.'" 
+            THEN timekeepings.TotalHours ELSE 0 END)) as TotalSumHours, 
+            SUM(leave_requests.LeaveDuration) as TotalLeaveDuration')]);
         } else{
             $CompanySetting = CompanySetting::select('AnnualWorkingHours')->first();
 
