@@ -109,7 +109,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($projectResources as $index=> $projectResource)
+                                        @foreach ($projectResources as $index => $projectResource)
                                         <tr>
                                             
                                             <td>{{ $index+1}}</td>
