@@ -26,6 +26,7 @@ class Project extends Model
     protected $fillable = [
         "Id",
         'Name',
+        'IsComplex',
         'KickoffDate',
         'ClosedDate',
         'ProjectManager',

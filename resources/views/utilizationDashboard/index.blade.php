@@ -84,6 +84,7 @@
 
                     {{-- SUMMARY OF PROJECT ASSIGNED PER RESOURCE --}}
                     {{-- MAKE IT BY TITLE, FC,TC,BA... --}}
+
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
@@ -122,10 +123,12 @@
                                                         <td class="text-center"></td>
                                                     @endif
                                             @endforeach
-                                            <td class="text-center">5</td>
-                                            <td class="text-center">3</td>
-                                            <td class="text-center">2</td>
-                                            <td class="text-center">10</td>
+                                            @foreach ($projectResource['ProjectCount'] as $key=> $projectCount)
+                                                <td class="text-center">{{$projectCount }}</td>
+                                                {{-- <td class="text-center">{{ $projectCount['Complex'] }}</td>
+                                                <td class="text-center">{{ $projectCount['Complex'] }}</td> --}}
+                                            @endforeach
+                                            <td class="text-center">{{ count($projectResource['ProjectsId']) }}</td>
                                         </tr>
                                         @endforeach
                                     </tbody>
@@ -408,7 +411,7 @@
                     //     console.log(res)
                     // },
                     error: function (xhr, error, thrown) {
-                        console.log(error);
+                        console.log('ERROR:'+error);
                     }
                 },
                 columns:[

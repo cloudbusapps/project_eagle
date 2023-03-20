@@ -69,16 +69,13 @@ class UtilizationDashboardController extends Controller
 
     public function getUserProject($userType=''){
         if($userType==='admin'){
-            // $projectResources= Resource::select('resources.*','projects.Name AS ProjectName')
-            // ->leftJoin('projects','resources.ProjectId','projects.Id')
-            // ->get();
+            $projectResources= Resource::select('resources.*','projects.Name AS ProjectName','projects.IsComplex')
+            ->leftJoin('projects','resources.ProjectId','projects.Id')
+            ->get();
             $users = User::where('IsAdmin',false)->orderBy('DesignationId')
             ->leftJoin('designations','designations.Id','=','users.DesignationId')
-            ->leftJoin('resources','users.Id','=','resources.UserId')
-            ->leftJoin('projects','resources.ProjectId','projects.Id')
             ->where('users.Status',1)
-            ->get(['users.*','designations.Name AS DesignationName','resources.ProjectId','projects.Name AS ProjectName']);
-            // ->get(['users.*','designations.Name AS DesignationName']);
+            ->get(['users.*','designations.Name AS DesignationName']);
         } else{
             $projectResources= Resource::select('resources.*','projects.Name AS ProjectName')
         ->leftJoin('projects','resources.ProjectId','projects.Id')
@@ -92,47 +89,53 @@ class UtilizationDashboardController extends Controller
         
         $data=[];
 
-        // foreach($users as $user){
-        //     $temp=[
-        //         'Id' => $user->Id,
-        //         'FirstName'      => $user->FirstName,
-        //         'LastName'       => $user->LastName,
-        //         'FullName'       => $user->FirstName.' '.$user->LastName,
-        //         'DesignationName'  => $user->DesignationName,
-        //         'ProjectsId'     => []
-        //     ];
-        //     foreach($projectResources as $projectResource){
-        //         if($projectResource->UserId===$user->Id){
-        //             $temp['ProjectsId'][]=$projectResource->ProjectId;
-        //         }
-        //     }
-        //     $data[]=$temp;
-        // }
-
-        $uniqueIdHolder=[];
-
         foreach($users as $user){
-            if(in_array($user->Id,$uniqueIdHolder)){
-              array_pop($data);
-            } else{
-                $uniqueIdHolder[]=$user->Id;
-                $temp=[
-                    'Id' => $user->Id,
-                    'FirstName'      => $user->FirstName,
-                    'LastName'       => $user->LastName,
-                    'FullName'       => $user->FirstName.' '.$user->LastName,
-                    'DesignationName'  => $user->DesignationName,
-                    'ProjectsId'     => []
-                ];
-            }
-            
-                
-            
-           
-            if($user->ProjectId){
-                $temp['ProjectsId'][]=$user->ProjectId;
-            }
+            $temp=[
+                'Id'             => $user->Id,
+                'FirstName'      => $user->FirstName,
+                'LastName'       => $user->LastName,
+                'FullName'       => $user->FirstName.' '.$user->LastName,
+                'DesignationName'  => $user->DesignationName,
+                'ProjectsId'     => [],
+                'ProjectCount'   => [
+                    'Complex'       => 0,
+                    'Intermediate'  => 0,
+                    'Easy'          => 0
+                ]
+            ];
+            $complex = 0;
+            $intermediate = 0;
+            $easy = 0;
 
+            foreach($projectResources as $key=> $projectResource){
+                if($projectResource->UserId===$user->Id){
+                    $temp['ProjectsId'][]=$projectResource->ProjectId;
+                    if($projectResource->IsComplex==1){
+                        $complex += 1;
+                        $temp['ProjectCount']=[
+                            'Complex' => $complex,
+                            'Intermediate' => $intermediate,
+                            'Easy' => $easy,
+                        ];
+                    } if($projectResource->IsComplex==2){
+                        $intermediate += 1;
+                        $temp['ProjectCount']=[
+                            'Complex' => $complex,
+                            'Intermediate' => $intermediate,
+                            'Easy' => $easy,
+                        ];
+                    
+                    } if($projectResource->IsComplex==3){
+                        $easy += 1;
+                        $temp['ProjectCount']=[
+                            'Complex' => $complex,
+                            'Intermediate' => $intermediate,
+                            'Easy' => $easy,
+                        ];
+                    } 
+                }
+               
+            }
             $data[]=$temp;
         }
 
