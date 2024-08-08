@@ -119,7 +119,7 @@ class ModuleSeeder extends Seeder
                     'Title'         => 'Trainings',
                     'WithApproval'  => false,
                     'Icon'          => 'training.png',
-                    'RouteName'     => null,
+                    'RouteName'     => 'training',
                     'Prefix'        => 'training',
                     'Status'        => 1,
                     'SortOrder'     => 6,

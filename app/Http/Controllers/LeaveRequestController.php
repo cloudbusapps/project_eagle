@@ -400,7 +400,7 @@ class LeaveRequestController extends Controller
 
         $LeaveBalance = UserLeaveBalance::where('UserId', $UserId)
             ->where('LeaveTypeId', $LeaveRequest->LeaveTypeId)
-            ->where('Balance', '>', 0)
+            // ->where('Balance', '>', 0)
             ->orderBy('Year', 'ASC')
             ->first();
         
