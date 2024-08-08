@@ -27,6 +27,7 @@ use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TimekeepingController;
+use App\Http\Controllers\TrainingController;
 
 // AUTH
 Route::get('/', [LoginController::class, 'index'])->name('auth.login');
@@ -103,7 +104,6 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     // EMPLOYEE DIRECTORY
-    
     Route::prefix('directory')->group(function () {
         Route::get('/', [EmployeeDirectoryController::class, 'index'])->name('employeeDirectory');
         Route::get('/add', [EmployeeDirectoryController::class, 'add'])->name('employeeDirectory.add');
@@ -201,6 +201,17 @@ Route::group(['middleware' => 'auth'], function () {
             Route::put('/edit/{Id}/update', [TimekeepingController::class, 'update'])->name('timekeeping.update');
             Route::get('/delete/{Id}', [TimekeepingController::class, 'delete'])->name('timekeeping.delete');
         });
+    });
+
+    // TRAINING
+    Route::prefix('training')->group(function () {
+        Route::get('/', [TrainingController::class, 'index'])->name('training');
+        Route::get('/add', [TrainingController::class, 'form'])->name('training.add');
+        Route::post('/save', [TrainingController::class, 'save'])->name('training.save');
+        Route::get('/view/{Id}', [TrainingController::class, 'view'])->name('training.view');
+        Route::get('/edit/{Id}', [TrainingController::class, 'edit'])->name('training.edit');
+        Route::put('/edit/{Id}/update', [TrainingController::class, 'update'])->name('training.update');
+        Route::get('/delete/{Id}', [TrainingController::class, 'delete'])->name('training.delete');
     });
 });
 
