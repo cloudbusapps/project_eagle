@@ -24,6 +24,7 @@ return new class extends Migration
             $table->text('Facilitator');
             $table->text('Purpose');
             $table->text('Attachments')->nullable();
+            $table->integer('WithCertification')->default(0);
             $table->uuid('CreatedById')->nullable();
             $table->uuid('UpdatedById')->nullable();
             $table->timestamps();
