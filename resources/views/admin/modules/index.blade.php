@@ -62,7 +62,7 @@
                         @if (!empty($data))
                         @foreach ($data as $index => $dt)
                         <?php 
-                            $status = $dt->Status == "Active" ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-danger'>Inactive</span>";
+                            $status = $dt->Status == 1 ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-danger'>Inactive</span>";
                             $approval = $dt->WithApproval ? "<span class='border border-success px-2 text-success'>Yes</span>" : "<span class='border border-danger px-2 text-danger'>No</span>";
                         ?>
 
