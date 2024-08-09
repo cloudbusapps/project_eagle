@@ -44,7 +44,7 @@ class TrainingController extends Controller
 
         $filename = '';
         $file = $request->file('Attachments');
-        if (!$file) {
+        if ($file) {
             $destination_path = 'uploads/trainings/';
             $filename_arr = explode('.', $file->getClientOriginalName());
             $extension = array_splice($filename_arr, count($filename_arr)-1, 1);
@@ -53,19 +53,20 @@ class TrainingController extends Controller
         }
 
         $Training = new Training;
-        $Training->UserId      = $request->UserId;
-        $Training->Status      = $request->TrainingStatus;
-        $Training->Type        = $request->TrainingType;
-        $Training->Name        = $request->TrainingName;
-        $Training->StartDate   = date('Y-m-d', strtotime($request->StartDate));
-        $Training->EndDate     = date('Y-m-d', strtotime($request->EndDate));
-        $Training->Facilitator = $request->Facilitator;
-        $Training->Purpose     = $request->Purpose;
-        $Training->Attachments = $filename;
-        $Training->CreatedById = Auth::id();
-        $Training->UpdatedById = Auth::id();
-        $Training->created_at  = now();
-        $Training->updated_at  = now();
+        $Training->UserId            = $request->UserId;
+        $Training->Status            = $request->TrainingStatus;
+        $Training->Type              = $request->TrainingType;
+        $Training->Name              = $request->TrainingName;
+        $Training->StartDate         = date('Y-m-d', strtotime($request->StartDate));
+        $Training->EndDate           = date('Y-m-d', strtotime($request->EndDate));
+        $Training->Facilitator       = $request->Facilitator;
+        $Training->Purpose           = $request->Purpose;
+        $Training->Attachments       = $filename;
+        $Training->WithCertification = isset($request->WithCertification) ? 1 : 0;
+        $Training->CreatedById       = Auth::id();
+        $Training->UpdatedById       = Auth::id();
+        $Training->created_at        = now();
+        $Training->updated_at        = now();
 
         if ($Training->save()) {
             return redirect()
@@ -118,17 +119,18 @@ class TrainingController extends Controller
         }
 
         $Training = Training::find($Id);
-        $Training->UserId      = $request->UserId;
-        $Training->Status      = $request->TrainingStatus;
-        $Training->Type        = $request->TrainingType;
-        $Training->Name        = $request->TrainingName;
-        $Training->StartDate   = date('Y-m-d', strtotime($request->StartDate));
-        $Training->EndDate     = date('Y-m-d', strtotime($request->EndDate));
-        $Training->Facilitator = $request->Facilitator;
-        $Training->Purpose     = $request->Purpose;
-        $Training->Attachments = $filename;
-        $Training->UpdatedById = Auth::id();
-        $Training->updated_at  = now();
+        $Training->UserId            = $request->UserId;
+        $Training->Status            = $request->TrainingStatus;
+        $Training->Type              = $request->TrainingType;
+        $Training->Name              = $request->TrainingName;
+        $Training->StartDate         = date('Y-m-d', strtotime($request->StartDate));
+        $Training->EndDate           = date('Y-m-d', strtotime($request->EndDate));
+        $Training->Facilitator       = $request->Facilitator;
+        $Training->Purpose           = $request->Purpose;
+        $Training->Attachments       = $filename;
+        $Training->WithCertification = isset($request->WithCertification) ? 1 : 0;
+        $Training->UpdatedById       = Auth::id();
+        $Training->updated_at        = now();
 
         if ($Training->save()) {
             return redirect()

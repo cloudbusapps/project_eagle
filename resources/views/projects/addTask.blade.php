@@ -3,7 +3,7 @@
 @section('content')
     <?php
     $Title = $Description = $StartDate = $EndDate = $ActualStartDate = $ActualEndDate = $todo = '';
-    $Duration = $ActualTaskDuration = '';
+    $Manhour = $ActualTaskDuration = '';
     $isEditable = '';
     if ($type === 'insert') {
         $todo = 'insert';
@@ -28,7 +28,7 @@
         $EndDate = !empty($taskData) ? $taskData['EndDate'] ?? '' : '';
         $ActualStartDate = !empty($taskData) ? $taskData['ActualStartDate'] ?? '' : '';
         $ActualEndDate = !empty($taskData) ? $taskData['ActualEndDate'] ?? '' : '';
-        $Duration = !empty($taskData) ? (!empty($taskData['Duration']) ? (int) $taskData['Duration'] / 60 / 60 : '') : '';
+        $Manhour = !empty($taskData) ? (!empty($taskData['Manhour']) ?$taskData['Manhour']: '') : '';
         $ActualTaskDuration = !empty($taskData) ? (!empty($taskData['TimeCompleted']) ? (int) $taskData['TimeCompleted'] / 60 / 60 : '') : '';
         $UserId = !empty($taskData) ? $taskData['UserId'] ?? '' : '';
         $status = !empty($taskData) ? $taskData['Status'] ?? '' : '';
@@ -137,8 +137,8 @@
                                     <label for="inputTime" class="col-sm-2 label">Budgeted Hours</label>
                                     <div class="col-sm-10">
                                         <input {{ $isEditable }} step=".01"
-                                            value="{{ old('TaskDuration') ?? $Duration }}" name="TaskDuration"
-                                            id="TaskDuration" type="number" min="0" class="form-control"
+                                            value="{{ old('Manhour') ?? $Manhour }}" name="Manhour"
+                                            id="Manhour" type="number" min="0" class="form-control"
                                             placeholder="0">
                                     </div>
                                 </div>
@@ -279,11 +279,11 @@
 
                     let content = todo == 'insert' ? `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                    <img src="/assets/img/modal/new.svg" class="py-3" height="150" width="150">
+                    <img src="${ASSET_URL}assets/img/modal/new.svg" class="py-3" height="150" width="150">
                     <b class="mt-4">Are you sure you want to add new task?</b>
                 </div>` : `
                 <div class="d-flex justify-content-center align-items-center flex-column text-center">
-                    <img src="/assets/img/modal/update.svg" class="py-1" height="150" width="150">
+                    <img src="${ASSET_URL}assets/img/modal/update.svg" class="py-1" height="150" width="150">
                     <b class="mt-4">Are you sure you want to update this task?</b>
                 </div>`;
 

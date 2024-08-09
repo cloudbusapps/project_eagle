@@ -158,7 +158,7 @@ class LeaveRequestController extends Controller
                     $Title       = "Leave";
                     $Description = "<b>".$data->DocumentNumber."</b> - ".$data->FirstName.' '.$data->LastName." is asking for your approval.";
                     $Link        = route('leaveRequest.view', ['Id' => $Id]);
-                    $Icon        = '/assets/img/icons/for-approval.png';
+                    $Icon        = 'assets/img/icons/for-approval.png';
 
                     // Mail::to($email)->send(new LeaveRequestMail($data, $approver));
                     Notification::sendNow($approver, new SystemNotification($Id, $Title, $Description, $Link, $Icon));
@@ -172,10 +172,10 @@ class LeaveRequestController extends Controller
 
                 if ($Status == 2) { // APPPROVED
                     $Description = "<b>".$data->DocumentNumber."</b> - Your leave has been approved.";
-                    $Icon        = '/assets/img/icons/approved.png';
+                    $Icon        = 'assets/img/icons/approved.png';
                 } else if ($Status == 3) {
                     $Description = "<b>".$data->DocumentNumber."</b> - Your leave has been rejected.";
-                    $Icon        = '/assets/img/icons/rejected.png';
+                    $Icon        = 'assets/img/icons/rejected.png';
                 }
 
                 // Mail::to($email)->send(new LeaveRequestMail($data, $user));
@@ -210,6 +210,9 @@ class LeaveRequestController extends Controller
         $LeaveRequest->LeaveDuration  = $request->LeaveDuration;
         $LeaveRequest->LeaveBalance   = $request->LeaveBalance;
         $LeaveRequest->Reason         = $request->Reason;
+        $LeaveRequest->IsWholeDay     = $LeaveRequest->LeaveDuration > 1 ? 1 : (isset($request->IsWholeDay) ? 1 : 0);
+        $LeaveRequest->StartTime      = $request->StartTime;
+        $LeaveRequest->EndTime        = $request->EndTime;
         $LeaveRequest->Status         = 1;
 
         if ($LeaveRequest->save()) {
@@ -310,9 +313,11 @@ class LeaveRequestController extends Controller
             ->leftJoin('users AS u2', 'u2.Id', 'mfa.ApproverId')
             ->where('leave_requests.Id', $Id)
             ->first();
-        $pending = (!$leaveRequestData->ApproverId && $leaveRequestData->Status == 1) || isFormPending(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id);
 
-        if ($pending || $leaveRequestData->Status == 3) {
+        $pending = isFormPending(config('constant.ID.MODULES.MODULE_ONE.LEAVE'), $Id);
+
+        // if (!$pending || $leaveRequestData->Status == 3) {
+        if (!$pending) {
             $data = [
                 'title' => "Revise Leave",
                 'data'  => $leaveRequestData,
@@ -324,7 +329,7 @@ class LeaveRequestController extends Controller
             ];
             return view('leaveRequest.form', $data);
         } else {
-            return redirect()->back()->withErrors(['Cannot revise the form that has been approved or ongoing for approval']);
+            return redirect()->route('leaveRequest.view', ['Id' => $Id])->withErrors(['Cannot revise the form that has been approved or ongoing for approval']);
         }
     }
 
@@ -343,12 +348,15 @@ class LeaveRequestController extends Controller
         
         $LeaveRequest = LeaveRequest::find($Id);
         $LeaveRequest->UserId        = $request->UserId;
-        $LeaveRequest->LeaveTypeId     = $request->LeaveTypeId;
+        $LeaveRequest->LeaveTypeId   = $request->LeaveTypeId;
         $LeaveRequest->StartDate     = $request->StartDate;
         $LeaveRequest->EndDate       = $request->EndDate;
         $LeaveRequest->LeaveDuration = $request->LeaveDuration;
         $LeaveRequest->LeaveBalance  = $request->LeaveBalance;
         $LeaveRequest->Reason        = $request->Reason;
+        $LeaveRequest->IsWholeDay    = $LeaveRequest->LeaveDuration > 1 ? 1 : (isset($request->IsWholeDay) ? 1 : 0);
+        $LeaveRequest->StartTime     = $request->StartTime;
+        $LeaveRequest->EndTime       = $request->EndTime;
         $LeaveRequest->Status        = 1; // FOR APPROVAL
 
         if ($LeaveRequest->save()) {
@@ -397,6 +405,7 @@ class LeaveRequestController extends Controller
     {
         $UserId        = $LeaveRequest->UserId;
         $LeaveDuration = $LeaveRequest->LeaveDuration ?? 1;
+        $OldBalance = $NewBalance = 0;
 
         $LeaveBalance = UserLeaveBalance::where('UserId', $UserId)
             ->where('LeaveTypeId', $LeaveRequest->LeaveTypeId)
@@ -410,25 +419,24 @@ class LeaveRequestController extends Controller
             $Used    = $LeaveBalance->Used ?? 0;
             $Balance = $LeaveBalance->Balance ?? 0;
 
+            $OldBalance = $Balance;
+
             $Remaining = $Credit - $LeaveDuration;
 
             if ($Remaining < 0) {
-                // $Credit = 0;
                 $Remaining = abs($Remaining);
 
                 $Accrued = $Accrued - $Remaining;
                 $Accrued = $Accrued > 0 ? $Accrued : 0;
             } 
-            // else {
-            //     $Credit = $Remaining;
-            // }
 
             $Used = $Used + $LeaveDuration;
             $Balance = $Balance - $LeaveDuration;
             $Balance = $Balance > 0 ? $Balance : 0;
 
+            $NewBalance = $Balance;
+
             $data = [
-                // 'Credit'  => $Credit,
                 'Accrued' => $Accrued,
                 'Used'    => $Used,
                 'Balance' => $Balance,
@@ -436,6 +444,7 @@ class LeaveRequestController extends Controller
             UserLeaveBalance::where('Id', $LeaveBalance->Id)->update($data);
         }
 
+        return ['OldBalance' => $OldBalance, 'NewBalance' => $NewBalance];
     }
     
     public function approve(Request $request, $Id, $UserId) {
@@ -466,11 +475,15 @@ class LeaveRequestController extends Controller
             $FullName = Auth::user()->FirstName . ' ' . Auth::user()->LastName;
             if ($LeaveRequest->save()) {
                 if ($newStatus == 2) { // APPROVED
-                    $this->deductLeaveCredit($LeaveRequest);
-                    $attributes=[
-                        ['data'=>"{$LeaveRequest->LeaveDuration} is deducted from {$LeaveRequest->FullName}'s {$LeaveRequest->LeaveType} credit"]
-                    ];
-                    LeaveRequest::logActivity("{$FullName} approved {$DocumentNumber} leave request",$LeaveRequest,$attributes);
+                    $balance = $this->deductLeaveCredit($LeaveRequest);
+                    if ($balance['OldBalance'] > 0) {
+                        $attributes=[
+                            ['data'=>"{$LeaveRequest->LeaveDuration} is deducted from {$LeaveRequest->FullName}'s {$LeaveRequest->LeaveType} credit"]
+                        ];
+                        LeaveRequest::logActivity("{$FullName} approved {$DocumentNumber} leave request",$LeaveRequest,$attributes);
+                    } else {
+                        LeaveRequest::logActivity("{$FullName} approved {$DocumentNumber} leave request",$LeaveRequest);
+                    }
                 } else{
                     
                     LeaveRequest::logActivity("{$FullName} approved {$DocumentNumber} leave request proceeding to next approver",$LeaveRequest);

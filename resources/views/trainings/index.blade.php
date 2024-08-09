@@ -54,7 +54,6 @@
                                 <th>Training</th>
                                 <th>Date</th>
                                 <th>Facilitator</th>
-                                <th>Purpose</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -62,6 +61,12 @@
 
                         @if (isset($data) && count($data))
                             @foreach ($data as $index => $dt)
+                                @php
+                                    $status = $dt->Status == 'Scheduled' ? 
+                                        "<span class='badge bg-info'>Scheduled</span>" : 
+                                        ($dt->Status == 'Completed' ? "<span class='badge bg-success'>Completed</span>" : "<span class='badge bg-warning'>On-going</span>");
+                                @endphp
+
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
                                     <td>
@@ -77,8 +82,7 @@
                                         {{ date('F d, Y', strtotime($dt->StartDate)) . ' - ' . date('F d, Y', strtotime($dt->EndDate)) }}
                                     </td>
                                     <td>{{ $dt->Facilitator }}</td> 
-                                    <td>{{ $dt->Purpose }}</td>
-                                    <td>{{ $dt->Status }}</td>
+                                    <td><?= $status ?></td>
                                 </tr>
                             @endforeach
                         @endif
@@ -111,8 +115,7 @@
                     { targets: 2,  width: 150 },
                     { targets: 3,  width: 150 },
                     { targets: 4,  width: 150 },
-                    { targets: 5,  width: 150 },
-                    { targets: 6,  width: 80  },
+                    { targets: 5,  width: 80  },
                 ],
             });
         // ----- END DATATABLES -----

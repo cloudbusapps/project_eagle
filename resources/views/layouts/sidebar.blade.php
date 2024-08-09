@@ -115,23 +115,24 @@
                 href="{{ route('projectPhase') }}">Project Phases</a>
             </li>
             <li>
-              <a class="ms-link {{ 'projectPhase' == $setupModule ? 'active' : '' }}" 
+              <a class="ms-link {{ 'companySetting' == $setupModule ? 'active' : '' }}" 
                 href="{{ route('companySetting') }}">Company Setting</a>
             </li>
           </ul>
         </li>
-        <a class="m-link {{ $subModule == 'dataManagement' ? 'active' : '' }}" href="{{ route('dataManagement') }}">
-          <img src="{{ asset('uploads/icons/dataManagement.png') }}" alt="Data Management" width="20" height="20">
-          <span class="ms-2">Data Management</span>
-        </a>
-        {{-- 
+        <!-- <li>
+            <a class="m-link {{ $subModule == 'dataManagement' ? 'active' : '' }}" href="{{ route('dataManagement') }}">
+              <img src="{{ asset('uploads/icons/dataManagement.png') }}" alt="Data Management" width="20" height="20">
+              <span class="ms-2">Data Management</span>
+            </a>
+        </li> -->
         <!-- FOR DEVELOPER ONLY -->  
         <li>
           <a class="m-link {{ $subModule == 'module' ? 'active' : '' }}" href="{{ route('module') }}">
             <img src="{{ asset('uploads/icons/modules.png') }}" alt="Modules" width="20" height="20">
             <span class="ms-2">Modules</span>
           </a>
-        </li> --}}
+        </li> 
       </ul>
       @endif
 
@@ -191,7 +192,7 @@
                                                 <div class="d-flex btnViewNotification"
                                                     style="cursor: pointer;"
                                                     onclick="viewNotification('{{ $notification->id }}', '{{ $data->Link ?? '#' }}')">
-                                                    <img src="{{ $data->Icon ?? '/assets/img/icons/default.png' }}" height="30" width="30">
+                                                    <img src="{{ asset($data->Icon ?? 'assets/img/icons/default.png') }}" height="30" width="30">
                                                     <div class="flex-fill ms-3">
                                                         <div class="mb-0">
                                                           <?= $data->Description ?>

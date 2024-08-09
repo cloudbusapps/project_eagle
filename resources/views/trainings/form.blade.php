@@ -25,17 +25,18 @@
         <a href="'. route('training.delete', ['Id' => $data['Id']]) .'" class="btn btn-danger btnDeleteForm">Delete</a>
         <a href="'. route('training.edit', ['Id' => $data['Id']]) .'" class="btn btn-warning btnUpdateForm">Edit</a>';
 
-        $UserId      = $data['UserId'];
-        $Status      = $data['Status'];
-        $Name        = $data['Name'];
-        $FirstName   = $data['FirstName'];
-        $LastName    = $data['LastName'];
-        $Type        = $data['Type'];
-        $StartDate   = $data['StartDate'];
-        $EndDate     = $data['EndDate'];
-        $Facilitator = $data['Facilitator'];
-        $Purpose     = $data['Purpose'];
-        $Attachments = $data['Attachments'];
+        $UserId            = $data['UserId'];
+        $Status            = $data['Status'];
+        $Name              = $data['Name'];
+        $FirstName         = $data['FirstName'];
+        $LastName          = $data['LastName'];
+        $Type              = $data['Type'];
+        $StartDate         = $data['StartDate'];
+        $EndDate           = $data['EndDate'];
+        $Facilitator       = $data['Facilitator'];
+        $Purpose           = $data['Purpose'];
+        $Attachments       = $data['Attachments'];
+        $WithCertification = $data['WithCertification'];
     } 
     // EDIT
     else if ($todo == 'update') {
@@ -46,33 +47,35 @@
         <a href="'. route('training.delete', ['Id' => $data['Id']]) .'" class="btn btn-danger btnDeleteForm">Delete</a>
         <button type="submit" class="btn btn-warning btnUpdateForm">Update</button>';
 
-        $UserId      = $data['UserId'];
-        $Status      = $data['Status'];
-        $Name        = $data['Name'];
-        $FirstName   = $data['FirstName'];
-        $LastName    = $data['LastName'];
-        $Type        = $data['Type'];
-        $StartDate   = $data['StartDate'];
-        $EndDate     = $data['EndDate'];
-        $Facilitator = $data['Facilitator'];
-        $Purpose     = $data['Purpose'];
-        $Attachments = $data['Attachments'];
+        $UserId            = $data['UserId'];
+        $Status            = $data['Status'];
+        $Name              = $data['Name'];
+        $FirstName         = $data['FirstName'];
+        $LastName          = $data['LastName'];
+        $Type              = $data['Type'];
+        $StartDate         = $data['StartDate'];
+        $EndDate           = $data['EndDate'];
+        $Facilitator       = $data['Facilitator'];
+        $Purpose           = $data['Purpose'];
+        $Attachments       = $data['Attachments'];
+        $WithCertification = $data['WithCertification'];
     } 
     // CREATE
     else {
         $required = '<code>*</code>';
 
-        $UserId      = '';
-        $Status      = '';
-        $Name        = '';
-        $FirstName   = '';
-        $LastName    = '';
-        $Type        = '';
-        $StartDate   = null;
-        $EndDate     = null;
-        $Facilitator = '';
-        $Purpose     = '';
-        $Attachments = '';
+        $UserId            = '';
+        $Status            = '';
+        $Name              = '';
+        $FirstName         = '';
+        $LastName          = '';
+        $Type              = '';
+        $StartDate         = null;
+        $EndDate           = null;
+        $Facilitator       = '';
+        $Purpose           = '';
+        $Attachments       = '';
+        $WithCertification = 0;
     }
 ?>
 
@@ -125,7 +128,7 @@
                         <div class="card">
                             <div class="card-body pt-3">
                                 <div class="row my-3">
-                                    <label for="User" class="col-sm-2">User <?= $required ?></label>
+                                    <label for="User" class="col-sm-2">Full Name <?= $required ?></label>
                                     <div class="col-sm-10">
                                         @if ($todo == 'read')
                                             <input type="text" class="form-control" name="User" value="{{ $FirstName }} {{ $LastName }}" disabled>                                            
@@ -265,6 +268,8 @@
                                                     class="py-1 px-3" style="border-radius: 5px; background: #d3ffd3 !important;">
                                                     {{ $Attachments }}
                                                 </a>
+                                            @else
+                                                <span class="text-muted">No Attachment</span>
                                             @endif
                                         @else
                                             <input type="file" 
@@ -273,6 +278,20 @@
                                                 name="Attachments"
                                                 accept="application/pdf, image/*, .pdf"
                                                 value="">
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="row my-3">
+                                    <label for="WithCertification" class="col-sm-2">With Certification</label>
+                                    <div class="col-sm-10">
+                                        @if ($todo == 'read')
+                                            <input type="checkbox" class="form-check-input" name="WithCertification" {{ $WithCertification == '1' ? 'checked' : '' }} disabled>
+                                        @else
+                                            <input type="checkbox" 
+                                                class="" 
+                                                id="WithCertification" 
+                                                name="WithCertification"
+                                                {{ $WithCertification == '1' ? 'checked' : '' }}>
                                         @endif
                                     </div>
                                 </div>
